@@ -33,61 +33,6 @@
 #include "crit3dDate.h"
 
 
-bool initializeSoilMoisture(Crit3DProject* myProject, int month)
-{
-    int myResult;
-    QString myError;
-    long index, surfaceIndex;
-    int soilIndex, horizonIndex;
-    double moistureIndex, waterPotential;
-    double fieldCapacity;                    //[m]
-    double  wiltingPoint = -160.0;           //[m]
-    double dry = wiltingPoint / 3.0;         //[m] dry potential
-
-    //[0-1] min: july  max: january
-    moistureIndex = fabs(1.0 - (month - 1) / 6.0);
-    moistureIndex = maxValue(moistureIndex, 0.001);
-    moistureIndex = log(moistureIndex) / log(0.001);
-
-    myProject->logInfo("Initialize soil moisture");
-
-    for (int row = 0; row < myProject->indexMap[0].header->nrRows; row++)
-    {
-        for (int col = 0; col < myProject->indexMap[0].header->nrCols; col++)
-        {
-            surfaceIndex = long(myProject->indexMap[0].value[row][col]);
-            if (surfaceIndex != long(myProject->indexMap[0].header->flag))
-            {
-                //surface
-                soilFluxes3D::setWaterContent(surfaceIndex, 0.0);
-
-                soilIndex = int(myProject->soilIndexMap.value[row][col]);
-                if (soilIndex != int(myProject->soilIndexMap.header->flag))
-                {
-                    for (int layer = 1; layer < myProject->nrLayers; layer++)
-                    {
-                        index = layer * myProject->nrNodesPerLayer + surfaceIndex;
-                        horizonIndex = soil::getHorizonIndex(&(myProject->soilList[soilIndex]), myProject->layerDepth[layer]);
-
-                        fieldCapacity = myProject->soilList[soilIndex].horizon[horizonIndex].fieldCapacity;
-                        waterPotential = fieldCapacity - moistureIndex * (fieldCapacity-dry);
-
-                        myResult = soilFluxes3D::setMatricPotential(index, waterPotential);
-
-                        if (isCrit3dError(myResult, &myError))
-                        {
-                            myProject->errorString = "initializeSoilMoisture:" + myError;
-                            return(false);
-                        }
-                    }
-                }
-            }
-        }
-    }
-    return true;
-}
-
-
 double getMaxEvaporation(double ET0, double LAI)
 {
     const double ke = 0.6;   //[-] light extinction factor
@@ -97,7 +42,7 @@ double getMaxEvaporation(double ET0, double LAI)
     return(ET0 * Kc * maxEvaporationRatio);
 }
 
-
+/*
 double evaporation(Crit3DProject* myProject, int row, int col, long surfaceIndex)
 {
     double depthCoeff, thickCoeff, layerCoeff;
@@ -156,7 +101,7 @@ double evaporation(Crit3DProject* myProject, int row, int col, long surfaceIndex
     }
     return 0;
 }
-
+*/
 
 bool setWaterSinkSource(Crit3DProject* myProject, double* totalPrecipitation,
                         double* totalEvaporation, double *totalTranspiration)
@@ -250,7 +195,7 @@ bool setWaterSinkSource(Crit3DProject* myProject, double* totalPrecipitation,
 }
 
 
-
+/*
 double* getCriteria3DVarProfile(Crit3DProject* myProject, int myRow, int myCol, criteria3DVariable myVar)
 {
     double* myProfile = (double *) calloc(myProject->nrLayers, sizeof(double));
@@ -269,7 +214,7 @@ double* getCriteria3DVarProfile(Crit3DProject* myProject, int myRow, int myCol, 
 
     return myProfile;
 }
-
+*/
 
 bool setCriteria3DVar(criteria3DVariable myVar, long nodeIndex, double myValue)
 {
@@ -286,7 +231,7 @@ bool setCriteria3DVar(criteria3DVariable myVar, long nodeIndex, double myValue)
             myResult != TOPOGRAPHY_ERROR);
 }
 
-
+/*
 bool setCriteria3DVarMap(int myLayerIndex, Crit3DProject* myProject, criteria3DVariable myVar,
                         gis::Crit3DRasterGrid* myCriteria3DMap)
 {
@@ -335,6 +280,7 @@ bool getCriteria3DVarMap(Crit3DProject* myProject, criteria3DVariable myVar,
 
     return true;
 }
+
 
 // AWC in the first 4 cm of soil
 bool getSoilSurfaceMoisture(Crit3DProject* myProject, gis::Crit3DRasterGrid* outputMap)
@@ -529,7 +475,7 @@ bool saveWaterBalanceOutput(Crit3DProject* myProject, Crit3DDate myDate, criteri
 
     return true;
 }
-
+*/
 
 std::string getPrefixFromVar(Crit3DDate myDate, criteria3DVariable myVar)
 {
@@ -549,6 +495,7 @@ std::string getPrefixFromVar(Crit3DDate myDate, criteria3DVariable myVar)
     return fileName;
 }
 
+/*
 bool loadWaterBalanceState(Crit3DProject* myProject, Crit3DDate myDate, std::string statePath, criteria3DVariable myVar)
 {
     std::string myErrorString;
@@ -573,7 +520,7 @@ bool loadWaterBalanceState(Crit3DProject* myProject, Crit3DDate myDate, std::str
     myMap.clear();
     return true;
 }
-
+*/
 
 //[m] upper depth of soil layer
 double getSoilLayerTop(Crit3DProject* myProject, int i)

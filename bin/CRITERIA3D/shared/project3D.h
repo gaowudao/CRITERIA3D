@@ -68,6 +68,8 @@
         bool setCrit3DTopography();
         bool setCrit3DNodeSoil();
 
+        bool initializeSoilMoisture(int month);
+
         int getSoilIndex(long row, long col);
         bool isWithinSoil(int soilIndex, double depth);
     };

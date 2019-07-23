@@ -82,55 +82,6 @@ gis::Crit3DRasterGrid* Crit3DWaterBalanceMaps::getMapFromVar(criteria3DVariable 
 }
 
 
-bool initializeSoilMoisture(Vine3DProject* myProject, int month)
-{
-    int myResult = CRIT3D_OK;
-    QString myError;
-    long index;
-    long soilIndex, horizonIndex;
-    double moistureIndex, waterPotential;
-    double fieldCapacity;                    //[m]
-    double  wiltingPoint = -160.0;           //[m]
-    double dry = wiltingPoint / 3.0;         //[m] dry potential
-
-    //[0-1] min: august  max: february
-    moistureIndex = fabs(1 - (month - 2) / 6);
-    moistureIndex = maxValue(moistureIndex, 0.001);
-    moistureIndex = log(moistureIndex) / log(0.001);
-
-    myProject->logInfo("Initialize soil moisture");
-
-    for (int layer = 0; layer < myProject->nrLayers; layer++)
-        for (int row = 0; row < myProject->indexMap.at(size_t(layer)).header->nrRows; row++)
-            for (int col = 0; col < myProject->indexMap.at(size_t(layer)).header->nrCols; col++)
-            {
-                index = long(myProject->indexMap.at(size_t(layer)).value[row][col]);
-                if (index != long(myProject->indexMap.at(size_t(layer)).header->flag))
-                {
-                    //surface
-                    if (layer == 0)
-                        soilFluxes3D::setWaterContent(index, 0.0);
-                    else
-                    {
-                        soilIndex = myProject->getSoilIndex(row, col);
-                        horizonIndex = soil::getHorizonIndex(&(myProject->soilList[soilIndex]), myProject->layerDepth[size_t(layer)]);
-                        fieldCapacity = myProject->soilList[soilIndex].horizon[horizonIndex].fieldCapacity;
-                        waterPotential = fieldCapacity - moistureIndex * (fieldCapacity-dry);
-                        myResult = soilFluxes3D::setMatricPotential(index, waterPotential);
-                    }
-
-                    if (isCrit3dError(myResult, &myError))
-                    {
-                        myProject->errorString = "initializeSoilMoisture:" + myError;
-                        return(false);
-                    }
-                }
-            }
-
-    return true;
-}
-
-
 double getMaxEvaporation(float ET0, float LAI)
 {
     const double ke = 0.6;   //[-] light extinction factor
@@ -280,7 +231,7 @@ bool waterBalanceSinkSource(Vine3DProject* myProject, double* totalPrecipitation
         myResult = soilFluxes3D::setWaterSinkSource(i, myProject->waterSinkSource.at(size_t(i)));
         if (isCrit3dError(myResult, &myError))
         {
-            myProject->errorString = "initializeSoilMoisture:" + myError;
+            myProject->errorString = "waterBalanceSinkSource:" + myError;
             return(false);
         }
     }

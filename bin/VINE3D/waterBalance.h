@@ -35,7 +35,6 @@
     double getLayerBottom(Vine3DProject* myProject, int i);
 
     bool initializeWaterBalance(Vine3DProject* myProject);
-    bool initializeSoilMoisture(Vine3DProject* myProject, int month);
 
     bool saveWaterBalanceState(Vine3DProject* myProject, QDate myDate, QString myArea,
                                QString myStatePath, criteria3DVariable myVar);

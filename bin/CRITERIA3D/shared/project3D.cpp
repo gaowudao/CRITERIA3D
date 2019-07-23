@@ -442,6 +442,60 @@ bool Project3D::setCrit3DNodeSoil()
 }
 
 
+bool Project3D::initializeSoilMoisture(int month)
+{
+    int crit3dResult = CRIT3D_OK;
+    QString error;
+    long index, soilIndex, horizonIndex;
+    double moistureIndex, waterPotential;
+    double fieldCapacity;                    // [m]
+    double  wiltingPoint = -160.0;           // [m]
+    double dry = wiltingPoint / 3.0;         // [m] dry potential
+
+    // [0-1] min: august  max: february
+    moistureIndex = fabs(1 - (month - 2) / 6);
+    moistureIndex = maxValue(moistureIndex, 0.001);
+    moistureIndex = log(moistureIndex) / log(0.001);
+
+    logInfo("Initialize soil moisture");
+
+    for (unsigned int layer = 0; layer < nrLayers; layer++)
+    {
+        for (int row = 0; row < indexMap.at(size_t(layer)).header->nrRows; row++)
+        {
+            for (int col = 0; col < indexMap.at(size_t(layer)).header->nrCols; col++)
+            {
+                index = long(indexMap.at(size_t(layer)).value[row][col]);
+                if (index != long(indexMap.at(size_t(layer)).header->flag))
+                {
+                    if (layer == 0)
+                    {
+                        // surface
+                        soilFluxes3D::setWaterContent(index, 0.0);
+                    }
+                    else
+                    {
+                        soilIndex = getSoilIndex(row, col);
+                        horizonIndex = soil::getHorizonIndex(&(soilList[soilIndex]), layerDepth[size_t(layer)]);
+                        fieldCapacity = soilList[soilIndex].horizon[horizonIndex].fieldCapacity;
+                        waterPotential = fieldCapacity - moistureIndex * (fieldCapacity-dry);
+                        crit3dResult = soilFluxes3D::setMatricPotential(index, waterPotential);
+                    }
+
+                    if (isCrit3dError(crit3dResult, &error))
+                    {
+                        logError("initializeSoilMoisture:" + error);
+                        return false;
+                    }
+                }
+            }
+        }
+    }
+
+    return true;
+}
+
+
 int Project3D::getSoilIndex(long row, long col)
 {
     if ( !soilIndexMap.isLoaded) return NODATA;

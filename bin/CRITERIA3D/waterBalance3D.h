@@ -16,7 +16,6 @@
     double getSoilLayerTop(Crit3DProject* myProject, int i);
     double getSoilLayerBottom(Crit3DProject* myProject, int i);
     bool initializeWaterBalance3D(Crit3DProject* myProject);
-    bool initializeSoilMoisture(Crit3DProject* myProject, int month);
 
     bool saveWaterBalanceState(Crit3DProject* myProject, Crit3DDate myDate, std::string myStatePath, criteria3DVariable myVar);
 
