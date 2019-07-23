@@ -1681,7 +1681,7 @@ int Vine3DProject::getVine3DSoilIndex(long row, long col)
     }
 }
 
-bool Vine3DProject::setVine3DSoilIndexMap()
+bool Vine3DProject::setSoilIndexMap()
 {
     // check
     if (!DEM.isLoaded || !modelCaseIndexMap.isLoaded || soilList.size() == 0)

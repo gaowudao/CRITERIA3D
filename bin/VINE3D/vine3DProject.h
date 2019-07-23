@@ -146,7 +146,7 @@
 
         int getVine3DSoilIndex(long row, long col);
 
-        bool setVine3DSoilIndexMap();
+        bool setSoilIndexMap();
 
         soil::Crit3DHorizon* getSoilHorizon(long row, long col, int layer);
 

@@ -990,6 +990,8 @@ bool initializeWaterBalance(Vine3DProject* myProject)
 
     myProject->logInfo("nr of layers: " + QString::number(myProject->nrLayers));
 
+    if (! myProject->setSoilIndexMap()) return false;
+
     if (! myProject->setIndexMaps()) return false;
 
     myProject->logInfo("nr of nodes: " + QString::number(myProject->nrNodes));
