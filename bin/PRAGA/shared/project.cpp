@@ -1192,10 +1192,12 @@ void Project::clear()
     projectSettings = nullptr;
 
     delete aggregationDbHandler;
+    aggregationDbHandler = nullptr;
 
     gisSettings.initialize();
     radSettings.initialize();
     delete radiationMaps;
+    radiationMaps = nullptr;
 
     clearProxyDEM();
     DEM.clear();
