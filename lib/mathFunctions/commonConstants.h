@@ -9,6 +9,10 @@
         #define maxValue(a, b) (((a) > (b))? (a) : (b))
     #endif
 
+    #ifndef sgnVariable
+        #define sgnVariable(a) (((a) < 0 )? -1 : 1)
+    #endif
+
     #ifndef NODATA
         #define NODATA -9999
     #endif

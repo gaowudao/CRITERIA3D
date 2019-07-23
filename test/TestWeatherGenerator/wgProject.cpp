@@ -116,7 +116,7 @@ bool WG_SeasonalForecast(WGSettings wgSettings)
     TXMLSeasonalAnomaly XMLAnomaly;
     TinputObsData climateDailyObsData;
     TinputObsData lastYearDailyObsData;
-    TwheatherGenClimate wGenClimate;
+    TweatherGenClimate wGenClimate;
 
     QString season;
     int wgDoy1 = NODATA;
@@ -233,7 +233,7 @@ bool WG_SeasonalForecast(WGSettings wgSettings)
 bool WG_Climate(WGSettings wgSettings)
 {
     TinputObsData climateDailyObsData;
-    TwheatherGenClimate wGenClimate;
+    TweatherGenClimate wGenClimate;
 
     // iterate input files on climate
     QString fileName, climateFileName, outputFileName;

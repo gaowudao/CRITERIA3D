@@ -22,8 +22,8 @@ using namespace std;
   * \param  *inputPrec      [mm] array(1..nrDays) of precipitation
 */
 bool computeWGClimate(int nrDays, Crit3DDate inputFirstDate, float *inputTMin, float *inputTMax,
-                      float *inputPrec, float precThreshold, float minPercData,
-                      TwheatherGenClimate* wGen, bool writeOutput)
+                      float *inputPrec, float precThreshold, float minPrecData,
+                      TweatherGenClimate* wGen, bool writeOutput)
 {
     int nValidData = 0;
     float dataPresence = 0;
@@ -79,7 +79,7 @@ bool computeWGClimate(int nrDays, Crit3DDate inputFirstDate, float *inputTMin, f
     }
 
     dataPresence = float(nValidData) / float(nrDays);
-    if (dataPresence < minPercData)
+    if (dataPresence < minPrecData)
         return false;
 
     // compute Climate
@@ -90,7 +90,7 @@ bool computeWGClimate(int nrDays, Crit3DDate inputFirstDate, float *inputTMin, f
             wGen->monthly.monthlyTmax[m] = sumTMax[m] / nrData[m]; //computes mean monthly values of maximum temperature
             wGen->monthly.monthlyTmin[m] = sumTMin[m] / nrData[m]; //computes mean monthly values of minimum temperature
 
-            daysInMonth = getDaysInMonth(m+1,1); // year = 1 is to avoid leap year
+            daysInMonth = getDaysInMonth(m+1,2001); // year = 2001 is to avoid leap year
 
             wGen->monthly.sumPrec[m] = sumPrec[m] / nrData[m] * daysInMonth;
 
@@ -121,13 +121,13 @@ bool computeWGClimate(int nrDays, Crit3DDate inputFirstDate, float *inputTMin, f
     if (writeOutput)
     {
         QString filename="climateWG.txt";
-        cout << "...Write WG climate file -->" << filename.toStdString();
+        cout << "...Write WG climate file -->" << filename.toStdString() << "\n";
 
         QFile file(filename);
         file.open(QIODevice::WriteOnly | QIODevice::Truncate | QIODevice::Text);
 
         QTextStream stream( &file );
-        stream << "----------------- CLIMATE ----------------";
+        stream << "----------------- CLIMATE ----------------\n";
         for (m=0; m<12; m++)
         {
             stream << "month = " << m +1 << endl;
@@ -150,7 +150,7 @@ bool computeWGClimate(int nrDays, Crit3DDate inputFirstDate, float *inputTMin, f
 /*!
   * \brief Generates a climate starting from daily weather
   */
-bool climateGenerator(int nrData, TinputObsData climateDailyObsData, Crit3DDate climateDateIni, Crit3DDate climateDateFin, float precThreshold, float minPercData, TwheatherGenClimate* wGen)
+bool climateGenerator(int nrData, TinputObsData climateDailyObsData, Crit3DDate climateDateIni, Crit3DDate climateDateFin, float precThreshold, float minPrecData, TweatherGenClimate* wGen)
 
 {
     int startIndex, nrDays;
@@ -180,7 +180,7 @@ bool climateGenerator(int nrData, TinputObsData climateDailyObsData, Crit3DDate 
 
     result = computeWGClimate(nrDays, newDailyObsData.inputFirstDate, newDailyObsData.inputTMin,
                               newDailyObsData.inputTMax, newDailyObsData.inputPrecip,
-                              precThreshold, minPercData, wGen, false);
+                              precThreshold, minPrecData, wGen, false);
 
     free(newDailyObsData.inputTMin);
     free(newDailyObsData.inputTMax);

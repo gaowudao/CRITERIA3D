@@ -33,7 +33,6 @@ void obsDataMeteoPointFormat(int nrStations, int nrData, float*** weatherArray, 
 
 int main()
 {
-
     FILE *fp;
     fp = fopen("inputData/budrio_1961_2018.txt", "r");
     if (fp == nullptr)
@@ -281,7 +280,7 @@ int main()
 
 
     bool computePrecipitation = true;
-    bool computeTemperature = false;
+    bool computeTemperature = true;
     printf("weather generator\n");
     if (computePrecipitation) printf("compute precipitation\n");
     if (computeTemperature) printf("compute temperature\n");

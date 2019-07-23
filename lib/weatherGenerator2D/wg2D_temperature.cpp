@@ -997,15 +997,16 @@ void weatherGenerator2D::multisiteRandomNumbersTemperature()
         for (int j=0;j<nrStations;j++)
         {
             dummyMatrix[i][j] = correlationMatrixTemperature.maxT[i][j];
-            dummyMatrix2[i][j] = correlationMatrixTemperature.maxT[i][j];
+            //dummyMatrix2[i][j] = correlationMatrixTemperature.maxT[i][j];
         }
 
     }
 
     isLowerDiagonal = false;
     matricial::choleskyDecompositionTriangularMatrix(dummyMatrix,nrStations,isLowerDiagonal);
-    isLowerDiagonal = true;
-    matricial::choleskyDecompositionTriangularMatrix(dummyMatrix2,nrStations,isLowerDiagonal);
+    //isLowerDiagonal = true;
+    //matricial::choleskyDecompositionTriangularMatrix(dummyMatrix2,nrStations,isLowerDiagonal);
+    matricial::transposedMatrix(dummyMatrix,nrStations,nrStations,dummyMatrix2);
     matricial::matrixProduct(dummyMatrix2,dummyMatrix,nrStations,nrStations,nrStations,nrStations,dummyMatrix3);
     isLowerDiagonal = true;
     matricial::choleskyDecompositionTriangularMatrix(dummyMatrix3,nrStations,isLowerDiagonal);
@@ -1089,15 +1090,16 @@ void weatherGenerator2D::multisiteRandomNumbersTemperature()
         for (int j=0;j<nrStations;j++)
         {
             dummyMatrix[i][j] = correlationMatrixTemperature.minT[i][j];
-            dummyMatrix2[i][j] = correlationMatrixTemperature.minT[i][j];
+            //dummyMatrix2[i][j] = correlationMatrixTemperature.minT[i][j];
         }
 
     }
 
     isLowerDiagonal = false;
     matricial::choleskyDecompositionTriangularMatrix(dummyMatrix,nrStations,isLowerDiagonal);
-    isLowerDiagonal = true;
-    matricial::choleskyDecompositionTriangularMatrix(dummyMatrix2,nrStations,isLowerDiagonal);
+    //isLowerDiagonal = true;
+    //matricial::choleskyDecompositionTriangularMatrix(dummyMatrix2,nrStations,isLowerDiagonal);
+    matricial::transposedMatrix(dummyMatrix,nrStations,nrStations,dummyMatrix2);
     matricial::matrixProduct(dummyMatrix2,dummyMatrix,nrStations,nrStations,nrStations,nrStations,dummyMatrix3);
     isLowerDiagonal = true;
     matricial::choleskyDecompositionTriangularMatrix(dummyMatrix3,nrStations,isLowerDiagonal);

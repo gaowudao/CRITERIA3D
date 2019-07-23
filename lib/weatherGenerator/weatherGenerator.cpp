@@ -79,7 +79,7 @@
 #include "fileUtility.h"
 
 
-float getTMax(int dayOfYear, float precThreshold, TwheatherGenClimate* wGen)
+float getTMax(int dayOfYear, float precThreshold, TweatherGenClimate* wGen)
 {
     dayOfYear = dayOfYear % 365;
     if (dayOfYear != wGen->state.currentDay)
@@ -89,7 +89,7 @@ float getTMax(int dayOfYear, float precThreshold, TwheatherGenClimate* wGen)
 }
 
 
-float getTMin(int dayOfYear, float precThreshold, TwheatherGenClimate* wGen)
+float getTMin(int dayOfYear, float precThreshold, TweatherGenClimate* wGen)
 {
     dayOfYear = dayOfYear % 365;
     if (dayOfYear != wGen->state.currentDay)
@@ -99,7 +99,7 @@ float getTMin(int dayOfYear, float precThreshold, TwheatherGenClimate* wGen)
 }
 
 
-float getTAverage(int dayOfYear, float precThreshold, TwheatherGenClimate* wGen)
+float getTAverage(int dayOfYear, float precThreshold, TweatherGenClimate* wGen)
 {
     dayOfYear = dayOfYear % 365;
     if (dayOfYear != wGen->state.currentDay)
@@ -109,7 +109,7 @@ float getTAverage(int dayOfYear, float precThreshold, TwheatherGenClimate* wGen)
 }
 
 
-float getPrecip(int dayOfYear, float precThreshold, TwheatherGenClimate* wGen)
+float getPrecip(int dayOfYear, float precThreshold, TweatherGenClimate* wGen)
 {
     dayOfYear = dayOfYear % 365;
     if (dayOfYear != wGen->state.currentDay)
@@ -120,7 +120,7 @@ float getPrecip(int dayOfYear, float precThreshold, TwheatherGenClimate* wGen)
 
 
 // main function
-void newDay(int dayOfYear, float precThreshold, TwheatherGenClimate* wGen)
+void newDay(int dayOfYear, float precThreshold, TweatherGenClimate* wGen)
 {
     float meanTMax, meanTMin, stdTMax, stdTMin;
 
@@ -155,7 +155,7 @@ void newDay(int dayOfYear, float precThreshold, TwheatherGenClimate* wGen)
 }
 
 
-void initializeWeather(TwheatherGenClimate* wGen)
+void initializeWeather(TweatherGenClimate* wGen)
 {
     float mpww[12];
     float mpwd[12];
@@ -220,7 +220,7 @@ void initializeWeather(TwheatherGenClimate* wGen)
 
         mpwd[m] = (1.f - mpww[m]) * (fWetDays[m] / (1.f - fWetDays[m]));
 
-        daysInMonth = getDaysInMonth(m+1,1); // year = 1 is to avoid leap year
+        daysInMonth = getDaysInMonth(m+1,2001); // year = 2001 is to avoid leap year
 
         // convert from total mm/month to average mm/wet day
         mMeanPrecip[m] = mMeanPrecip[m] / (fWetDays[m] * daysInMonth);
@@ -427,7 +427,7 @@ void genTemps(float *tMax, float *tMin, float meanTMax, float meanTMin, float st
 }
 
 
-bool assignXMLAnomaly(TXMLSeasonalAnomaly* XMLAnomaly, int modelIndex, int anomalyMonth1, int anomalyMonth2, TwheatherGenClimate* wGenNoAnomaly, TwheatherGenClimate* wGen)
+bool assignXMLAnomaly(TXMLSeasonalAnomaly* XMLAnomaly, int modelIndex, int anomalyMonth1, int anomalyMonth2, TweatherGenClimate* wGenNoAnomaly, TweatherGenClimate* wGen)
 {
     unsigned int i = 0;
     QString myVar;
@@ -597,10 +597,10 @@ bool assignAnomalyPrec(float myAnomaly, int anomalyMonth1, int anomalyMonth2, fl
   * Output is written on outputFileName (csv)
 */
 bool makeSeasonalForecast(QString outputFileName, char separator, TXMLSeasonalAnomaly* XMLAnomaly,
-                          TwheatherGenClimate wGenClimate, TinputObsData* lastYearDailyObsData,
+                          TweatherGenClimate wGenClimate, TinputObsData* lastYearDailyObsData,
                           int nrRepetitions, int myPredictionYear, int wgDoy1, int wgDoy2, float rainfallThreshold)
 {
-    TwheatherGenClimate wGen;
+    TweatherGenClimate wGen;
     ToutputDailyMeteo* myDailyPredictions;
     Crit3DDate myFirstDatePrediction;
     Crit3DDate seasonFirstDate;
@@ -763,7 +763,7 @@ bool makeSeasonalForecast(QString outputFileName, char separator, TXMLSeasonalAn
     Observed data (Tmin, Tmax, Prec) are in lastYearDailyObsData
   \return outputDailyData
 */
-bool computeSeasonalPredictions(TinputObsData *lastYearDailyObsData, TwheatherGenClimate* wgClimate,
+bool computeSeasonalPredictions(TinputObsData *lastYearDailyObsData, TweatherGenClimate* wgClimate,
                                 int predictionYear, int firstYear, int nrRepetitions,
                                 int wgDoy1, int wgDoy2, float rainfallThreshold, bool isLastMember,
                                 ToutputDailyMeteo* outputDailyData, int *outputDataLenght)

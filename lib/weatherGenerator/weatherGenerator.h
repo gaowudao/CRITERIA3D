@@ -19,7 +19,7 @@
         int dataLenght;
     };
 
-    struct TmonthlyWheather
+    struct Tmonthlyweather
     {
         float monthlyTmin [12];           // [°C]   monthly maximum temp.
         float monthlyTmax [12];           // [°C]   monthly minimum temp.
@@ -31,7 +31,7 @@
         float stDevTmax [12];             // [-]    monthly maximum temperature standard deviation
     };
 
-    struct TdailyWheather
+    struct Tdailyweather
     {
         float pww [366];                  // [-]    daily probability wet/wet
         float pwd [366];                  // [-]    daily probability wet/dry
@@ -43,7 +43,7 @@
         float minTempStd [366];           // [°C]   daily minimum temperature standard deviation
     };
 
-    struct TstateWheather
+    struct Tstateweather
     {
         int currentDay;                    // [-]   day we have just passed as argument to "newday" function
         float currentTmax;                 // [°C]  maximum temperature of the day passed as argument to "newday" function
@@ -54,11 +54,11 @@
         bool wetPreviousDay;               // [-]   true if the previous day has been a wet day, false otherwise
     };
 
-    struct TwheatherGenClimate
+    struct TweatherGenClimate
     {
-        TmonthlyWheather monthly;
-        TdailyWheather daily;
-        TstateWheather state;
+        Tmonthlyweather monthly;
+        Tdailyweather daily;
+        Tstateweather state;
     };
 
     struct ToutputDailyMeteo
@@ -71,14 +71,14 @@
 
     void initializeDailyDataBasic(ToutputDailyMeteo* mydailyData, Crit3DDate myDate);
 
-    float getTMax(int dayOfYear, float precThreshold, TwheatherGenClimate* wGen);
-    float getTMin(int dayOfYear, float precThreshold, TwheatherGenClimate* wGen);
-    float getTAverage(int dayOfYear, float precThreshold, TwheatherGenClimate* wGen);
-    float getPrecip(int dayOfYear, float precThreshold, TwheatherGenClimate* wGen);
+    float getTMax(int dayOfYear, float precThreshold, TweatherGenClimate* wGen);
+    float getTMin(int dayOfYear, float precThreshold, TweatherGenClimate* wGen);
+    float getTAverage(int dayOfYear, float precThreshold, TweatherGenClimate* wGen);
+    float getPrecip(int dayOfYear, float precThreshold, TweatherGenClimate* wGen);
 
-    void newDay(int dayOfYear, float precThreshold, TwheatherGenClimate* wGen);
+    void newDay(int dayOfYear, float precThreshold, TweatherGenClimate* wGen);
 
-    void initializeWeather(TwheatherGenClimate* wGen);
+    void initializeWeather(TweatherGenClimate* wGen);
 
     void normalRandom(float *rnd_1, float *rnd_2);
 
@@ -93,7 +93,7 @@
     bool isWGDate(Crit3DDate myDate, int wgDoy1, int wgDoy2);
 
     bool assignXMLAnomaly(TXMLSeasonalAnomaly* XMLAnomaly, int modelIndex, int anomalyMonth1,
-                          int anomalyMonth2, TwheatherGenClimate* wGenNoAnomaly, TwheatherGenClimate* wGen);
+                          int anomalyMonth2, TweatherGenClimate* wGenNoAnomaly, TweatherGenClimate* wGen);
 
     bool assignAnomalyNoPrec(float myAnomaly, int anomalyMonth1, int anomalyMonth2,
                              float* myWGMonthlyVarNoAnomaly, float* myWGMonthlyVar );
@@ -102,10 +102,10 @@
                            float* myWGMonthlyVarNoAnomaly, float* myWGMonthlyVar);
 
     bool makeSeasonalForecast(QString outputFileName, char separator, TXMLSeasonalAnomaly* XMLAnomaly,
-                            TwheatherGenClimate wGenClimate, TinputObsData* lastYearDailyObsData,
+                            TweatherGenClimate wGenClimate, TinputObsData* lastYearDailyObsData,
                             int numRepetitions, int myPredictionYear, int wgDoy1, int wgDoy2, float minPrec);
 
-    bool computeSeasonalPredictions(TinputObsData *lastYearDailyObsData, TwheatherGenClimate* wgClimate,
+    bool computeSeasonalPredictions(TinputObsData *lastYearDailyObsData, TweatherGenClimate* wgClimate,
                                     int predictionYear, int firstYear, int nrRepetitions,
                                     int wgDoy1, int wgDoy2, float minPrec, bool isLastMember,
                                     ToutputDailyMeteo* outputDailyData, int *outputDataLenght);

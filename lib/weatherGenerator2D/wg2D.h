@@ -7,6 +7,7 @@
 
     #define TOLERANCE_MULGETS 0.001
     #define MAX_ITERATION_MULGETS 200
+    #define ONELESSEPSILON 0.999999
 
 
     enum Tseason {DJF,MAM,JJA,SON};
@@ -182,9 +183,9 @@
         double** minTGenerated;
 
         ToutputWeatherData *outputWeatherData;
-        int contatoreGammaUguale = 0;
-        int contatoreGammaUguale2 = 0;
-        int contatoreGammaDiverso = 0;
+        //int contatoreGammaUguale = 0;
+        //int contatoreGammaUguale2 = 0;
+        //int contatoreGammaDiverso = 0;
         //functions
 
         void commonModuleCompute();
@@ -223,7 +224,7 @@
         void initializeTemperaturesOutput(int length);
 
         void getWeatherGeneratorOutput();
-        void initializeOutputData();
+        void initializeOutputData(int* nrDays);
 
     public:
         // variables
