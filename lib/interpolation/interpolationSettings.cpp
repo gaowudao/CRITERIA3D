@@ -221,7 +221,6 @@ void Crit3DInterpolationSettings::initialize()
     useLapseRateCode = false;
     minRegressionR2 = float(PEARSONSTANDARDTHRESHOLD);
     meteoGridAggrMethod = aggrAverage;
-    initializeProxy();
     indexHeight = NODATA;
 
     isKrigingReady = false;
@@ -233,6 +232,8 @@ void Crit3DInterpolationSettings::initialize()
     currentClimateParametersLoaded = false;
     if (currentCombination == nullptr)
         currentCombination = new Crit3DProxyCombination();
+
+    initializeProxy();
 }
 
 std::string getKeyStringInterpolationMethod(TInterpolationMethod value)

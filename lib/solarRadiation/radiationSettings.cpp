@@ -30,6 +30,12 @@
 
 Crit3DRadiationSettings::Crit3DRadiationSettings()
 {
+    initialize();
+    gisSettings->initialize();
+}
+
+void Crit3DRadiationSettings::initialize()
+{
     computeRealData = true;
     usePotentialIfMissing = false;
     timeStepIntegration = 1;
@@ -50,7 +56,6 @@ Crit3DRadiationSettings::Crit3DRadiationSettings()
     transSettings.useTotal = false;
     transSettings.clearSky = CLEAR_SKY_TRANSMISSIVITY_DEFAULT;
 }
-
 
 void Crit3DRadiationSettings::setGisSettings(const gis::Crit3DGisSettings* mySettings)
 {

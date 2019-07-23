@@ -36,10 +36,12 @@
         float tilt;
         float aspect;
 
-    public:
+    public:        
+        gis::Crit3DGisSettings* gisSettings;
+
         Crit3DRadiationSettings();
 
-        gis::Crit3DGisSettings* gisSettings;
+        void initialize();
 
         void setGisSettings(const gis::Crit3DGisSettings *myGisSettings);
 
