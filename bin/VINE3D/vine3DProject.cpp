@@ -808,57 +808,6 @@ bool Vine3DProject::loadSoils()
     return true;
 }
 
-
-int Vine3DProject::getSoilIndex(long row, long col)
-{
-    int caseIndex = getModelCaseIndex(row, col);
-    if (caseIndex == int(NODATA))
-    {
-        return NODATA;
-    }
-    else
-    {
-        return modelCases[caseIndex].soilIndex;
-    }
-}
-
-
-bool Vine3DProject::setSoilIndexMap()
-{
-    // check
-    if (!DEM.isLoaded || !modelCaseIndexMap.isLoaded || soilList.size() == 0)
-    {
-        if (!DEM.isLoaded)
-            logError("Missing Digital Elevation Model.");
-        else if (!modelCaseIndexMap.isLoaded)
-            logError("Missing field map.");
-        else if (soilList.size() == 0)
-            logError("Missing soil properties.");
-        return false;
-    }
-
-    int soilIndex;
-    soilIndexMap.initializeGrid(*(DEM.header));
-    for (int row = 0; row < DEM.header->nrRows; row++)
-    {
-        for (int col = 0; col < DEM.header->nrCols; col++)
-        {
-            if (int(DEM.value[row][col]) != int(DEM.header->flag))
-            {
-                soilIndex = getSoilIndex(row, col);
-                if (soilIndex != int(NODATA))
-                {
-                    soilIndexMap.value[row][col] = soilIndex;
-                }
-            }
-        }
-    }
-
-    soilIndexMap.isLoaded = true;
-    return true;
-}
-
-
 int Vine3DProject::getAggregatedVarCode(int rawVarCode)
 {
     for (int i=0; i<nrAggrVar; i++)
@@ -1698,7 +1647,6 @@ bool Vine3DProject::saveStateAndOutput(QDate myDate, QString myArea, bool saveDi
     return(true);
 }
 
-
 int Vine3DProject::getModelCaseIndex(long row, long col)
 {
     if (gis::isOutOfGridRowCol(row, col, modelCaseIndexMap)) return NODATA;
@@ -1709,12 +1657,9 @@ int Vine3DProject::getModelCaseIndex(long row, long col)
         //DEFAULT
         caseIndex = 0;
     }
-    else
-    {
-        return caseIndex;
-    }
-}
 
+    return caseIndex;
+}
 
 bool Vine3DProject::isVineyard(long row, long col)
 {
@@ -1727,9 +1672,48 @@ int Vine3DProject::getSoilIndex(long row, long col)
     int caseIndex = this->getModelCaseIndex(row, col);
 
     if (caseIndex != NODATA)
+    {
         return this->modelCases[caseIndex].soilIndex;
+    }
     else
+    {
         return NODATA;
+    }
+}
+
+bool Vine3DProject::setSoilIndexMap()
+{
+    // check
+    if (!DEM.isLoaded || !modelCaseIndexMap.isLoaded || soilList.size() == 0)
+    {
+        if (!DEM.isLoaded)
+            logError("Missing Digital Elevation Model.");
+        else if (!modelCaseIndexMap.isLoaded)
+            logError("Missing field map.");
+        else if (soilList.size() == 0)
+            logError("Missing soil properties.");
+        return false;
+    }
+
+    int soilIndex;
+    soilIndexMap.initializeGrid(*(DEM.header));
+    for (int row = 0; row < DEM.header->nrRows; row++)
+    {
+        for (int col = 0; col < DEM.header->nrCols; col++)
+        {
+            if (int(DEM.value[row][col]) != int(DEM.header->flag))
+            {
+                soilIndex = getSoilIndex(row, col);
+                if (soilIndex != int(NODATA))
+                {
+                    soilIndexMap.value[row][col] = soilIndex;
+                }
+            }
+        }
+    }
+
+    soilIndexMap.isLoaded = true;
+    return true;
 }
 
 soil::Crit3DHorizon* Vine3DProject::getSoilHorizon(long row, long col, int layer)
