@@ -186,7 +186,7 @@ void TabHorizons::checkMissingItem(int horizonNum)
         if (tableDb->item(horizonNum,j)->text().contains(NODATAString))
         {
             tableDb->item(horizonNum,j)->setBackgroundColor(Qt::yellow);
-            tableDb->item(horizonNum,j)->setText(NODATAString);
+            tableDb->item(horizonNum,j)->setText("");
         }
     }
 
@@ -195,7 +195,7 @@ void TabHorizons::checkMissingItem(int horizonNum)
         if (tableModel->item(horizonNum,j)->text().contains(NODATAString))
         {
             tableModel->item(horizonNum,j)->setBackgroundColor(Qt::red);
-            tableModel->item(horizonNum,j)->setText(NODATAString);
+            tableModel->item(horizonNum,j)->setText("");
         }
     }
 
@@ -351,7 +351,7 @@ void TabHorizons::cellChanged(int row, int column)
     }
     else
     {
-        tableModel->item(row,1)->setText(QString::number(mySoil->horizon[row].coarseFragments, 'f', 1 ));
+        tableModel->item(row,1)->setText("");
     }
 
     if (mySoil->horizon[row].organicMatter != NODATA)
@@ -360,7 +360,7 @@ void TabHorizons::cellChanged(int row, int column)
     }
     else
     {
-        tableModel->item(row,2)->setText(QString::number(mySoil->horizon[row].organicMatter, 'f', 1 ));
+        tableModel->item(row,2)->setText("");
     }
 
     tableModel->item(row,3)->setText(QString::number(mySoil->horizon[row].bulkDensity, 'f', 3));
