@@ -797,10 +797,10 @@ bool Vine3DProject::loadSoils()
         return false;
     }
 
-    nrSoils = int(soilList.size());
+    nrSoils = soilList.size();
 
     double maxSoilDepth = 0;
-    for (unsigned int i = 0; i < soilList.size(); i++)
+    for (unsigned int i = 0; i < nrSoils; i++)
     {
         maxSoilDepth = maxValue(maxSoilDepth, soilList[i].totalDepth);
     }
@@ -1686,13 +1686,13 @@ int Vine3DProject::getVine3DSoilIndex(long row, long col)
 bool Vine3DProject::setSoilIndexMap()
 {
     // check
-    if (!DEM.isLoaded || !modelCaseIndexMap.isLoaded || soilList.size() == 0)
+    if (!DEM.isLoaded || !modelCaseIndexMap.isLoaded || nrSoils == 0)
     {
         if (!DEM.isLoaded)
             logError("Missing Digital Elevation Model.");
         else if (!modelCaseIndexMap.isLoaded)
             logError("Missing field map.");
-        else if (soilList.size() == 0)
+        else if (nrSoils == 0)
             logError("Missing soil properties.");
         return false;
     }

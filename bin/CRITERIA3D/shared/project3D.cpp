@@ -131,13 +131,13 @@ void Project3D::setLayersDepth()
 bool Project3D::setIndexMaps()
 {
     // check
-    if (!DEM.isLoaded || !soilIndexMap.isLoaded || soilList.size() == 0)
+    if (!DEM.isLoaded || !soilIndexMap.isLoaded || nrSoils == 0)
     {
         if (!DEM.isLoaded)
             logError("Missing Digital Elevation Model.");
         else if (!soilIndexMap.isLoaded)
             logError("Missing soil map.");
-        else if (soilList.size() == 0)
+        else if (nrSoils == 0)
             logError("Missing soil properties.");
         return false;
     }

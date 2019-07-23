@@ -32,7 +32,7 @@
         std::vector <gis::Crit3DRasterGrid> indexMap;
 
         // soil properties
-        int nrSoils;
+        unsigned int nrSoils;
         double soilDepth;                       // [m]
 
         std::vector <soil::Crit3DSoil> soilList;
