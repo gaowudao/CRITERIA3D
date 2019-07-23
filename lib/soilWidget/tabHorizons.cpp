@@ -164,22 +164,22 @@ void TabHorizons::checkHorizonData(int horizonNum)
 
 void TabHorizons::checkMissingItem(int horizonNum)
 {
-    QString NODATAString = "-9999.000";
+    QString NODATAString = "-9999";
     for (int j = 0; j < tableDb->columnCount(); j++)
     {
-        if (tableDb->item(horizonNum,j)->text() == NODATAString)
+        if (tableDb->item(horizonNum,j)->text().contains(NODATAString))
         {
             tableDb->item(horizonNum,j)->setBackgroundColor(Qt::yellow);
-            tableDb->item(horizonNum,j)->setText(QString::number(NODATA));
+            tableDb->item(horizonNum,j)->setText(NODATAString);
         }
     }
 
     for (int j = 0; j < tableModel->columnCount(); j++)
     {
-        if (tableModel->item(horizonNum,j)->text() == NODATAString)
+        if (tableModel->item(horizonNum,j)->text().contains(NODATAString))
         {
             tableModel->item(horizonNum,j)->setBackgroundColor(Qt::red);
-            tableModel->item(horizonNum,j)->setText(QString::number(NODATA));
+            tableModel->item(horizonNum,j)->setText(NODATAString);
         }
     }
 
