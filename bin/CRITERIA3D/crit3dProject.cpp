@@ -353,19 +353,12 @@ bool Crit3DProject::initializeCriteria3D()
 
     if (!setSoilIndexMap()) return false;
 
-    // loadCropProperties()
-    // load crop map
+    // TODO loadCropProperties()
 
-    if (! initializeWaterBalance3D(this))
-    {
-        this->clearCriteria3DProject();
-        return false;
-    }
+    // TODO load crop map
 
-    //initialize root density
-    //TO DO: andrebbe rifatto per ogni tipo di suolo
-    //(ora considera solo suolo 0)
-    /*
+    /* TODO initialize root density
+    // andrebbe rifatto per ogni tipo di suolo (ora considera solo suolo 0)
     int nrSoilLayersWithoutRoots = 2;
     int soilLayerWithRoot = this->nrSoilLayers - nrSoilLayersWithoutRoots;
     double depthModeRootDensity = 0.35*this->soilDepth;     //[m] depth of mode of root density
@@ -373,7 +366,14 @@ bool Crit3DProject::initializeCriteria3D()
     initializeRootProperties(&(this->soilList[0]), this->nrSoilLayers, this->soilDepth,
                          this->layerDepth.data(), this->layerThickness.data(),
                          nrSoilLayersWithoutRoots, soilLayerWithRoot,
-                         GAMMA_DISTRIBUTION, depthModeRootDensity, depthMeanRootDensity);*/
+                         GAMMA_DISTRIBUTION, depthModeRootDensity, depthMeanRootDensity);
+    */
+
+    if (! initializeWaterBalance3D(this))
+    {
+        this->clearCriteria3DProject();
+        return false;
+    }
 
     this->isInitialized = true;
     logInfoGUI("Criteria3D model initialized");
