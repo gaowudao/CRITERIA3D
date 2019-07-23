@@ -23,7 +23,7 @@ using namespace std;
 */
 bool computeWGClimate(int nrDays, Crit3DDate inputFirstDate, float *inputTMin, float *inputTMax,
                       float *inputPrec, float precThreshold, float minPrecData,
-                      TweatherGenClimate* wGen, bool writeOutput)
+                      TweatherGenClimate* wGen, bool writeOutput, QString outputFileName)
 {
     int nValidData = 0;
     float dataPresence = 0;
@@ -120,10 +120,9 @@ bool computeWGClimate(int nrDays, Crit3DDate inputFirstDate, float *inputTMin, f
 
     if (writeOutput)
     {
-        QString filename="climateWG.txt";
-        cout << "...Write WG climate file -->" << filename.toStdString() << "\n";
+        cout << "...Write WG climate file -->" << outputFileName.toStdString() << "\n";
 
-        QFile file(filename);
+        QFile file(outputFileName);
         file.open(QIODevice::WriteOnly | QIODevice::Truncate | QIODevice::Text);
 
         QTextStream stream( &file );
@@ -180,7 +179,7 @@ bool climateGenerator(int nrData, TinputObsData climateDailyObsData, Crit3DDate 
 
     result = computeWGClimate(nrDays, newDailyObsData.inputFirstDate, newDailyObsData.inputTMin,
                               newDailyObsData.inputTMax, newDailyObsData.inputPrecip,
-                              precThreshold, minPrecData, wGen, false);
+                              precThreshold, minPrecData, wGen, false,"");
 
     free(newDailyObsData.inputTMin);
     free(newDailyObsData.inputTMax);

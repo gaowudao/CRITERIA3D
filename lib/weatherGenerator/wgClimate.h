@@ -4,10 +4,11 @@
     class Crit3DDate;
     struct TinputObsData;
     struct TweatherGenClimate;
+    class QString;
 
     bool computeWGClimate(int nrDays, Crit3DDate firstDate, float *inputTMin, float *inputTMax,
                           float *inputPrec, float precThreshold, float minPrecData,
-                          TweatherGenClimate* wGen, bool writeOutput);
+                          TweatherGenClimate* wGen, bool writeOutput, QString outputFileName);
 
     bool climateGenerator(int nrDays, TinputObsData climateDailyObsData, Crit3DDate climateDateIni,
                           Crit3DDate climateDateFin, float precThreshold, float minPrecData, TweatherGenClimate* wGen);

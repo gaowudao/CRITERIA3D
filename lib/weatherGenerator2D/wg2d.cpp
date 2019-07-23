@@ -246,7 +246,7 @@ void weatherGenerator2D::computeWeatherGenerator2D()
         weatherGenerator2D::precipitationCompute();
 
     weatherGenerator2D::getWeatherGeneratorOutput();
-    pressEnterToContinue();
+    //pressEnterToContinue();
 }
 void weatherGenerator2D::commonModuleCompute()
 {
@@ -874,6 +874,7 @@ void weatherGenerator2D::getWeatherGeneratorOutput()
     weatherGenerator2D::initializeOutputData(&nrDays);
     Crit3DDate inputFirstDate;
     TweatherGenClimate weatherGenClimate;
+    QString outputFileName;
 
     float *inputTMin = nullptr;
     float *inputTMax = nullptr;
@@ -887,8 +888,10 @@ void weatherGenerator2D::getWeatherGeneratorOutput()
     inputFirstDate.day = 1;
     inputFirstDate.month = 1;
     inputFirstDate.year = 1;
+
     for (int iStation=0;iStation<nrStations;iStation++)
     {
+        outputFileName = "wgClimate" + QString::number(iStation) + ".txt";
         counter = 0;
         counterSeason[3] = counterSeason[2] = counterSeason[1] = counterSeason[0] = 0;
         for (int iYear=1;iYear<=parametersModel.yearOfSimulation;iYear++)
@@ -943,8 +946,8 @@ void weatherGenerator2D::getWeatherGeneratorOutput()
             }
             counter++;
         }
-        computeWGClimate(nrDays,inputFirstDate,inputTMin,inputTMax,inputPrec,precThreshold,minPrecData,&weatherGenClimate,writeOutput);
-        pressEnterToContinue();
+        computeWGClimate(nrDays,inputFirstDate,inputTMin,inputTMax,inputPrec,precThreshold,minPrecData,&weatherGenClimate,writeOutput,outputFileName);
+        //pressEnterToContinue();
     }
 
 
