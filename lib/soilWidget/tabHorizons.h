@@ -26,6 +26,7 @@ public:
     void cellChanged(int row, int column);
     void cellClicked(int row, int column);
     void addRowClicked();
+    void removeRowClicked();
 
 private:
     TableDbOrModel* tableDb;
