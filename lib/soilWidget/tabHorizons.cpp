@@ -12,12 +12,24 @@ TabHorizons::TabHorizons()
     modelTableLabel->setStyleSheet("font: 11pt;");
     tableDb = new TableDbOrModel(dbTable);
     tableModel = new TableDbOrModel(modelTable);
+    QHBoxLayout *addDeleteRowLayout = new QHBoxLayout;
+    addRow = new QPushButton("+");
+    addRow->setFixedWidth(40);
+    deleteRow = new QPushButton("-");
+    deleteRow->setFixedWidth(40);
+    addRow->setEnabled(false);
+    deleteRow->setEnabled(false);
+    addDeleteRowLayout->addStretch(80);
+    addDeleteRowLayout->addWidget(addRow);
+    addDeleteRowLayout->addWidget(deleteRow);
+
 
     connect(tableDb->verticalHeader(), &QHeaderView::sectionClicked, [=](int index){ this->tableDbVerticalHeaderClick(index); });
     connect(tableModel->verticalHeader(), &QHeaderView::sectionClicked, [=](int index){ this->tableModelVerticalHeaderClick(index); });
 
     mainLayout->addWidget(dbTableLabel);
     mainLayout->addWidget(tableDb);
+    mainLayout->addLayout(addDeleteRowLayout);
     mainLayout->addWidget(modelTableLabel);
     mainLayout->addWidget(tableModel);
 
@@ -81,6 +93,8 @@ void TabHorizons::insertSoilHorizons(soil::Crit3DSoil *soil, soil::Crit3DTexture
     clearSelections();
 
     tableDb->blockSignals(false);
+    addRow->setEnabled(true);
+    deleteRow->setEnabled(false);
 
     connect(tableDb, &QTableWidget::cellChanged, [=](int row, int column){ this->cellChanged(row, column); });
     connect(tableDb, &QTableWidget::cellClicked, [=](int row, int column){ this->cellClicked(row, column); });
@@ -218,6 +232,7 @@ void TabHorizons::clearSelections()
 {
     tableDb->clearSelection();
     tableModel->clearSelection();
+    deleteRow->setEnabled(false);
 }
 
 void TabHorizons::tableDbVerticalHeaderClick(int index)
@@ -225,6 +240,14 @@ void TabHorizons::tableDbVerticalHeaderClick(int index)
     tableDb->horizontalHeader()->setHighlightSections(false);
     tableModel->selectRow(index);
     tableModel->horizontalHeader()->setHighlightSections(false);
+    if (index == tableDb->rowCount()-1)
+    {
+        deleteRow->setEnabled(true);
+    }
+    else
+    {
+        deleteRow->setEnabled(false);
+    }
 }
 
 void TabHorizons::tableModelVerticalHeaderClick(int index)

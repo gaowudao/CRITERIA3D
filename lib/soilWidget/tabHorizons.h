@@ -29,6 +29,8 @@ public:
 private:
     TableDbOrModel* tableDb;
     TableDbOrModel* tableModel;
+    QPushButton* addRow;
+    QPushButton* deleteRow;
     soil::Crit3DSoil* mySoil;
     soil::Crit3DTextureClass* myTextureClassList;
 
