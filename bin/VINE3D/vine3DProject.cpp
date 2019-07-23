@@ -799,10 +799,12 @@ bool Vine3DProject::loadSoils()
 
     nrSoils = int(soilList.size());
 
+    double maxSoilDepth = 0;
     for (unsigned int i = 0; i < soilList.size(); i++)
     {
-        soilDepth = minValue(soilDepth, soilList[i].totalDepth);
+        maxSoilDepth = maxValue(maxSoilDepth, soilList[i].totalDepth);
     }
+    soilDepth = minValue(soilDepth, maxSoilDepth);
 
     logInfo("Soil depth = " + QString::number(this->soilDepth));
     return true;
