@@ -45,6 +45,7 @@
 
     public:
         QString projectName = "";
+        bool isProjectLoaded;
         int modality;
         bool requestedExit;
         QString errorString;
@@ -88,8 +89,9 @@
 
         Project();
 
-        void clear();
-        bool load();
+        void initializeProject();
+        void clearProject();
+        bool loadProject();
         bool loadProjectSettings(QString settingsFileName);
         bool loadParameters(QString parametersFileName);
         void setProxyDEM();

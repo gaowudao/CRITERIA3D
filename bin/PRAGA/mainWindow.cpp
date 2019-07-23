@@ -1946,7 +1946,7 @@ void MainWindow::on_actionOpen_project_triggered()
         return;
     }
 
-    if (! myProject.load())
+    if (! myProject.loadProject())
     {
         myProject.logError("Could not open project: " + myProject.projectName);
         return;

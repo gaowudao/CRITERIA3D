@@ -29,11 +29,11 @@
 
 Vine3DProject::Vine3DProject() : Project3D()
 {
-    initialize();
+    initializeVine3DProject();
 }
 
 
-void Vine3DProject::initialize()
+void Vine3DProject::initializeVine3DProject()
 {
     idArea = "0000";
     dbProvider = "QPSQL";
@@ -46,13 +46,8 @@ void Vine3DProject::initialize()
     isObsDataLoaded = false;
     setFrequency(hourly);
 
-    isProjectLoaded = false;
-
     dailyOutputPath = "daily_output/";
-    demFileName = "";
     fieldMapName = "";
-    logFileName = "";
-    errorString = "";
 
     lastDateTransmissivity.setDate(1900,1,1);
 
@@ -72,20 +67,18 @@ bool Vine3DProject::loadVine3DSettings()
 }
 
 
-void Vine3DProject::closeProject()
+void Vine3DProject::clearVine3DProject()
 {
-    if (this->isProjectLoaded)
+    if (isProjectLoaded)
     {
-        this->logInfo("Close Project");
-        this->dbConnection.close();
-        this->logFile.close();
-        this->initializeMeteoPoints();
+        logInfo("Close Project");
+        dbConnection.close();
 
         modelCaseIndexMap.clear();
 
-        closeProject3D();
+        clearProject3D();
 
-        this->isProjectLoaded = false;
+        isProjectLoaded = false;
     }
 }
 
@@ -129,29 +122,12 @@ bool Vine3DProject::loadVine3DProjectSettings(QString projectFile)
         return false;
     }
 
-    initialize();
-
-    if (! loadProjectSettings(projectFile))
-    {
-        logError("Error reading common settings in " + projectFile);
-        return false;
-    }
-
-    projectSettings->beginGroup("location");
-        int timeZone = projectSettings->value("timezone").toInt();
-    projectSettings->endGroup();
-
-    gisSettings.timeZone = timeZone;
-
     projectSettings->beginGroup("project");
         QString myId = projectSettings->value("id").toString();
-        QString projectName = projectSettings->value("name").toString();
-        QString demName = projectSettings->value("dem").toString();
         QString fieldName = projectSettings->value("modelCaseMap").toString();
     projectSettings->endGroup();
 
     idArea = myId;
-    demFileName = demName;
     fieldMapName = fieldName;
 
     inizializeDBConnection();
@@ -172,32 +148,28 @@ bool Vine3DProject::loadVine3DProjectSettings(QString projectFile)
 }
 
 
-bool Vine3DProject::loadProject(QString myFileName)
+bool Vine3DProject::loadVine3DProject(QString myFileName)
 {
-    closeProject();
-    this->initialize();
+    clearVine3DProject();
+
+    initializeProject();
+    initializeProject3D();
+    initializeVine3DProject();
 
     if (myFileName == "") return(false);
+
+    if (! loadProjectSettings(myFileName))
+        return false;
+
     if (! loadVine3DProjectSettings(myFileName))
         return false;
 
-    if (! loadParameters(parametersFile))
+    if (! loadProject())
         return false;
 
-    if (this->setLogFile())
-        this->logInfo("LogFile = " + this->logFileName);
-    else
-        this->logError("LogFile Wrong.");
-
-    myFileName = path + demFileName;
-    if (loadDEM(myFileName))
-    {
-        this->logInfo("Initialize DEM and project maps...");
-        meteoMaps = new Crit3DMeteoMaps(DEM);
-        statePlantMaps = new Crit3DStatePlantMaps(DEM);
-    }
-    else
-        return(false);
+    logInfo("Initialize DEM and project maps...");
+    meteoMaps = new Crit3DMeteoMaps(DEM);
+    statePlantMaps = new Crit3DStatePlantMaps(DEM);
 
     if (! openDBConnection()) return (false);
 
@@ -222,11 +194,11 @@ bool Vine3DProject::loadProject(QString myFileName)
         if (!loadFieldMap(myFileName)) return false;
     }
 
-    this->isProjectLoaded = true;
+    isProjectLoaded = true;
 
     if (! initializeWaterBalance(this))
     {
-        this->logError();
+        logError();
         return(false);
     }
 
@@ -836,200 +808,6 @@ bool Vine3DProject::loadSoils()
     return true;
 }
 
-
-/*
-soil::Crit3DSoil* Vine3DProject::loadHorizons(int idSoil, QString soil_code)
-{
-    QString queryString = "SELECT soil_code, horizon_nr, upper_depth, lower_depth, coarse_fragment, ";
-    queryString += "organic_matter, sand, silt, clay, bulk_density, theta_sat, ksat FROM horizons ";
-    queryString += "WHERE soil_code='" + soil_code + "' ORDER BY horizon_nr";
-
-    QSqlQuery query = dbConnection.exec(queryString);
-    if (query.size() < 1)
-    {
-        if (query.size() == -1)
-            this->errorString = "Table 'horizons' " + query.lastError().text();
-        else if (query.size() == 0)
-            this->errorString = "Missing horizons in soil nr:" + QString::number(idSoil);
-        return(nullptr);
-    }
-
-    int nrHorizons = query.size();
-
-    soil::Crit3DSoil* mySoil = new soil::Crit3DSoil();
-    mySoil->initialize(idSoil, nrHorizons);
-
-    int idHorizon;
-    double sand, silt, clay, organicMatter, skeleton;
-    double bulkDensity, porosity, ksat;
-    int i = 0;
-    while (query.next())
-    {
-        //check depth
-        idHorizon = query.value("horizon_nr").toInt();
-        getValue(query.value("upper_depth"), &(mySoil->horizon[i].upperDepth));
-        getValue(query.value("lower_depth"), &(mySoil->horizon[i].lowerDepth));
-        if ((mySoil->horizon[i].upperDepth == NODATA) || (mySoil->horizon[i].lowerDepth == NODATA)
-                || (mySoil->horizon[i].lowerDepth < mySoil->horizon[i].upperDepth))
-        {
-            this->errorString = "Wrong depths in soil " + QString::number(idSoil)
-                    + " horizon " + QString::number(idHorizon);
-            return(nullptr);
-        }
-        //[cm]->[m]
-        mySoil->horizon[i].upperDepth /= 100.0;
-        mySoil->horizon[i].lowerDepth /= 100.0;
-
-        //check skeleton
-        getValue(query.value("coarse_fragment"), &skeleton);
-        if (skeleton == NODATA)
-            mySoil->horizon[i].coarseFragments = 0.;
-        else
-            //[0,1]
-            mySoil->horizon[i].coarseFragments = skeleton / 100.0;
-
-        //texture
-        getValue(query.value("sand"), &sand);
-        getValue(query.value("silt"), &silt);
-        getValue(query.value("clay"), &clay);
-
-        if ((sand == NODATA) || (silt == NODATA) || (clay == NODATA))
-        {
-            this->errorString = "Missing texture data in soil " + soil_code + " horizon " + QString::number(idHorizon);
-            return (nullptr);
-        }
-
-        //check Texture
-        int idTexture = soil::getUSDATextureClass(sand*100, silt*100, clay*100);
-        if (idTexture == NODATA)
-        {
-            this->errorString = "Wrong texture for soil " + soil_code + " horizon " + QString::number(idHorizon);
-            return (nullptr);
-        }
-
-        // TODO
-        if (clay == NODATA) clay = 0.25;
-        mySoil->horizon[i].texture.sand = sand;
-        mySoil->horizon[i].texture.silt = silt;
-        mySoil->horizon[i].texture.clay = clay;
-
-        //default values
-        mySoil->horizon[i].texture.classUSDA = idTexture;
-        mySoil->horizon[i].vanGenuchten = texturalClassList[idTexture].vanGenuchten;
-        mySoil->horizon[i].waterConductivity = texturalClassList[idTexture].waterConductivity;
-
-        //organic matter
-        getValue(query.value("organic_matter"), &organicMatter);
-        if (organicMatter == NODATA)
-            organicMatter = 0.005;      //minimum value: 0.5%
-        else
-            organicMatter /= 100.0;     //[0-1]
-        mySoil->horizon[i].organicMatter = organicMatter;
-
-        //bulk density and porosity
-        getValue(query.value("bulk_density"), &bulkDensity);
-        getValue(query.value("theta_sat"), &porosity);
-
-        if (int(bulkDensity) == int(NODATA))
-            bulkDensity = soil::estimateBulkDensity(&(mySoil->horizon[i]), porosity, false);
-        if (int(porosity) == int(NODATA))
-            porosity = soil::estimateTotalPorosity(&(mySoil->horizon[i]), bulkDensity);
-
-        mySoil->horizon[i].bulkDensity = bulkDensity;
-
-        //saturated conductivity
-        getValue(query.value("ksat"), &ksat);
-        if (ksat != NODATA)
-        {
-            if ((ksat < (mySoil->horizon[i].waterConductivity.kSat / 10.)) || (ksat > (mySoil->horizon[i].waterConductivity.kSat * 10.)))
-                logInfo("WARNING: Ksat out of class limit, in soil " + QString::number(idSoil) + " horizon " + QString::number(i));
-        }
-        else
-        {
-            ksat = soil::estimateSaturatedConductivity(&(mySoil->horizon[i]), bulkDensity);
-        }
-        mySoil->horizon[i].waterConductivity.kSat = ksat;
-
-        //update with skeleton
-        mySoil->horizon[i].vanGenuchten.thetaS = porosity * (1.0 - mySoil->horizon[i].coarseFragments);
-        mySoil->horizon[i].vanGenuchten.thetaR = mySoil->horizon[i].vanGenuchten.thetaR * (1.0 - mySoil->horizon[i].coarseFragments);
-
-        mySoil->horizon[i].CEC = 50.0;
-        mySoil->horizon[i].PH = 7.7;
-
-        mySoil->horizon[i].fieldCapacity = soil::getFieldCapacity(&(mySoil->horizon[i]), soil::KPA);
-        mySoil->horizon[i].wiltingPoint = soil::getWiltingPoint(soil::KPA);
-        mySoil->horizon[i].waterContentFC = soil::thetaFromSignPsi(mySoil->horizon[i].fieldCapacity, &(mySoil->horizon[i]));
-        mySoil->horizon[i].waterContentWP = soil::thetaFromSignPsi(mySoil->horizon[i].wiltingPoint, &(mySoil->horizon[i]));
-
-        i++;
-    }
-
-    if (nrHorizons > 0)
-    {
-        mySoil->totalDepth = mySoil->horizon[nrHorizons-1].lowerDepth;
-    }
-    else {
-        mySoil->totalDepth = 0;
-    }
-
-    return(mySoil);
-}
-
-
-bool Vine3DProject::loadSoils()
-{
-    logInfo ("Read soils...");
-
-    QString queryString = "SELECT id_soil, soil_code FROM soils ORDER BY id_soil";
-
-    QSqlQuery query = dbConnection.exec(queryString);
-    if (query.size() == -1)
-    {
-        this->errorString = "Function 'loadSoils' - Table 'soils'\n" + query.lastError().text();
-        return false;
-    }
-
-    if (soilList.size() > 0) soilList.clear();
-
-    nrSoils = query.size();
-    soilList.resize(unsigned(nrSoils));
-
-    int idSoil;
-    QString soilCode;
-    float maxSoilDepth = 0;
-
-    soil::Crit3DSoil* mySoil;
-    int index = 0;
-
-    while (query.next())
-    {
-        idSoil = query.value("id_soil").toInt();
-        soilCode = query.value("soil_code").toString();
-
-        mySoil = loadHorizons(idSoil, soilCode);
-
-        if (mySoil == nullptr)
-        {
-             this->errorString = "Function 'loadHorizon' " + this->errorString;
-             return(false);
-        }
-
-        soilList[index] = *mySoil;
-
-        maxSoilDepth = maxValue(maxSoilDepth, soilList[index].totalDepth);
-        index++;
-    }
-
-    this->soilDepth = minValue(this->soilDepth, maxSoilDepth);
-
-    logInfo("Soil depth = " + QString::number(this->soilDepth));
-
-    return(true);
-}
-*/
-
-
 int Vine3DProject::getAggregatedVarCode(int rawVarCode)
 {
     for (int i=0; i<nrAggrVar; i++)
@@ -1066,23 +844,11 @@ bool Vine3DProject::getMeteoVarIndexRaw(meteoVariable myVar, int* nrIndices, int
     return true;
 }
 
-void Vine3DProject::initializeMeteoPoints()
-{
-    if (nrMeteoPoints > 0)
-    {
-        if (meteoPoints != nullptr)
-        {
-            for (int i = 0; i < nrMeteoPoints; i++)
-                meteoPoints[i].cleanObsDataH();
-            delete [] meteoPoints;
-        }
-        nrMeteoPoints = 0;
-    }
-}
-
 
 bool Vine3DProject::loadDBPoints()
 {
+    closeMeteoPointsDB();
+
     logInfo ("Read points locations...");
 
     QString queryString = "SELECT id_point, name, utm_x, utm_y, altitude, is_utc, is_forecast FROM points_properties";
@@ -1095,7 +861,6 @@ bool Vine3DProject::loadDBPoints()
         return(false);
     }
 
-    initializeMeteoPoints();
     nrMeteoPoints = query.size();
     meteoPoints = new Crit3DMeteoPoint[nrMeteoPoints];
 
@@ -1611,7 +1376,7 @@ bool removeDirectory(QString myPath)
 }
 
 
-bool Vine3DProject::LoadObsDataFilled(QDateTime firstTime, QDateTime lastTime)
+bool Vine3DProject::loadObsDataFilled(QDateTime firstTime, QDateTime lastTime)
 {
     QDate d1 = firstTime.date().addDays(-30);
     QDate d2 = lastTime.date().addDays(30);
@@ -1654,7 +1419,7 @@ bool Vine3DProject::runModels(QDateTime dateTime1, QDateTime dateTime2, bool sav
         return false;
     }
 
-    if (!LoadObsDataFilled(dateTime1, dateTime2))
+    if (!loadObsDataFilled(dateTime1, dateTime2))
     {
         this->logError();
         return false;
@@ -1936,52 +1701,3 @@ bool Vine3DProject::getFieldBookIndex(int firstIndex, QDate myDate, int fieldInd
     }
     return false;
 }
-
-
-//-------- LOG functions -------------------------
-bool Vine3DProject::setLogFile()
-{
-    QString fileName, myPath, myDate;
-    QDir myDir;
-
-    myPath = path + "log/";
-    myDir.mkpath(myPath);
-    //TODO check and error if directory not created
-
-    myDate = QDateTime().currentDateTime().toString("yyyyMMddhhmm");
-    fileName = "log_" + idArea + "_" + myDate + ".txt";
-
-    this->logFileName = myPath + fileName;
-    this->logFile.open(this->logFileName.toStdString().c_str());
-    return (logFile.is_open());
-}
-
-/*
-void Vine3DProject::logInfo(QString myLog)
-{
-    if (logFile.is_open())
-            logFile << myLog.toStdString() << std::endl;
-
-    if (environment == gui)
-        std::cout << myLog.toStdString() << std::endl;
-}
-
-void Vine3DProject::logError()
-{
-    errorString = "Error! " + errorString;
-    if (environment == gui)
-    {
-        QMessageBox msgBox;
-        msgBox.setText(errorString);
-        msgBox.exec();
-    }
-    if (logFile.is_open())
-        logFile << errorString.toStdString() << std::endl;
-}
-
-void Vine3DProject::logError(QString myError)
-{
-    errorString = myError;
-    logError();
-}
-*/

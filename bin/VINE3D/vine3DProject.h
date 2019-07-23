@@ -106,11 +106,9 @@
         bool loadFieldBook();
         soil::Crit3DSoil *loadHorizons(int idSoil, QString soil_code);
 
-        void initializeMeteoPoints();
-        void initialize();
-
-        void closeProject();
-        bool loadProject(QString myFileName);
+        void initializeVine3DProject();
+        void clearVine3DProject();
+        bool loadVine3DProject(QString myFileName);
 
         int queryFieldPoint(double x, double y);
         bool loadFieldShape();
@@ -132,7 +130,7 @@
         bool loadObsDataAllPointsVar(meteoVariable myVar, QDate d1, QDate d2);
         bool meteoDataLoaded(const Crit3DTime& myTimeIni, const Crit3DTime& myTimeFin);
         float meteoDataConsistency(meteoVariable myVar, const Crit3DTime& myTimeIni, const Crit3DTime& myTimeFin);
-        bool LoadObsDataFilled(QDateTime firstTime, QDateTime lastTime);
+        bool loadObsDataFilled(QDateTime firstTime, QDateTime lastTime);
         void findVine3DLastMeteoDate();
 
         bool loadStates(QDate myDate, QString myArea);
@@ -140,10 +138,6 @@
 
         int getIndexPointFromId(QString myId);
 
-        bool setLogFile();
-        //void logError();
-        //void logError(QString myError);
-        //void logInfo(QString myLog);
         float getTimeStep();
         int getModelCaseIndex(long row, long col);
         bool isVineyard(long row, long col);

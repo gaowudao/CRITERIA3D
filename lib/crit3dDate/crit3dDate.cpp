@@ -40,11 +40,9 @@ const long daysInMonth[12] = {31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31};
 // index: 1 - 12
 int getDaysInMonth(int month, int year)
 {
-    if (month < 1 || month > 12)
-        return (-1);
+    if (month < 1 || month > 12) return NODATA;
 
-    if(month == 2 && isLeapYear(year))
-        return 29;
+    if(month == 2 && isLeapYear(year)) return 29;
 
     else return daysInMonth[month-1];
 }
@@ -55,101 +53,104 @@ Crit3DDate::Crit3DDate()
     day = 0; month = 0; year = 0;
 }
 
+
 Crit3DDate::Crit3DDate(int myDay, int myMonth, int myYear)
 {
     day = myDay; month = myMonth; year = myYear;
 }
 
+
 bool operator == (const Crit3DDate& myDate1, const Crit3DDate& myDate2)
 {
-    return myDate1.year == myDate2.year && myDate1.month == myDate2.month && myDate1.day == myDate2.day;
+    return ( myDate1.year == myDate2.year && myDate1.month == myDate2.month && myDate1.day == myDate2.day );
 }
+
 
 bool operator != (const Crit3DDate& myDate1, const Crit3DDate& myDate2)
 {
     return ! ( myDate1.year == myDate2.year && myDate1.month == myDate2.month && myDate1.day == myDate2.day );
 }
 
+
 bool operator > (const Crit3DDate& myDate1, const Crit3DDate& myDate2)
 {
-    return myDate1.year > myDate2.year ||
-        ( myDate1.year == myDate2.year && myDate1.month > myDate2.month ) ||
-        ( myDate1.year == myDate2.year && myDate1.month == myDate2.month && myDate1.day > myDate2.day );
+    return  ( myDate1.year > myDate2.year ||
+            ( myDate1.year == myDate2.year && myDate1.month > myDate2.month ) ||
+            ( myDate1.year == myDate2.year && myDate1.month == myDate2.month && myDate1.day > myDate2.day ));
 }
+
 
 bool operator >= (const Crit3DDate& myDate1, const Crit3DDate& myDate2)
 {
-    return myDate1.year > myDate2.year ||
-         ( myDate1.year == myDate2.year && myDate1.month > myDate2.month ) ||
-         ( myDate1.year == myDate2.year && myDate1.month == myDate2.month && myDate1.day >= myDate2.day );
+    return ( myDate1.year > myDate2.year ||
+            ( myDate1.year == myDate2.year && myDate1.month > myDate2.month ) ||
+            ( myDate1.year == myDate2.year && myDate1.month == myDate2.month && myDate1.day >= myDate2.day ));
 }
+
 
 bool operator < (const Crit3DDate& myDate1, const Crit3DDate& myDate2)
 {
-    return myDate1.year < myDate2.year ||
-        ( myDate1.year == myDate2.year && myDate1.month < myDate2.month ) ||
-        ( myDate1.year == myDate2.year && myDate1.month == myDate2.month && myDate1.day < myDate2.day );
+    return  ( myDate1.year < myDate2.year ||
+            ( myDate1.year == myDate2.year && myDate1.month < myDate2.month ) ||
+            ( myDate1.year == myDate2.year && myDate1.month == myDate2.month && myDate1.day < myDate2.day ));
 }
+
 
 bool operator <= (const Crit3DDate& myDate1, const Crit3DDate& myDate2)
 {
-    return myDate1.year < myDate2.year ||
-           ( myDate1.year == myDate2.year && myDate1.month < myDate2.month ) ||
-           ( myDate1.year == myDate2.year && myDate1.month == myDate2.month && myDate1.day <= myDate2.day );
+    return  ( myDate1.year < myDate2.year ||
+            ( myDate1.year == myDate2.year && myDate1.month < myDate2.month ) ||
+            ( myDate1.year == myDate2.year && myDate1.month == myDate2.month && myDate1.day <= myDate2.day ));
 }
+
 
 Crit3DDate& operator ++ (Crit3DDate& myDate)
 {
-    long leap = 0;
-
-    if(myDate.month == 2 && isLeapYear(myDate.year))
-      leap = 1; // anni bisestili
-
-    if( myDate.day < daysInMonth[myDate.month - 1] + leap )
+    if( myDate.day < getDaysInMonth(myDate.month, myDate.year))
+    {
         myDate.day++;
+    }
     else
     {
         if( myDate.month < 12)
         {
-            myDate.day = 1;
             myDate.month++;
         }
         else
         {
-            myDate.day = 1;
-            myDate.month = 1;
             myDate.year++;
+            myDate.month = 1;
         }
+        myDate.day = 1;
     }
+
     return myDate;
 }
 
+
 Crit3DDate& operator -- (Crit3DDate& myDate)
 {
-    long leap = 0;
-
-    if( myDate.month == 3 && isLeapYear(myDate.year))
-      leap = 1; // anni bisestili
-
     if( myDate.day > 1 )
+    {
         myDate.day--;
+    }
     else
     {
         if( myDate.month > 1 )
         {
             myDate.month--;
-            myDate.day = daysInMonth[myDate.month-1] + leap;
         }
         else
         {
-            myDate.month = 12;
-            myDate.day = daysInMonth[myDate.month-1];
             myDate.year--;
+            myDate.month = 12;
         }
+         myDate.day = getDaysInMonth(myDate.month, myDate.year);
     }
 
     return myDate;
 }
+
 
 Crit3DDate Crit3DDate::addDays(int nrDays) const
 {
@@ -165,8 +166,9 @@ Crit3DDate Crit3DDate::addDays(int nrDays) const
             --myDate;
     }
 
-    return (myDate);
+    return myDate;
 }
+
 
 int Crit3DDate::daysTo(const Crit3DDate& myDate) const
 {
@@ -181,30 +183,32 @@ int Crit3DDate::daysTo(const Crit3DDate& myDate) const
     }
 
     if (myDateMax == myDate)
-        return (myDiff);
+        return myDiff;
     else
-        return (-myDiff);
+        return -myDiff;
 }
 
 Crit3DDate max(const Crit3DDate& myDate1, const Crit3DDate& myDate2)
 {
-    if( myDate1.year > myDate2.year ||
+    if  ( myDate1.year > myDate2.year ||
         ( myDate1.year == myDate2.year && myDate1.month > myDate2.month ) ||
-        ( myDate1.year == myDate2.year && myDate1.month == myDate2.month && myDate1.day > myDate2.day ) )
+        ( myDate1.year == myDate2.year && myDate1.month == myDate2.month && myDate1.day > myDate2.day ))
         return myDate1;
     else
         return myDate2;
 }
 
+
 Crit3DDate min(const Crit3DDate& myDate1, const Crit3DDate& myDate2)
 {
-    if( myDate1.year < myDate2.year ||
+    if  ( myDate1.year < myDate2.year ||
         ( myDate1.year == myDate2.year && myDate1.month < myDate2.month ) ||
-        ( myDate1.year == myDate2.year && myDate1.month == myDate2.month && myDate1.day < myDate2.day ) )
+        ( myDate1.year == myDate2.year && myDate1.month == myDate2.month && myDate1.day < myDate2.day ))
         return myDate1;
     else
         return myDate2;
 }
+
 
 Crit3DDate getDateFromDoy(int myYear, int myDoy)
 {
@@ -218,24 +222,24 @@ Crit3DDate getDateFromDoy(int myYear, int myDoy)
     }
     Crit3DDate myDate(1, 1, myYear);
     myDate = myDate.addDays(myDoy - 1);
-    return (myDate);
+
+    return myDate;
 }
 
 Crit3DDate getNullDate()
 {
     Crit3DDate* myDate = new Crit3DDate();
-    return (*myDate);
+    return *myDate;
 }
 
 bool isNullDate(Crit3DDate myDate)
 {
-    return ((myDate.day == 0) && (myDate.month == 0) && (myDate.year == 0));
+    return (myDate.day == 0 && myDate.month == 0 && myDate.year == 0);
 }
 
 
 int difference(Crit3DDate myDatefirst, Crit3DDate myDatelast)
 {
-
     int myDiff = 0;
     while (myDatefirst < myDatelast)
     {
@@ -249,26 +253,24 @@ int difference(Crit3DDate myDatefirst, Crit3DDate myDatelast)
 
 bool isLeapYear(int year)
 {
-    bool leap = false ;
+    bool isLeap = false ;
     if (year%4 == 0)
     {
-      leap = true;
+      isLeap = true;
       if (year%100 == 0)
-          if (! (year%400 == 0)) leap = false;
+          if (! (year%400 == 0)) isLeap = false;
     }
-    return leap ;
+    return isLeap ;
 }
 
 
 int getDoyFromDate(const Crit3DDate& myDate)
 {
     int myDoy = 0;
-
-    if(myDate.month > 2 && isLeapYear(myDate.year))
-      myDoy = 1;
-
-    for(int month = 0; month < myDate.month - 1; month++)
-      myDoy += daysInMonth[month];
+    for(int month = 1; month < myDate.month; month++)
+    {
+        myDoy += getDaysInMonth(month, myDate.year);
+    }
 
     myDoy += myDate.day;
 
@@ -282,6 +284,5 @@ std::string Crit3DDate::toStdString()
     sprintf (myStr, "%d-%02d-%02d", this->year, this->month, this->day);
 
     return std::string(myStr);
-
 }
 

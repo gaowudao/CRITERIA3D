@@ -12,12 +12,26 @@ TabHorizons::TabHorizons()
     modelTableLabel->setStyleSheet("font: 11pt;");
     tableDb = new TableDbOrModel(dbTable);
     tableModel = new TableDbOrModel(modelTable);
+    QHBoxLayout *addDeleteRowLayout = new QHBoxLayout;
+    addRow = new QPushButton("+");
+    addRow->setFixedWidth(40);
+    deleteRow = new QPushButton("-");
+    deleteRow->setFixedWidth(40);
+    addRow->setEnabled(false);
+    deleteRow->setEnabled(false);
+    addDeleteRowLayout->addStretch(80);
+    addDeleteRowLayout->addWidget(addRow);
+    addDeleteRowLayout->addWidget(deleteRow);
+
 
     connect(tableDb->verticalHeader(), &QHeaderView::sectionClicked, [=](int index){ this->tableDbVerticalHeaderClick(index); });
     connect(tableModel->verticalHeader(), &QHeaderView::sectionClicked, [=](int index){ this->tableModelVerticalHeaderClick(index); });
+    connect(addRow, &QPushButton::clicked, [=](){ this->addRowClicked(); });
+    connect(deleteRow, &QPushButton::clicked, [=](){ this->removeRowClicked(); });
 
     mainLayout->addWidget(dbTableLabel);
     mainLayout->addWidget(tableDb);
+    mainLayout->addLayout(addDeleteRowLayout);
     mainLayout->addWidget(modelTableLabel);
     mainLayout->addWidget(tableModel);
 
@@ -81,6 +95,8 @@ void TabHorizons::insertSoilHorizons(soil::Crit3DSoil *soil, soil::Crit3DTexture
     clearSelections();
 
     tableDb->blockSignals(false);
+    addRow->setEnabled(true);
+    deleteRow->setEnabled(false);
 
     connect(tableDb, &QTableWidget::cellChanged, [=](int row, int column){ this->cellChanged(row, column); });
     connect(tableDb, &QTableWidget::cellClicked, [=](int row, int column){ this->cellClicked(row, column); });
@@ -133,27 +149,27 @@ void TabHorizons::checkHorizonData(int horizonNum)
         return;
     }
 
-    if (mySoil->horizon[horizonNum].dbData.coarseFragments < 0 || mySoil->horizon[horizonNum].dbData.coarseFragments > 100)
+    if (mySoil->horizon[horizonNum].dbData.coarseFragments != NODATA && (mySoil->horizon[horizonNum].dbData.coarseFragments < 0 || mySoil->horizon[horizonNum].dbData.coarseFragments > 100))
     {
         tableDb->item(horizonNum,5)->setBackgroundColor(Qt::red);
     }
 
-    if (mySoil->horizon[horizonNum].dbData.organicMatter < 0 || mySoil->horizon[horizonNum].dbData.organicMatter > 100)
+    if (mySoil->horizon[horizonNum].dbData.organicMatter != NODATA && (mySoil->horizon[horizonNum].dbData.organicMatter < 0 || mySoil->horizon[horizonNum].dbData.organicMatter > 100))
     {
         tableDb->item(horizonNum,6)->setBackgroundColor(Qt::red);
     }
 
-    if (mySoil->horizon[horizonNum].dbData.bulkDensity < 0 || mySoil->horizon[horizonNum].dbData.bulkDensity > QUARTZ_DENSITY)
+    if (mySoil->horizon[horizonNum].dbData.bulkDensity != NODATA && (mySoil->horizon[horizonNum].dbData.bulkDensity < 0 || mySoil->horizon[horizonNum].dbData.bulkDensity > QUARTZ_DENSITY))
     {
         tableDb->item(horizonNum,7)->setBackgroundColor(Qt::red);
     }
 
-    if (mySoil->horizon[horizonNum].dbData.kSat <= 0)
+    if (mySoil->horizon[horizonNum].dbData.kSat != NODATA && mySoil->horizon[horizonNum].dbData.kSat <= 0)
     {
         tableDb->item(horizonNum,8)->setBackgroundColor(Qt::red);
     }
 
-    if (mySoil->horizon[horizonNum].dbData.thetaSat <= 0 || mySoil->horizon[horizonNum].dbData.thetaSat >= 1)
+    if (mySoil->horizon[horizonNum].dbData.thetaSat != NODATA && (mySoil->horizon[horizonNum].dbData.thetaSat <= 0 || mySoil->horizon[horizonNum].dbData.thetaSat >= 1))
     {
         tableDb->item(horizonNum,9)->setBackgroundColor(Qt::red);
     }
@@ -167,19 +183,19 @@ void TabHorizons::checkMissingItem(int horizonNum)
     QString NODATAString = "-9999";
     for (int j = 0; j < tableDb->columnCount(); j++)
     {
-        if (tableDb->item(horizonNum,j)->text().contains(NODATAString))
+        if (tableDb->item(horizonNum,j)->text().contains(NODATAString) || tableDb->item(horizonNum,j)->text().isEmpty())
         {
             tableDb->item(horizonNum,j)->setBackgroundColor(Qt::yellow);
-            tableDb->item(horizonNum,j)->setText(NODATAString);
+            tableDb->item(horizonNum,j)->setText("");
         }
     }
 
     for (int j = 0; j < tableModel->columnCount(); j++)
     {
-        if (tableModel->item(horizonNum,j)->text().contains(NODATAString))
+        if (tableModel->item(horizonNum,j)->text().contains(NODATAString) || tableModel->item(horizonNum,j)->text().isEmpty())
         {
             tableModel->item(horizonNum,j)->setBackgroundColor(Qt::red);
-            tableModel->item(horizonNum,j)->setText(NODATAString);
+            tableModel->item(horizonNum,j)->setText("");
         }
     }
 
@@ -218,6 +234,7 @@ void TabHorizons::clearSelections()
 {
     tableDb->clearSelection();
     tableModel->clearSelection();
+    deleteRow->setEnabled(false);
 }
 
 void TabHorizons::tableDbVerticalHeaderClick(int index)
@@ -225,6 +242,14 @@ void TabHorizons::tableDbVerticalHeaderClick(int index)
     tableDb->horizontalHeader()->setHighlightSections(false);
     tableModel->selectRow(index);
     tableModel->horizontalHeader()->setHighlightSections(false);
+    if (index == tableDb->rowCount()-1)
+    {
+        deleteRow->setEnabled(true);
+    }
+    else
+    {
+        deleteRow->setEnabled(false);
+    }
 }
 
 void TabHorizons::tableModelVerticalHeaderClick(int index)
@@ -236,8 +261,16 @@ void TabHorizons::tableModelVerticalHeaderClick(int index)
 
 void TabHorizons::cellChanged(int row, int column)
 {
+
+    if (tableDb->itemAt(row,column) == nullptr || mySoil->nrHorizons < row)
+    {
+        qDebug() << "mySoil->horizon->dbData.horizonNr < row ";
+        return;
+    }
+
     //disable events otherwise setBackgroundColor call again cellChanged event
     tableDb->blockSignals(true);
+
     qDebug() << "Cell at row: " << QString::number(row) << " column " << QString::number(column)<<" was changed.";
     tableModel->selectRow(row);
     QString data = tableDb->item(row, column)->text();
@@ -318,7 +351,7 @@ void TabHorizons::cellChanged(int row, int column)
     }
     else
     {
-        tableModel->item(row,1)->setText(QString::number(mySoil->horizon[row].coarseFragments, 'f', 1 ));
+        tableModel->item(row,1)->setText("");
     }
 
     if (mySoil->horizon[row].organicMatter != NODATA)
@@ -327,7 +360,7 @@ void TabHorizons::cellChanged(int row, int column)
     }
     else
     {
-        tableModel->item(row,2)->setText(QString::number(mySoil->horizon[row].organicMatter, 'f', 1 ));
+        tableModel->item(row,2)->setText("");
     }
 
     tableModel->item(row,3)->setText(QString::number(mySoil->horizon[row].bulkDensity, 'f', 3));
@@ -360,4 +393,39 @@ void TabHorizons::cellClicked(int row, int column)
 {
     tableDb->selectRow(row);
     tableModel->selectRow(row);
+}
+
+void TabHorizons::addRowClicked()
+{
+    tableDb->blockSignals(true);
+    int numRow = tableDb->rowCount();
+    QString lowerDepth = tableDb->item(numRow-1, 1)->text();
+    tableDb->insertRow(numRow);
+    tableModel->insertRow(numRow);
+
+    for (int j=0; j<tableDb->columnCount(); j++)
+    {
+        tableDb->setItem(numRow, j, new QTableWidgetItem());
+        tableModel->setItem(numRow, j, new QTableWidgetItem());
+    }
+    tableDb->scrollToBottom();
+    tableModel->scrollToBottom();
+    deleteRow->setEnabled(true);
+    tableDb->item(numRow, 0)->setText(lowerDepth);
+    tableDb->selectRow(numRow);
+    tableModel->selectRow(numRow);
+
+    // LC inserire una funziona di addHorizon
+    tableDb->blockSignals(false);
+
+}
+
+void TabHorizons::removeRowClicked()
+{
+    tableDb->blockSignals(true);
+    clearSelections();
+    tableDb->removeRow(tableDb->rowCount()-1);
+    tableModel->removeRow(tableDb->rowCount()-1);
+    // LC inserire una funzione di removeHorizon
+    tableDb->blockSignals(false);
 }

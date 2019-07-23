@@ -25,10 +25,14 @@ public:
     void tableModelVerticalHeaderClick(int index);
     void cellChanged(int row, int column);
     void cellClicked(int row, int column);
+    void addRowClicked();
+    void removeRowClicked();
 
 private:
     TableDbOrModel* tableDb;
     TableDbOrModel* tableModel;
+    QPushButton* addRow;
+    QPushButton* deleteRow;
     soil::Crit3DSoil* mySoil;
     soil::Crit3DTextureClass* myTextureClassList;
 

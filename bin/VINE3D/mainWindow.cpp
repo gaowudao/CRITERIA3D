@@ -299,9 +299,8 @@ void MainWindow::on_actionOpen_project_triggered()
     QString myFileName = QFileDialog::getOpenFileName(this,tr("Open Project"), "", tr("Project files (*.ini)"));
     if (myFileName != "")
     {
-        if (myProject.loadProject(myFileName))
+        if (myProject.loadVine3DProject(myFileName))
         {
-
             setDefaultDEMScale(myProject.DEM.colorScale);
 
             this->setCurrentRaster(&(myProject.DEM));
