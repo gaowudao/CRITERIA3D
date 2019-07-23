@@ -15,6 +15,7 @@
 
 bool openDbSoil(QString dbName, QSqlDatabase* dbSoil, QString* error)
 {
+
     *dbSoil = QSqlDatabase::addDatabase("QSQLITE", QUuid::createUuid().toString());
     dbSoil->setDatabaseName(dbName);
 

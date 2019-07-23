@@ -177,7 +177,11 @@ void Crit3DSoilWidget::on_actionOpenSoilDB()
 
 void Crit3DSoilWidget::on_actionChooseSoil(QString soilCode)
 {
-
+    // soilListComboBox has been cleared
+    if (soilCode.isEmpty())
+    {
+        return;
+    }
     QString error;
     if (! loadSoil(&dbSoil, soilCode, &mySoil, textureClassList, &error))
     {
