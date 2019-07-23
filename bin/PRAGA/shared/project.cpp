@@ -1228,19 +1228,22 @@ void Project::clear()
     dbGridXMLName = "";
 }
 
-bool Project::load()
+bool Project::loadProject()
 {
     if (! loadParameters(parametersFile))
         return false;
 
-    if (! loadDEM(demName))
-        return false;
+    if (demName != "")
+        if (! loadDEM(demName))
+            return false;
 
-    if (! loadMeteoPointsDB(dbPointsName))
-        return false;
+    if (dbPointsName != "")
+        if (! loadMeteoPointsDB(dbPointsName))
+            return false;
 
-    if (! loadMeteoGridDB(dbGridXMLName))
-        return false;
+    if (dbGridXMLName != "")
+        if (! loadMeteoGridDB(dbGridXMLName))
+            return false;
 
     return true;
 }

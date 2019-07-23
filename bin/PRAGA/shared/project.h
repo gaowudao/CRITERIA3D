@@ -89,7 +89,7 @@
         Project();
 
         void clear();
-        bool load();
+        bool loadProject();
         bool loadProjectSettings(QString settingsFileName);
         bool loadParameters(QString parametersFileName);
         void setProxyDEM();

@@ -70,7 +70,7 @@ bool cmdOpenVine3DProject(Vine3DProject* myProject, QStringList argumentList)
 
     QString projectName = myProject->getCompleteFileName(argumentList.at(1), "PROJECT/");
 
-    if (! myProject->loadProject(projectName))
+    if (! myProject->loadVine3DProject(projectName))
         return false;
 
     return true;
@@ -126,7 +126,7 @@ bool cmdRunModels(Vine3DProject* myProject, QStringList argumentList)
     if (! myProject->runModels(firstDateTime, lastDateTime, true, true, myProject->idArea))
         return false;
 
-    myProject->closeProject();
+    myProject->closeVine3DProject();
 
     return true;
 }

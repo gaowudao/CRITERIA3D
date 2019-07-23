@@ -29,11 +29,11 @@
 
 Vine3DProject::Vine3DProject() : Project3D()
 {
-    initialize();
+    initializeVine3DProject();
 }
 
 
-void Vine3DProject::initialize()
+void Vine3DProject::initializeVine3DProject()
 {
     idArea = "0000";
     dbProvider = "QPSQL";
@@ -72,7 +72,7 @@ bool Vine3DProject::loadVine3DSettings()
 }
 
 
-void Vine3DProject::closeProject()
+void Vine3DProject::closeVine3DProject()
 {
     if (this->isProjectLoaded)
     {
@@ -87,6 +87,8 @@ void Vine3DProject::closeProject()
 
         this->isProjectLoaded = false;
     }
+    clear();
+    initializeVine3DProject();
 }
 
 
@@ -129,8 +131,6 @@ bool Vine3DProject::loadVine3DProjectSettings(QString projectFile)
         return false;
     }
 
-    initialize();
-
     if (! loadProjectSettings(projectFile))
     {
         logError("Error reading common settings in " + projectFile);
@@ -172,16 +172,19 @@ bool Vine3DProject::loadVine3DProjectSettings(QString projectFile)
 }
 
 
-bool Vine3DProject::loadProject(QString myFileName)
+bool Vine3DProject::loadVine3DProject(QString myFileName)
 {
-    closeProject();
-    this->initialize();
+    closeVine3DProject();
 
     if (myFileName == "") return(false);
+
+    if (! loadProjectSettings(myFileName))
+        return false;
+
     if (! loadVine3DProjectSettings(myFileName))
         return false;
 
-    if (! loadParameters(parametersFile))
+    if (! loadProject())
         return false;
 
     if (this->setLogFile())
@@ -189,15 +192,9 @@ bool Vine3DProject::loadProject(QString myFileName)
     else
         this->logError("LogFile Wrong.");
 
-    myFileName = path + demFileName;
-    if (loadDEM(myFileName))
-    {
-        this->logInfo("Initialize DEM and project maps...");
-        meteoMaps = new Crit3DMeteoMaps(DEM);
-        statePlantMaps = new Crit3DStatePlantMaps(DEM);
-    }
-    else
-        return(false);
+    logInfo("Initialize DEM and project maps...");
+    meteoMaps = new Crit3DMeteoMaps(DEM);
+    statePlantMaps = new Crit3DStatePlantMaps(DEM);
 
     if (! openDBConnection()) return (false);
 
@@ -222,11 +219,11 @@ bool Vine3DProject::loadProject(QString myFileName)
         if (!loadFieldMap(myFileName)) return false;
     }
 
-    this->isProjectLoaded = true;
+    isProjectLoaded = true;
 
     if (! initializeWaterBalance(this))
     {
-        this->logError();
+        logError();
         return(false);
     }
 
