@@ -35,10 +35,6 @@
     #define DB_MYSQL 1
     #define DB_POSTGRES 2
 
-    // --------------- Soil -----------------
-    // [g cm3-1]
-    #define QUARTZ_DENSITY 2.648
-
     // --------------- soilFluxes3D -----------------
     #define NOLINK -1
 
@@ -160,6 +156,9 @@
     #define VON_KARMAN_CONST 0.41
     // [J kg-1 K-1] specific heat at constant pressure
     #define CP 1013
+
+    // [g cm3-1]
+    #define QUARTZ_DENSITY 2.648
 
     // [J m-3 K-1] volumetric specific heat
     #define HEAT_CAPACITY_WATER 4182000
