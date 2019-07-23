@@ -149,27 +149,27 @@ void TabHorizons::checkHorizonData(int horizonNum)
         return;
     }
 
-    if (mySoil->horizon[horizonNum].dbData.coarseFragments < 0 || mySoil->horizon[horizonNum].dbData.coarseFragments > 100)
+    if (mySoil->horizon[horizonNum].dbData.coarseFragments != NODATA && (mySoil->horizon[horizonNum].dbData.coarseFragments < 0 || mySoil->horizon[horizonNum].dbData.coarseFragments > 100))
     {
         tableDb->item(horizonNum,5)->setBackgroundColor(Qt::red);
     }
 
-    if (mySoil->horizon[horizonNum].dbData.organicMatter < 0 || mySoil->horizon[horizonNum].dbData.organicMatter > 100)
+    if (mySoil->horizon[horizonNum].dbData.organicMatter != NODATA && (mySoil->horizon[horizonNum].dbData.organicMatter < 0 || mySoil->horizon[horizonNum].dbData.organicMatter > 100))
     {
         tableDb->item(horizonNum,6)->setBackgroundColor(Qt::red);
     }
 
-    if (mySoil->horizon[horizonNum].dbData.bulkDensity < 0 || mySoil->horizon[horizonNum].dbData.bulkDensity > QUARTZ_DENSITY)
+    if (mySoil->horizon[horizonNum].dbData.bulkDensity != NODATA && (mySoil->horizon[horizonNum].dbData.bulkDensity < 0 || mySoil->horizon[horizonNum].dbData.bulkDensity > QUARTZ_DENSITY))
     {
         tableDb->item(horizonNum,7)->setBackgroundColor(Qt::red);
     }
 
-    if (mySoil->horizon[horizonNum].dbData.kSat <= 0)
+    if (mySoil->horizon[horizonNum].dbData.kSat != NODATA && mySoil->horizon[horizonNum].dbData.kSat <= 0)
     {
         tableDb->item(horizonNum,8)->setBackgroundColor(Qt::red);
     }
 
-    if (mySoil->horizon[horizonNum].dbData.thetaSat <= 0 || mySoil->horizon[horizonNum].dbData.thetaSat >= 1)
+    if (mySoil->horizon[horizonNum].dbData.thetaSat != NODATA && (mySoil->horizon[horizonNum].dbData.thetaSat <= 0 || mySoil->horizon[horizonNum].dbData.thetaSat >= 1))
     {
         tableDb->item(horizonNum,9)->setBackgroundColor(Qt::red);
     }
@@ -183,7 +183,7 @@ void TabHorizons::checkMissingItem(int horizonNum)
     QString NODATAString = "-9999";
     for (int j = 0; j < tableDb->columnCount(); j++)
     {
-        if (tableDb->item(horizonNum,j)->text().contains(NODATAString))
+        if (tableDb->item(horizonNum,j)->text().contains(NODATAString) || tableDb->item(horizonNum,j)->text().isEmpty())
         {
             tableDb->item(horizonNum,j)->setBackgroundColor(Qt::yellow);
             tableDb->item(horizonNum,j)->setText("");
@@ -192,7 +192,7 @@ void TabHorizons::checkMissingItem(int horizonNum)
 
     for (int j = 0; j < tableModel->columnCount(); j++)
     {
-        if (tableModel->item(horizonNum,j)->text().contains(NODATAString))
+        if (tableModel->item(horizonNum,j)->text().contains(NODATAString) || tableModel->item(horizonNum,j)->text().isEmpty())
         {
             tableModel->item(horizonNum,j)->setBackgroundColor(Qt::red);
             tableModel->item(horizonNum,j)->setText("");
