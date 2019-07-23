@@ -36,7 +36,9 @@ Project::Project()
     meteoPointsDbHandler = nullptr;
     meteoGridDbHandler = nullptr;
     radiationMaps = nullptr;
-
+    demName = "";
+    dbPointsName = "";
+    dbGridXMLName = "";
 }
 
 void Project::clearProxyDEM()
@@ -610,7 +612,6 @@ bool Project::loadMeteoGridDB(QString xmlName)
 
     meteoGridDbHandler = new Crit3DMeteoGridDbHandler();
     meteoGridDbHandler->meteoGrid()->setGisSettings(this->gisSettings);
-
 
     if (! meteoGridDbHandler->parseXMLGrid(xmlName, &errorString))
         return false;
@@ -1205,13 +1206,22 @@ void Project::clear()
 
     clearProxyDEM();
     DEM.clear();
+    demName = "";
     dataRaster.clear();
 
     interpolationSettings.initialize();
     qualityInterpolationSettings.initialize();
 
     closeMeteoPointsDB();
+    dbPointsName = "";
     closeMeteoGridDB();
+    dbGridXMLName = "";
+}
+
+bool Project::load()
+{
+
+    return true;
 }
 
 /* ---------------------------------------------
