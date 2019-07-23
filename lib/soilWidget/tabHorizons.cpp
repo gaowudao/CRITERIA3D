@@ -27,6 +27,7 @@ TabHorizons::TabHorizons()
     connect(tableDb->verticalHeader(), &QHeaderView::sectionClicked, [=](int index){ this->tableDbVerticalHeaderClick(index); });
     connect(tableModel->verticalHeader(), &QHeaderView::sectionClicked, [=](int index){ this->tableModelVerticalHeaderClick(index); });
     connect(addRow, &QPushButton::clicked, [=](){ this->addRowClicked(); });
+    connect(deleteRow, &QPushButton::clicked, [=](){ this->removeRowClicked(); });
 
     mainLayout->addWidget(dbTableLabel);
     mainLayout->addWidget(tableDb);
@@ -411,8 +412,20 @@ void TabHorizons::addRowClicked()
     tableModel->scrollToBottom();
     deleteRow->setEnabled(true);
     tableDb->item(numRow, 0)->setText(lowerDepth);
+    tableDb->selectRow(numRow);
+    tableModel->selectRow(numRow);
 
     // LC inserire una funziona di addHorizon
     tableDb->blockSignals(false);
 
+}
+
+void TabHorizons::removeRowClicked()
+{
+    tableDb->blockSignals(true);
+    clearSelections();
+    tableDb->removeRow(tableDb->rowCount()-1);
+    tableModel->removeRow(tableDb->rowCount()-1);
+    // LC inserire una funzione di removeHorizon
+    tableDb->blockSignals(false);
 }
