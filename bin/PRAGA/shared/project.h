@@ -81,10 +81,13 @@
             NetCDFHandler netCDF;
         #endif
 
+        QString demName, dbPointsName, dbGridXMLName;
+
+
         Project();
 
         void clear();
-
+        bool load();
         bool loadProjectSettings(QString settingsFileName);
         bool loadParameters(QString parametersFileName);
         void setProxyDEM();
