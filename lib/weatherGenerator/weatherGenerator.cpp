@@ -220,7 +220,7 @@ void initializeWeather(TwheatherGenClimate* wGen)
 
         mpwd[m] = (1.f - mpww[m]) * (fWetDays[m] / (1.f - fWetDays[m]));
 
-        daysInMonth = getDefaultDaysInMonth(m);
+        daysInMonth = getDaysInMonth(m+1,1); // year = 1 is to avoid leap year
 
         // convert from total mm/month to average mm/wet day
         mMeanPrecip[m] = mMeanPrecip[m] / (fWetDays[m] * daysInMonth);
