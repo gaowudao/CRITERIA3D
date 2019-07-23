@@ -26,6 +26,7 @@ TabHorizons::TabHorizons()
 
     connect(tableDb->verticalHeader(), &QHeaderView::sectionClicked, [=](int index){ this->tableDbVerticalHeaderClick(index); });
     connect(tableModel->verticalHeader(), &QHeaderView::sectionClicked, [=](int index){ this->tableModelVerticalHeaderClick(index); });
+    connect(addRow, &QPushButton::clicked, [=](){ this->addRowClicked(); });
 
     mainLayout->addWidget(dbTableLabel);
     mainLayout->addWidget(tableDb);
@@ -259,8 +260,16 @@ void TabHorizons::tableModelVerticalHeaderClick(int index)
 
 void TabHorizons::cellChanged(int row, int column)
 {
+
+    if (tableDb->itemAt(row,column) == nullptr || mySoil->horizon->dbData.horizonNr < row)
+    {
+        qDebug() << "mySoil->horizon->dbData.horizonNr < row ";
+        return;
+    }
+
     //disable events otherwise setBackgroundColor call again cellChanged event
     tableDb->blockSignals(true);
+
     qDebug() << "Cell at row: " << QString::number(row) << " column " << QString::number(column)<<" was changed.";
     tableModel->selectRow(row);
     QString data = tableDb->item(row, column)->text();
@@ -383,4 +392,27 @@ void TabHorizons::cellClicked(int row, int column)
 {
     tableDb->selectRow(row);
     tableModel->selectRow(row);
+}
+
+void TabHorizons::addRowClicked()
+{
+    tableDb->blockSignals(true);
+    int numRow = tableDb->rowCount();
+    QString lowerDepth = tableDb->item(numRow-1, 1)->text();
+    tableDb->insertRow(numRow);
+    tableModel->insertRow(numRow);
+
+    for (int j=0; j<tableDb->columnCount(); j++)
+    {
+        tableDb->setItem(numRow, j, new QTableWidgetItem());
+        tableModel->setItem(numRow, j, new QTableWidgetItem());
+    }
+    tableDb->scrollToBottom();
+    tableModel->scrollToBottom();
+    deleteRow->setEnabled(true);
+    tableDb->item(numRow, 0)->setText(lowerDepth);
+
+    // LC inserire una funziona di addHorizon
+    tableDb->blockSignals(false);
+
 }

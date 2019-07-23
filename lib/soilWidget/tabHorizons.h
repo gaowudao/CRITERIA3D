@@ -25,6 +25,7 @@ public:
     void tableModelVerticalHeaderClick(int index);
     void cellChanged(int row, int column);
     void cellClicked(int row, int column);
+    void addRowClicked();
 
 private:
     TableDbOrModel* tableDb;
