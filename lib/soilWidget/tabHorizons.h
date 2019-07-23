@@ -17,7 +17,7 @@ class TabHorizons : public QWidget
 public:
     TabHorizons();
     void insertSoilHorizons(soil::Crit3DSoil* mySoil, soil::Crit3DTextureClass *textureClassList);
-    void checkHorizonData(int horizonNum);
+    bool checkHorizonData(int horizonNum);
     void checkMissingItem(int horizonNum);
     void checkComputedValues(int horizonNum);
     void clearSelections();
