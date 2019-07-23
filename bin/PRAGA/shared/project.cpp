@@ -17,30 +17,9 @@
 
 Project::Project()
 {
-    projectName = "";
-    modality = MODE_GUI;
-    requestedExit = false;
-    path = "";
-    logFileName = "";
-    errorString = "";
-    meteoPoints = nullptr;
-    nrMeteoPoints = 0;
     meteoSettings = new Crit3DMeteoSettings();
     quality = new Crit3DQuality();
-    checkSpatialQuality = true;
-    currentVariable = noMeteoVar;
-    currentFrequency = noFrequency;
-    currentDate.setDate(1800,1,1);
-    previousDate = currentDate;
-    currentHour = 12;
-    meteoPointsColorScale = new Crit3DColorScale();
-    meteoPointsDbHandler = nullptr;
-    meteoGridDbHandler = nullptr;
-    radiationMaps = nullptr;
-    demName = "";
-    dbPointsName = "";
-    dbGridXMLName = "";
-    parametersFile = "";
+    meteoPointsColorScale = new Crit3DColorScale();   
 }
 
 void Project::clearProxyDEM()
@@ -1181,8 +1160,9 @@ QString Project::getCompleteFileName(QString fileName, QString secondaryPath)
 
 
 void Project::clear()
-{
+{            
     projectName = "";
+    isProjectLoaded = false;
     modality = MODE_GUI;
     requestedExit = false;
     path = "";

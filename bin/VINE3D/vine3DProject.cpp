@@ -74,19 +74,19 @@ bool Vine3DProject::loadVine3DSettings()
 
 void Vine3DProject::closeVine3DProject()
 {
-    if (this->isProjectLoaded)
+    if (isProjectLoaded)
     {
-        this->logInfo("Close Project");
-        this->dbConnection.close();
-        this->logFile.close();
-        this->initializeMeteoPoints();
+        logInfo("Close Project");
+        dbConnection.close();
+        initializeMeteoPoints();
 
         modelCaseIndexMap.clear();
 
         closeProject3D();
 
-        this->isProjectLoaded = false;
+        isProjectLoaded = false;
     }
+
     clear();
     initializeVine3DProject();
 }

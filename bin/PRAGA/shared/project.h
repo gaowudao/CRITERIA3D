@@ -45,6 +45,7 @@
 
     public:
         QString projectName = "";
+        bool isProjectLoaded;
         int modality;
         bool requestedExit;
         QString errorString;
