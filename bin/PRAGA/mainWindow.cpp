@@ -1940,6 +1940,18 @@ void MainWindow::on_actionOpen_project_triggered()
 
     QMessageBox::information(nullptr, "TODO", "work in progress");
 
+    if (! myProject.loadProjectSettings(fileName))
+    {
+        myProject.logError("Could not open project ini file: " + fileName);
+        return;
+    }
+
+    if (! myProject.load())
+    {
+        myProject.logError("Could not open project: " + myProject.projectName);
+        return;
+    }
+
     /*
     if (!myProject.loadDEM(fileName)) return;
 

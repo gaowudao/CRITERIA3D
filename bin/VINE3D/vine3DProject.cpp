@@ -165,11 +165,8 @@ bool Vine3DProject::loadVine3DProjectSettings(QString projectFile)
     projectSettings->endGroup();
 
     projectSettings->beginGroup("settings");
-    QString paramFile = path + projectSettings->value("parameters_file").toString();
     soilDepth = projectSettings->value("soil_depth").toDouble();
     projectSettings->endGroup();
-
-    parametersFile = paramFile;
 
     return true;
 }

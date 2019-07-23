@@ -53,8 +53,6 @@
 
         Crit3DTime currentTime;
 
-        QString parametersFile;
-
         QString idArea;
         QString dailyOutputPath;
         QString demFileName;

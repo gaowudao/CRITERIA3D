@@ -44,12 +44,14 @@
         int currentHour;
 
     public:
+        QString projectName = "";
         int modality;
         bool requestedExit;
         QString errorString;
         QString logFileName;
         std::ofstream logFile;
 
+        QString parametersFile;
         QSettings* parameters;
         QSettings* projectSettings;
 

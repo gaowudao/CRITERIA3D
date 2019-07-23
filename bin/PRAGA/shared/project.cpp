@@ -17,6 +17,7 @@
 
 Project::Project()
 {
+    projectName = "";
     modality = MODE_GUI;
     requestedExit = false;
     path = "";
@@ -39,6 +40,7 @@ Project::Project()
     demName = "";
     dbPointsName = "";
     dbGridXMLName = "";
+    parametersFile = "";
 }
 
 void Project::clearProxyDEM()
@@ -131,6 +133,8 @@ void Project::addProxy(std::string name_, std::string gridName_, std::string tab
 
 bool Project::loadParameters(QString parametersFileName)
 {
+    parametersFileName = getCompleteFileName(parametersFileName, "DATA/SETTINGS/");
+
     if (! QFile(parametersFileName).exists())
     {
         logError("Missing file: " + parametersFileName);
@@ -354,10 +358,14 @@ bool Project::loadProjectSettings(QString settingsFileName)
     gisSettings.timeZone = timeZone;
 
     projectSettings->beginGroup("project");
-        QString projectName = projectSettings->value("name").toString();
-        QString demFilename = projectSettings->value("dem").toString();
-        QString meteoPointsName = projectSettings->value("meteo_points").toString();
-        QString meteoGridName = projectSettings->value("meteo_grid").toString();
+        projectName = projectSettings->value("name").toString();
+        demName = projectSettings->value("dem").toString();
+        dbPointsName = projectSettings->value("meteo_points").toString();
+        dbGridXMLName = projectSettings->value("meteo_grid").toString();
+    projectSettings->endGroup();
+
+    projectSettings->beginGroup("settings");
+        parametersFile = projectSettings->value("parameters_file").toString();
     projectSettings->endGroup();
 
     return true;
@@ -1174,6 +1182,7 @@ QString Project::getCompleteFileName(QString fileName, QString secondaryPath)
 
 void Project::clear()
 {
+    projectName = "";
     modality = MODE_GUI;
     requestedExit = false;
     path = "";
@@ -1196,6 +1205,7 @@ void Project::clear()
     if (logFile.is_open()) logFile.close();
 
     parameters->clear();
+    parametersFile = "";
     projectSettings->clear();
 
     delete aggregationDbHandler;
@@ -1220,6 +1230,17 @@ void Project::clear()
 
 bool Project::load()
 {
+    if (! loadParameters(parametersFile))
+        return false;
+
+    if (! loadDEM(demName))
+        return false;
+
+    if (! loadMeteoPointsDB(dbPointsName))
+        return false;
+
+    if (! loadMeteoGridDB(dbGridXMLName))
+        return false;
 
     return true;
 }
