@@ -90,39 +90,6 @@ bool Crit3DProject::loadSoilMap(QString myFileName)
 }
 
 
-bool Crit3DProject::createIndexMap()
-{
-    // check
-    if (! this->DEM.isLoaded)
-    {
-        logError("Missing Digital Elevation Model.");
-        return false;
-    }
-
-    indexMap.clear();
-    indexMap.resize(1);
-    indexMap[0].initializeGrid(*(DEM.header));
-
-    long index = 0;
-    for (int row = 0; row < indexMap[0].header->nrRows; row++)
-    {
-        for (int col = 0; col < indexMap[0].header->nrCols; col++)
-        {
-            if (int(DEM.value[row][col]) != int(DEM.header->flag))
-            {
-                indexMap[0].value[row][col] = float(index);
-                index++;
-            }
-        }
-    }
-
-    gis::updateMinMaxRasterGrid(&indexMap[0]);
-    indexMap[0].isLoaded = true;
-    nrNodesPerLayer = index;
-    return(nrNodesPerLayer > 0);
-}
-
-
 bool Crit3DProject::setSoilIndexMap()
 {
     // check
@@ -157,7 +124,7 @@ bool Crit3DProject::setSoilIndexMap()
 }
 
 
-int Crit3DProject::getSoilIndex(int demRow, int demCol)
+int Crit3DProject::getCrit3DSoilIndex(int demRow, int demCol)
 {
     double x, y;
     int idSoil;

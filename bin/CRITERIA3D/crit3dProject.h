@@ -41,13 +41,12 @@
         bool initializeCriteria3D();
 
         bool setSoilIndexMap();
-        bool createIndexMap();
 
         double getSoilVar(int soilIndex, int layerIndex, soil::soilVariable myVar);
         double* getSoilVarProfile(int row, int col, soil::soilVariable myVar);
         bool setSoilProfileCrop(int row, int col);
 
-        int getSoilIndex(int demRow, int demCol);
+        int getCrit3DSoilIndex(int demRow, int demCol);
 
         bool setDEM(QString myFileName);
 

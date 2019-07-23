@@ -43,7 +43,6 @@ void Project3D::initializeProject3D()
 
     nrLayers = 0;
     nrNodes = 0;
-    nrNodesPerLayer = 0;
     nrLateralLink = 8;
 
     meteoMaps = nullptr;
@@ -231,14 +230,14 @@ bool Project3D::setCrit3DSoils()
     QString myError;
     int result;
 
-    for (int soilIndex = 0; soilIndex < nrSoils; soilIndex++)
+    for (unsigned int soilIndex = 0; soilIndex < nrSoils; soilIndex++)
     {
-        for (int horizIndex = 0; horizIndex < soilList[unsigned(soilIndex)].nrHorizons; horizIndex++)
+        for (int horizIndex = 0; horizIndex < soilList[soilIndex].nrHorizons; horizIndex++)
         {
-            myHorizon = &(soilList[unsigned(soilIndex)].horizon[horizIndex]);
+            myHorizon = &(soilList[soilIndex].horizon[horizIndex]);
             if ((myHorizon->texture.classUSDA > 0) && (myHorizon->texture.classUSDA <= 12))
             {
-                result = soilFluxes3D::setSoilProperties(soilIndex, horizIndex,
+                result = soilFluxes3D::setSoilProperties(int(soilIndex), horizIndex,
                      myHorizon->vanGenuchten.alpha * GRAVITY,               // [kPa-1] -> [m-1]
                      myHorizon->vanGenuchten.n,
                      myHorizon->vanGenuchten.m,
@@ -261,6 +260,184 @@ bool Project3D::setCrit3DSoils()
         }
     }
 
+    return true;
+}
+
+
+bool Project3D::setCrit3DTopography()
+{
+    double x, y;
+    float z, lateralArea, slope;
+    double area, volume;
+    long index, linkIndex, soilIndex;
+    int myResult;
+    QString myError;
+
+    for (size_t layer = 0; layer < nrLayers; layer++)
+    {
+        for (int row = 0; row < indexMap.at(layer).header->nrRows; row++)
+        {
+            for (int col = 0; col < indexMap.at(layer).header->nrCols; col++)
+            {
+                index = long(indexMap.at(layer).value[row][col]);
+
+                if (index != long(indexMap.at(layer).header->flag))
+                {
+                    gis::getUtmXYFromRowCol(DEM, row, col, &x, &y);
+                    area = DEM.header->cellSize * DEM.header->cellSize;
+                    slope = radiationMaps->slopeMap->value[row][col] / 100;
+                    z = DEM.value[row][col] - float(layerDepth[layer]);
+                    volume = area * layerThickness[layer];
+
+                    soilIndex = getSoilIndex(row, col);
+
+                    // surface
+                    if (layer == 0)
+                    {
+                        lateralArea = float(DEM.header->cellSize);
+
+                        if (int(boundaryMap.value[row][col]) == BOUNDARY_RUNOFF)
+                            myResult = soilFluxes3D::setNode(index, float(x), float(y), float(z), area, true, true, BOUNDARY_RUNOFF, float(slope));
+                        else
+                            myResult = soilFluxes3D::setNode(index, float(x), float(y), z, area, true, false, BOUNDARY_NONE, 0.0);
+                    }
+                    // sub-surface
+                    else
+                    {
+                        lateralArea = float(DEM.header->cellSize * layerThickness[layer]);
+
+                        // last project layer or last soil layer
+                        if (int(layer) == nrLayers - 1 || ! isWithinSoil(soilIndex, layerDepth.at(size_t(layer+1))))
+                            myResult = soilFluxes3D::setNode(index, float(x), float(y), z, volume, false, true, BOUNDARY_FREEDRAINAGE, 0.0);
+                        else
+                        {
+                            if (int(boundaryMap.value[row][col]) == BOUNDARY_RUNOFF)
+                                myResult = soilFluxes3D::setNode(index, float(x), float(y), z, volume, false, true, BOUNDARY_FREELATERALDRAINAGE, slope);
+                            else
+                                myResult = soilFluxes3D::setNode(index, float(x), float(y), z, volume, false, false, BOUNDARY_NONE, 0.0);
+                        }
+                    }
+
+                    // check error
+                    if (isCrit3dError(myResult, &myError))
+                    {
+                        errorString = "setTopography:" + myError + " in layer nr:" + QString::number(layer);
+                        return(false);
+                    }
+
+                    // up link
+                    if (layer > 0)
+                    {
+                        linkIndex = long(indexMap.at(layer - 1).value[row][col]);
+
+                        if (linkIndex != long(indexMap.at(layer - 1).header->flag))
+                        {
+                            myResult = soilFluxes3D::setNodeLink(index, linkIndex, UP, float(area));
+                            if (isCrit3dError(myResult, &myError))
+                            {
+                                errorString = "setNodeLink:" + myError + " in layer nr:" + QString::number(layer);
+                                return(false);
+                            }
+                        }
+                    }
+
+                    // down link
+                    if (int(layer) < (nrLayers - 1) && isWithinSoil(soilIndex, layerDepth.at(size_t(layer + 1))))
+                    {
+                        linkIndex = long(indexMap.at(layer + 1).value[row][col]);
+
+                        if (linkIndex != long(indexMap.at(layer + 1).header->flag))
+                        {
+                            myResult = soilFluxes3D::setNodeLink(index, linkIndex, DOWN, float(area));
+
+                            if (isCrit3dError(myResult, &myError))
+                            {
+                                errorString = "setNodeLink:" + myError + " in layer nr:" + QString::number(layer);
+                                return(false);
+                            }
+                        }
+                    }
+
+                    // lateral links
+                    for (int i=-1; i <= 1; i++)
+                    {
+                        for (int j=-1; j <= 1; j++)
+                        {
+                            if ((i != 0)||(j != 0))
+                            {
+                                if (! gis::isOutOfGridRowCol(row+i, col+j, indexMap.at(layer)))
+                                {
+                                    linkIndex = long(indexMap.at(layer).value[row+i][col+j]);
+                                    if (linkIndex != long(indexMap.at(layer).header->flag))
+                                    {
+                                        myResult = soilFluxes3D::setNodeLink(index, linkIndex, LATERAL, float(lateralArea / 2));
+                                        if (isCrit3dError(myResult, &myError))
+                                        {
+                                            errorString = "setNodeLink:" + myError + " in layer nr:" + QString::number(layer);
+                                            return(false);
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+   return true;
+}
+
+
+bool Project3D::setCrit3DNodeSoil()
+{
+    long index;
+    int soilIndex, horizonIndex, myResult;
+    QString myError;
+
+    for (unsigned int layer = 0; layer < nrLayers; layer ++)
+    {
+        for (int row = 0; row < indexMap.at(layer).header->nrRows; row++)
+        {
+            for (int col = 0; col < indexMap.at(layer).header->nrCols; col++)
+            {
+                index = long(indexMap.at(layer).value[row][col]);
+                if (index != long(indexMap.at(layer).header->flag))
+                {
+                    soilIndex = getSoilIndex(row, col);
+
+                    if (layer == 0)
+                    {
+                        // surface
+                        myResult = soilFluxes3D::setNodeSurface(index, 0);
+                    }
+                    else
+                    {
+                        // sub-surface
+                        horizonIndex = soil::getHorizonIndex(&(soilList[unsigned(soilIndex)]), layerDepth[layer]);
+                        if (horizonIndex == NODATA)
+                        {
+                            logError("function setCrit3DNodeSoil: \nno horizon definition in soil "
+                                    + QString::number(soilList[unsigned(soilIndex)].id) + " depth: " + QString::number(layerDepth[layer])
+                                    +"\nCheck soil totalDepth");
+                            return false;
+                        }
+
+                        myResult = soilFluxes3D::setNodeSoil(index, soilIndex, horizonIndex);
+
+                        // check error
+                        if (isCrit3dError(myResult, &myError))
+                        {
+                            logError("setCrit3DNodeSoil:" + myError + " in soil nr: " + QString::number(soilIndex)
+                                    + " horizon nr:" + QString::number(horizonIndex));
+                            return false;
+                        }
+                    }
+                }
+            }
+        }
+    }
     return true;
 }
 

@@ -23,7 +23,6 @@
     public:
         long nrNodes;
         unsigned int nrLayers;
-        long nrNodesPerLayer;
         int nrLateralLink;
 
         // 3D soil fluxes maps
@@ -66,6 +65,8 @@
         bool setBoundary();
         bool setCrit3DSurfaces();
         bool setCrit3DSoils();
+        bool setCrit3DTopography();
+        bool setCrit3DNodeSoil();
 
         int getSoilIndex(long row, long col);
         bool isWithinSoil(int soilIndex, double depth);
