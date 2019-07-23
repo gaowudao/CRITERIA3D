@@ -345,6 +345,7 @@ bool Project::loadProjectSettings(QString settingsFileName)
 
     projectSettings->beginGroup("settings");
         parametersFile = projectSettings->value("parameters_file").toString();
+        logFileName = projectSettings->value("log_file").toString();
     projectSettings->endGroup();
 
     return true;
@@ -1184,9 +1185,11 @@ void Project::clear()
 
     if (logFile.is_open()) logFile.close();
 
-    parameters->clear();
+    delete parameters;
+    parameters = nullptr;
     parametersFile = "";
-    projectSettings->clear();
+    delete projectSettings;
+    projectSettings = nullptr;
 
     delete aggregationDbHandler;
 
@@ -1211,6 +1214,9 @@ void Project::clear()
 bool Project::loadProject()
 {
     if (! loadParameters(parametersFile))
+        return false;
+
+    if (! setLogFile(logFileName))
         return false;
 
     if (demName != "")
@@ -1244,8 +1250,8 @@ bool Project::setLogFile(QString fileNameWithPath)
          QDir().mkdir(filePath);
     }
 
-    QString myDate = QDateTime().currentDateTime().toString("yyyy-MM-dd hh mm ");
-    fileName = myDate + fileName;
+    QString myDate = QDateTime().currentDateTime().toString("yyyyMMdd_HHmm");
+    fileName = myDate + "_" + fileName;
 
     logFileName = filePath + fileName;
 

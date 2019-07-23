@@ -140,10 +140,6 @@
 
         int getIndexPointFromId(QString myId);
 
-        bool setLogFile();
-        //void logError();
-        //void logError(QString myError);
-        //void logInfo(QString myLog);
         float getTimeStep();
         int getModelCaseIndex(long row, long col);
         bool isVineyard(long row, long col);

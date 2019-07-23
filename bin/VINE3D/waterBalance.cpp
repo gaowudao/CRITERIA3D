@@ -270,7 +270,7 @@ bool setCrit3DNodeSoil(Vine3DProject* myProject)
                         {
                             myProject->errorString = "function setCrit3DNodeSoil: \nno horizon definition in soil "
                                     + QString::number(myProject->soilList[soilIndex].id) + " depth: " + QString::number(myProject->layerDepth[layer])
-                                    +"\nCheck soil totalDepth in .xml file.";
+                                    +"\nCheck soil totalDepth";
                             return(false);
                         }
 

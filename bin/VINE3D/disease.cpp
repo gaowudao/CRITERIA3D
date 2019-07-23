@@ -159,6 +159,8 @@ bool computeDownyMildew(Vine3DProject* myProject, QDate firstDate, QDate lastDat
     nrPoints = 0;
     row = 0;
     col = 0;
+    int groupId = 0;
+
     while ((! missingData) && (! isLastCell))
     {
         if (myProject->isVineyard(row, col))
@@ -178,10 +180,12 @@ bool computeDownyMildew(Vine3DProject* myProject, QDate firstDate, QDate lastDat
 
         if ((nrPoints == MAXPOINTS) || (isLastCell && (nrPoints > 0)))
         {
+            groupId++;
+
             input.clear();
             input.resize(nrPoints*nrHours);
 
-            myProject->logInfo("Interpolate hourly data... nr points: " + QString::number(nrPoints));
+            myProject->logInfo("Interpolating hourly data. Group " + QString::number(groupId) + ". Nr points: " + QString::number(nrPoints));
             myTime = getCrit3DTime(firstTime);
             for (long h = 0; h < nrHours; h++)
             {
@@ -224,7 +228,7 @@ bool computeDownyMildew(Vine3DProject* myProject, QDate firstDate, QDate lastDat
             // Downy cycle computation
             if (! missingData)
             {
-                myProject->logInfo("Downy mildew model... nr points: " + QString::number(nrPoints));
+                myProject->logInfo("Downy mildew model. Group " + QString::number(groupId) + ". Nr points: " + QString::number(nrPoints));
                 for (n = 0; n < nrPoints; n++)
                 {
                     row = rowPoint[n];

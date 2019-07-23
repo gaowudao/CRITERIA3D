@@ -131,27 +131,12 @@ bool Vine3DProject::loadVine3DProjectSettings(QString projectFile)
         return false;
     }
 
-    if (! loadProjectSettings(projectFile))
-    {
-        logError("Error reading common settings in " + projectFile);
-        return false;
-    }
-
-    projectSettings->beginGroup("location");
-        int timeZone = projectSettings->value("timezone").toInt();
-    projectSettings->endGroup();
-
-    gisSettings.timeZone = timeZone;
-
     projectSettings->beginGroup("project");
         QString myId = projectSettings->value("id").toString();
-        QString projectName = projectSettings->value("name").toString();
-        QString demName = projectSettings->value("dem").toString();
         QString fieldName = projectSettings->value("modelCaseMap").toString();
     projectSettings->endGroup();
 
     idArea = myId;
-    demFileName = demName;
     fieldMapName = fieldName;
 
     inizializeDBConnection();
@@ -186,11 +171,6 @@ bool Vine3DProject::loadVine3DProject(QString myFileName)
 
     if (! loadProject())
         return false;
-
-    if (this->setLogFile())
-        this->logInfo("LogFile = " + this->logFileName);
-    else
-        this->logError("LogFile Wrong.");
 
     logInfo("Initialize DEM and project maps...");
     meteoMaps = new Crit3DMeteoMaps(DEM);
@@ -1739,52 +1719,3 @@ bool Vine3DProject::getFieldBookIndex(int firstIndex, QDate myDate, int fieldInd
     }
     return false;
 }
-
-
-//-------- LOG functions -------------------------
-bool Vine3DProject::setLogFile()
-{
-    QString fileName, myPath, myDate;
-    QDir myDir;
-
-    myPath = path + "log/";
-    myDir.mkpath(myPath);
-    //TODO check and error if directory not created
-
-    myDate = QDateTime().currentDateTime().toString("yyyyMMddhhmm");
-    fileName = "log_" + idArea + "_" + myDate + ".txt";
-
-    this->logFileName = myPath + fileName;
-    this->logFile.open(this->logFileName.toStdString().c_str());
-    return (logFile.is_open());
-}
-
-/*
-void Vine3DProject::logInfo(QString myLog)
-{
-    if (logFile.is_open())
-            logFile << myLog.toStdString() << std::endl;
-
-    if (environment == gui)
-        std::cout << myLog.toStdString() << std::endl;
-}
-
-void Vine3DProject::logError()
-{
-    errorString = "Error! " + errorString;
-    if (environment == gui)
-    {
-        QMessageBox msgBox;
-        msgBox.setText(errorString);
-        msgBox.exec();
-    }
-    if (logFile.is_open())
-        logFile << errorString.toStdString() << std::endl;
-}
-
-void Vine3DProject::logError(QString myError)
-{
-    errorString = myError;
-    logError();
-}
-*/
