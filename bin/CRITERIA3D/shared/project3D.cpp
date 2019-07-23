@@ -29,6 +29,11 @@
 
 Project3D::Project3D() : Project()
 {
+    initializeProject3D();
+}
+
+void Project3D::initializeProject3D()
+{
     nrSoils = 0;
     soilDepth = 0.4;            // [m]
 
@@ -42,6 +47,20 @@ Project3D::Project3D() : Project()
     nrLateralLink = 8;
 
     meteoMaps = nullptr;
+}
+
+void Project3D::clearProject3D()
+{
+    clearWaterBalance3D();
+
+    for (unsigned int i = 0; i < soilList.size(); i++)
+    {
+        soilList[i].cleanSoil();
+    }
+
+    delete meteoMaps;
+
+    clearProject();
 }
 
 
@@ -61,21 +80,6 @@ void Project3D::clearWaterBalance3D()
 
     boundaryMap.clear();
 }
-
-
-void Project3D::closeProject3D()
-{
-    clearWaterBalance3D();
-
-    for (unsigned int i = 0; i < soilList.size(); i++)
-    {
-        soilList[i].cleanSoil();
-    }
-
-    delete meteoMaps;
-    meteoMaps = nullptr;
-}
-
 
 void Project3D::computeNrLayers()
  {

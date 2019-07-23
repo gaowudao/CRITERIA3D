@@ -126,8 +126,6 @@ bool cmdRunModels(Vine3DProject* myProject, QStringList argumentList)
     if (! myProject->runModels(firstDateTime, lastDateTime, true, true, myProject->idArea))
         return false;
 
-    myProject->closeVine3DProject();
-
     return true;
 }
 

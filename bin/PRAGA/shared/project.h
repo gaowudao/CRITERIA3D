@@ -89,7 +89,8 @@
 
         Project();
 
-        void clear();
+        void initializeProject();
+        void clearProject();
         bool loadProject();
         bool loadProjectSettings(QString settingsFileName);
         bool loadParameters(QString parametersFileName);

@@ -106,10 +106,8 @@
         bool loadFieldBook();
         soil::Crit3DSoil *loadHorizons(int idSoil, QString soil_code);
 
-        void initializeMeteoPoints();
-
         void initializeVine3DProject();
-        void closeVine3DProject();
+        void clearVine3DProject();
         bool loadVine3DProject(QString myFileName);
 
         int queryFieldPoint(double x, double y);

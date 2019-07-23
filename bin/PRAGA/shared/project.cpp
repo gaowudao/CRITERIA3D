@@ -14,12 +14,76 @@
 #include <iostream> //debug
 #include <QtSql>
 
-
 Project::Project()
 {
+    // TODO remove pointers
     meteoSettings = new Crit3DMeteoSettings();
     quality = new Crit3DQuality();
+    // TODO ???
     meteoPointsColorScale = new Crit3DColorScale();   
+
+    initializeProject();
+}
+
+void Project::initializeProject()
+{
+    projectName = "";
+    isProjectLoaded = false;
+    modality = MODE_GUI;
+    requestedExit = false;
+    path = "";
+    logFileName = "";
+    errorString = "";
+
+    meteoSettings->initialize();
+    quality->initialize();
+
+    checkSpatialQuality = true;
+    currentVariable = noMeteoVar;
+    currentFrequency = noFrequency;
+    currentDate.setDate(1800,1,1);
+    previousDate = currentDate;
+    currentHour = 12;
+
+    parameters = nullptr;
+    parametersFile = "";
+
+    projectSettings = nullptr;
+
+    aggregationDbHandler = nullptr;
+
+    gisSettings.initialize();
+    radSettings.initialize();
+
+    radiationMaps = nullptr;
+
+    demName = "";
+
+    interpolationSettings.initialize();
+    qualityInterpolationSettings.initialize();
+
+    dbPointsName = "";
+    dbGridXMLName = "";
+}
+
+void Project::clearProject()
+{
+    if (logFile.is_open()) logFile.close();
+
+    meteoPointsColorScale->setRange(NODATA, NODATA);
+    meteoPointsSelected.clear();
+
+    delete parameters;
+    delete projectSettings;
+    delete aggregationDbHandler;
+    delete radiationMaps;
+
+    clearProxyDEM();
+    DEM.clear();
+    dataRaster.clear();
+
+    closeMeteoPointsDB();
+    closeMeteoGridDB();
 }
 
 void Project::clearProxyDEM()
@@ -457,22 +521,33 @@ void Project::closeMeteoPointsDB()
     if (meteoPointsDbHandler != nullptr)
     {
         delete meteoPointsDbHandler;
+        meteoPointsDbHandler = nullptr;
     }
 
-    if (meteoPoints != nullptr)
+    if (nrMeteoPoints > 0)
     {
-        delete [] meteoPoints;
-    }
+        if (meteoPoints != nullptr)
+        {
+            for (int i = 0; i < nrMeteoPoints; i++)
+            {
+                meteoPoints[i].cleanObsDataH();
+                meteoPoints[i].cleanObsDataD();
+                meteoPoints[i].cleanObsDataM();
+            }
 
-    meteoPointsDbHandler = nullptr;
-    meteoPoints = nullptr;
+            delete [] meteoPoints;
+
+            meteoPoints = nullptr;
+        }
+        nrMeteoPoints = 0;
+    }
 
     meteoPointsSelected.clear();
-    nrMeteoPoints = 0;
 }
 
 void Project::closeMeteoGridDB()
 {
+    //TODO check clean data
 
     if (meteoGridDbHandler != nullptr)
     {
@@ -1160,58 +1235,7 @@ QString Project::getCompleteFileName(QString fileName, QString secondaryPath)
 }
 
 
-void Project::clear()
-{            
-    projectName = "";
-    isProjectLoaded = false;
-    modality = MODE_GUI;
-    requestedExit = false;
-    path = "";
-    logFileName = "";
-    errorString = "";
 
-    meteoSettings->initialize();
-    quality->initialize();
-
-    checkSpatialQuality = true;
-    currentVariable = noMeteoVar;
-    currentFrequency = noFrequency;
-    currentDate.setDate(1800,1,1);
-    previousDate = currentDate;
-    currentHour = 12;
-
-    meteoPointsColorScale->setRange(NODATA, NODATA);
-    meteoPointsSelected.clear();
-
-    if (logFile.is_open()) logFile.close();
-
-    delete parameters;
-    parameters = nullptr;
-    parametersFile = "";
-    delete projectSettings;
-    projectSettings = nullptr;
-
-    delete aggregationDbHandler;
-    aggregationDbHandler = nullptr;
-
-    gisSettings.initialize();
-    radSettings.initialize();
-    delete radiationMaps;
-    radiationMaps = nullptr;
-
-    clearProxyDEM();
-    DEM.clear();
-    demName = "";
-    dataRaster.clear();
-
-    interpolationSettings.initialize();
-    qualityInterpolationSettings.initialize();
-
-    closeMeteoPointsDB();
-    dbPointsName = "";
-    closeMeteoGridDB();
-    dbGridXMLName = "";
-}
 
 bool Project::loadProject()
 {

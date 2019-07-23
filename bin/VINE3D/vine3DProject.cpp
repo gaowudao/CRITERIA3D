@@ -46,13 +46,8 @@ void Vine3DProject::initializeVine3DProject()
     isObsDataLoaded = false;
     setFrequency(hourly);
 
-    isProjectLoaded = false;
-
     dailyOutputPath = "daily_output/";
-    demFileName = "";
     fieldMapName = "";
-    logFileName = "";
-    errorString = "";
 
     lastDateTransmissivity.setDate(1900,1,1);
 
@@ -72,23 +67,19 @@ bool Vine3DProject::loadVine3DSettings()
 }
 
 
-void Vine3DProject::closeVine3DProject()
+void Vine3DProject::clearVine3DProject()
 {
     if (isProjectLoaded)
     {
         logInfo("Close Project");
         dbConnection.close();
-        initializeMeteoPoints();
 
         modelCaseIndexMap.clear();
 
-        closeProject3D();
+        clearProject3D();
 
         isProjectLoaded = false;
     }
-
-    clear();
-    initializeVine3DProject();
 }
 
 
@@ -159,7 +150,11 @@ bool Vine3DProject::loadVine3DProjectSettings(QString projectFile)
 
 bool Vine3DProject::loadVine3DProject(QString myFileName)
 {
-    closeVine3DProject();
+    clearVine3DProject();
+
+    initializeProject();
+    initializeProject3D();
+    initializeVine3DProject();
 
     if (myFileName == "") return(false);
 
@@ -849,23 +844,11 @@ bool Vine3DProject::getMeteoVarIndexRaw(meteoVariable myVar, int* nrIndices, int
     return true;
 }
 
-void Vine3DProject::initializeMeteoPoints()
-{
-    if (nrMeteoPoints > 0)
-    {
-        if (meteoPoints != nullptr)
-        {
-            for (int i = 0; i < nrMeteoPoints; i++)
-                meteoPoints[i].cleanObsDataH();
-            delete [] meteoPoints;
-        }
-        nrMeteoPoints = 0;
-    }
-}
-
 
 bool Vine3DProject::loadDBPoints()
 {
+    closeMeteoPointsDB();
+
     logInfo ("Read points locations...");
 
     QString queryString = "SELECT id_point, name, utm_x, utm_y, altitude, is_utc, is_forecast FROM points_properties";
@@ -878,7 +861,6 @@ bool Vine3DProject::loadDBPoints()
         return(false);
     }
 
-    initializeMeteoPoints();
     nrMeteoPoints = query.size();
     meteoPoints = new Crit3DMeteoPoint[nrMeteoPoints];
 
