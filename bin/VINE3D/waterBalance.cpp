@@ -374,6 +374,7 @@ bool setCriteria3DVarMap(int myLayerIndex, Vine3DProject* myProject, criteria3DV
     return true;
 }
 
+
 bool getCriteria3DVarMap(Vine3DProject* myProject, criteria3DVariable myVar,
                         int layerIndex, gis::Crit3DRasterGrid* criteria3DMap)
 {
@@ -808,8 +809,4 @@ bool initializeWaterBalance(Vine3DProject* myProject)
     myProject->logInfo("Waterbalance initialized");
     return true;
 }
-
-
-
-
 

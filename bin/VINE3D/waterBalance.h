@@ -46,6 +46,7 @@
 
     bool getCriteria3DVarMap(Vine3DProject* myProject, criteria3DVariable myVar, int layerIndex,
                              gis::Crit3DRasterGrid* criteria3DMap);
+
     bool getRootZoneAWCmap(Vine3DProject* myProject, gis::Crit3DRasterGrid* outputMap);
 
     bool getCriteria3DIntegrationMap(Vine3DProject* myProject, criteria3DVariable myVar,

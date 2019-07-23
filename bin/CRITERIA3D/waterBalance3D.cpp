@@ -550,6 +550,7 @@ int getSoilLayerIndex(Crit3DProject* myProject, double depth)
 }
 
 
+/*
 bool saveWaterBalanceState(Crit3DProject* myProject, Crit3DDate myDate, std::string statePath, criteria3DVariable myVar)
 {
     std::string myErrorString;
@@ -573,6 +574,7 @@ bool saveWaterBalanceState(Crit3DProject* myProject, Crit3DDate myDate, std::str
 
     return true;
 }
+*/
 
 
 bool waterBalance(Crit3DProject* myProject)
@@ -651,11 +653,8 @@ bool initializeWaterBalance3D(Crit3DProject* myProject)
     if (! myProject->setCrit3DTopography()) return false;
     myProject->logInfo("Topology initialized");
 
-    if (! myProject->setCrit3DNodeSoil())
-    {
-        myProject->logError();
-        return false;
-    }
+    if (! myProject->setCrit3DNodeSoil()) return false;
+    myProject->logInfo("Soils initialized");
 
     //criteria3D::setNumericalParameters(6.0, 600.0, 200, 10, 12, 3);   // precision
     soilFluxes3D::setNumericalParameters(30.0, 1800.0, 100, 10, 12, 2);  // speedy

@@ -931,7 +931,7 @@ void MainWindow::initializeViewer3D()
     {
         if (! myProject.isInitialized)
         {
-            myProject.createIndexMap();
+            myProject.setIndexMaps();
         }
         viewer3D->initialize(&myProject);
     }
