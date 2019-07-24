@@ -1948,13 +1948,7 @@ void MainWindow::on_actionOpen_project_triggered()
     QString fileName = QFileDialog::getOpenFileName(this, tr("Open project file"), "", tr("ini files (*.ini)"));
     if (fileName == "") return;
 
-    if (! myProject.loadProjectSettings(fileName))
-    {
-        myProject.logError("Could not open project ini file: " + fileName);
-        return;
-    }
-
-    if (! myProject.loadProject()) return;
+    if (! myProject.loadPragaProject(fileName)) return;
 
     if (myProject.DEM.isLoaded)
         renderDEM();

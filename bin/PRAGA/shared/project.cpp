@@ -84,6 +84,8 @@ void Project::clearProject()
 
     closeMeteoPointsDB();
     closeMeteoGridDB();
+
+    isProjectLoaded = false;
 }
 
 void Project::clearProxyDEM()
