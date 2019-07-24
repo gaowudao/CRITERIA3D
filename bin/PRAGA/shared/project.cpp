@@ -622,7 +622,7 @@ bool Project::loadMeteoPointsDB(QString dbName)
 
     closeMeteoPointsDB();
 
-    dbName = getCompleteFileName(dbName, "DATA/METEOPOINTS/");
+    dbName = getCompleteFileName(dbName, "DATA/METEOPOINT/");
 
     meteoPointsDbHandler = new Crit3DMeteoPointsDbHandler(dbName);
     if (meteoPointsDbHandler->error != "")
