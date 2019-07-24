@@ -1,8 +1,7 @@
 # CRITERIA3D distribution
 CRITERIA3D distribution provides a set of libraries and executables for agro-meteorological analysis.
-It includes a numerical solution for three-dimensional water and heat flow in the soil, water balance, meteorological data interpolation, daily weather generator, radiation budget, snow accumulation and melt, crop development and crop water uptake.
-
-Executables with graphical user interface (CRITERIA3D, VINE3D, PRAGA and HEAT1D) are in `bin/` directory. They need MapGraphics library and a configuration file (default.ini), see [PRAGA wiki](https://github.com/ARPA-SIMC/CRITERIA3D/wiki/PRAGA) for more informations. Console tests and libraries are in `test/` and `lib/` directories. QT distribution (5.7 or following) is needed.
+It includes a numerical solution for three-dimensional water and heat flow in the soil, water balance, meteorological data interpolation, daily weather generator, radiation budget, snow accumulation and melt, crop development and crop water uptake.  
+GUI executables (CRITERIA3D, VINE3D, PRAGA and HEAT1D) need MapGraphics library and a configuration file (default.ini), see [PRAGA wiki](https://github.com/ARPA-SIMC/CRITERIA3D/wiki/PRAGA) for more informations. QT distribution (5.7 or following) is needed.
 
 ## soilFluxes3D library
 SoilFluxes3D is a numerical solution for flow equations of water and heat in the soil, in a three-dimensional domain.
@@ -17,13 +16,11 @@ PRAGA is a geographical application for agrometeorological and climate analysis.
 See [PRAGA wiki](https://github.com/ARPA-SIMC/CRITERIA3D/wiki/PRAGA) for more informations.
 
 ## TestCriteria1D
-Test program for the 1D water balance using criteriaModel, crop and soil libraries.
-
-To compile it, use the project `Makeall_CRITERIA1D`. Example data are available in `DATA/criteria1d` directory.
+Test program for the 1D water balance using criteriaModel, crop and soil libraries.  
+To compile it, use the project `test/Makeall_CRITERIA1D`. Example data are available in `DATA/PROJECT/kiwifruit` directory.
 
 ## HEAT1D
-HEAT1D is a graphical interface for testing the soilFluxex3D library in a 1D domain. Users can set fixed or variable atmospheric boundary conditions and soil parameters. Output graph results include soil temperature, soil water content, heat fluxes (diffusive and latent), liquid (isothermal and thermal) and vapor (isothermal and thermal) water fluxes. 
-
+HEAT1D is a graphical interface for testing the soilFluxex3D library in a 1D domain. Users can set fixed or variable atmospheric boundary conditions and soil parameters. Output graph results include soil temperature, soil water content, heat fluxes (diffusive and latent), liquid (isothermal and thermal) and vapor (isothermal and thermal) water fluxes.  
 Graphs are produced using the Qwt plot library (http://qwt.sourceforge.net/) which should be compiled before usage.
 
 ## criteriaModel library
