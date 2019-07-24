@@ -381,8 +381,8 @@ bool Project::loadProjectSettings(QString settingsFileName)
     }
 
     projectSettings->beginGroup("location");
-        float latitude = projectSettings->value("lat").toFloat();
-        float longitude = projectSettings->value("lon").toFloat();
+        double latitude = projectSettings->value("lat").toDouble();
+        double longitude = projectSettings->value("lon").toDouble();
         int utmZone = projectSettings->value("utm_zone").toInt();
         int isUtc = projectSettings->value("is_utc").toBool();
         int timeZone = projectSettings->value("time_zone").toInt();
@@ -620,6 +620,8 @@ bool Project::loadMeteoPointsDB(QString dbName)
 
     closeMeteoPointsDB();
 
+    dbName = getCompleteFileName(dbName, "DATA/db/");
+
     meteoPointsDbHandler = new Crit3DMeteoPointsDbHandler(dbName);
     if (meteoPointsDbHandler->error != "")
     {
@@ -672,6 +674,8 @@ bool Project::loadMeteoGridDB(QString xmlName)
 {
     if (xmlName == "")
         return false;
+
+    xmlName = getCompleteFileName(xmlName, "DATA/grid/");
 
     meteoGridDbHandler = new Crit3DMeteoGridDbHandler();
     meteoGridDbHandler->meteoGrid()->setGisSettings(this->gisSettings);

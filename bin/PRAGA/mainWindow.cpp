@@ -310,15 +310,8 @@ void MainWindow::on_actionRectangle_Selection_triggered()
      }
 }
 
-
-void MainWindow::on_actionOpen_DEM_triggered()
+void MainWindow::renderDEM()
 {
-    QString fileName = QFileDialog::getOpenFileName(this, tr("Open raster Grid"), "", tr("ESRI grid files (*.flt)"));
-
-    if (fileName == "") return;
-
-    if (!myProject.loadDEM(fileName)) return;
-
     this->setCurrentRaster(&(myProject.DEM));
     ui->labelRasterScale->setText(QString::fromStdString(getVariableString(noMeteoTerrain)));
     this->ui->rasterOpacitySlider->setEnabled(true);
@@ -337,29 +330,29 @@ void MainWindow::on_actionOpen_DEM_triggered()
     this->rasterObj->updateCenter();
 }
 
+void MainWindow::on_actionOpen_DEM_triggered()
+{
+    QString fileName = QFileDialog::getOpenFileName(this, tr("Open raster Grid"), "", tr("ESRI grid files (*.flt)"));
+
+    if (fileName == "") return;
+
+    if (!myProject.loadDEM(fileName)) return;
+
+    renderDEM();
+
+}
 
 void MainWindow::on_actionOpen_meteo_points_DB_triggered()
 {
     QString dbName = QFileDialog::getOpenFileName(this, tr("Open DB meteo points"), "", tr("DB files (*.db)"));
-
-    if (dbName != "") this->loadMeteoPointsDB(dbName);
-
-    this->currentPointsVisualization = showLocation;
-    this->redrawMeteoPoints(this->currentPointsVisualization, true);
+    if (dbName != "") this->loadMeteoPoints(dbName);
 }
 
 
 void MainWindow::on_actionOpen_meteo_grid_triggered()
 {
     QString xmlName = QFileDialog::getOpenFileName(this, tr("Open XML DB meteo grid"), "", tr("xml files (*.xml)"));
-
-    if (xmlName != "")
-    {
-        this->loadMeteoGridDB(xmlName);
-    }
-    currentGridVisualization = showLocation;
-    redrawMeteoGrid(currentGridVisualization);
-
+    if (xmlName != "") this->loadMeteoGrid(xmlName);
 }
 
 
@@ -540,7 +533,7 @@ void MainWindow::disableAllButton(bool toggled)
 void MainWindow::on_actionDownload_meteo_data_triggered()
 {
     if (downloadMeteoData(&myProject))
-        this->loadMeteoPointsDB(myProject.meteoPointsDbHandler->getDbName());
+        this->loadMeteoPoints(myProject.meteoPointsDbHandler->getDbName());
 }
 
 QPoint MainWindow::getMapPoint(QPoint* point) const
@@ -695,6 +688,109 @@ void MainWindow::on_timeEdit_timeChanged(const QTime &time)
 }
 
 
+
+
+
+#ifdef NETCDF
+    void MainWindow::on_actionOpen_NetCDF_data_triggered()
+    {
+        QString fileName = QFileDialog::getOpenFileName(this, tr("Open NetCDF data"), "", tr("NetCDF files (*.nc)"));
+
+        if (fileName == "") return;
+
+        myProject.netCDF.initialize(myProject.gisSettings.utmZone);
+
+        std::stringstream buffer;
+        myProject.netCDF.readProperties(fileName.toStdString(), &buffer);
+
+        if (myProject.netCDF.isLatLon)
+            meteoGridObj->initializeLatLon(&(myProject.netCDF.dataGrid), myProject.gisSettings, myProject.netCDF.latLonHeader, true);
+        else
+            meteoGridObj->initializeUTM(&(myProject.netCDF.dataGrid), myProject.gisSettings, true);
+
+        myProject.netCDF.dataGrid.emptyGrid();
+        meteoGridObj->updateCenter();
+
+        QDialog myDialog;
+        QVBoxLayout mainLayout;
+
+        myDialog.setWindowTitle("NetCDF file info  ");
+
+        QTextBrowser textBrowser;
+        textBrowser.setText(QString::fromStdString(buffer.str()));
+        buffer.clear();
+
+        mainLayout.addWidget(&textBrowser);
+
+        myDialog.setLayout(&mainLayout);
+        myDialog.setFixedSize(800,600);
+        myDialog.exec();
+    }
+
+    // deactivated
+    void MainWindow::on_actionExtract_NetCDF_series_triggered()
+    {
+        int idVar;
+        QDateTime firstDate, lastDate;
+
+        if (chooseNetCDFVariable(&idVar, &firstDate, &lastDate))
+        {
+            QMessageBox::information(nullptr, "Variable",
+                                     "Variable: " + QString::number(idVar)
+                                     + "\nfirst date: " + firstDate.toString()
+                                     + "\nLast Date: " + lastDate.toString());
+        }
+    }
+
+    void exportNetCDFDataSeries(gis::Crit3DGeoPoint geoPoint)
+    {
+        if (myProject.netCDF.isPointInside(geoPoint))
+        {
+            int idVar;
+            QDateTime firstTime, lastTime;
+
+            if (chooseNetCDFVariable(&idVar, &firstTime, &lastTime))
+            {
+                std::stringstream buffer;
+                if (! myProject.netCDF.exportDataSeries(idVar, geoPoint, firstTime.toTime_t(), lastTime.toTime_t(), &buffer))
+                    QMessageBox::information(nullptr, "ERROR", QString::fromStdString(buffer.str()));
+                else
+                {
+                    QString fileName = QFileDialog::getSaveFileName(nullptr, "Save data series", "", "csv files (*.csv)");
+                    std::ofstream myFile;
+                    myFile.open(fileName.toStdString());
+                    myFile << buffer.str();
+                    myFile.close();
+                }
+            }
+        }
+    }
+#endif
+
+void MainWindow::drawMeteoPoints()
+{
+    this->resetMeteoPoints();
+    this->addMeteoPoints();
+
+    if (myProject.meteoGridDbHandler == nullptr)
+    {
+        this->updateDateTime();
+    }
+    myProject.loadMeteoPointsData (myProject.getCurrentDate(), myProject.getCurrentDate(), true);
+
+    this->ui->meteoPoints->setEnabled(true);
+    this->ui->meteoPoints->setChecked(true);
+    showPointsGroup->setEnabled(true);
+    this->ui->actionShowPointsCurrent->setEnabled(false);
+    this->ui->actionShowPointsElab->setEnabled(false);
+    this->ui->actionShowPointsClimate->setEnabled(false);
+
+    this->ui->grid->setChecked(false);
+
+    currentPointsVisualization = showLocation;
+    redrawMeteoPoints(currentPointsVisualization, true);
+}
+
 void MainWindow::redrawMeteoPoints(visualizationType showType, bool updateColorSCale)
 {
     currentPointsVisualization = showType;
@@ -807,6 +903,65 @@ void MainWindow::redrawMeteoPoints(visualizationType showType, bool updateColorS
     }
 }
 
+bool MainWindow::loadMeteoPoints(QString dbName)
+{
+    if (myProject.loadMeteoPointsDB(dbName))
+    {
+        drawMeteoPoints();
+        return true;
+    }
+    else
+        return false;
+}
+
+void MainWindow::drawMeteoGrid()
+{
+    myProject.meteoGridDbHandler->meteoGrid()->createRasterGrid();
+
+    if (myProject.meteoGridDbHandler->gridStructure().isUTM() == false)
+    {
+        meteoGridObj->initializeLatLon(&(myProject.meteoGridDbHandler->meteoGrid()->dataMeteoGrid), myProject.gisSettings, myProject.meteoGridDbHandler->gridStructure().header(), true);
+    }
+    else
+    {
+        meteoGridObj->initializeUTM(&(myProject.meteoGridDbHandler->meteoGrid()->dataMeteoGrid), myProject.gisSettings, true);
+    }
+
+    meteoGridLegend->colorScale = myProject.meteoGridDbHandler->meteoGrid()->dataMeteoGrid.colorScale;
+    ui->meteoGridOpacitySlider->setEnabled(true);
+
+    // update dateTime Edit if there are not MeteoPoints
+    if (this->pointList.isEmpty())
+    {
+        myProject.setCurrentDate(myProject.meteoGridDbHandler->lastDate());
+        this->updateDateTime();
+    }
+
+    myProject.loadMeteoGridData(myProject.getCurrentDate(), myProject.getCurrentDate(), true);
+
+    meteoGridObj->redrawRequested();
+
+    this->ui->meteoPoints->setChecked(false);
+    this->ui->grid->setEnabled(true);
+    this->ui->grid->setChecked(true);
+    showGridGroup->setEnabled(true);
+    if (myProject.getCurrentVariable() != noMeteoVar && myProject.getFrequency() != noFrequency)
+    {
+        this->ui->actionShowGridCurrent->setEnabled(true);
+    }
+    else
+    {
+        this->ui->actionShowGridCurrent->setEnabled(false);
+    }
+    this->ui->actionShowGridElab->setEnabled(false);
+    this->ui->actionShowGridClimate->setEnabled(false);
+
+    currentGridVisualization = showLocation;
+    redrawMeteoGrid(currentGridVisualization);
+}
+
+
+
 void MainWindow::redrawMeteoGrid(visualizationType showType)
 {
     currentGridVisualization = showType;
@@ -898,161 +1053,18 @@ void MainWindow::redrawMeteoGrid(visualizationType showType)
     meteoGridObj->redrawRequested();
 }
 
-
-#ifdef NETCDF
-    void MainWindow::on_actionOpen_NetCDF_data_triggered()
-    {
-        QString fileName = QFileDialog::getOpenFileName(this, tr("Open NetCDF data"), "", tr("NetCDF files (*.nc)"));
-
-        if (fileName == "") return;
-
-        myProject.netCDF.initialize(myProject.gisSettings.utmZone);
-
-        std::stringstream buffer;
-        myProject.netCDF.readProperties(fileName.toStdString(), &buffer);
-
-        if (myProject.netCDF.isLatLon)
-            meteoGridObj->initializeLatLon(&(myProject.netCDF.dataGrid), myProject.gisSettings, myProject.netCDF.latLonHeader, true);
-        else
-            meteoGridObj->initializeUTM(&(myProject.netCDF.dataGrid), myProject.gisSettings, true);
-
-        myProject.netCDF.dataGrid.emptyGrid();
-        meteoGridObj->updateCenter();
-
-        QDialog myDialog;
-        QVBoxLayout mainLayout;
-
-        myDialog.setWindowTitle("NetCDF file info  ");
-
-        QTextBrowser textBrowser;
-        textBrowser.setText(QString::fromStdString(buffer.str()));
-        buffer.clear();
-
-        mainLayout.addWidget(&textBrowser);
-
-        myDialog.setLayout(&mainLayout);
-        myDialog.setFixedSize(800,600);
-        myDialog.exec();
-    }
-
-    // deactivated
-    void MainWindow::on_actionExtract_NetCDF_series_triggered()
-    {
-        int idVar;
-        QDateTime firstDate, lastDate;
-
-        if (chooseNetCDFVariable(&idVar, &firstDate, &lastDate))
-        {
-            QMessageBox::information(nullptr, "Variable",
-                                     "Variable: " + QString::number(idVar)
-                                     + "\nfirst date: " + firstDate.toString()
-                                     + "\nLast Date: " + lastDate.toString());
-        }
-    }
-
-    void exportNetCDFDataSeries(gis::Crit3DGeoPoint geoPoint)
-    {
-        if (myProject.netCDF.isPointInside(geoPoint))
-        {
-            int idVar;
-            QDateTime firstTime, lastTime;
-
-            if (chooseNetCDFVariable(&idVar, &firstTime, &lastTime))
-            {
-                std::stringstream buffer;
-                if (! myProject.netCDF.exportDataSeries(idVar, geoPoint, firstTime.toTime_t(), lastTime.toTime_t(), &buffer))
-                    QMessageBox::information(nullptr, "ERROR", QString::fromStdString(buffer.str()));
-                else
-                {
-                    QString fileName = QFileDialog::getSaveFileName(nullptr, "Save data series", "", "csv files (*.csv)");
-                    std::ofstream myFile;
-                    myFile.open(fileName.toStdString());
-                    myFile << buffer.str();
-                    myFile.close();
-                }
-            }
-        }
-    }
-#endif
-
-
-bool MainWindow::loadMeteoPointsDB(QString dbName)
+bool MainWindow::loadMeteoGrid(QString xmlName)
 {
-    this->resetMeteoPoints();
-
-    if (!myProject.loadMeteoPointsDB(dbName))
-        return false;
-
-    this->addMeteoPoints();
-
-    if (myProject.meteoGridDbHandler == nullptr)
+    if (myProject.loadMeteoGridDB(xmlName))
     {
-        this->updateDateTime();
+        drawMeteoGrid();
+        return true;
     }
-    myProject.loadMeteoPointsData (myProject.getCurrentDate(), myProject.getCurrentDate(), true);
-
-    this->ui->meteoPoints->setEnabled(true);
-    this->ui->meteoPoints->setChecked(true);
-    showPointsGroup->setEnabled(true);
-    this->ui->actionShowPointsCurrent->setEnabled(false);
-    this->ui->actionShowPointsElab->setEnabled(false);
-    this->ui->actionShowPointsClimate->setEnabled(false);
-
-    this->ui->grid->setChecked(false);
-
-    return true;
-}
-
-
-bool MainWindow::loadMeteoGridDB(QString xmlName)
-{
-    if (!myProject.loadMeteoGridDB(xmlName))
+    else
     {
         myProject.logError();
         return false;
     }
-
-    myProject.meteoGridDbHandler->meteoGrid()->createRasterGrid();
-
-    if (myProject.meteoGridDbHandler->gridStructure().isUTM() == false)
-    {
-        meteoGridObj->initializeLatLon(&(myProject.meteoGridDbHandler->meteoGrid()->dataMeteoGrid), myProject.gisSettings, myProject.meteoGridDbHandler->gridStructure().header(), true);
-    }
-    else
-    {
-        meteoGridObj->initializeUTM(&(myProject.meteoGridDbHandler->meteoGrid()->dataMeteoGrid), myProject.gisSettings, true);
-    }
-
-    meteoGridLegend->colorScale = myProject.meteoGridDbHandler->meteoGrid()->dataMeteoGrid.colorScale;
-    ui->meteoGridOpacitySlider->setEnabled(true);
-
-    // update dateTime Edit if there are not MeteoPoints
-    if (this->pointList.isEmpty())
-    {
-        myProject.setCurrentDate(myProject.meteoGridDbHandler->lastDate());
-        this->updateDateTime();
-    }
-
-    myProject.loadMeteoGridData(myProject.getCurrentDate(), myProject.getCurrentDate(), true);
-
-    meteoGridObj->redrawRequested();
-
-    this->ui->meteoPoints->setChecked(false);
-    this->ui->grid->setEnabled(true);
-    this->ui->grid->setChecked(true);
-    showGridGroup->setEnabled(true);
-    if (myProject.getCurrentVariable() != noMeteoVar && myProject.getFrequency() != noFrequency)
-    {
-        this->ui->actionShowGridCurrent->setEnabled(true);
-    }
-    else
-    {
-        this->ui->actionShowGridCurrent->setEnabled(false);
-    }
-    this->ui->actionShowGridElab->setEnabled(false);
-    this->ui->actionShowGridClimate->setEnabled(false);
-
-    return true;
 }
 
 
@@ -1073,7 +1085,6 @@ void MainWindow::addMeteoPoints()
         point->setToolTip(&(myProject.meteoPoints[i]));
     }
 }
-
 
 void MainWindow::on_rasterScaleButton_clicked()
 {
@@ -1938,37 +1949,21 @@ void MainWindow::on_actionOpen_project_triggered()
 
     if (fileName == "") return;
 
-    QMessageBox::information(nullptr, "TODO", "work in progress");
-
     if (! myProject.loadProjectSettings(fileName))
     {
         myProject.logError("Could not open project ini file: " + fileName);
         return;
     }
 
-    if (! myProject.loadProject())
-    {
-        myProject.logError("Could not open project: " + myProject.projectName);
-        return;
-    }
+    if (! myProject.loadProject()) return;
 
-    /*
-    if (!myProject.loadDEM(fileName)) return;
+    if (myProject.DEM.isLoaded)
+        renderDEM();
 
-    this->setCurrentRaster(&(myProject.DEM));
-    ui->labelRasterScale->setText(QString::fromStdString(getVariableString(noMeteoTerrain)));
-    this->ui->rasterOpacitySlider->setEnabled(true);
+    resetMeteoPoints();
+    currentPointsVisualization = showLocation;
+    drawMeteoPoints();
 
-    // center map
-    gis::Crit3DGeoPoint* center = this->rasterObj->getRasterCenter();
-    this->mapView->centerOn(qreal(center->longitude), qreal(center->latitude));
-
-    // resize map
-    float size = this->rasterObj->getRasterMaxSize();
-    size = log2(1000.f/size);
-    this->mapView->setZoomLevel(quint8(size));
-    this->mapView->centerOn(qreal(center->longitude), qreal(center->latitude));
-
-    // active raster object
-    this->rasterObj->updateCenter();*/
+    currentGridVisualization = showLocation;
+    drawMeteoGrid();
 }
