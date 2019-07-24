@@ -13,13 +13,15 @@ TabHorizons::TabHorizons()
     tableDb = new TableDbOrModel(dbTable);
     tableModel = new TableDbOrModel(modelTable);
     QHBoxLayout *addDeleteRowLayout = new QHBoxLayout;
+    QLabel* addDeleteLabel = new QLabel("Modify horizons:");
     addRow = new QPushButton("+");
     addRow->setFixedWidth(40);
     deleteRow = new QPushButton("-");
     deleteRow->setFixedWidth(40);
     addRow->setEnabled(false);
     deleteRow->setEnabled(false);
-    addDeleteRowLayout->addStretch(80);
+    addDeleteRowLayout->addStretch(40);
+    addDeleteRowLayout->addWidget(addDeleteLabel);
     addDeleteRowLayout->addWidget(addRow);
     addDeleteRowLayout->addWidget(deleteRow);
 
