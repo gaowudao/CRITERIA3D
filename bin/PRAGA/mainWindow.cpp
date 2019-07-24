@@ -1954,5 +1954,7 @@ void MainWindow::on_actionOpen_project_triggered()
         renderDEM();
 
     drawMeteoPoints();
-    drawMeteoGrid();
+
+    if (myProject.meteoGridDbHandler != nullptr)
+        drawMeteoGrid();
 }

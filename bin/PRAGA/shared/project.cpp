@@ -385,7 +385,6 @@ bool Project::loadProjectSettings(QString settingsFileName)
     projectSettings->beginGroup("project");
         // path
         QString myPath = projectSettings->value("path").toString();
-        projectSettings->endGroup();
 
         if (! myPath.isEmpty())
         {
@@ -394,10 +393,7 @@ bool Project::loadProjectSettings(QString settingsFileName)
                 path += myPath;
                 path = QDir::cleanPath(path);
             }
-            else
-            {
-                path = myPath;
-            }
+            else path = myPath;
 
             if (path.right(1) != "/") path += "/";
         }
