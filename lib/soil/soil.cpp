@@ -148,10 +148,15 @@ namespace soil
         this->totalDepth = 0;
     }
 
-    void Crit3DSoil::addHorizon(int nHorizon)
+    void Crit3DSoil::addHorizon(int nHorizon, Crit3DHorizon* newHorizon)
     {
         this->nrHorizons = nrHorizons + 1;
-        // TO DO
+        Crit3DHorizon* tmp = horizon;
+        this->horizon = new Crit3DHorizon[unsigned(this->nrHorizons)];
+        std::copy(tmp, tmp+nHorizon, this->horizon);
+        this->horizon[nHorizon] = *newHorizon;
+        std::copy(tmp+nHorizon+1, tmp+this->nrHorizons-1, this->horizon+nHorizon+1);
+
     }
 
     void Crit3DSoil::deleteHorizon(int nHorizon)
@@ -164,7 +169,6 @@ namespace soil
     {
         if (this->horizon != nullptr)
             delete [] (this->horizon);
-
         this->id = NODATA;
         this->nrHorizons = 0;
         this->totalDepth = 0;

@@ -440,7 +440,7 @@ void TabHorizons::addRowClicked()
     int numRow;
     if (!tableDb->selectedItems().isEmpty())
     {
-        numRow = tableDb->selectedItems().at(0)->row();
+        numRow = tableDb->selectedItems().at(0)->row()+1;
     }
     else
     {
@@ -463,7 +463,21 @@ void TabHorizons::addRowClicked()
     tableDb->selectRow(numRow);
     tableModel->selectRow(numRow);
 
-    // LC inserire una funziona di addHorizon
+    soil::Crit3DHorizon* newHor = new soil::Crit3DHorizon();
+    // set newHor dbData
+    newHor->dbData.horizonNr = numRow;
+    newHor->dbData.upperDepth = lowerDepth.toDouble();
+    newHor->dbData.lowerDepth = NODATA;
+    newHor->dbData.sand = NODATA;
+    newHor->dbData.silt = NODATA;
+    newHor->dbData.clay = NODATA;
+    newHor->dbData.coarseFragments = NODATA;
+    newHor->dbData.organicMatter = NODATA;
+    newHor->dbData.bulkDensity = NODATA;
+    newHor->dbData.thetaSat = NODATA;
+    newHor->dbData.kSat = NODATA;
+
+    mySoil->addHorizon(numRow,newHor);
     checkDepths();
     tableDb->blockSignals(false);
 
