@@ -110,6 +110,10 @@ Crit3DSoilWidget::Crit3DSoilWidget()
     QAction* saveChanges = new QAction(tr("&Save Changes"), this);
     QAction* newSoil = new QAction(tr("&New Soil"), this);
     QAction* deleteSoil = new QAction(tr("&Delete Soil"), this);
+    addHorizon = new QAction(tr("&Add Horizon"), this);
+    deleteHorizon = new QAction(tr("&Delete Horizon"), this);
+    addHorizon->setEnabled(false);
+    deleteHorizon->setEnabled(false);
 
     useData = new QAction(tr("&Use Water Retention Data"), this);
     airEntry = new QAction(tr("&Air Entry fixed"), this);
@@ -121,6 +125,8 @@ Crit3DSoilWidget::Crit3DSoilWidget()
     connect(saveChanges, &QAction::triggered, this, &Crit3DSoilWidget::on_actionSave);
     connect(newSoil, &QAction::triggered, this, &Crit3DSoilWidget::on_actionNewSoil);
     connect(deleteSoil, &QAction::triggered, this, &Crit3DSoilWidget::on_actionDeleteSoil);
+    connect(addHorizon, &QAction::triggered, this, &Crit3DSoilWidget::on_actionAddHorizon);
+    connect(deleteHorizon, &QAction::triggered, this, &Crit3DSoilWidget::on_actionDeleteHorizon);
 
     connect(useData, &QAction::triggered, this, &Crit3DSoilWidget::on_actionUseData);
     connect(airEntry, &QAction::triggered, this, &Crit3DSoilWidget::on_actionAirEntry);
@@ -131,6 +137,8 @@ Crit3DSoilWidget::Crit3DSoilWidget()
     fileMenu->addAction(saveChanges);
     editMenu->addAction(newSoil);
     editMenu->addAction(deleteSoil);
+    editMenu->addAction(addHorizon);
+    editMenu->addAction(deleteHorizon);
     optionsMenu->addAction(useData);
     optionsMenu->addAction(airEntry);
 
@@ -190,8 +198,8 @@ void Crit3DSoilWidget::on_actionChooseSoil(QString soilCode)
     }
     horizonsTab->clearSelections();
     horizonsTab->insertSoilHorizons(&mySoil, textureClassList);
-
-
+    addHorizon->setEnabled(true);
+    deleteHorizon->setEnabled(true);
 }
 
 
@@ -257,4 +265,14 @@ void Crit3DSoilWidget::on_actionSave()
 {
     qDebug() << "save changes";
     // TO DO
+}
+
+void Crit3DSoilWidget::on_actionAddHorizon()
+{
+    horizonsTab->addRowClicked();
+}
+
+void Crit3DSoilWidget::on_actionDeleteHorizon()
+{
+    horizonsTab->removeRowClicked();
 }

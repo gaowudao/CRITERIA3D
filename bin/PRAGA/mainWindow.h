@@ -162,15 +162,18 @@
 
         QPoint getMapPoint(QPoint* point) const;
 
+        void renderDEM();
         void updateVariable();
         void updateDateTime();
         void resetMeteoPoints();
         void addMeteoPoints();
+        void drawMeteoPoints();
         void redrawMeteoPoints(visualizationType showType, bool updateColorSCale);
+        void drawMeteoGrid();
         void redrawMeteoGrid(visualizationType showType);
 
-        bool loadMeteoPointsDB(QString dbName);
-        bool loadMeteoGridDB(QString xmlName);
+        bool loadMeteoPoints(QString dbName);
+        bool loadMeteoGrid(QString xmlName);
         bool openRaster(QString fileName, gis::Crit3DRasterGrid *myRaster);
         bool openShape(QString fileName);
         void setCurrentRaster(gis::Crit3DRasterGrid *myRaster);

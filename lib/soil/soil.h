@@ -153,6 +153,8 @@
             Crit3DSoil();
             void initialize(int idSoil, int nrHorizons);
             void cleanSoil();
+            void addHorizon(int nHorizon);
+            void deleteHorizon(int nHorizon);
         };
 
 

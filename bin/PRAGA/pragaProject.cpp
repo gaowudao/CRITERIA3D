@@ -19,11 +19,43 @@ void PragaProject::setIsElabMeteoPointsValue(bool value)
     isElabMeteoPointsValue = value;
 }
 
-PragaProject::PragaProject()
+void PragaProject::initializePragaProject()
 {
     clima = new Crit3DClimate();
     climaFromDb = nullptr;
     referenceClima = nullptr;
+}
+
+void PragaProject::clearPragaProject()
+{
+    if (isProjectLoaded) clearProject();
+}
+
+bool PragaProject::loadPragaProject(QString myFileName)
+{
+    clearPragaProject();
+    initializeProject();
+    initializePragaProject();
+
+    if (myFileName == "") return(false);
+
+    if (! loadProjectSettings(myFileName))
+        return false;
+
+    if (! loadProject())
+        return false;
+
+    if (! loadPragaSettings())
+        return false;
+
+    isProjectLoaded = true;
+    logInfo("Project loaded");
+    return true;
+}
+
+PragaProject::PragaProject()
+{
+    initializePragaProject();
 }
 
 bool PragaProject::loadPragaSettings()

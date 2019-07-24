@@ -13,19 +13,21 @@ TabHorizons::TabHorizons()
     tableDb = new TableDbOrModel(dbTable);
     tableModel = new TableDbOrModel(modelTable);
     QHBoxLayout *addDeleteRowLayout = new QHBoxLayout;
+    QLabel* addDeleteLabel = new QLabel("Modify horizons:");
     addRow = new QPushButton("+");
     addRow->setFixedWidth(40);
     deleteRow = new QPushButton("-");
     deleteRow->setFixedWidth(40);
     addRow->setEnabled(false);
     deleteRow->setEnabled(false);
-    addDeleteRowLayout->addStretch(80);
+    addDeleteRowLayout->addStretch(40);
+    addDeleteRowLayout->addWidget(addDeleteLabel);
     addDeleteRowLayout->addWidget(addRow);
     addDeleteRowLayout->addWidget(deleteRow);
 
 
     connect(tableDb->verticalHeader(), &QHeaderView::sectionClicked, [=](int index){ this->tableDbVerticalHeaderClick(index); });
-    connect(tableModel->verticalHeader(), &QHeaderView::sectionClicked, [=](int index){ this->tableModelVerticalHeaderClick(index); });
+    connect(tableModel->verticalHeader(), &QHeaderView::sectionClicked, [=](int index){ this->tableDbVerticalHeaderClick(index); });
     connect(addRow, &QPushButton::clicked, [=](){ this->addRowClicked(); });
     connect(deleteRow, &QPushButton::clicked, [=](){ this->removeRowClicked(); });
 
@@ -108,6 +110,7 @@ void TabHorizons::insertSoilHorizons(soil::Crit3DSoil *soil, soil::Crit3DTexture
     addRow->setEnabled(true);
     deleteRow->setEnabled(false);
 
+    connect(tableDb, &QTableWidget::cellDoubleClicked, [=](int row, int column){ this->editItem(row, column); });
     connect(tableDb, &QTableWidget::cellChanged, [=](int row, int column){ this->cellChanged(row, column); });
     connect(tableDb, &QTableWidget::cellClicked, [=](int row, int column){ this->cellClicked(row, column); });
     connect(tableModel, &QTableWidget::cellClicked, [=](int row, int column){ this->cellClicked(row, column); });
@@ -275,26 +278,24 @@ void TabHorizons::clearSelections()
     deleteRow->setEnabled(false);
 }
 
+void TabHorizons::editItem(int row, int column)
+{
+    tableDb->itemAt(row,column)->setFlags(Qt::ItemIsSelectable|Qt::ItemIsEnabled|Qt::ItemIsEditable);
+}
+
+void TabHorizons::cellClicked(int row, int column)
+{
+    tableDb->selectRow(row);
+    tableModel->selectRow(row);
+}
+
 void TabHorizons::tableDbVerticalHeaderClick(int index)
 {
     tableDb->horizontalHeader()->setHighlightSections(false);
     tableModel->selectRow(index);
     tableModel->horizontalHeader()->setHighlightSections(false);
-    if (index == tableDb->rowCount()-1)
-    {
-        deleteRow->setEnabled(true);
-    }
-    else
-    {
-        deleteRow->setEnabled(false);
-    }
-}
+    deleteRow->setEnabled(true);
 
-void TabHorizons::tableModelVerticalHeaderClick(int index)
-{
-    tableModel->horizontalHeader()->setHighlightSections(false);
-    tableDb->selectRow(index);
-    tableDb->horizontalHeader()->setHighlightSections(false);
 }
 
 void TabHorizons::cellChanged(int row, int column)
@@ -430,20 +431,22 @@ void TabHorizons::cellChanged(int row, int column)
         checkComputedValues(row);
     }
 
-
     tableDb->blockSignals(false);
-}
-
-void TabHorizons::cellClicked(int row, int column)
-{
-    tableDb->selectRow(row);
-    tableModel->selectRow(row);
 }
 
 void TabHorizons::addRowClicked()
 {
     tableDb->blockSignals(true);
-    int numRow = tableDb->rowCount();
+    int numRow;
+    if (!tableDb->selectedItems().isEmpty())
+    {
+        numRow = tableDb->selectedItems().at(0)->row();
+    }
+    else
+    {
+        numRow = tableDb->rowCount();
+    }
+
     QString lowerDepth = tableDb->item(numRow-1, 1)->text();
     tableDb->insertRow(numRow);
     tableModel->insertRow(numRow);
@@ -461,6 +464,7 @@ void TabHorizons::addRowClicked()
     tableModel->selectRow(numRow);
 
     // LC inserire una funziona di addHorizon
+    checkDepths();
     tableDb->blockSignals(false);
 
 }
@@ -468,9 +472,19 @@ void TabHorizons::addRowClicked()
 void TabHorizons::removeRowClicked()
 {
     tableDb->blockSignals(true);
-    clearSelections();
-    tableDb->removeRow(tableDb->rowCount()-1);
-    tableModel->removeRow(tableDb->rowCount()-1);
+    int row;
+    if (!tableDb->selectedItems().isEmpty())
+    {
+        row = tableDb->selectedItems().at(0)->row();
+    }
+    else
+    {
+        QMessageBox::critical(nullptr, "Error!", "Select an horizon");
+        return;
+    }
+    tableDb->removeRow(row);
+    tableModel->removeRow(row);
     // LC inserire una funzione di removeHorizon
+    checkDepths();
     tableDb->blockSignals(false);
 }

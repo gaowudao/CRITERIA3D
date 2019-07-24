@@ -114,8 +114,10 @@
 
         void redrawMeteoPoints(visualizationType myType, bool updateColorSCale);
 
+        void renderDEM();
+        void drawMeteoPoints();
+
         bool loadMeteoPointsDB(QString dbName);
-        bool loadMeteoGridDB(QString xmlName);
         void setCurrentRaster(gis::Crit3DRasterGrid *myRaster);
         void interpolateDemGUI();
     };

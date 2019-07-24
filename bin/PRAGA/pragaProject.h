@@ -28,6 +28,10 @@
 
         PragaProject();
 
+        void initializePragaProject();
+        void clearPragaProject();
+        bool loadPragaProject(QString myFileName);
+
         bool loadPragaSettings();
 
         bool downloadDailyDataArkimet(QStringList variables, bool prec0024, QDate startDate, QDate endDate, bool showInfo);

@@ -23,7 +23,7 @@ public:
     void checkComputedValues(int horizonNum);
     void clearSelections();
     void tableDbVerticalHeaderClick(int index);
-    void tableModelVerticalHeaderClick(int index);
+    void editItem(int row, int column);
     void cellChanged(int row, int column);
     void cellClicked(int row, int column);
     void addRowClicked();

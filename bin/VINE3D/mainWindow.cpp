@@ -294,44 +294,48 @@ void MainWindow::on_actionMapESRISatellite_triggered()
     ui->actionMapESRISatellite->setChecked(true);
 }
 
+void MainWindow::renderDEM()
+{
+    this->setCurrentRaster(&(myProject.DEM));
+    ui->labelRasterScale->setText(QString::fromStdString(getVariableString(noMeteoTerrain)));
+    this->ui->rasterOpacitySlider->setEnabled(true);
+
+    // center map
+    gis::Crit3DGeoPoint* center = this->rasterObj->getRasterCenter();
+    this->mapView->centerOn(qreal(center->longitude), qreal(center->latitude));
+
+    // resize map
+    float size = this->rasterObj->getRasterMaxSize();
+    size = log2(1000.f/size);
+    this->mapView->setZoomLevel(quint8(size));
+    this->mapView->centerOn(qreal(center->longitude), qreal(center->latitude));
+
+    // active raster object
+    this->rasterObj->updateCenter();
+}
+
+void MainWindow::drawMeteoPoints()
+{
+    this->resetMeteoPoints();
+    this->addMeteoPoints();
+    this->updateDateTime();
+    myProject.loadObsDataAllPoints(myProject.getCurrentDate(), myProject.getCurrentDate(), true);
+    this->showPointsGroup->setEnabled(true);
+    currentPointsVisualization = showLocation;
+    redrawMeteoPoints(currentPointsVisualization, true);
+}
+
 void MainWindow::on_actionOpen_project_triggered()
 {
     QString myFileName = QFileDialog::getOpenFileName(this,tr("Open Project"), "", tr("Project files (*.ini)"));
-    if (myFileName != "")
-    {
-        if (myProject.loadVine3DProject(myFileName))
-        {
-            setDefaultDEMScale(myProject.DEM.colorScale);
+    if (myFileName == "") return;
 
-            this->setCurrentRaster(&(myProject.DEM));
-            ui->labelRasterScale->setText(QString::fromStdString(getVariableString(noMeteoTerrain)));
-            this->ui->rasterOpacitySlider->setEnabled(true);
+    if (! myProject.loadVine3DProject(myFileName)) return;
 
-            // center map
-            gis::Crit3DGeoPoint* center = this->rasterObj->getRasterCenter();
-            this->mapView->centerOn(qreal(center->longitude), qreal(center->latitude));
+    if (myProject.DEM.isLoaded)
+        renderDEM();
 
-            // resize map
-            float size = this->rasterObj->getRasterMaxSize();
-            size = log2(1000.f/size);
-            this->mapView->setZoomLevel(quint8(size));
-            this->mapView->centerOn(qreal(center->longitude), qreal(center->latitude));
-
-            // active raster object
-            this->rasterObj->updateCenter();
-
-            this->resetMeteoPoints();
-            this->addMeteoPoints();
-            this->updateDateTime();
-            myProject.loadObsDataAllPoints(myProject.getCurrentDate(), myProject.getCurrentDate(), true);
-            this->showPointsGroup->setEnabled(true);
-            currentPointsVisualization = showLocation;
-            redrawMeteoPoints(currentPointsVisualization, true);
-
-        }
-        else myProject.logError("Open project failed:\n " + myFileName);
-        this->update();
-    }
+    drawMeteoPoints();
 }
 
 void MainWindow::on_actionRun_models_triggered()

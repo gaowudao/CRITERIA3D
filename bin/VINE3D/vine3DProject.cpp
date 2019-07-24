@@ -77,8 +77,6 @@ void Vine3DProject::clearVine3DProject()
         modelCaseIndexMap.clear();
 
         clearProject3D();
-
-        isProjectLoaded = false;
     }
 }
 

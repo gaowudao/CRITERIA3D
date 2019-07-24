@@ -9,6 +9,7 @@ QStringList getPragaCommandList()
 
     // praga commands
     cmdList.append("List    | ListCommands");
+    cmdList.append("Proj    | OpenProject");
 
     return cmdList;
 }
@@ -41,6 +42,11 @@ bool PragaProject::executePragaCommand(QStringList argumentList, bool* isCommand
         *isCommandFound = true;
         return cmdList(this);
     }
+    else if (command == "PROJ" || command == "OPENPROJECT")
+    {
+        *isCommandFound = true;
+        return cmdOpenPragaProject(this, argumentList);
+    }
     else
     {
         // other specific Praga commands
@@ -50,6 +56,21 @@ bool PragaProject::executePragaCommand(QStringList argumentList, bool* isCommand
     return false;
 }
 
+bool cmdOpenPragaProject(PragaProject* myProject, QStringList argumentList)
+{
+    if (argumentList.size() < 2)
+    {
+        myProject->logError("Missing project name");
+        return false;
+    }
+
+    QString projectName = myProject->getCompleteFileName(argumentList.at(1), "DATA/PROJECT/");
+
+    if (! myProject->loadPragaProject(projectName))
+        return false;
+
+    return true;
+}
 
 bool executeCommand(QStringList argumentList, PragaProject* myProject)
 {
