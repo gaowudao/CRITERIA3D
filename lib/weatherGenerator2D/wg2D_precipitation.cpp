@@ -793,7 +793,7 @@ void weatherGenerator2D::precipitationMultiDistributionParameterization()
 void weatherGenerator2D::precipitationMultisiteAmountsGeneration()
 {
    // begin of step 5
-   printf("parte 5 inizio\n");
+   //printf("parte 5 inizio\n");
    double** amountMatrixSeasonDJF = (double **)calloc(nrStations, sizeof(double*));
    double** amountMatrixSeasonMAM = (double **)calloc(nrStations, sizeof(double*));
    double** amountMatrixSeasonJJA = (double **)calloc(nrStations, sizeof(double*));
@@ -1067,12 +1067,12 @@ void weatherGenerator2D::precipitationMultisiteAmountsGeneration()
       {
           for (int i=0;i<nrStations;i++)
           {
-               randomMatrixNormalDistribution[i][j] = myrandom::normalRandomLongSeries(&gasDevIset,&gasDevGset,&firstRandomNumber);
-               //randomMatrixNormalDistribution[i][j] = myrandom::normalRandom(&gasDevIset,&gasDevGset);
+               //randomMatrixNormalDistribution[i][j] = myrandom::normalRandomLongSeries(&gasDevIset,&gasDevGset,&firstRandomNumber);
+               randomMatrixNormalDistribution[i][j] = myrandom::normalRandom(&gasDevIset,&gasDevGset);
           }
       }
 
-      printf("fase 5a\n");
+      printf("modulo precipitazione fase 9/9 sottofase %d/4\n",iSeason+1);
       weatherGenerator2D::spatialIterationAmounts(amountCorrelationMatrixSeasonSimulated , amountCorrelationMatrixSeason,randomMatrixNormalDistribution,lengthSeason[iSeason]*parametersModel.yearOfSimulation,occurrenceSeason,phatAlpha,phatBeta,simulatedPrecipitationAmountsSeasonal);
       //printf("%d \n",iSeason);
 

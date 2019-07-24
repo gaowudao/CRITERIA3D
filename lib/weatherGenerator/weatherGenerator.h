@@ -29,6 +29,10 @@
         float probabilityWetWet[12];      // [-]    probability of a wet day after a wet day
         float stDevTmin [12];             // [-]    monthly minimum temperature standard deviation
         float stDevTmax [12];             // [-]    monthly maximum temperature standard deviation
+        float monthlyTmaxWet [12];           // [°C]   monthly maximum temp Wet days
+        float monthlyTmaxDry [12];           // [°C]   monthly maximum temp Dry days
+        float monthlyTminWet [12];           // [°C]   monthly maximum temp Wet days
+        float monthlyTminDry [12];           // [°C]   monthly maximum temp Dry days
     };
 
     struct Tdailyweather
