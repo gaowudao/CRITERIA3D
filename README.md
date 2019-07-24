@@ -2,7 +2,7 @@
 CRITERIA3D distribution provides a set of libraries and executables for agro-meteorological analysis.
 It includes a numerical solution for three-dimensional water and heat flow in the soil, water balance, meteorological data interpolation, daily weather generator, radiation budget, snow accumulation and melt, crop development and crop water uptake. 
 
-GUI executables (CRITERIA3D, VINE3D, PRAGA and HEAT1D) need MapGraphics library and a configuration file (default.ini), see [PRAGA wiki](https://github.com/ARPA-SIMC/CRITERIA3D/wiki/PRAGA) for more informations. QT distribution (5.7 or following) is needed.
+CRITERIA3D distribution uses Qt libraries. Qt 5.7 or following is needed. GUI executables (CRITERIA3D, VINE3D, PRAGA and HEAT1D) need MapGraphics library and a configuration file (default.ini), see [PRAGA wiki](https://github.com/ARPA-SIMC/CRITERIA3D/wiki/PRAGA) for more informations. 
 
 ## soilFluxes3D library
 SoilFluxes3D is a numerical solution for flow equations of water and heat in the soil, in a three-dimensional domain.
