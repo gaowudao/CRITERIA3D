@@ -367,7 +367,7 @@ void MainWindow::on_actionNewMeteoPointsArkimet_triggered()
 {
     resetMeteoPoints();
 
-    QString templateFileName = myProject.getPath() + "DATA/template/template_meteo.db";
+    QString templateFileName = myProject.getPath() + "DATA/TEMPLATES/template_meteo_arkimet.db";
 
     QString dbName = QFileDialog::getSaveFileName(this, tr("Save as"), "", tr("DB files (*.db)"));
     if (dbName == "")
@@ -1904,7 +1904,7 @@ void MainWindow::on_actionOpen_aggregation_DB_triggered()
 
 void MainWindow::on_actionNew_aggregation_DB_triggered()
 {
-    QString templateFileName = myProject.getPath() + "DATA/template/template_meteo_aggregation.db";
+    QString templateFileName = myProject.getPath() + "DATA/TEMPLATES/template_meteo_aggregation.db";
 
     QString dbName = QFileDialog::getSaveFileName(this, tr("Save as"), "", tr("DB files (*.db)"));
     if (dbName == "")
