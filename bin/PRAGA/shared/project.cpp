@@ -1247,9 +1247,8 @@ bool Project::loadProject()
     if (! loadParameters(parametersFile))
         return false;
 
-    if (logFileName != "")
-        if (! setLogFile(logFileName))
-            return false;
+    if (! setLogFile(logFileName))
+        return false;
 
     if (demName != "")
         if (! loadDEM(demName))
