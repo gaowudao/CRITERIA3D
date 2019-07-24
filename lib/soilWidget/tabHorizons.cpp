@@ -25,7 +25,7 @@ TabHorizons::TabHorizons()
 
 
     connect(tableDb->verticalHeader(), &QHeaderView::sectionClicked, [=](int index){ this->tableDbVerticalHeaderClick(index); });
-    connect(tableModel->verticalHeader(), &QHeaderView::sectionClicked, [=](int index){ this->tableModelVerticalHeaderClick(index); });
+    connect(tableModel->verticalHeader(), &QHeaderView::sectionClicked, [=](int index){ this->tableDbVerticalHeaderClick(index); });
     connect(addRow, &QPushButton::clicked, [=](){ this->addRowClicked(); });
     connect(deleteRow, &QPushButton::clicked, [=](){ this->removeRowClicked(); });
 
@@ -108,6 +108,7 @@ void TabHorizons::insertSoilHorizons(soil::Crit3DSoil *soil, soil::Crit3DTexture
     addRow->setEnabled(true);
     deleteRow->setEnabled(false);
 
+    connect(tableDb, &QTableWidget::cellDoubleClicked, [=](int row, int column){ this->editItem(row, column); });
     connect(tableDb, &QTableWidget::cellChanged, [=](int row, int column){ this->cellChanged(row, column); });
     connect(tableDb, &QTableWidget::cellClicked, [=](int row, int column){ this->cellClicked(row, column); });
     connect(tableModel, &QTableWidget::cellClicked, [=](int row, int column){ this->cellClicked(row, column); });
@@ -275,8 +276,28 @@ void TabHorizons::clearSelections()
     deleteRow->setEnabled(false);
 }
 
+void TabHorizons::editItem(int row, int column)
+{
+    tableDb->itemAt(row,column)->setFlags(Qt::ItemIsSelectable|Qt::ItemIsEnabled|Qt::ItemIsEditable);
+}
+
+void TabHorizons::cellClicked(int row, int column)
+{
+    tableDb->itemAt(row,column)->setFlags(Qt::ItemIsSelectable|Qt::ItemIsEnabled);
+    tableDb->selectRow(row);
+    tableModel->selectRow(row);
+}
+
 void TabHorizons::tableDbVerticalHeaderClick(int index)
 {
+    //disable edit item
+    for (int j=0; j<tableDb->colorCount();j++)
+    {
+        if (tableDb->itemAt(index,j)!= nullptr)
+        {
+            tableDb->itemAt(index,j)->setFlags(Qt::ItemIsSelectable|Qt::ItemIsEnabled);
+        }
+    }
     tableDb->horizontalHeader()->setHighlightSections(false);
     tableModel->selectRow(index);
     tableModel->horizontalHeader()->setHighlightSections(false);
@@ -288,13 +309,6 @@ void TabHorizons::tableDbVerticalHeaderClick(int index)
     {
         deleteRow->setEnabled(false);
     }
-}
-
-void TabHorizons::tableModelVerticalHeaderClick(int index)
-{
-    tableModel->horizontalHeader()->setHighlightSections(false);
-    tableDb->selectRow(index);
-    tableDb->horizontalHeader()->setHighlightSections(false);
 }
 
 void TabHorizons::cellChanged(int row, int column)
@@ -430,14 +444,8 @@ void TabHorizons::cellChanged(int row, int column)
         checkComputedValues(row);
     }
 
-
+    tableDb->itemAt(row,column)->setFlags(Qt::ItemIsSelectable|Qt::ItemIsEnabled);
     tableDb->blockSignals(false);
-}
-
-void TabHorizons::cellClicked(int row, int column)
-{
-    tableDb->selectRow(row);
-    tableModel->selectRow(row);
 }
 
 void TabHorizons::addRowClicked()
