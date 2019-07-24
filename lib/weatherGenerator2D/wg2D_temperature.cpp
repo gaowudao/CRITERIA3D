@@ -1023,7 +1023,8 @@ void weatherGenerator2D::multisiteRandomNumbersTemperature()
     {
         for (int j=0;j<lengthOfRandomSeries;j++)
         {
-            normRandom[i][j] = myrandom::normalRandomLongSeries(&gasDevIset,&gasDevGset,&firstRandomNumber);
+            //normRandom[i][j] = myrandom::normalRandomLongSeries(&gasDevIset,&gasDevGset,&firstRandomNumber);
+            normRandom[i][j] = myrandom::normalRandom(&gasDevIset,&gasDevGset);
         }
     }
     matricial::matrixProduct(dummyMatrix3,normRandom,nrStations,nrStations,lengthOfRandomSeries,nrStations,normRandom2);
@@ -1116,7 +1117,8 @@ void weatherGenerator2D::multisiteRandomNumbersTemperature()
     {
         for (int j=0;j<lengthOfRandomSeries;j++)
         {
-            normRandom[i][j] = myrandom::normalRandomLongSeries(&gasDevIset,&gasDevGset,&firstRandomNumber);
+            //normRandom[i][j] = myrandom::normalRandomLongSeries(&gasDevIset,&gasDevGset,&firstRandomNumber);
+            normRandom[i][j] = myrandom::normalRandom(&gasDevIset,&gasDevGset);
         }
     }
     matricial::matrixProduct(dummyMatrix3,normRandom,nrStations,nrStations,lengthOfRandomSeries,nrStations,normRandom2);
@@ -1315,6 +1317,7 @@ void weatherGenerator2D::multisiteTemperatureGeneration()
         // !!!!!! this part has been changed by the original one. To be verified with authors and colleagues!
         for (int j=0;j<lengthOfRandomSeries;j++)
         {
+            //X[j] = 1 - X[j]; // tornato come il codice originale
             cAverage[0][j] = X[j]*averageT[2][j] + (1- X[j])*averageT[0][j]; // for Tmax
             cAverage[1][j] = X[j]*averageT[3][j] + (1- X[j])*averageT[1][j]; // for Tmin
             cStdDev[0][j] = X[j]*stdDevT[2][j] + (1-X[j])*stdDevT[0][j]; // for Tmax
@@ -1342,12 +1345,21 @@ void weatherGenerator2D::multisiteTemperatureGeneration()
                 Xp[1][j] = Xp[0][j] - 0.2*fabs(Xp[0][j]);
             }
         }
+        double averageTmax[365]={0};
+        double averageTmin[365]={0};
         for (int j=0;j<lengthOfRandomSeries;j++)
         {
             maxTGenerated[j][i] = Xp[0][j];
             minTGenerated[j][i] = Xp[1][j];
-            //printf("%.1f  %.1f %.f\n",maxTGenerated[j][i],minTGenerated[j][i],X[j]);
+            //printf("%d %.1f  %.1f %.f\n",(j+1)%365,maxTGenerated[j][i],minTGenerated[j][i],X[j]);
+            averageTmax[j%365] += maxTGenerated[j][i]/parametersModel.yearOfSimulation;
+            averageTmin[j%365] += minTGenerated[j][i]/parametersModel.yearOfSimulation;
+            //if ((j+1)%365 == 62)
+                //pressEnterToContinue();
         }
+        for (int j=0;j<365;j++)
+            printf("%d %f %f\n",j+1,averageTmin[j%365],averageTmax[j%365]);
+        pressEnterToContinue();
         free(ksi[0]);
         free(ksi[1]);
         free(eps[0]);

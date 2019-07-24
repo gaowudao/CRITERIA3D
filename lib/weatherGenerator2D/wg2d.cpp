@@ -254,12 +254,12 @@ void weatherGenerator2D::commonModuleCompute()
     weatherGenerator2D::initializePrecipitationInternalArrays();
     weatherGenerator2D::initializePrecipitationOutputs(lengthSeason);
     // step 1 of precipitation WG2D
-    printf("fase 1: modulo comune\n");
+    printf("modulo comune fase 1/9 \n");
     weatherGenerator2D::precipitationP00P10(); // it computes the monthly probabilities p00 and p10
-    printf("fase 2: modulo comune\n");
+    printf("modulo comune fase 2/9 \n");
     // step 2 of precipitation WG2D
     weatherGenerator2D::precipitationCorrelationMatrices(); // computation of monthly correlation amongst stations
-    printf("fase 3: modulo comune\n");
+    printf("modulo comune fase 3/9 \n");
     // step 3 of precipitation WG2D
     weatherGenerator2D::precipitationMultisiteOccurrenceGeneration(); // generation of a sequence of dry/wet days after statistics and random numbers
     //printf("fine modulo comune\n");
@@ -268,15 +268,15 @@ void weatherGenerator2D::commonModuleCompute()
 void weatherGenerator2D::temperatureCompute()
 {
     // step 1 of temperature WG2D
-    printf("fase 1 temperature\n");
+    printf("modulo temperature fase 4/9\n");
     weatherGenerator2D::computeTemperatureParameters();
-    printf("fase 2 temperature\n");
+    printf("modulo temperature fase 5/9\n");
     // step 2 of temperature WG2D
     weatherGenerator2D::temperaturesCorrelationMatrices();
-    printf("fase 3 temperature\n");
+    printf("modulo temperature fase 6/9\n");
     // step 3 of temperature WG2D
     weatherGenerator2D::multisiteRandomNumbersTemperature();
-    printf("fase 4 temperature\n");
+    printf("modulo temperature fase 7/9\n");
     // step 4 of temperature WG2D
     weatherGenerator2D::multisiteTemperatureGeneration();
 }
@@ -285,9 +285,9 @@ void weatherGenerator2D::precipitationCompute()
 {
 
     // step 4 of precipitation WG2D
-    printf("fase 1: modulo precipitazione\n");
+    printf("modulo precipitazione fase 8/9 \n");
     weatherGenerator2D::precipitationMultiDistributionParameterization(); // seasonal amounts distribution
-    printf("fase 2: modulo precipitazione\n");
+    printf("modulo precipitazione fase 9/9\n");
     // step 5 of precipitation WG2D
     weatherGenerator2D::precipitationMultisiteAmountsGeneration(); // generation of synthetic series
     printf("fine modulo precipitazione\n");
@@ -536,8 +536,8 @@ void weatherGenerator2D::precipitationMultisiteOccurrenceGeneration()
             //printf("start\n");
             for (int jCount=0;jCount<nrDaysIterativeProcessMonthly[iMonth];jCount++)
             {
-               normalizedRandomMatrix[i][jCount] = myrandom::normalRandomLongSeries(&gasDevIset,&gasDevGset,&randomNumberInitial);
-               //normalizedRandomMatrix[i][jCount]= myrandom::normalRandom(&gasDevIset,&gasDevGset);
+               //normalizedRandomMatrix[i][jCount] = myrandom::normalRandomLongSeries(&gasDevIset,&gasDevGset,&randomNumberInitial);
+               normalizedRandomMatrix[i][jCount]= myrandom::normalRandom(&gasDevIset,&gasDevGset);
             }
 
             //printf("end\n");
@@ -836,121 +836,6 @@ void weatherGenerator2D::spatialIterationOccurrence(double ** M, double** K,doub
     free(eigenvalues);
     free(eigenvectors);
     free(correlationArray);
-
-}
-
-void weatherGenerator2D::initializeOutputData(int* nrDays)
-{
-    int length = 365*parametersModel.yearOfSimulation;
-    for (int i=1; i<= parametersModel.yearOfSimulation;i++)
-    {
-        if (isLeapYear(i)) length++;
-    }
-    *nrDays = length;
-    outputWeatherData = (ToutputWeatherData*)calloc(nrStations, sizeof(ToutputWeatherData));
-    for (int iStation=0;iStation<nrStations;iStation++)
-    {
-        outputWeatherData[iStation].yearSimulated = (int*)calloc(length, sizeof(int));
-        outputWeatherData[iStation].monthSimulated = (int*)calloc(length, sizeof(int));
-        outputWeatherData[iStation].daySimulated = (int*)calloc(length, sizeof(int));
-        outputWeatherData[iStation].doySimulated = (int*)calloc(length, sizeof(int));
-        if (isTempWG2D)
-        {
-            outputWeatherData[iStation].maxT = (double*)calloc(length, sizeof(double));
-            outputWeatherData[iStation].minT = (double*)calloc(length, sizeof(double));
-        }
-        if (isPrecWG2D)
-            outputWeatherData[iStation].precipitation = (double*)calloc(length, sizeof(double));
-    }
-    // = (double*)calloc(lengthOfRandomSeries, sizeof(double));
-}
-
-void weatherGenerator2D::getWeatherGeneratorOutput()
-{
-    int counter;
-    int counterSeason[4];
-    int day,month;
-    int nrDays = NODATA;
-    weatherGenerator2D::initializeOutputData(&nrDays);
-    Crit3DDate inputFirstDate;
-    TweatherGenClimate weatherGenClimate;
-    QString outputFileName;
-
-    float *inputTMin = nullptr;
-    float *inputTMax = nullptr;
-    float *inputPrec = nullptr;
-    float precThreshold = parametersModel.precipitationThreshold;
-    float minPrecData = NODATA;
-    bool writeOutput = true;
-    inputTMin = (float*)calloc(nrDays, sizeof(float));
-    inputTMax = (float*)calloc(nrDays, sizeof(float));
-    inputPrec = (float*)calloc(nrDays, sizeof(float));
-    inputFirstDate.day = 1;
-    inputFirstDate.month = 1;
-    inputFirstDate.year = 1;
-
-    for (int iStation=0;iStation<nrStations;iStation++)
-    {
-        outputFileName = "wgClimate" + QString::number(iStation) + ".txt";
-        counter = 0;
-        counterSeason[3] = counterSeason[2] = counterSeason[1] = counterSeason[0] = 0;
-        for (int iYear=1;iYear<=parametersModel.yearOfSimulation;iYear++)
-        {
-            for (int iDoy=0; iDoy<365; iDoy++)
-            {
-                outputWeatherData[iStation].yearSimulated[counter] = iYear;
-                outputWeatherData[iStation].doySimulated[counter] = iDoy+1;
-                weatherGenerator2D::dateFromDoy(outputWeatherData[iStation].doySimulated[counter],1,&day,&month);
-                outputWeatherData[iStation].daySimulated[counter] = day;
-                outputWeatherData[iStation].monthSimulated[counter] = month;
-                if (isTempWG2D)
-                {
-                    outputWeatherData[iStation].maxT[counter] = maxTGenerated[counter][iStation];
-                    outputWeatherData[iStation].minT[counter] = minTGenerated[counter][iStation];
-                }
-
-                if (isPrecWG2D)
-                {
-                    //simulatedPrecipitationAmounts[iSeason].matrixAmounts[i][j]
-                    int iSeason;
-                    if (month == 1 || month == 2 || month == 12) iSeason = 0;
-                    else if (month == 3 || month == 4 || month == 5) iSeason = 1;
-                    else if (month == 6 || month == 7 || month == 8) iSeason = 2;
-                    else iSeason = 3;
-                    outputWeatherData[iStation].precipitation[counter] = simulatedPrecipitationAmounts[iSeason].matrixAmounts[iStation][counterSeason[iSeason]];
-                    //printf("%.2f\n",outputWeatherData[iStation].precipitation[counter]);
-                    (counterSeason[iSeason])++;
-                }
-                counter++;
-            }                       
-        }
-
-        for(int i=0;i<parametersModel.yearOfSimulation*365;i++)
-        {
-            //printf("%d %d %.1f %.1f %.1f\n",outputWeatherData[iStation].daySimulated[i],outputWeatherData[iStation].monthSimulated[i],outputWeatherData[iStation].minT[i],outputWeatherData[iStation].maxT[i],outputWeatherData[iStation].precipitation[i]);
-            //printf("%d %d %.1f %.1f %.1f\n",outputWeatherData[iStation].daySimulated[i],outputWeatherData[iStation].monthSimulated[i],outputWeatherData[iStation].minT[i],outputWeatherData[iStation].maxT[i],outputWeatherData[iStation].precipitation[i]);
-            //printf("%d %d %.1f\n",outputWeatherData[iStation].daySimulated[i],outputWeatherData[iStation].monthSimulated[i],outputWeatherData[iStation].precipitation[i]);
-
-        }
-        counter = 0;
-        for (int i=0;i<nrDays;i++)
-        {
-            inputTMin[i]= (float)(outputWeatherData[iStation].minT[counter]);
-            inputTMax[i]= (float)(outputWeatherData[iStation].maxT[counter]);
-            inputPrec[i]= (float)(outputWeatherData[iStation].precipitation[counter]);
-            if (isLeapYear(outputWeatherData[iStation].yearSimulated[counter]) && outputWeatherData[iStation].monthSimulated[counter] == 2 && outputWeatherData[iStation].daySimulated[counter] == 28)
-            {
-                inputTMin[++i]= (float)(outputWeatherData[iStation].minT[counter]);
-                inputTMax[++i]= (float)(outputWeatherData[iStation].maxT[counter]);
-                inputPrec[++i]= (float)(outputWeatherData[iStation].precipitation[counter]);
-            }
-            counter++;
-        }
-        computeWGClimate(nrDays,inputFirstDate,inputTMin,inputTMax,inputPrec,precThreshold,minPrecData,&weatherGenClimate,writeOutput,outputFileName);
-        //pressEnterToContinue();
-    }
-
-
 
 }
 
