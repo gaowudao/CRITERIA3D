@@ -74,3 +74,8 @@ void TableDbOrModel::mouseMoveEvent(QMouseEvent *event)
 
     }
 }
+
+void TableDbOrModel::keyPressEvent(QKeyEvent *event)
+{
+    return;
+}

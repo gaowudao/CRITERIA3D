@@ -283,21 +283,12 @@ void TabHorizons::editItem(int row, int column)
 
 void TabHorizons::cellClicked(int row, int column)
 {
-    tableDb->itemAt(row,column)->setFlags(Qt::ItemIsSelectable|Qt::ItemIsEnabled);
     tableDb->selectRow(row);
     tableModel->selectRow(row);
 }
 
 void TabHorizons::tableDbVerticalHeaderClick(int index)
 {
-    //disable edit item
-    for (int j=0; j<tableDb->colorCount();j++)
-    {
-        if (tableDb->itemAt(index,j)!= nullptr)
-        {
-            tableDb->itemAt(index,j)->setFlags(Qt::ItemIsSelectable|Qt::ItemIsEnabled);
-        }
-    }
     tableDb->horizontalHeader()->setHighlightSections(false);
     tableModel->selectRow(index);
     tableModel->horizontalHeader()->setHighlightSections(false);
@@ -444,7 +435,6 @@ void TabHorizons::cellChanged(int row, int column)
         checkComputedValues(row);
     }
 
-    tableDb->itemAt(row,column)->setFlags(Qt::ItemIsSelectable|Qt::ItemIsEnabled);
     tableDb->blockSignals(false);
 }
 

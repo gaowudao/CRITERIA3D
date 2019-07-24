@@ -14,6 +14,7 @@ Q_OBJECT
 public:
     TableDbOrModel(tableType type);
     void mouseMoveEvent(QMouseEvent *event);
+    void keyPressEvent(QKeyEvent *event);
 private:
     tableType type;
 
