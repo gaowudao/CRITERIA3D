@@ -15,19 +15,18 @@ Crit3DMeteoGridDbHandler::~Crit3DMeteoGridDbHandler()
     delete _meteoGrid;
 }
 
-bool Crit3DMeteoGridDbHandler::parseXMLFile(QString xmlFileName, QDomDocument* xmlDoc)
+bool Crit3DMeteoGridDbHandler::parseXMLFile(QString xmlFileName, QDomDocument* xmlDoc, QString *error)
 {
     if (xmlFileName == "")
     {
-        qDebug() << "Missing XML file.";
-        return(false);
+        *error = "Missing XML file.";
+        return false;
     }
 
     QFile myFile(xmlFileName);
     if (!myFile.open(QIODevice::ReadOnly))
     {
-        qDebug() << "Open XML failed:" << xmlFileName;
-        qDebug() << myFile.errorString();
+        *error = "Open XML failed:\n" + xmlFileName + "\n" + myFile.errorString();
         return (false);
     }
 
@@ -35,10 +34,10 @@ bool Crit3DMeteoGridDbHandler::parseXMLFile(QString xmlFileName, QDomDocument* x
     int myErrLine, myErrColumn;
     if (!xmlDoc->setContent(&myFile, &myError, &myErrLine, &myErrColumn))
     {
-       qDebug() << "Parse xml failed:" << xmlFileName
-                << " Row: " << QString::number(myErrLine)
-                << " - Column: " << QString::number(myErrColumn)
-                << "\n" << myError;
+       *error = "Parse xml failed:" + xmlFileName
+                + " Row: " + QString::number(myErrLine)
+                + " - Column: " + QString::number(myErrColumn)
+                + "\n" + myError;
         myFile.close();
         return(false);
     }
@@ -52,11 +51,7 @@ bool Crit3DMeteoGridDbHandler::parseXMLGrid(QString xmlFileName, QString *myErro
 
     QDomDocument xmlDoc;
 
-     if (!parseXMLFile(xmlFileName, &xmlDoc))
-    {
-        *myError = "parseXMLFile error";
-        return false;
-    }
+    if (!parseXMLFile(xmlFileName, &xmlDoc, myError)) return false;
 
     QDomNode child;
     QDomNode secondChild;
