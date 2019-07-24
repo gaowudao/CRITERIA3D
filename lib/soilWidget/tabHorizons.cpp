@@ -437,7 +437,16 @@ void TabHorizons::cellChanged(int row, int column)
 void TabHorizons::addRowClicked()
 {
     tableDb->blockSignals(true);
-    int numRow = tableDb->rowCount();
+    int numRow;
+    if (!tableDb->selectedItems().isEmpty())
+    {
+        numRow = tableDb->selectedItems().at(0)->row();
+    }
+    else
+    {
+        numRow = tableDb->rowCount();
+    }
+
     QString lowerDepth = tableDb->item(numRow-1, 1)->text();
     tableDb->insertRow(numRow);
     tableModel->insertRow(numRow);
@@ -455,12 +464,14 @@ void TabHorizons::addRowClicked()
     tableModel->selectRow(numRow);
 
     // LC inserire una funziona di addHorizon
+    checkDepths();
     tableDb->blockSignals(false);
 
 }
 
 void TabHorizons::removeRowClicked()
 {
+    tableDb->blockSignals(true);
     int row;
     if (!tableDb->selectedItems().isEmpty())
     {
@@ -475,4 +486,5 @@ void TabHorizons::removeRowClicked()
     tableModel->removeRow(row);
     // LC inserire una funzione di removeHorizon
     checkDepths();
+    tableDb->blockSignals(false);
 }
