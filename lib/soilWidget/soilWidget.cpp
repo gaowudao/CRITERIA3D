@@ -159,8 +159,8 @@ void Crit3DSoilWidget::on_actionOpenSoilDB()
     }
 
     // read soil list
-    QStringList soilList;
-    if (! getSoilList(&dbSoil, &soilList, &error))
+    QStringList soilStringList;
+    if (! getSoilList(&dbSoil, &soilStringList, &error))
     {
         QMessageBox::critical(nullptr, "Error!", error);
         return;
@@ -168,9 +168,9 @@ void Crit3DSoilWidget::on_actionOpenSoilDB()
 
     // show soil list
     this->soilListComboBox.clear();
-    for (int i = 0; i < soilList.size(); i++)
+    for (int i = 0; i < soilStringList.size(); i++)
     {
-        this->soilListComboBox.addItem(soilList[i]);
+        this->soilListComboBox.addItem(soilStringList[i]);
     }
 }
 

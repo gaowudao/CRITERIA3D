@@ -22,16 +22,16 @@
 
     public:
         long nrNodes;
-        int nrLayers;
-        long nrNodesPerLayer;
+        unsigned int nrLayers;
         int nrLateralLink;
 
         // 3D soil fluxes maps
+        gis::Crit3DRasterGrid soilIndexMap;
         gis::Crit3DRasterGrid boundaryMap;
         std::vector <gis::Crit3DRasterGrid> indexMap;
 
         // soil properties
-        int nrSoils;
+        unsigned int nrSoils;
         double soilDepth;                       // [m]
 
         std::vector <soil::Crit3DSoil> soilList;
@@ -61,10 +61,17 @@
 
         void computeNrLayers();
         void setLayersDepth();
-
+        bool setIndexMaps();
         bool setBoundary();
         bool setCrit3DSurfaces();
         bool setCrit3DSoils();
+        bool setCrit3DTopography();
+        bool setCrit3DNodeSoil();
+
+        bool initializeSoilMoisture(int month);
+
+        int getSoilIndex(long row, long col);
+        bool isWithinSoil(int soilIndex, double depth);
     };
 
 

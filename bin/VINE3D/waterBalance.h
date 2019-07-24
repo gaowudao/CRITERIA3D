@@ -33,10 +33,8 @@
     int getLayerIndex(Vine3DProject* myProject, double depth);
     double getLayerTop(Vine3DProject* myProject, int i);
     double getLayerBottom(Vine3DProject* myProject, int i);
-    bool isWithinSoil(Vine3DProject* myProject, long row, long col, double depth);
 
     bool initializeWaterBalance(Vine3DProject* myProject);
-    bool initializeSoilMoisture(Vine3DProject* myProject, int month);
 
     bool saveWaterBalanceState(Vine3DProject* myProject, QDate myDate, QString myArea,
                                QString myStatePath, criteria3DVariable myVar);
@@ -48,6 +46,7 @@
 
     bool getCriteria3DVarMap(Vine3DProject* myProject, criteria3DVariable myVar, int layerIndex,
                              gis::Crit3DRasterGrid* criteria3DMap);
+
     bool getRootZoneAWCmap(Vine3DProject* myProject, gis::Crit3DRasterGrid* outputMap);
 
     bool getCriteria3DIntegrationMap(Vine3DProject* myProject, criteria3DVariable myVar,

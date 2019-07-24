@@ -42,7 +42,7 @@ void updateWaterBalanceMaps(Vine3DProject* myProject)
 {
     long row, col;
     long nodeIndex;
-    int layer;
+    int layer, soilIndex;
     double flow, flow_mm;
     double area;
 
@@ -52,6 +52,7 @@ void updateWaterBalanceMaps(Vine3DProject* myProject)
         for (col = 0; col < myProject->outputWaterBalanceMaps->bottomDrainageMap->header->nrCols; col++)
             if (int(myProject->indexMap.at(0).value[row][col]) != int(myProject->indexMap.at(0).header->flag))
             {
+                soilIndex = myProject->getSoilIndex(row,col);
                 layer = 1;
                 do
                 {
@@ -60,7 +61,7 @@ void updateWaterBalanceMaps(Vine3DProject* myProject)
                     myProject->outputWaterBalanceMaps->waterInflowMap->value[row][col] += float(flow * 1000); //liters
 
                     layer++;
-                } while (layer < myProject->nrLayers && isWithinSoil(myProject, row, col, myProject->layerDepth.at(size_t(layer))));
+                } while (layer < myProject->nrLayers && myProject->isWithinSoil(soilIndex, myProject->layerDepth.at(size_t(layer))));
 
                 nodeIndex = long(myProject->indexMap.at(size_t(--layer)).value[row][col]);
 
@@ -78,265 +79,6 @@ gis::Crit3DRasterGrid* Crit3DWaterBalanceMaps::getMapFromVar(criteria3DVariable 
         return waterInflowMap;
     else
         return nullptr;
-}
-
-
-bool isWithinSoil(Vine3DProject* myProject, long row, long col, double depth)
-{
-    int caseIndex, soilIndex, nrHorizons;
-    soil::Crit3DHorizon* myHorizon;
-
-    caseIndex = myProject->getModelCaseIndex(row, col);
-    if (caseIndex == NODATA) return false;
-
-    //read soil and last horizon
-    soilIndex = myProject->modelCases[caseIndex].soilIndex;
-    nrHorizons = myProject->soilList[soilIndex].nrHorizons;
-    myHorizon = &(myProject->soilList[soilIndex].horizon[nrHorizons - 1]);
-
-    //check if we are within last horizon
-    return (depth <= myHorizon->lowerDepth);
-}
-
-
-bool setIndexMap(Vine3DProject* myProject)
-{
-    long index = 0;
-
-    int i, row, col;
-
-    myProject->indexMap.resize(size_t(myProject->nrLayers));
-
-    for (i=0; i < myProject->nrLayers; i++)
-    {
-        myProject->indexMap.at(size_t(i)).initializeGrid(myProject->DEM);
-        for (row = 0; row < myProject->indexMap.at(size_t(i)).header->nrRows; row++)
-            for (col = 0; col < myProject->indexMap.at(size_t(i)).header->nrCols; col++)
-                if (int(myProject->DEM.value[row][col]) != int(myProject->DEM.header->flag))
-                {
-                    if (isWithinSoil(myProject, row, col, myProject->layerDepth.at(size_t(i))))
-                    {
-                        myProject->indexMap.at(size_t(i)).value[row][col] = index;
-                        index++;
-                    }
-                }
-    }
-
-    myProject->nrNodes = index;
-    return(index > 0);
-}
-
-
-
-bool setCrit3DTopography(Vine3DProject* myProject)
-{
-    double x, y;
-    float z, lateralArea, slope;
-    double area, volume;
-    long index, linkIndex;
-    int myResult;
-    QString myError;
-
-    for (size_t layer = 0; layer < size_t(myProject->nrLayers); layer++)
-        for (int row = 0; row < myProject->indexMap.at(layer).header->nrRows; row++)
-            for (int col = 0; col < myProject->indexMap.at(layer).header->nrCols; col++)
-            {
-                index = long(myProject->indexMap.at(layer).value[row][col]);
-
-                if (index != long(myProject->indexMap.at(layer).header->flag))
-                {
-                    gis::getUtmXYFromRowCol(myProject->DEM, row, col, &x, &y);
-                    area = myProject->DEM.header->cellSize * myProject->DEM.header->cellSize;
-                    slope = myProject->radiationMaps->slopeMap->value[row][col] / 100;
-                    z = myProject->DEM.value[row][col] - float(myProject->layerDepth[layer]);
-                    volume = area * myProject->layerThickness[layer];
-
-                    //surface
-                    if (layer == 0)
-                    {
-                        lateralArea = float(myProject->DEM.header->cellSize);
-
-                        if (int(myProject->boundaryMap.value[row][col]) == BOUNDARY_RUNOFF)
-                            myResult = soilFluxes3D::setNode(index, float(x), float(y), float(z), area, true, true, BOUNDARY_RUNOFF, float(slope));
-                        else
-                            myResult = soilFluxes3D::setNode(index, float(x), float(y), z, area, true, false, BOUNDARY_NONE, 0.0);
-                    }
-                    //sub-surface
-                    else
-                    {
-                        lateralArea = float(myProject->DEM.header->cellSize * myProject->layerThickness[layer]);
-
-                        //last project layer or last soil layer
-                        if (int(layer) == myProject->nrLayers - 1 || ! isWithinSoil(myProject, row, col, myProject->layerDepth.at(size_t(layer+1))))
-                            myResult = soilFluxes3D::setNode(index, float(x), float(y), z, volume, false, true, BOUNDARY_FREEDRAINAGE, 0.0);
-                        else
-                        {
-                            if (int(myProject->boundaryMap.value[row][col]) == BOUNDARY_RUNOFF)
-                                myResult = soilFluxes3D::setNode(index, float(x), float(y), z, volume, false, true, BOUNDARY_FREELATERALDRAINAGE, slope);
-                            else
-                                myResult = soilFluxes3D::setNode(index, float(x), float(y), z, volume, false, false, BOUNDARY_NONE, 0.0);
-                        }
-                    }
-
-                    //check error
-                    if (isCrit3dError(myResult, &myError))
-                    {
-                        myProject->errorString = "setCrit3DTopography:" + myError + " in layer nr:" + QString::number(layer);
-                        return(false);
-                    }
-
-                    //up link
-                    if (layer > 0)
-                    {
-                        linkIndex = long(myProject->indexMap.at(layer - 1).value[row][col]);
-
-                        if (linkIndex != long(myProject->indexMap.at(layer - 1).header->flag))
-                        {
-                            myResult = soilFluxes3D::setNodeLink(index, linkIndex, UP, float(area));
-                            if (isCrit3dError(myResult, &myError))
-                            {
-                                myProject->errorString = "setNodeLink:" + myError + " in layer nr:" + QString::number(layer);
-                                return(false);
-                            }
-                        }
-                    }
-
-                    //down link
-                    if (int(layer) < (myProject->nrLayers - 1) && isWithinSoil(myProject, row, col, myProject->layerDepth.at(size_t(layer + 1))))
-                    {
-                        linkIndex = long(myProject->indexMap.at(layer + 1).value[row][col]);
-
-                        if (linkIndex != long(myProject->indexMap.at(layer + 1).header->flag))
-                        {
-                            myResult = soilFluxes3D::setNodeLink(index, linkIndex, DOWN, float(area));
-
-                            if (isCrit3dError(myResult, &myError))
-                            {
-                                myProject->errorString = "setNodeLink:" + myError + " in layer nr:" + QString::number(layer);
-                                return(false);
-                            }
-                        }
-                    }
-
-                    //lateral links
-                    for (int i=-1; i <= 1; i++)
-                        for (int j=-1; j <= 1; j++)
-                            if ((i != 0)||(j != 0))
-                                if (! gis::isOutOfGridRowCol(row+i, col+j, myProject->indexMap.at(layer)))
-                                {
-                                    linkIndex = long(myProject->indexMap.at(layer).value[row+i][col+j]);
-                                    if (linkIndex != long(myProject->indexMap.at(layer).header->flag))
-                                    {
-                                        myResult = soilFluxes3D::setNodeLink(index, linkIndex, LATERAL, float(lateralArea / 2));
-                                        if (isCrit3dError(myResult, &myError))
-                                        {
-                                            myProject->errorString = "setNodeLink:" + myError + " in layer nr:" + QString::number(layer);
-                                            return(false);
-                                        }
-                                    }
-                                }
-                }
-            }
-
-   return (true);
-}
-
-
-bool setCrit3DNodeSoil(Vine3DProject* myProject)
-{
-    long index;
-    long soilIndex, horizonIndex;
-    int myResult;
-    QString myError;
-
-    for (int layer = 0; layer < myProject->nrLayers; layer ++)
-        for (int row = 0; row < myProject->indexMap.at(layer).header->nrRows; row++)
-            for (int col = 0; col < myProject->indexMap.at(layer).header->nrCols; col++)
-            {
-                index = myProject->indexMap.at(layer).value[row][col];
-                if (index != myProject->indexMap.at(layer).header->flag)
-                {
-                    soilIndex = myProject->getSoilIndex(row, col);
-
-                    //surface
-                    if (layer == 0)
-                        myResult = soilFluxes3D::setNodeSurface(index, 0);
-
-                    //sub-surface
-                    else
-                    {
-                        horizonIndex = soil::getHorizonIndex(&(myProject->soilList[soilIndex]), myProject->layerDepth[layer]);
-                        if (horizonIndex == NODATA)
-                        {
-                            myProject->errorString = "function setCrit3DNodeSoil: \nno horizon definition in soil "
-                                    + QString::number(myProject->soilList[soilIndex].id) + " depth: " + QString::number(myProject->layerDepth[layer])
-                                    +"\nCheck soil totalDepth";
-                            return(false);
-                        }
-
-                        myResult = soilFluxes3D::setNodeSoil(index, soilIndex, horizonIndex);
-
-                        //check error
-                        if (isCrit3dError(myResult, &myError))
-                        {
-                            myProject->errorString = "setCrit3DNodeSoil:" + myError + " in soil nr: " + QString::number(soilIndex)
-                                    + " horizon nr:" + QString::number(horizonIndex);
-                            return(false);
-                        }
-                    }
-                }
-            }
-
-    return(true);
-}
-
-
-bool initializeSoilMoisture(Vine3DProject* myProject, int month)
-{
-    int myResult = CRIT3D_OK;
-    QString myError;
-    long index;
-    long soilIndex, horizonIndex;
-    double moistureIndex, waterPotential;
-    double fieldCapacity;                    //[m]
-    double  wiltingPoint = -160.0;           //[m]
-    double dry = wiltingPoint / 3.0;         //[m] dry potential
-
-    //[0-1] min: august  max: february
-    moistureIndex = fabs(1 - (month - 2) / 6);
-    moistureIndex = maxValue(moistureIndex, 0.001);
-    moistureIndex = log(moistureIndex) / log(0.001);
-
-    myProject->logInfo("Initialize soil moisture");
-
-    for (int layer = 0; layer < myProject->nrLayers; layer++)
-        for (int row = 0; row < myProject->indexMap.at(size_t(layer)).header->nrRows; row++)
-            for (int col = 0; col < myProject->indexMap.at(size_t(layer)).header->nrCols; col++)
-            {
-                index = long(myProject->indexMap.at(size_t(layer)).value[row][col]);
-                if (index != long(myProject->indexMap.at(size_t(layer)).header->flag))
-                {
-                    //surface
-                    if (layer == 0)
-                        soilFluxes3D::setWaterContent(index, 0.0);
-                    else
-                    {
-                        soilIndex = myProject->getSoilIndex(row, col);
-                        horizonIndex = soil::getHorizonIndex(&(myProject->soilList[soilIndex]), myProject->layerDepth[size_t(layer)]);
-                        fieldCapacity = myProject->soilList[soilIndex].horizon[horizonIndex].fieldCapacity;
-                        waterPotential = fieldCapacity - moistureIndex * (fieldCapacity-dry);
-                        myResult = soilFluxes3D::setMatricPotential(index, waterPotential);
-                    }
-
-                    if (isCrit3dError(myResult, &myError))
-                    {
-                        myProject->errorString = "initializeSoilMoisture:" + myError;
-                        return(false);
-                    }
-                }
-            }
-
-    return true;
 }
 
 
@@ -489,7 +231,7 @@ bool waterBalanceSinkSource(Vine3DProject* myProject, double* totalPrecipitation
         myResult = soilFluxes3D::setWaterSinkSource(i, myProject->waterSinkSource.at(size_t(i)));
         if (isCrit3dError(myResult, &myError))
         {
-            myProject->errorString = "initializeSoilMoisture:" + myError;
+            myProject->errorString = "waterBalanceSinkSource:" + myError;
             return(false);
         }
     }
@@ -545,9 +287,8 @@ double* getSoilVarProfile(Vine3DProject* myProject, int row, int col, soil::soil
     for (int layerIndex = 0; layerIndex < myProject->nrLayers; layerIndex++)
         myProfile[layerIndex] = NODATA;
 
-    int soilIndex = myProject->getSoilIndex(row, col);
-
     int nodeIndex;
+    int soilIndex = myProject->getSoilIndex(row, col);
 
     for (int layerIndex = 0; layerIndex < myProject->nrLayers; layerIndex++)
     {
@@ -632,6 +373,7 @@ bool setCriteria3DVarMap(int myLayerIndex, Vine3DProject* myProject, criteria3DV
 
     return true;
 }
+
 
 bool getCriteria3DVarMap(Vine3DProject* myProject, criteria3DVariable myVar,
                         int layerIndex, gis::Crit3DRasterGrid* criteria3DMap)
@@ -1035,16 +777,16 @@ bool initializeWaterBalance(Vine3DProject* myProject)
 
     myProject->logInfo("nr of layers: " + QString::number(myProject->nrLayers));
 
-    if (setIndexMap(myProject))
-        myProject->logInfo("nr of nodes: " + QString::number(myProject->nrNodes));
-    else
-    {
-        myProject->logError("initializeWaterBalance: missing data in Digital Elevation Model");
-        return false;
-    }
+    if (! myProject->setSoilIndexMap()) return false;
+
+    if (! myProject->setIndexMaps()) return false;
+    myProject->logInfo("nr of nodes: " + QString::number(myProject->nrNodes));
 
     myProject->waterSinkSource.resize(size_t(myProject->nrNodes));
-    myProject->setBoundary();
+
+    // Boundary
+    if (!myProject->setBoundary()) return false;
+    myProject->logInfo("Boundary computed");
 
     int myResult = soilFluxes3D::initialize(myProject->nrNodes, myProject->nrLayers,
                                             myProject->nrLateralLink, true, false, false);
@@ -1057,8 +799,8 @@ bool initializeWaterBalance(Vine3DProject* myProject)
 
     if (! myProject->setCrit3DSurfaces()) return(false);
     if (! myProject->setCrit3DSoils()) return(false);
-    if (! setCrit3DTopography(myProject)) return(false);
-    if (! setCrit3DNodeSoil(myProject)) return(false);
+    if (! myProject->setCrit3DTopography()) return(false);
+    if (! myProject->setCrit3DNodeSoil()) return(false);
 
     //soilFluxes3D::setNumericalParameters(6.0, 1800.0, 200, 10, 12, 3);   // precision
     soilFluxes3D::setNumericalParameters(30.0, 1800.0, 100, 10, 12, 2);  // speedy
@@ -1067,8 +809,4 @@ bool initializeWaterBalance(Vine3DProject* myProject)
     myProject->logInfo("Waterbalance initialized");
     return true;
 }
-
-
-
-
 

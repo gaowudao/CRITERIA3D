@@ -90,40 +90,7 @@ bool Crit3DProject::loadSoilMap(QString myFileName)
 }
 
 
-bool Crit3DProject::createIndexMap()
-{
-    // check
-    if (! this->DEM.isLoaded)
-    {
-        logError("Missing Digital Elevation Model.");
-        return false;
-    }
-
-    indexMap.clear();
-    indexMap.resize(1);
-    indexMap[0].initializeGrid(*(DEM.header));
-
-    long index = 0;
-    for (int row = 0; row < indexMap[0].header->nrRows; row++)
-    {
-        for (int col = 0; col < indexMap[0].header->nrCols; col++)
-        {
-            if (int(DEM.value[row][col]) != int(DEM.header->flag))
-            {
-                indexMap[0].value[row][col] = float(index);
-                index++;
-            }
-        }
-    }
-
-    gis::updateMinMaxRasterGrid(&indexMap[0]);
-    indexMap[0].isLoaded = true;
-    nrNodesPerLayer = index;
-    return(nrNodesPerLayer > 0);
-}
-
-
-bool Crit3DProject::createSoilIndexMap()
+bool Crit3DProject::setSoilIndexMap()
 {
     // check
     if (!DEM.isLoaded || !soilMap.isLoaded || soilList.size() == 0)
@@ -157,7 +124,7 @@ bool Crit3DProject::createSoilIndexMap()
 }
 
 
-int Crit3DProject::getSoilIndex(int demRow, int demCol)
+int Crit3DProject::getCrit3DSoilIndex(int demRow, int demCol)
 {
     double x, y;
     int idSoil;
@@ -221,11 +188,9 @@ double Crit3DProject::getSoilVar(int soilIndex, int layerIndex, soil::soilVariab
 }
 
 
-void Crit3DProject::clearProject()
+void Crit3DProject::clearCriteria3DProject()
 {
     clearWaterBalance3D();
-
-    soilIndexMap.clear();
     cropIndexMap.clear();
 
     isInitialized = false;
@@ -351,23 +316,16 @@ bool Crit3DProject::initializeCriteria3D()
         return false;
     }
 
-    this->clearProject();
+    this->clearCriteria3DProject();
 
-    if (!createSoilIndexMap()) return false;
+    if (!setSoilIndexMap()) return false;
 
-    // loadCropProperties()
-    // load crop map
+    // TODO loadCropProperties()
 
-    if (! initializeWaterBalance3D(this))
-    {
-        this->clearProject();
-        return false;
-    }
+    // TODO load crop map
 
-    //initialize root density
-    //TO DO: andrebbe rifatto per ogni tipo di suolo
-    //(ora considera solo suolo 0)
-    /*
+    /* TODO initialize root density
+    // andrebbe rifatto per ogni tipo di suolo (ora considera solo suolo 0)
     int nrSoilLayersWithoutRoots = 2;
     int soilLayerWithRoot = this->nrSoilLayers - nrSoilLayersWithoutRoots;
     double depthModeRootDensity = 0.35*this->soilDepth;     //[m] depth of mode of root density
@@ -375,7 +333,14 @@ bool Crit3DProject::initializeCriteria3D()
     initializeRootProperties(&(this->soilList[0]), this->nrSoilLayers, this->soilDepth,
                          this->layerDepth.data(), this->layerThickness.data(),
                          nrSoilLayersWithoutRoots, soilLayerWithRoot,
-                         GAMMA_DISTRIBUTION, depthModeRootDensity, depthMeanRootDensity);*/
+                         GAMMA_DISTRIBUTION, depthModeRootDensity, depthMeanRootDensity);
+    */
+
+    if (! initializeWaterBalance3D(this))
+    {
+        this->clearCriteria3DProject();
+        return false;
+    }
 
     this->isInitialized = true;
     logInfoGUI("Criteria3D model initialized");

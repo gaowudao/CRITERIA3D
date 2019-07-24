@@ -139,7 +139,7 @@ bool modelDailyCycle(bool isInitialState, Crit3DDate myDate, int nrHours,
 
         if (isInitialState)
         {
-            initializeSoilMoisture(myProject, myCurrentTime.date.month);
+            myProject->initializeSoilMoisture(myCurrentTime.date.month);
         }
 
         //Grapevine

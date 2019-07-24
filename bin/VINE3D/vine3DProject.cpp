@@ -797,12 +797,14 @@ bool Vine3DProject::loadSoils()
         return false;
     }
 
-    nrSoils = int(soilList.size());
+    nrSoils = soilList.size();
 
-    for (unsigned int i = 0; i < soilList.size(); i++)
+    double maxSoilDepth = 0;
+    for (unsigned int i = 0; i < nrSoils; i++)
     {
-        soilDepth = minValue(soilDepth, soilList[i].totalDepth);
+        maxSoilDepth = maxValue(maxSoilDepth, soilList[i].totalDepth);
     }
+    soilDepth = minValue(soilDepth, maxSoilDepth);
 
     logInfo("Soil depth = " + QString::number(this->soilDepth));
     return true;
@@ -1649,16 +1651,17 @@ bool Vine3DProject::saveStateAndOutput(QDate myDate, QString myArea, bool saveDi
 
 int Vine3DProject::getModelCaseIndex(long row, long col)
 {
-    if (gis::isOutOfGridRowCol(row, col, modelCaseIndexMap))
-        return NODATA;
+    if (gis::isOutOfGridRowCol(row, col, modelCaseIndexMap)) return NODATA;
 
     int caseIndex = modelCaseIndexMap.value[row][col];
-    if (caseIndex == modelCaseIndexMap.header->flag)
+    if (caseIndex == int(modelCaseIndexMap.header->flag))
+    {
         //DEFAULT
         caseIndex = 0;
+    }
+
     return caseIndex;
 }
-
 
 bool Vine3DProject::isVineyard(long row, long col)
 {
@@ -1666,15 +1669,55 @@ bool Vine3DProject::isVineyard(long row, long col)
     return (modelCases[caseIndex].landuse == landuse_vineyard);
 }
 
-int Vine3DProject::getSoilIndex(long row, long col)
+int Vine3DProject::getVine3DSoilIndex(long row, long col)
 {
     int caseIndex = this->getModelCaseIndex(row, col);
 
     if (caseIndex != NODATA)
+    {
         return this->modelCases[caseIndex].soilIndex;
+    }
     else
+    {
         return NODATA;
+    }
 }
+
+bool Vine3DProject::setSoilIndexMap()
+{
+    // check
+    if (!DEM.isLoaded || !modelCaseIndexMap.isLoaded || nrSoils == 0)
+    {
+        if (!DEM.isLoaded)
+            logError("Missing Digital Elevation Model.");
+        else if (!modelCaseIndexMap.isLoaded)
+            logError("Missing field map.");
+        else if (nrSoils == 0)
+            logError("Missing soil properties.");
+        return false;
+    }
+
+    int soilIndex;
+    soilIndexMap.initializeGrid(*(DEM.header));
+    for (int row = 0; row < DEM.header->nrRows; row++)
+    {
+        for (int col = 0; col < DEM.header->nrCols; col++)
+        {
+            if (int(DEM.value[row][col]) != int(DEM.header->flag))
+            {
+                soilIndex = getVine3DSoilIndex(row, col);
+                if (soilIndex != int(NODATA))
+                {
+                    soilIndexMap.value[row][col] = soilIndex;
+                }
+            }
+        }
+    }
+
+    soilIndexMap.isLoaded = true;
+    return true;
+}
+
 
 soil::Crit3DHorizon* Vine3DProject::getSoilHorizon(long row, long col, int layer)
 {

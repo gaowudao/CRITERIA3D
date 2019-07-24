@@ -139,9 +139,15 @@
         int getIndexPointFromId(QString myId);
 
         float getTimeStep();
+
         int getModelCaseIndex(long row, long col);
+
         bool isVineyard(long row, long col);
-        int getSoilIndex(long row, long col);
+
+        int getVine3DSoilIndex(long row, long col);
+
+        bool setSoilIndexMap();
+
         soil::Crit3DHorizon* getSoilHorizon(long row, long col, int layer);
 
         bool runModels(QDateTime myTime1, QDateTime myTime2, bool saveOutput, bool computeDiseases, const QString& myArea);

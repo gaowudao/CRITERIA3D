@@ -22,7 +22,7 @@
     public:
         // same header of DEM
         gis::Crit3DRasterGrid soilMap;
-        gis::Crit3DRasterGrid soilIndexMap;
+
         gis::Crit3DRasterGrid cropIndexMap;
 
         bool isParametersLoaded;
@@ -37,17 +37,16 @@
         bool loadSoilData(QString dbName);
         bool loadSoilMap(QString fileName);
 
-        void clearProject();
+        void clearCriteria3DProject();
         bool initializeCriteria3D();
 
-        bool createSoilIndexMap();
-        bool createIndexMap();
+        bool setSoilIndexMap();
 
         double getSoilVar(int soilIndex, int layerIndex, soil::soilVariable myVar);
         double* getSoilVarProfile(int row, int col, soil::soilVariable myVar);
         bool setSoilProfileCrop(int row, int col);
 
-        int getSoilIndex(int demRow, int demCol);
+        int getCrit3DSoilIndex(int demRow, int demCol);
 
         bool setDEM(QString myFileName);
 
