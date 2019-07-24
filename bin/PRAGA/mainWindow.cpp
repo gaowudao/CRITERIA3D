@@ -1946,7 +1946,6 @@ void MainWindow::on_actionNew_aggregation_DB_triggered()
 void MainWindow::on_actionOpen_project_triggered()
 {
     QString fileName = QFileDialog::getOpenFileName(this, tr("Open project file"), "", tr("ini files (*.ini)"));
-
     if (fileName == "") return;
 
     if (! myProject.loadProjectSettings(fileName))
@@ -1960,10 +1959,6 @@ void MainWindow::on_actionOpen_project_triggered()
     if (myProject.DEM.isLoaded)
         renderDEM();
 
-    resetMeteoPoints();
-    currentPointsVisualization = showLocation;
     drawMeteoPoints();
-
-    currentGridVisualization = showLocation;
     drawMeteoGrid();
 }
