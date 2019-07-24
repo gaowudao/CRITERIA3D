@@ -19,7 +19,7 @@ See [PRAGA wiki](https://github.com/ARPA-SIMC/CRITERIA3D/wiki/PRAGA) for more in
 ## TestCriteria1D
 Test program for the 1D water balance using criteriaModel, crop and soil libraries.
 
-To compile it, use the project *Makeall_CRITERIA1D*. Example data are available in *DATA/Criteria1d* directory.
+To compile it, use the project `Makeall_CRITERIA1D`. Example data are available in `DATA/criteria1d` directory.
 
 ## HEAT1D
 HEAT1D is a graphical interface for testing the soilFluxex3D library in a 1D domain. Users can set fixed or variable atmospheric boundary conditions and soil parameters. Output graph results include soil temperature, soil water content, heat fluxes (diffusive and latent), liquid (isothermal and thermal) and vapor (isothermal and thermal) water fluxes. 
@@ -46,7 +46,7 @@ Algorithms for the spatialization of meteorological data.
 CRITERIA3D has been developed under contract issued by 
 ARPAE Hydro-Meteo-Climate Service, Emilia-Romagna, Italy: http://www.arpae.it/sim/
 
-Executables (CRITERIA3D, PRAGA, VINE3D, HEAT1D, etc.) are released under the GNU GPL, libreries are released under the GNU LGPL.
+Executables (CRITERIA3D, PRAGA, VINE3D, HEAT1D, etc.) are released under the GNU GPL license, libreries are released under the GNU LGPL license.
 
 # Authors
 Fausto Tomei <ftomei@arpae.it>
