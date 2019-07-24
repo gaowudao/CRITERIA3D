@@ -32,9 +32,9 @@ int main(int argc, char *argv[])
         settingsFileName = argv[1];
     else
     {
-        settingsFileName = "../../../DATA/criteria1D/example/kiwifruit.ini";
+        settingsFileName = "../../../DATA/criteria1D/kiwifruit/kiwifruit.ini";
 
-        //myProject.logError("USAGE: CRITERIA1D settings_filename.ini");
+        //myProject.logError("USAGE: CRITERIA1D filename.ini");
         //return ERROR_SETTINGS_MISSING;
     }
 

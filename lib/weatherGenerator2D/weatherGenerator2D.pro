@@ -38,6 +38,7 @@ INCLUDEPATH += ../weatherGenerator
 SOURCES += wg2D.cpp \
     randomset.cpp \
     wg2D_precipitation.cpp \
-    wg2D_temperature.cpp
+    wg2D_temperature.cpp \
+    wg2doutputmanagement.cpp
 
 HEADERS += wg2D.h

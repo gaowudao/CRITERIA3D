@@ -38,6 +38,8 @@ bool computeWGClimate(int nrDays, Crit3DDate inputFirstDate, float *inputTMin, f
     int nrData[12] = {0};
     float sumTmaxWet[12] = {0};
     float sumTmaxDry[12] = {0};
+    float sumTminWet[12] = {0};
+    float sumTminDry[12] = {0};
     int daysInMonth;
     bool isPreviousDayWet = false;
 
@@ -66,13 +68,15 @@ bool computeWGClimate(int nrDays, Crit3DDate inputFirstDate, float *inputTMin, f
             {
                 if (isPreviousDayWet) nWetWetDays[m]++;
                 nWetDays[m] = nWetDays[m] + 1;
-                sumTmaxWet[m] = sumTmaxWet[m] + inputTMax[n];
+                sumTmaxWet[m] += inputTMax[n];
+                sumTminWet[m] += inputTMin [n];
                 isPreviousDayWet = true;
             }
             else
             {
                 nDryDays[m] = nDryDays[m] + 1;
-                sumTmaxDry[m] = sumTmaxDry[m] + inputTMax[n];
+                sumTmaxDry[m] += inputTMax[n];
+                sumTminDry[m] += inputTMin[n];
                 isPreviousDayWet = false;
             }
         }
@@ -89,6 +93,10 @@ bool computeWGClimate(int nrDays, Crit3DDate inputFirstDate, float *inputTMin, f
         {
             wGen->monthly.monthlyTmax[m] = sumTMax[m] / nrData[m]; //computes mean monthly values of maximum temperature
             wGen->monthly.monthlyTmin[m] = sumTMin[m] / nrData[m]; //computes mean monthly values of minimum temperature
+            wGen->monthly.monthlyTmaxDry[m] = sumTmaxDry[m] / nDryDays[m];
+            wGen->monthly.monthlyTmaxWet[m] = sumTmaxWet[m] / nWetDays[m];
+            wGen->monthly.monthlyTminDry[m] = sumTminDry[m] / nDryDays[m];
+            wGen->monthly.monthlyTminWet[m] = sumTminWet[m] / nWetDays[m];
 
             daysInMonth = getDaysInMonth(m+1,2001); // year = 2001 is to avoid leap year
 
@@ -133,11 +141,16 @@ bool computeWGClimate(int nrDays, Crit3DDate inputFirstDate, float *inputTMin, f
             stream << "wGen->monthly.monthlyTmin = " << wGen->monthly.monthlyTmin[m] << endl;
             stream << "wGen->monthly.monthlyTmax = " << wGen->monthly.monthlyTmax[m] << endl;
             stream << "wGen->monthly.sumPrec = " << wGen->monthly.sumPrec[m] << endl;
-            stream << "wGen->monthly.stDevTmin[m] = " << wGen->monthly.stDevTmin[m] << endl;
+            stream << "wGen->monthly.stDevTmin = " << wGen->monthly.stDevTmin[m] << endl;
             stream << "wGen->monthly.stDevTmax = " << wGen->monthly.stDevTmax[m] << endl;
-            stream << "wGen->monthly.fractionWetDays[m] = " << wGen->monthly.fractionWetDays[m] << endl;
-            stream << "wGen->monthly.probabilityWetWet[m] = " << wGen->monthly.probabilityWetWet[m] << endl;
-            stream << "wGen->monthly.dw_Tmax[m] = " << wGen->monthly.dw_Tmax[m] << endl;
+            stream << "wGen->monthly.fractionWetDays = " << wGen->monthly.fractionWetDays[m] << endl;
+            stream << "wGen->monthly.probabilityWetWet = " << wGen->monthly.probabilityWetWet[m] << endl;
+            stream << "wGen->monthly.dw_Tmax = " << wGen->monthly.dw_Tmax[m] << endl;
+            stream << "wGen->monthly.monthlyTminDry = " << wGen->monthly.monthlyTminDry[m] << endl;
+            stream << "wGen->monthly.monthlyTmaxDry = " << wGen->monthly.monthlyTmaxDry[m] << endl;
+            stream << "wGen->monthly.monthlyTminWet = " << wGen->monthly.monthlyTminWet[m] << endl;
+            stream << "wGen->monthly.monthlyTmaxWet = " << wGen->monthly.monthlyTmaxWet[m] << endl;
+
             stream << "-------------------------------------------" << endl;
         }
     }

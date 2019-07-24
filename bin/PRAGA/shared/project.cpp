@@ -362,26 +362,6 @@ bool Project::loadProjectSettings(QString settingsFileName)
 
     projectSettings = new QSettings(settingsFileName, QSettings::IniFormat);
 
-    projectSettings->beginGroup("path");
-    QString myPath = projectSettings->value("path").toString();
-    projectSettings->endGroup();
-
-    if (! myPath.isEmpty())
-    {
-        if (myPath.right(1) != "/")
-            myPath += "/";
-
-        if(myPath.left(1) == ".")
-        {
-            path += myPath;
-            path = QDir::cleanPath(path) + "/";
-        }
-        else
-        {
-            path = myPath;
-        }
-    }
-
     projectSettings->beginGroup("location");
         double latitude = projectSettings->value("lat").toDouble();
         double longitude = projectSettings->value("lon").toDouble();
@@ -403,6 +383,25 @@ bool Project::loadProjectSettings(QString settingsFileName)
     gisSettings.timeZone = timeZone;
 
     projectSettings->beginGroup("project");
+        // path
+        QString myPath = projectSettings->value("path").toString();
+        projectSettings->endGroup();
+
+        if (! myPath.isEmpty())
+        {
+            if(myPath.left(1) == ".")
+            {
+                path += myPath;
+                path = QDir::cleanPath(path);
+            }
+            else
+            {
+                path = myPath;
+            }
+
+            if (path.right(1) != "/") path += "/";
+        }
+
         projectName = projectSettings->value("name").toString();
         demName = projectSettings->value("dem").toString();
         dbPointsName = projectSettings->value("meteo_points").toString();
@@ -622,7 +621,11 @@ bool Project::loadMeteoPointsDB(QString dbName)
 
     closeMeteoPointsDB();
 
+<<<<<<< HEAD
     dbName = getCompleteFileName(dbName, "DATA/POINT/");
+=======
+    dbName = getCompleteFileName(dbName, "DATA/METEOPOINT/");
+>>>>>>> ba4eb08a0d72da8d45745d55e560fb0243b6fe9d
 
     meteoPointsDbHandler = new Crit3DMeteoPointsDbHandler(dbName);
     if (meteoPointsDbHandler->error != "")
