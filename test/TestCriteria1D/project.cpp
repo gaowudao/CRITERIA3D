@@ -118,24 +118,24 @@ bool Criteria1DProject::readSettings()
     this->path += projectSettings->value("path","").toString();
     this->name += projectSettings->value("name","").toString();
 
-    this->dbParametersName = projectSettings->value("DBparameters","").toString();
+    this->dbParametersName = projectSettings->value("db_parameters","").toString();
     if (this->dbParametersName.left(1) == ".")
         this->dbParametersName = this->path + this->dbParametersName;
 
-    this->dbSoilName = projectSettings->value("DBsoil","").toString();
+    this->dbSoilName = projectSettings->value("db_soil","").toString();
     if (this->dbSoilName.left(1) == ".")
         this->dbSoilName = this->path + this->dbSoilName;
 
-    this->dbMeteoName = projectSettings->value("DBmeteo","").toString();
+    this->dbMeteoName = projectSettings->value("db_meteo","").toString();
     if (this->dbMeteoName.left(1) == ".")
         this->dbMeteoName = this->path + this->dbMeteoName;
 
-    this->dbForecastName = projectSettings->value("DBforecast","").toString();
+    this->dbForecastName = projectSettings->value("db_forecast","").toString();
     if (this->dbForecastName.left(1) == ".")
         this->dbForecastName = this->path + this->dbForecastName;
 
     // unit list
-    this->dbUnitsName = projectSettings->value("DBunits","").toString();
+    this->dbUnitsName = projectSettings->value("db_units","").toString();
     if (this->dbUnitsName.left(1) == ".")
         this->dbUnitsName = this->path + this->dbUnitsName;
 
@@ -145,7 +145,7 @@ bool Criteria1DProject::readSettings()
         return false;
     }
 
-    this->dbOutputName = projectSettings->value("DBoutput","").toString();
+    this->dbOutputName = projectSettings->value("db_output","").toString();
     if (this->dbOutputName.left(1) == ".")
         this->dbOutputName = this->path + this->dbOutputName;
 
