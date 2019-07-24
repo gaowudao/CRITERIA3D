@@ -47,6 +47,8 @@
             soil::Crit3DTextureClass textureClassList[13];
             int dbSoilType;
 
+            QAction* addHorizon;
+            QAction* deleteHorizon;
             QAction* useData;
             QAction* airEntry;
 
@@ -57,6 +59,8 @@
             void on_actionUseData();
             void on_actionAirEntry();
             void on_actionChooseSoil(QString);
+            void on_actionAddHorizon();
+            void on_actionDeleteHorizon();
     };
 
 #endif // SOILWIDGET_H

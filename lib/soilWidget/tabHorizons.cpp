@@ -294,14 +294,8 @@ void TabHorizons::tableDbVerticalHeaderClick(int index)
     tableDb->horizontalHeader()->setHighlightSections(false);
     tableModel->selectRow(index);
     tableModel->horizontalHeader()->setHighlightSections(false);
-    if (index == tableDb->rowCount()-1)
-    {
-        deleteRow->setEnabled(true);
-    }
-    else
-    {
-        deleteRow->setEnabled(false);
-    }
+    deleteRow->setEnabled(true);
+
 }
 
 void TabHorizons::cellChanged(int row, int column)
@@ -467,10 +461,18 @@ void TabHorizons::addRowClicked()
 
 void TabHorizons::removeRowClicked()
 {
-    tableDb->blockSignals(true);
-    clearSelections();
-    tableDb->removeRow(tableDb->rowCount()-1);
-    tableModel->removeRow(tableDb->rowCount()-1);
+    int row;
+    if (!tableDb->selectedItems().isEmpty())
+    {
+        row = tableDb->selectedItems().at(0)->row();
+    }
+    else
+    {
+        QMessageBox::critical(nullptr, "Error!", "Select an horizon");
+        return;
+    }
+    tableDb->removeRow(row);
+    tableModel->removeRow(row);
     // LC inserire una funzione di removeHorizon
-    tableDb->blockSignals(false);
+    checkDepths();
 }
