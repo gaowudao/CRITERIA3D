@@ -12,5 +12,6 @@
     bool pragaShell(PragaProject* myProject);
     bool pragaBatch(PragaProject* myProject, QString batchFileName);
 
+    bool cmdOpenPragaProject(PragaProject* myProject, QStringList argumentList);
 
 #endif // PRAGASHELL_H
