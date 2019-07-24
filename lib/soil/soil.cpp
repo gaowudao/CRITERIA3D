@@ -148,6 +148,18 @@ namespace soil
         this->totalDepth = 0;
     }
 
+    void Crit3DSoil::addHorizon(int nHorizon)
+    {
+        this->nrHorizons = nrHorizons + 1;
+        // TO DO
+    }
+
+    void Crit3DSoil::deleteHorizon(int nHorizon)
+    {
+        this->nrHorizons = nrHorizons - 1;
+        // TO DO
+    }
+
     void Crit3DSoil::cleanSoil()
     {
         if (this->horizon != nullptr)
