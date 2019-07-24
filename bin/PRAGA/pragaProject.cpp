@@ -132,7 +132,7 @@ bool PragaProject::saveGrid(meteoVariable myVar, frequencyType myFrequency, cons
     {
         if (showInfo)
         {
-            QString infoStr = "Save grid daily data";
+            QString infoStr = "Save meteo grid daily data";
             infoStep = myInfo.start(infoStr, this->meteoGridDbHandler->gridStructure().header().nrRows);
         }
 
@@ -163,7 +163,7 @@ bool PragaProject::saveGrid(meteoVariable myVar, frequencyType myFrequency, cons
     {
         if (showInfo)
         {
-            QString infoStr = "Save grid hourly data";
+            QString infoStr = "Save meteo grid hourly data";
             infoStep = myInfo.start(infoStr, this->meteoGridDbHandler->gridStructure().header().nrRows);
         }
 

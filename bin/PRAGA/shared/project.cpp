@@ -372,7 +372,7 @@ bool Project::loadProjectSettings(QString settingsFileName)
 
     if (! gis::isValidUtmTimeZone(utmZone, timeZone))
     {
-        logError("Wrong time zone");
+        logError("Wrong time_zone or utm_zone in file:\n" + settingsFileName);
         return false;
     }
 
@@ -622,7 +622,7 @@ bool Project::loadMeteoPointsDB(QString dbName)
     meteoPointsDbHandler = new Crit3DMeteoPointsDbHandler(dbName);
     if (meteoPointsDbHandler->error != "")
     {
-        logError(meteoPointsDbHandler->error);
+        logError("Function loadMeteoPointsDB:\n" + dbName + "\n" + meteoPointsDbHandler->error);
         closeMeteoPointsDB();
         return false;
     }
@@ -773,7 +773,7 @@ bool Project::loadMeteoGridDailyData(QDate firstDate, QDate lastDate, bool showI
 
     if (showInfo)
     {
-        QString infoStr = "Load grid daily data: " + firstDate.toString();
+        QString infoStr = "Load meteo grid daily data: " + firstDate.toString();
         if (firstDate != lastDate) infoStr += " - " + lastDate.toString();
         infoStep = myInfo.start(infoStr, this->meteoGridDbHandler->gridStructure().header().nrRows);
     }
@@ -826,7 +826,7 @@ bool Project::loadMeteoGridHourlyData(QDateTime firstDate, QDateTime lastDate, b
 
     if (showInfo)
     {
-        QString infoStr = "Load grid hourly data: " + firstDate.toString("yyyy-MM-dd:hh") + " - " + lastDate.toString("yyyy-MM-dd:hh");
+        QString infoStr = "Load meteo grid hourly data: " + firstDate.toString("yyyy-MM-dd:hh") + " - " + lastDate.toString("yyyy-MM-dd:hh");
         infoStep = myInfo.start(infoStr, this->meteoGridDbHandler->gridStructure().header().nrRows);
     }
 
@@ -1234,8 +1234,6 @@ QString Project::getCompleteFileName(QString fileName, QString secondaryPath)
         return fileName;
     }
 }
-
-
 
 
 bool Project::loadProject()
