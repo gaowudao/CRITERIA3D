@@ -622,7 +622,7 @@ bool Project::loadMeteoPointsDB(QString dbName)
 
     closeMeteoPointsDB();
 
-    dbName = getCompleteFileName(dbName, "DATA/db/");
+    dbName = getCompleteFileName(dbName, "DATA/POINT/");
 
     meteoPointsDbHandler = new Crit3DMeteoPointsDbHandler(dbName);
     if (meteoPointsDbHandler->error != "")
@@ -1248,8 +1248,9 @@ bool Project::loadProject()
     if (! loadParameters(parametersFile))
         return false;
 
-    if (! setLogFile(logFileName))
-        return false;
+    if (logFileName != "")
+        if (! setLogFile(logFileName))
+            return false;
 
     if (demName != "")
         if (! loadDEM(demName))
