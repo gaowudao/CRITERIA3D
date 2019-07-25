@@ -123,6 +123,8 @@ MainWindow::MainWindow(QWidget *parent) :
     this->currentPointsVisualization = notShown;
     this->currentGridVisualization = notShown;
 
+    this->setWindowTitle("PRAGA");
+
     ui->groupBoxElab->hide();
 }
 
@@ -916,6 +918,8 @@ bool MainWindow::loadMeteoPoints(QString dbName)
 
 void MainWindow::drawMeteoGrid()
 {
+    if (myProject.meteoGridDbHandler == nullptr) return;
+
     myProject.meteoGridDbHandler->meteoGrid()->createRasterGrid();
 
     if (myProject.meteoGridDbHandler->gridStructure().isUTM() == false)
@@ -1954,7 +1958,8 @@ void MainWindow::on_actionOpen_project_triggered()
         renderDEM();
 
     drawMeteoPoints();
+    drawMeteoGrid();
 
-    if (myProject.meteoGridDbHandler != nullptr)
-        drawMeteoGrid();
+    this->setWindowTitle("PRAGA - " + myProject.projectName);
+
 }
