@@ -176,18 +176,7 @@ bool TabHorizons::checkHorizonData(int horizonNum)
         tableDb->item(horizonNum,3)->setBackgroundColor(Qt::red);
         tableDb->item(horizonNum,4)->setBackgroundColor(Qt::red);
 
-        tableModel->item(horizonNum,0)->setBackgroundColor(Qt::red);
-        tableModel->item(horizonNum,1)->setBackgroundColor(Qt::red);
-        tableModel->item(horizonNum,2)->setBackgroundColor(Qt::red);
-        tableModel->item(horizonNum,3)->setBackgroundColor(Qt::red);
-        tableModel->item(horizonNum,4)->setBackgroundColor(Qt::red);
-        tableModel->item(horizonNum,5)->setBackgroundColor(Qt::red);
-        tableModel->item(horizonNum,6)->setBackgroundColor(Qt::red);
-        tableModel->item(horizonNum,7)->setBackgroundColor(Qt::red);
-        tableModel->item(horizonNum,8)->setBackgroundColor(Qt::red);
-        tableModel->item(horizonNum,9)->setBackgroundColor(Qt::red);
-        tableModel->item(horizonNum,10)->setBackgroundColor(Qt::red);
-
+        setInvalidTableModelRow(horizonNum);
         goOn = false;
     }
 
@@ -217,6 +206,21 @@ bool TabHorizons::checkHorizonData(int horizonNum)
     }
     return goOn;
 
+}
+
+bool TabHorizons::setInvalidTableModelRow(int horizonNum)
+{
+    tableModel->item(horizonNum,0)->setBackgroundColor(Qt::red);
+    tableModel->item(horizonNum,1)->setBackgroundColor(Qt::red);
+    tableModel->item(horizonNum,2)->setBackgroundColor(Qt::red);
+    tableModel->item(horizonNum,3)->setBackgroundColor(Qt::red);
+    tableModel->item(horizonNum,4)->setBackgroundColor(Qt::red);
+    tableModel->item(horizonNum,5)->setBackgroundColor(Qt::red);
+    tableModel->item(horizonNum,6)->setBackgroundColor(Qt::red);
+    tableModel->item(horizonNum,7)->setBackgroundColor(Qt::red);
+    tableModel->item(horizonNum,8)->setBackgroundColor(Qt::red);
+    tableModel->item(horizonNum,9)->setBackgroundColor(Qt::red);
+    tableModel->item(horizonNum,10)->setBackgroundColor(Qt::red);
 }
 
 void TabHorizons::checkMissingItem(int horizonNum)
@@ -380,10 +384,12 @@ void TabHorizons::cellChanged(int row, int column)
     }
 
     std::string errorString;
+
     soil::setHorizon(&(mySoil->horizon[row]), myTextureClassList, &errorString);
 
     // update tableModel values
     tableModel->item(row,0)->setText(QString::fromStdString(mySoil->horizon[row].texture.classNameUSDA));
+
     if (mySoil->horizon[row].coarseFragments != NODATA)
     {
         tableModel->item(row,1)->setText(QString::number(mySoil->horizon[row].coarseFragments*100, 'f', 1 ));
@@ -454,14 +460,16 @@ void TabHorizons::addRowClicked()
     for (int j=0; j<tableDb->columnCount(); j++)
     {
         tableDb->setItem(numRow, j, new QTableWidgetItem());
+    }
+    for (int j=0; j<tableModel->columnCount(); j++)
+    {
         tableModel->setItem(numRow, j, new QTableWidgetItem());
     }
     tableDb->scrollToBottom();
     tableModel->scrollToBottom();
     deleteRow->setEnabled(true);
     tableDb->item(numRow, 0)->setText(lowerDepth);
-    tableDb->selectRow(numRow);
-    tableModel->selectRow(numRow);
+    setInvalidTableModelRow(numRow);
 
     soil::Crit3DHorizon* newHor = new soil::Crit3DHorizon();
     // set newHor dbData
