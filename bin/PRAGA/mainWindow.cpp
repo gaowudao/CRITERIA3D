@@ -312,6 +312,15 @@ void MainWindow::on_actionRectangle_Selection_triggered()
      }
 }
 
+void MainWindow::clearDEM()
+{
+    this->rasterObj = nullptr;
+    ui->labelRasterScale->setText("");
+    this->ui->rasterOpacitySlider->setEnabled(false);
+    this->mapView->centerOn(startCenter->lonLat());
+}
+
+
 void MainWindow::renderDEM()
 {
     this->setCurrentRaster(&(myProject.DEM));
@@ -1946,6 +1955,16 @@ void MainWindow::on_actionNew_aggregation_DB_triggered()
     myProject.loadAggregationdDB(dbName);
 }
 
+void MainWindow::drawProject()
+{
+    if (myProject.DEM.isLoaded)
+        renderDEM();
+
+    drawMeteoPoints();
+    drawMeteoGrid();
+
+    this->setWindowTitle("PRAGA - " + myProject.projectName);
+}
 
 void MainWindow::on_actionOpen_project_triggered()
 {
@@ -1954,22 +1973,18 @@ void MainWindow::on_actionOpen_project_triggered()
 
     if (! myProject.loadPragaProject(fileName)) return;
 
-    if (myProject.DEM.isLoaded)
-        renderDEM();
-
-    drawMeteoPoints();
-    drawMeteoGrid();
-
-    this->setWindowTitle("PRAGA - " + myProject.projectName);
-
+    drawProject();
 }
 
 void MainWindow::on_actionClose_project_triggered()
 {
     if (! myProject.isProjectLoaded) return;
 
-    myProject.loadPragaProject(myProject.appPath + "default.ini");
-
+    clearDEM();
     on_actionClose_meteo_points_triggered();
     on_actionClose_meteo_grid_triggered();
+
+    if (! myProject.loadPragaProject(myProject.appPath + "default.ini")) return;
+
+    drawProject();
 }

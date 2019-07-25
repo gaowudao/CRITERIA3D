@@ -165,6 +165,7 @@
         QPoint getMapPoint(QPoint* point) const;
 
         void renderDEM();
+        void clearDEM();
         void updateVariable();
         void updateDateTime();
         void resetMeteoPoints();
@@ -173,6 +174,7 @@
         void redrawMeteoPoints(visualizationType showType, bool updateColorSCale);
         void drawMeteoGrid();
         void redrawMeteoGrid(visualizationType showType);
+        void drawProject();
 
         bool loadMeteoPoints(QString dbName);
         bool loadMeteoGrid(QString xmlName);
