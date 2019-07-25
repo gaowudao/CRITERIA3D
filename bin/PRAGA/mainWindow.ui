@@ -2934,6 +2934,7 @@
      <addaction name="separator"/>
     </widget>
     <addaction name="actionOpen_project"/>
+    <addaction name="actionClose_project"/>
     <addaction name="separator"/>
     <addaction name="actionOpen_DEM"/>
     <addaction name="separator"/>
@@ -3428,6 +3429,11 @@
   <action name="actionOpen_project">
    <property name="text">
     <string>Open project..</string>
+   </property>
+  </action>
+  <action name="actionClose_project">
+   <property name="text">
+    <string>Close project</string>
    </property>
   </action>
  </widget>

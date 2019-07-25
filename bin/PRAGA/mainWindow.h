@@ -117,6 +117,8 @@
 
         void on_actionOpen_project_triggered();
 
+        void on_actionClose_project_triggered();
+
     protected:
         /*!
          * \brief mouseReleaseEvent call moveCenter

@@ -180,7 +180,7 @@ bool Project::loadParameters(QString parametersFileName)
 {
     parametersFileName = getCompleteFileName(parametersFileName, "DATA/SETTINGS/");
 
-    if (! QFile(parametersFileName).exists())
+    if (! QFile(parametersFileName).exists() || ! QFileInfo(parametersFileName).isFile())
     {
         logError("Missing file: " + parametersFileName);
         return false;
@@ -354,7 +354,7 @@ bool Project::loadProjectSettings(QString settingsFileName)
 {
     path = getFilePath(settingsFileName);
 
-    if (! QFile(settingsFileName).exists())
+    if (! QFile(settingsFileName).exists() || ! QFileInfo(settingsFileName).isFile())
     {
         logError("Missing settings file: " + settingsFileName);
         return false;

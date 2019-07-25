@@ -1963,3 +1963,13 @@ void MainWindow::on_actionOpen_project_triggered()
     this->setWindowTitle("PRAGA - " + myProject.projectName);
 
 }
+
+void MainWindow::on_actionClose_project_triggered()
+{
+    if (! myProject.isProjectLoaded) return;
+
+    myProject.loadPragaProject(myProject.appPath + "default.ini");
+
+    on_actionClose_meteo_points_triggered();
+    on_actionClose_meteo_grid_triggered();
+}
