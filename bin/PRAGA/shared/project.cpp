@@ -479,7 +479,6 @@ void Project::getMeteoPointsRange(float *minimum, float *maximum)
 
 void Project::closeMeteoPointsDB()
 {
-
     if (meteoPointsDbHandler != nullptr)
     {
         delete meteoPointsDbHandler;
@@ -496,7 +495,6 @@ void Project::closeMeteoPointsDB()
                 meteoPoints[i].cleanObsDataD();
                 meteoPoints[i].cleanObsDataM();
             }
-
             delete [] meteoPoints;
 
             meteoPoints = nullptr;
@@ -506,6 +504,7 @@ void Project::closeMeteoPointsDB()
 
     meteoPointsSelected.clear();
 }
+
 
 void Project::closeMeteoGridDB()
 {
@@ -1283,8 +1282,14 @@ bool Project::loadProjectSettings(QString settingsFileName)
 
 QString Project::searchDefaultPath()
 {
-    return "D:/CRITERIA3D/DATA/";
+    QString myPath = getApplicationPath();
+
+    while (! QDir(myPath + "DATA").exists())
+        myPath += "../";
+
+    return QDir::cleanPath(myPath + "DATA") + "/";
 }
+
 
 bool Project::createDefaultSettings(QString fileName)
 {
@@ -1313,24 +1318,21 @@ bool Project::createDefaultSettings(QString fileName)
 }
 
 
-
 bool Project::start(QString appPath)
 {
-    // application path
     if (appPath.right(1) != "/") appPath += "/";
     setApplicationPath(appPath);
 
-    // default settings
-    QString defaultFileName = getApplicationPath() + "default.ini";
-    if (! QFile(defaultFileName).exists())
+    QString defaultSettings = getApplicationPath() + "default.ini";
+
+    if (! QFile(defaultSettings).exists())
     {
-        createDefaultSettings(defaultFileName);
+        createDefaultSettings(defaultSettings);
     }
 
-    if (! loadProjectSettings(defaultFileName))
+    if (! loadProjectSettings(defaultSettings))
         return false;
 
-    // default path
     setDefaultPath(getProjectPath());
     return true;
 }

@@ -1182,7 +1182,9 @@ void MainWindow::on_actionClose_meteo_points_triggered()
 {
     resetMeteoPoints();
     meteoPointsLegend->setVisible(false);
+
     myProject.closeMeteoPointsDB();
+
     myProject.setIsElabMeteoPointsValue(false);
     ui->groupBoxElab->hide();
 
@@ -1197,6 +1199,7 @@ void MainWindow::on_actionClose_meteo_points_triggered()
         this->ui->grid->setChecked(true);
     }
 }
+
 
 void MainWindow::on_actionClose_meteo_grid_triggered()
 {
@@ -1986,6 +1989,7 @@ void MainWindow::on_actionClose_project_triggered()
 
     on_actionClose_meteo_grid_triggered();
     on_actionClose_meteo_points_triggered();
+
     clearDEM();
 
     this->mapView->centerOn(startCenter->lonLat());
