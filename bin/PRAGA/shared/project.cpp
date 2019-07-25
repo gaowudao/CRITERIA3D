@@ -1281,8 +1281,33 @@ bool Project::loadProjectSettings(QString settingsFileName)
 }
 
 
+QString Project::searchDefaultPath()
+{
+    return "D:/CRITERIA3D/DATA/";
+}
+
 bool Project::createDefaultSettings(QString fileName)
 {
+    QSettings* defaultSettings = new QSettings(fileName, QSettings::IniFormat);
+
+    defaultSettings->beginGroup("project");
+        QString defaultPath = searchDefaultPath();
+        defaultSettings->setValue("path", defaultPath);
+    defaultSettings->endGroup();
+
+    defaultSettings->beginGroup("location");
+        defaultSettings->setValue("lat", gisSettings.startLocation.latitude);
+        defaultSettings->setValue("lon", gisSettings.startLocation.longitude);
+        defaultSettings->setValue("utm_zone", gisSettings.utmZone);
+        defaultSettings->setValue("time_zone", gisSettings.timeZone);
+        defaultSettings->setValue("is_utc", gisSettings.isUTC);
+    defaultSettings->endGroup();
+
+    defaultSettings->beginGroup("settings");
+        defaultSettings->setValue("parameters_file", "parameters.ini");
+    defaultSettings->endGroup();
+
+    defaultSettings->sync();
 
     return true;
 }
@@ -1291,9 +1316,11 @@ bool Project::createDefaultSettings(QString fileName)
 
 bool Project::start(QString appPath)
 {
+    // application path
     if (appPath.right(1) != "/") appPath += "/";
     setApplicationPath(appPath);
 
+    // default settings
     QString defaultFileName = getApplicationPath() + "default.ini";
     if (! QFile(defaultFileName).exists())
     {
@@ -1303,6 +1330,7 @@ bool Project::start(QString appPath)
     if (! loadProjectSettings(defaultFileName))
         return false;
 
+    // default path
     setDefaultPath(getProjectPath());
     return true;
 }

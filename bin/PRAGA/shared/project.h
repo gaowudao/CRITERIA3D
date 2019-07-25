@@ -39,6 +39,7 @@
         QString projectPath;
 
         bool createDefaultSettings(QString fileName);
+        QString searchDefaultPath();
 
 
     protected:

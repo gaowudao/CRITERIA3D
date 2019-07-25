@@ -3,6 +3,7 @@
 
 #define EDIT_SIZE 100
 
+
 GeoTab::GeoTab(gis::Crit3DGisSettings *gisSettings)
 {
     QLabel *startLocationLat = new QLabel(tr("<b>start location latitude </b> (negative for Southern Emisphere) [decimal degrees]:"));
@@ -327,7 +328,6 @@ void DialogSettings::accept()
 
 void DialogSettings::saveSettings()
 {
-
     _pathSettings->beginGroup("location");
     _pathSettings->setValue("lat", geoTab->startLocationLatEdit.text());
     _pathSettings->setValue("lon", geoTab->startLocationLonEdit.text());
