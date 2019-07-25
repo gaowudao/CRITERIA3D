@@ -194,12 +194,29 @@ void Crit3DSoilWidget::on_actionChooseSoil(QString soilCode)
     {
         return;
     }
+
+    // somethig has been modified, ask for saving
+    if (!horizonsTab->getSoilCodeChanged().empty())
+    {
+        std::string soilCode = horizonsTab->getSoilCodeChanged();
+        QMessageBox::StandardButton confirm;
+        QString msg = "Do you want to save changes to soil "+QString::fromStdString(soilCode)+" ?";
+        confirm = QMessageBox::question(nullptr, "Warning", msg, QMessageBox::Yes|QMessageBox::No, QMessageBox::Yes);
+
+        if (confirm == QMessageBox::Yes)
+        {
+            qDebug() << "Yes was clicked";
+            //TO DO
+        }
+        horizonsTab->resetSoilCodeChanged();
+    }
     QString error;
     if (! loadSoil(&dbSoil, soilCode, &mySoil, textureClassList, &error))
     {
         QMessageBox::critical(nullptr, "Error!", error);
         return;
     }
+    mySoil.code = soilCode.toStdString();
     SoilFromDb = mySoil;
     horizonsTab->clearSelections();
     horizonsTab->insertSoilHorizons(&mySoil, textureClassList);
