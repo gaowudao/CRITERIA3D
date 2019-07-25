@@ -312,9 +312,10 @@ void MainWindow::on_actionRectangle_Selection_triggered()
      }
 }
 
+
 void MainWindow::clearDEM()
 {
-    this->rasterObj = nullptr;
+    this->rasterObj->clear();
     ui->labelRasterScale->setText("");
     this->ui->rasterOpacitySlider->setEnabled(false);
     this->mapView->centerOn(startCenter->lonLat());
