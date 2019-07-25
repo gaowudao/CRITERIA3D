@@ -1988,3 +1988,8 @@ void MainWindow::on_actionClose_project_triggered()
 
     drawProject();
 }
+
+void MainWindow::on_actionSave_project_as_triggered()
+{
+
+}

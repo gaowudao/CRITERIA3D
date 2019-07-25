@@ -44,6 +44,7 @@
         int currentHour;
 
     public:
+        QString appPath;
         QString projectName = "";
         bool isProjectLoaded;
         int modality;

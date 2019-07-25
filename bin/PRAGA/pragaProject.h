@@ -25,7 +25,6 @@
 
         bool isElabMeteoPointsValue;
         QString climateIndex;
-        QString appPath;
 
         PragaProject();
 
