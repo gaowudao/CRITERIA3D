@@ -26,6 +26,8 @@
         bool isElabMeteoPointsValue;
         QString climateIndex;
 
+        QSettings* pragaDefaultSettings;
+
         PragaProject();
 
         void initializePragaProject();

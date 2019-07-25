@@ -1270,7 +1270,7 @@ void MainWindow::on_actionCompute_elaboration_triggered()
 
     if (myProject.elaborationCheck(isMeteoGrid, isAnomaly))
     {
-        DialogMeteoComputation compDialog(myProject.parameters, isAnomaly, saveClima);
+        DialogMeteoComputation compDialog(myProject.pragaDefaultSettings, isAnomaly, saveClima);
         if (compDialog.result() != QDialog::Accepted)
             return;
 
@@ -1319,7 +1319,7 @@ void MainWindow::on_actionCompute_anomaly_triggered()
 
     if (myProject.elaborationCheck(isMeteoGrid, isAnomaly))
     {
-        DialogMeteoComputation compDialog(myProject.parameters, isAnomaly, saveClima);
+        DialogMeteoComputation compDialog(myProject.pragaDefaultSettings, isAnomaly, saveClima);
         if (compDialog.result() != QDialog::Accepted)
             return;
 
@@ -1372,7 +1372,7 @@ void MainWindow::on_actionCompute_climate_triggered()
     if (myProject.elaborationCheck(isMeteoGrid, isAnomaly))
     {
         myProject.clima->resetListElab();
-        DialogMeteoComputation compDialog(myProject.parameters, isAnomaly, saveClima);
+        DialogMeteoComputation compDialog(myProject.pragaDefaultSettings, isAnomaly, saveClima);
         if (compDialog.result() != QDialog::Accepted)
             return;
 
@@ -1683,7 +1683,7 @@ void MainWindow::on_actionInterpolationSettings_triggered()
 
 void MainWindow::on_actionParameters_triggered()
 {
-    DialogPragaSettings* mySettingsDialog = new DialogPragaSettings(myProject.projectSettings, myProject.parameters, &myProject.gisSettings, myProject.quality, myProject.meteoSettings, myProject.clima->getElabSettings());
+    DialogPragaSettings* mySettingsDialog = new DialogPragaSettings(myProject.projectSettings, myProject.pragaDefaultSettings, &myProject.gisSettings, myProject.quality, myProject.meteoSettings, myProject.clima->getElabSettings());
     mySettingsDialog->exec();
     if (startCenter->latitude() != myProject.gisSettings.startLocation.latitude
         || startCenter->longitude() != myProject.gisSettings.startLocation.longitude)
@@ -1892,7 +1892,7 @@ bool MainWindow::on_actionAggregate_from_grid_triggered()
         openShape(fileName);
     }
 
-    DialogSeriesOnZones zoneDialog(myProject.parameters);
+    DialogSeriesOnZones zoneDialog(myProject.pragaDefaultSettings);
     if (zoneDialog.result() != QDialog::Accepted)
     {
         delete myRaster;

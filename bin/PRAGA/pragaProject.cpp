@@ -24,6 +24,7 @@ void PragaProject::initializePragaProject()
     clima = new Crit3DClimate();
     climaFromDb = nullptr;
     referenceClima = nullptr;
+    pragaDefaultSettings = nullptr;
 }
 
 void PragaProject::clearPragaProject()
@@ -64,6 +65,8 @@ PragaProject::PragaProject()
 
 bool PragaProject::loadPragaSettings()
 {
+    pragaDefaultSettings = new QSettings(path + "./DATA/SETTINGS/pragaDefault.ini", QSettings::IniFormat);
+
     Q_FOREACH (QString group, parameters->childGroups())
     {
         if (group == "elaboration")
