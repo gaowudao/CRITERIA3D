@@ -273,7 +273,7 @@ void MainWindow::mousePressEvent(QMouseEvent *event)
             myRubberBand->isActive = true;
             myRubberBand->show();
         }
-        else if (event->flags().testFlag(Qt::MouseEventCreatedDoubleClick))
+        else if (event->type() != QEvent::MouseButtonDblClick)
         {
             // context menu
             contextMenuRequested(event->globalPos());
