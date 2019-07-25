@@ -23,7 +23,7 @@ Project::Project()
     // TODO ???
     meteoPointsColorScale = new Crit3DColorScale();
 
-    // not change after first run
+    // They not change after loading default settings
     appPath = "";
     defaultPath = "";
 
@@ -351,72 +351,6 @@ bool Project::loadParameters(QString parametersFileName)
         errorString = "Error loading proxy grids";
         return false;
     }
-
-    return true;
-}
-
-
-bool Project::loadProjectSettings(QString settingsFileName)
-{
-    if (! QFile(settingsFileName).exists() || ! QFileInfo(settingsFileName).isFile())
-    {
-        logError("Missing settings file: " + settingsFileName);
-        return false;
-    }
-
-    QString filePath = getFilePath(settingsFileName);
-    setProjectPath(filePath);
-
-    projectSettings = new QSettings(settingsFileName, QSettings::IniFormat);
-
-    projectSettings->beginGroup("location");
-        double latitude = projectSettings->value("lat").toDouble();
-        double longitude = projectSettings->value("lon").toDouble();
-        int utmZone = projectSettings->value("utm_zone").toInt();
-        int isUtc = projectSettings->value("is_utc").toBool();
-        int timeZone = projectSettings->value("time_zone").toInt();
-    projectSettings->endGroup();
-
-    if (! gis::isValidUtmTimeZone(utmZone, timeZone))
-    {
-        logError("Wrong time_zone or utm_zone in file:\n" + settingsFileName);
-        return false;
-    }
-
-    gisSettings.startLocation.latitude = latitude;
-    gisSettings.startLocation.longitude = longitude;
-    gisSettings.utmZone = utmZone;
-    gisSettings.isUTC = isUtc;
-    gisSettings.timeZone = timeZone;
-
-    projectSettings->beginGroup("project");
-        // project path
-        QString myPath = projectSettings->value("path").toString();
-
-        if (! myPath.isEmpty())
-        {
-            QString newProjectPath;
-            if(myPath.left(1) == ".")
-            {
-                newProjectPath = getProjectPath() + myPath;
-                newProjectPath = QDir::cleanPath(newProjectPath);
-            }
-            else newProjectPath = myPath;
-
-            if (newProjectPath.right(1) != "/") newProjectPath += "/";
-            setProjectPath(newProjectPath);
-        }
-
-        projectName = projectSettings->value("name").toString();
-        demFileName = projectSettings->value("dem").toString();
-        dbPointsFileName = projectSettings->value("meteo_points").toString();
-        dbGridXMLFileName = projectSettings->value("meteo_grid").toString();
-    projectSettings->endGroup();
-
-    projectSettings->beginGroup("settings");
-        parametersFileName = projectSettings->value("parameters_file").toString();
-        logFileName = projectSettings->value("log_file").toString();
-    projectSettings->endGroup();
 
     return true;
 }
@@ -1277,6 +1211,73 @@ QString Project::getCompleteFileName(QString fileName, QString secondaryPath)
     {
         return fileName;
     }
+}
+
+
+bool Project::loadProjectSettings(QString settingsFileName)
+{
+    if (! QFile(settingsFileName).exists() || ! QFileInfo(settingsFileName).isFile())
+    {
+        logError("Missing settings file: " + settingsFileName);
+        return false;
+    }
+
+    // project path
+    QString filePath = getFilePath(settingsFileName);
+    setProjectPath(filePath);
+
+    projectSettings = new QSettings(settingsFileName, QSettings::IniFormat);
+
+    projectSettings->beginGroup("location");
+        double latitude = projectSettings->value("lat").toDouble();
+        double longitude = projectSettings->value("lon").toDouble();
+        int utmZone = projectSettings->value("utm_zone").toInt();
+        int isUtc = projectSettings->value("is_utc").toBool();
+        int timeZone = projectSettings->value("time_zone").toInt();
+    projectSettings->endGroup();
+
+    if (! gis::isValidUtmTimeZone(utmZone, timeZone))
+    {
+        logError("Wrong time_zone or utm_zone in file:\n" + settingsFileName);
+        return false;
+    }
+
+    gisSettings.startLocation.latitude = latitude;
+    gisSettings.startLocation.longitude = longitude;
+    gisSettings.utmZone = utmZone;
+    gisSettings.isUTC = isUtc;
+    gisSettings.timeZone = timeZone;
+
+    projectSettings->beginGroup("project");
+
+        QString myPath = projectSettings->value("path").toString();
+        if (! myPath.isEmpty())
+        {
+            // modify project path
+            QString newProjectPath;
+            if(myPath.left(1) == ".")
+            {
+                newProjectPath = getProjectPath() + myPath;
+                newProjectPath = QDir::cleanPath(newProjectPath);
+            }
+            else newProjectPath = myPath;
+
+            if (newProjectPath.right(1) != "/") newProjectPath += "/";
+            setProjectPath(newProjectPath);
+        }
+
+        projectName = projectSettings->value("name").toString();
+        demFileName = projectSettings->value("dem").toString();
+        dbPointsFileName = projectSettings->value("meteo_points").toString();
+        dbGridXMLFileName = projectSettings->value("meteo_grid").toString();
+    projectSettings->endGroup();
+
+    projectSettings->beginGroup("settings");
+        parametersFileName = projectSettings->value("parameters_file").toString();
+        logFileName = projectSettings->value("log_file").toString();
+    projectSettings->endGroup();
+
+    return true;
 }
 
 
