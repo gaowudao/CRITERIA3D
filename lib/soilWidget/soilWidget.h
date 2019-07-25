@@ -44,9 +44,11 @@
 
             QSqlDatabase dbSoil;
             soil::Crit3DSoil mySoil;
+            soil::Crit3DSoil originalSoil;
             soil::Crit3DTextureClass textureClassList[13];
             int dbSoilType;
 
+            QAction* restoreData;
             QAction* addHorizon;
             QAction* deleteHorizon;
             QAction* useData;
@@ -61,6 +63,7 @@
             void on_actionChooseSoil(QString);
             void on_actionAddHorizon();
             void on_actionDeleteHorizon();
+            void on_actionRestoreData();
     };
 
 #endif // SOILWIDGET_H

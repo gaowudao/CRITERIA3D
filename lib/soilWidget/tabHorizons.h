@@ -21,7 +21,7 @@ public:
     bool checkHorizonData(int horizonNum);
     void checkMissingItem(int horizonNum);
     void checkComputedValues(int horizonNum);
-    bool setInvalidTableModelRow(int horizonNum);
+    void setInvalidTableModelRow(int horizonNum);
     void clearSelections();
     void tableDbVerticalHeaderClick(int index);
     void editItem(int row, int column);

@@ -208,7 +208,7 @@ bool TabHorizons::checkHorizonData(int horizonNum)
 
 }
 
-bool TabHorizons::setInvalidTableModelRow(int horizonNum)
+void TabHorizons::setInvalidTableModelRow(int horizonNum)
 {
     tableModel->item(horizonNum,0)->setText("UNDEFINED");
     tableModel->item(horizonNum,0)->setBackgroundColor(Qt::red);

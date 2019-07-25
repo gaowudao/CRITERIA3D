@@ -110,11 +110,12 @@ Crit3DSoilWidget::Crit3DSoilWidget()
     QAction* saveChanges = new QAction(tr("&Save Changes"), this);
     QAction* newSoil = new QAction(tr("&New Soil"), this);
     QAction* deleteSoil = new QAction(tr("&Delete Soil"), this);
+    restoreData = new QAction(tr("&Restore Data"), this);
     addHorizon = new QAction(tr("&Add Horizon"), this);
     deleteHorizon = new QAction(tr("&Delete Horizon"), this);
     addHorizon->setEnabled(false);
     deleteHorizon->setEnabled(false);
-
+    restoreData->setEnabled(false);
     useData = new QAction(tr("&Use Water Retention Data"), this);
     airEntry = new QAction(tr("&Air Entry fixed"), this);
     useData->setCheckable(true);
@@ -125,6 +126,7 @@ Crit3DSoilWidget::Crit3DSoilWidget()
     connect(saveChanges, &QAction::triggered, this, &Crit3DSoilWidget::on_actionSave);
     connect(newSoil, &QAction::triggered, this, &Crit3DSoilWidget::on_actionNewSoil);
     connect(deleteSoil, &QAction::triggered, this, &Crit3DSoilWidget::on_actionDeleteSoil);
+    connect(restoreData, &QAction::triggered, this, &Crit3DSoilWidget::on_actionRestoreData);
     connect(addHorizon, &QAction::triggered, this, &Crit3DSoilWidget::on_actionAddHorizon);
     connect(deleteHorizon, &QAction::triggered, this, &Crit3DSoilWidget::on_actionDeleteHorizon);
 
@@ -137,6 +139,7 @@ Crit3DSoilWidget::Crit3DSoilWidget()
     fileMenu->addAction(saveChanges);
     editMenu->addAction(newSoil);
     editMenu->addAction(deleteSoil);
+    editMenu->addAction(restoreData);
     editMenu->addAction(addHorizon);
     editMenu->addAction(deleteHorizon);
     optionsMenu->addAction(useData);
@@ -180,6 +183,7 @@ void Crit3DSoilWidget::on_actionOpenSoilDB()
     {
         this->soilListComboBox.addItem(soilStringList[i]);
     }
+
 }
 
 
@@ -200,6 +204,7 @@ void Crit3DSoilWidget::on_actionChooseSoil(QString soilCode)
     horizonsTab->insertSoilHorizons(&mySoil, textureClassList);
     addHorizon->setEnabled(true);
     deleteHorizon->setEnabled(true);
+    restoreData->setEnabled(true);
 }
 
 
@@ -268,6 +273,11 @@ void Crit3DSoilWidget::on_actionSave()
 }
 
 void Crit3DSoilWidget::on_actionAddHorizon()
+{
+
+}
+
+void Crit3DSoilWidget::on_actionRestoreData()
 {
     horizonsTab->addRowClicked();
 }
