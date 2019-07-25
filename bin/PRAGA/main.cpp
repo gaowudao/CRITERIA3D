@@ -59,9 +59,12 @@ int main(int argc, char *argv[])
 
     QApplication myApp(argc, argv);
 
-    myProject.appPath = myApp.applicationDirPath() + "/";
-    if (! myProject.loadPragaProject(myProject.appPath + "default.ini"))
+    myProject.setApplicationPath(myApp.applicationDirPath() + "/");
+
+    if (! myProject.loadPragaProject(myProject.getApplicationPath() + "default.ini"))
         return -1;
+
+    myProject.setDefaultPath(myProject.getProjectPath());
 
     QNetworkProxyFactory::setUseSystemConfiguration(true);
 
