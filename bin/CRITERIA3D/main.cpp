@@ -42,7 +42,7 @@ int main(int argc, char *argv[])
 
     myProject.setDefaultPath(myProject.getProjectPath());
 
-    if (! myProject.loadParameters(myProject.parametersFileName))
+    if (! myProject.loadParameters("parameters.ini"))
         return -1;
 
     if (! myProject.readCriteria3DParameters())
