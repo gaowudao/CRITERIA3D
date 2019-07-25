@@ -24,6 +24,11 @@ GeoTab::GeoTab(gis::Crit3DGisSettings *gisSettings)
     utmZoneEdit.setValidator(new QIntValidator(0, 60));
     utmZoneEdit.setText(QString::number(gisSettings->utmZone));
 
+    QLabel *timeZone = new QLabel(tr("Time zone:"));
+    timeZoneEdit.setFixedWidth(130);
+    timeZoneEdit.setValidator(new QIntValidator(-12, 12));
+    timeZoneEdit.setText(QString::number(gisSettings->timeZone));
+
     QLabel *timeConvention = new QLabel(tr("Time Convention:"));
     QButtonGroup *group = new QButtonGroup();
     group->setExclusive(true);
@@ -52,6 +57,9 @@ GeoTab::GeoTab(gis::Crit3DGisSettings *gisSettings)
 
     mainLayout->addWidget(utmZone);
     mainLayout->addWidget(&utmZoneEdit);
+
+    mainLayout->addWidget(timeZone);
+    mainLayout->addWidget(&timeZoneEdit);
 
     buttonLayout->addWidget(timeConvention);
     buttonLayout->addWidget(&utc);
@@ -211,6 +219,12 @@ bool DialogSettings::acceptValues()
         return false;
     }
 
+    if (geoTab->timeZoneEdit.text().isEmpty())
+    {
+        QMessageBox::information(nullptr, "Missing Parameter", "insert time zone");
+        return false;
+    }
+
     if (!geoTab->utc.isChecked() && !geoTab->localTime.isChecked())
     {
         QMessageBox::information(nullptr, "Missing time convention", "choose UTC or local time");
@@ -274,6 +288,7 @@ bool DialogSettings::acceptValues()
     _geoSettings->startLocation.latitude = geoTab->startLocationLatEdit.text().toDouble();
     _geoSettings->startLocation.longitude = geoTab->startLocationLonEdit.text().toDouble();
     _geoSettings->utmZone = geoTab->utmZoneEdit.text().toInt();
+    _geoSettings->timeZone = geoTab->timeZoneEdit.text().toInt();
     _geoSettings->isUTC = geoTab->utc.isChecked();
 
     _qualitySettings->setReferenceHeight(qualityTab->referenceClimateHeightEdit.text().toFloat());
@@ -307,6 +322,7 @@ void DialogSettings::saveSettings()
     _pathSettings->setValue("lat", geoTab->startLocationLatEdit.text());
     _pathSettings->setValue("lon", geoTab->startLocationLonEdit.text());
     _pathSettings->setValue("utm_zone", geoTab->utmZoneEdit.text());
+    _pathSettings->setValue("time_zone", geoTab->timeZoneEdit.text());
     _pathSettings->setValue("is_utc", geoTab->utc.isChecked());
     _pathSettings->endGroup();
 

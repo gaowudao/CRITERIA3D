@@ -25,6 +25,7 @@ public:
     QLineEdit startLocationLatEdit;
     QLineEdit startLocationLonEdit;
     QLineEdit utmZoneEdit;
+    QLineEdit timeZoneEdit;
     QCheckBox utc;
     QCheckBox localTime ;
 
