@@ -29,6 +29,8 @@ public:
     void cellClicked(int row, int column);
     void addRowClicked();
     void removeRowClicked();
+    std::string getSoilCodeChanged() const;
+    void resetSoilCodeChanged();
 
 private:
     TableDbOrModel* tableDb;
@@ -37,6 +39,7 @@ private:
     QPushButton* deleteRow;
     soil::Crit3DSoil* mySoil;
     soil::Crit3DTextureClass* myTextureClassList;
+    std::string soilCodeChanged;
 
 };
 

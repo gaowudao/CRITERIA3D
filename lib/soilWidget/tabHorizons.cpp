@@ -43,6 +43,7 @@ TabHorizons::TabHorizons()
 void TabHorizons::insertSoilHorizons(soil::Crit3DSoil *soil, soil::Crit3DTextureClass* textureClassList)
 {
     clearSelections();
+    resetSoilCodeChanged();
     //disable events otherwise setBackgroundColor call again cellChanged event
     tableDb->blockSignals(true);
     mySoil = soil;
@@ -439,6 +440,7 @@ void TabHorizons::cellChanged(int row, int column)
     }
 
     tableDb->blockSignals(false);
+    soilCodeChanged = mySoil->code;
 }
 
 void TabHorizons::addRowClicked()
@@ -510,4 +512,14 @@ void TabHorizons::removeRowClicked()
     mySoil->deleteHorizon(row);
     checkDepths();
     tableDb->blockSignals(false);
+}
+
+std::string TabHorizons::getSoilCodeChanged() const
+{
+    return soilCodeChanged;
+}
+
+void TabHorizons::resetSoilCodeChanged()
+{
+    soilCodeChanged.clear();
 }
