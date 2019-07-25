@@ -325,68 +325,147 @@ void TabHorizons::cellChanged(int row, int column)
     switch (column) {
         case 0:
         {
-            mySoil->horizon[row].dbData.upperDepth = data.toDouble();
-            tableDb->item(row, column)->setText(QString::number(data.toDouble(), 'f', 0));
+            if (data == NODATA)
+            {
+                mySoil->horizon[row].dbData.upperDepth = NODATA;
+                tableDb->item(row, column)->setText("");
+            }
+            else
+            {
+                mySoil->horizon[row].dbData.upperDepth = data.toDouble();
+                tableDb->item(row, column)->setText(QString::number(data.toDouble(), 'f', 0));
+            }
             break;
         }
         case 1:
         {
-            mySoil->horizon[row].dbData.lowerDepth = data.toDouble();
-            tableDb->item(row, column)->setText(QString::number(data.toDouble(), 'f', 0));
+            if (data == NODATA)
+            {
+                mySoil->horizon[row].dbData.lowerDepth = NODATA;
+                tableDb->item(row, column)->setText("");
+            }
+            else
+            {
+                mySoil->horizon[row].dbData.lowerDepth = data.toDouble();
+                tableDb->item(row, column)->setText(QString::number(data.toDouble(), 'f', 0));
+            }
             break;
         }
         case 2:
         {
-            mySoil->horizon[row].dbData.sand = data.toFloat();
-            tableDb->item(row, column)->setText(QString::number(data.toFloat(), 'f', 1));
+            if (data == NODATA)
+            {
+                mySoil->horizon[row].dbData.sand = NODATA;
+                tableDb->item(row, column)->setText("");
+            }
+            else
+            {
+                mySoil->horizon[row].dbData.sand = data.toFloat();
+                tableDb->item(row, column)->setText(QString::number(data.toFloat(), 'f', 1));
+            }
             break;
         }
         case 3:
         {
-            mySoil->horizon[row].dbData.silt = data.toFloat();
-            tableDb->item(row, column)->setText(QString::number(data.toFloat(), 'f', 1));
+            if (data == NODATA)
+            {
+                mySoil->horizon[row].dbData.silt = NODATA;
+                tableDb->item(row, column)->setText("");
+            }
+            else
+            {
+                mySoil->horizon[row].dbData.silt = data.toFloat();
+                tableDb->item(row, column)->setText(QString::number(data.toFloat(), 'f', 1));
+            }
             break;
         }
         case 4:
         {
-            mySoil->horizon[row].dbData.clay = data.toFloat();
-            tableDb->item(row, column)->setText(QString::number(data.toFloat(), 'f', 1));
+            if (data == NODATA)
+            {
+                mySoil->horizon[row].dbData.clay = NODATA;
+                tableDb->item(row, column)->setText("");
+            }
+            else
+            {
+                mySoil->horizon[row].dbData.clay = data.toFloat();
+                tableDb->item(row, column)->setText(QString::number(data.toFloat(), 'f', 1));
+            }
             break;
         }
         case 5:
         {
-            mySoil->horizon[row].dbData.coarseFragments = data.toDouble();
-            tableDb->item(row, column)->setText(QString::number(data.toDouble(), 'f', 1));
+            if (data == NODATA)
+            {
+                mySoil->horizon[row].dbData.coarseFragments = NODATA;
+                tableDb->item(row, column)->setText("");
+            }
+            else
+            {
+                mySoil->horizon[row].dbData.coarseFragments = data.toDouble();
+                tableDb->item(row, column)->setText(QString::number(data.toDouble(), 'f', 1));
+            }
             break;
         }
         case 6:
         {
-            mySoil->horizon[row].dbData.organicMatter = data.toDouble();
-            tableDb->item(row, column)->setText(QString::number(data.toDouble(), 'f', 1));
+            if (data == NODATA)
+            {
+                mySoil->horizon[row].dbData.organicMatter = NODATA;
+                tableDb->item(row, column)->setText("");
+            }
+            else
+            {
+                mySoil->horizon[row].dbData.organicMatter = data.toDouble();
+                tableDb->item(row, column)->setText(QString::number(data.toDouble(), 'f', 1));
+            }
             break;
         }
         case 7:
         {
-            mySoil->horizon[row].dbData.bulkDensity = data.toDouble();
-            tableDb->item(row, column)->setText(QString::number(data.toDouble(), 'f', 3));
+            if (data == NODATA)
+            {
+                mySoil->horizon[row].dbData.bulkDensity = NODATA;
+                tableDb->item(row, column)->setText("");
+            }
+            else
+            {
+                mySoil->horizon[row].dbData.bulkDensity = data.toDouble();
+                tableDb->item(row, column)->setText(QString::number(data.toDouble(), 'f', 3));
+            }
             break;
         }
         case 8:
         {
-            mySoil->horizon[row].dbData.kSat = data.toDouble();
-            tableDb->item(row, column)->setText(QString::number(data.toDouble(), 'f', 3));
+            if (data == NODATA)
+            {
+                mySoil->horizon[row].dbData.kSat = NODATA;
+                tableDb->item(row, column)->setText("");
+            }
+            else
+            {
+                mySoil->horizon[row].dbData.kSat = data.toDouble();
+                tableDb->item(row, column)->setText(QString::number(data.toDouble(), 'f', 3));
+            }
             break;
         }
         case 9:
         {
-            mySoil->horizon[row].dbData.thetaSat = data.toDouble();
-            tableDb->item(row, column)->setText(QString::number(data.toDouble(), 'f', 3));
+            if (data == NODATA)
+            {
+                mySoil->horizon[row].dbData.thetaSat = NODATA;
+                tableDb->item(row, column)->setText("");
+            }
+            else
+            {
+                mySoil->horizon[row].dbData.thetaSat = data.toDouble();
+                tableDb->item(row, column)->setText(QString::number(data.toDouble(), 'f', 3));
+            }
             break;
         }
     }
 
     std::string errorString;
-
     soil::setHorizon(&(mySoil->horizon[row]), myTextureClassList, &errorString);
 
     // update tableModel values
