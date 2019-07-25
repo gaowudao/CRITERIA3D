@@ -34,26 +34,32 @@
 
     class Project {
     private:
+        QString appPath;
+        QString defaultPath;
+        QString projectPath;
 
     protected:
-        QString path;
-
         frequencyType currentFrequency;
         meteoVariable currentVariable;
         QDate previousDate, currentDate;
         int currentHour;
 
     public:
-        QString appPath;
         QString projectName = "";
         bool isProjectLoaded;
         int modality;
+
         bool requestedExit;
         QString errorString;
+
         QString logFileName;
+        QString demFileName;
+        QString dbPointsFileName;
+        QString dbGridXMLFileName;
+        QString parametersFileName;
+
         std::ofstream logFile;
 
-        QString parametersFile;
         QSettings* parameters;
         QSettings* projectSettings;
 
@@ -63,7 +69,6 @@
         Crit3DAggregationsDbHandler* aggregationDbHandler;
         QList<gis::Crit3DGeoPoint> meteoPointsSelected;
         Crit3DMeteoGridDbHandler* meteoGridDbHandler;
-
         Crit3DColorScale* meteoPointsColorScale;
 
         Crit3DQuality* quality;
@@ -84,9 +89,6 @@
         #ifdef NETCDF
             NetCDFHandler netCDF;
         #endif
-
-        QString demName, dbPointsName, dbGridXMLName;
-
 
         Project();
 
@@ -110,8 +112,12 @@
         frequencyType getFrequency();
         meteoVariable getCurrentVariable();
 
-        void setPath(QString myPath);
-        QString getPath();
+        void setApplicationPath(QString myPath);
+        QString getApplicationPath();
+        void setDefaultPath(QString myPath);
+        QString getDefaultPath();
+        void setProjectPath(QString myPath);
+        QString getProjectPath();
 
         bool setLogFile(QString fileNameWithPath);
         void logError(QString myStr);

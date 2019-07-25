@@ -19,19 +19,25 @@ Project::Project()
     // TODO remove pointers
     meteoSettings = new Crit3DMeteoSettings();
     quality = new Crit3DQuality();
+
     // TODO ???
-    meteoPointsColorScale = new Crit3DColorScale();   
+    meteoPointsColorScale = new Crit3DColorScale();
+
+    // not change after first run
+    appPath = "";
+    defaultPath = "";
 
     initializeProject();
 }
 
 void Project::initializeProject()
 {
+    projectPath = "";
+
     projectName = "";
     isProjectLoaded = false;
     modality = MODE_GUI;
     requestedExit = false;
-    path = "";
     logFileName = "";
     errorString = "";
 
@@ -46,7 +52,7 @@ void Project::initializeProject()
     currentHour = 12;
 
     parameters = nullptr;
-    parametersFile = "";
+    parametersFileName = "";
 
     projectSettings = nullptr;
 
@@ -57,13 +63,13 @@ void Project::initializeProject()
 
     radiationMaps = nullptr;
 
-    demName = "";
+    demFileName = "";
 
     interpolationSettings.initialize();
     qualityInterpolationSettings.initialize();
 
-    dbPointsName = "";
-    dbGridXMLName = "";
+    dbPointsFileName = "";
+    dbGridXMLFileName = "";
 }
 
 void Project::clearProject()
@@ -178,7 +184,7 @@ void Project::addProxy(std::string name_, std::string gridName_, std::string tab
 
 bool Project::loadParameters(QString parametersFileName)
 {
-    parametersFileName = getCompleteFileName(parametersFileName, "DATA/SETTINGS/");
+    parametersFileName = getCompleteFileName(parametersFileName, PATH_SETTINGS);
 
     if (! QFile(parametersFileName).exists() || ! QFileInfo(parametersFileName).isFile())
     {
@@ -320,11 +326,11 @@ bool Project::loadParameters(QString parametersFileName)
             proxyName = group.right(group.size()-6).toStdString();
 
             parameters->beginGroup(group);
+
             gridName = parameters->value("raster").toString();
-            if (gridName.left(1) == ".")
-                proxyGridName = path.toStdString() + gridName.toStdString();
-            else
-                proxyGridName = gridName.toStdString();
+            gridName = getCompleteFileName(gridName, PATH_GEO);
+            proxyGridName = gridName.toStdString();
+
             proxyTable = parameters->value("table").toString().toStdString();
             proxyField = parameters->value("field").toString().toStdString();
             isActive = parameters->value("active").toBool();
@@ -352,13 +358,14 @@ bool Project::loadParameters(QString parametersFileName)
 
 bool Project::loadProjectSettings(QString settingsFileName)
 {
-    path = getFilePath(settingsFileName);
-
     if (! QFile(settingsFileName).exists() || ! QFileInfo(settingsFileName).isFile())
     {
         logError("Missing settings file: " + settingsFileName);
         return false;
     }
+
+    QString filePath = getFilePath(settingsFileName);
+    setProjectPath(filePath);
 
     projectSettings = new QSettings(settingsFileName, QSettings::IniFormat);
 
@@ -383,29 +390,31 @@ bool Project::loadProjectSettings(QString settingsFileName)
     gisSettings.timeZone = timeZone;
 
     projectSettings->beginGroup("project");
-        // path
+        // project path
         QString myPath = projectSettings->value("path").toString();
 
         if (! myPath.isEmpty())
         {
+            QString newProjectPath;
             if(myPath.left(1) == ".")
             {
-                path += myPath;
-                path = QDir::cleanPath(path);
+                newProjectPath = getProjectPath() + myPath;
+                newProjectPath = QDir::cleanPath(newProjectPath);
             }
-            else path = myPath;
+            else newProjectPath = myPath;
 
-            if (path.right(1) != "/") path += "/";
+            if (newProjectPath.right(1) != "/") newProjectPath += "/";
+            setProjectPath(newProjectPath);
         }
 
         projectName = projectSettings->value("name").toString();
-        demName = projectSettings->value("dem").toString();
-        dbPointsName = projectSettings->value("meteo_points").toString();
-        dbGridXMLName = projectSettings->value("meteo_grid").toString();
+        demFileName = projectSettings->value("dem").toString();
+        dbPointsFileName = projectSettings->value("meteo_points").toString();
+        dbGridXMLFileName = projectSettings->value("meteo_grid").toString();
     projectSettings->endGroup();
 
     projectSettings->beginGroup("settings");
-        parametersFile = projectSettings->value("parameters_file").toString();
+        parametersFileName = projectSettings->value("parameters_file").toString();
         logFileName = projectSettings->value("log_file").toString();
     projectSettings->endGroup();
 
@@ -427,14 +436,35 @@ bool Project::getMeteoPointSelected(int i)
     return false;
 }
 
-void Project::setPath(QString myPath)
+
+void Project::setApplicationPath(QString myPath)
 {
-    this->path = myPath;
+    this->appPath = myPath;
 }
 
-QString Project::getPath()
+QString Project::getApplicationPath()
 {
-    return this->path;
+    return this->appPath;
+}
+
+void Project::setDefaultPath(QString myPath)
+{
+    this->defaultPath = myPath;
+}
+
+QString Project::getDefaultPath()
+{
+    return this->defaultPath;
+}
+
+void Project::setProjectPath(QString myPath)
+{
+    this->projectPath = myPath;
+}
+
+QString Project::getProjectPath()
+{
+    return this->projectPath;
 }
 
 void Project::setFrequency(frequencyType frequency)
@@ -565,7 +595,7 @@ bool Project::loadDEM(QString myFileName)
 {
     this->logInfo("Read Digital Elevation Model...");
 
-    myFileName = getCompleteFileName(myFileName, "DATA/DEM/");
+    myFileName = getCompleteFileName(myFileName, PATH_DEM);
 
     std::string error, fileName;
     if (myFileName.right(4).left(1) == ".")
@@ -617,7 +647,7 @@ bool Project::loadMeteoPointsDB(QString dbName)
 
     closeMeteoPointsDB();
 
-    dbName = getCompleteFileName(dbName, "DATA/METEOPOINT/");
+    dbName = getCompleteFileName(dbName, PATH_METEOPOINT);
 
     meteoPointsDbHandler = new Crit3DMeteoPointsDbHandler(dbName);
     if (meteoPointsDbHandler->error != "")
@@ -672,7 +702,7 @@ bool Project::loadMeteoGridDB(QString xmlName)
     if (xmlName == "")
         return false;
 
-    xmlName = getCompleteFileName(xmlName, "DATA/grid/");
+    xmlName = getCompleteFileName(xmlName, PATH_METEOGRID);
 
     meteoGridDbHandler = new Crit3DMeteoGridDbHandler();
     meteoGridDbHandler->meteoGrid()->setGisSettings(this->gisSettings);
@@ -1018,7 +1048,7 @@ bool Project::writeTopographicDistanceMaps()
         return false;
     }
 
-    QString mapsFolder = this->path + "DATA/GEO/TAD/";
+    QString mapsFolder = getDefaultPath() + PATH_TAD;
     if (! QDir(mapsFolder).exists())
         QDir().mkdir(mapsFolder);
 
@@ -1062,7 +1092,7 @@ bool Project::loadTopographicDistanceMaps()
         return false;
     }
 
-    QString mapsFolder = this->path + "DATA/GEO/TAD/";
+    QString mapsFolder = getDefaultPath() + PATH_TAD;
     if (! QDir(mapsFolder).exists()) return false;
 
     FormInfo myInfo;
@@ -1231,14 +1261,16 @@ float Project::meteoDataConsistency(meteoVariable myVar, const Crit3DTime& timeI
 
 QString Project::getCompleteFileName(QString fileName, QString secondaryPath)
 {
+    if (fileName == "") return fileName;
+
     if (getFilePath(fileName) == "")
     {
-        QString completeFileName = this->getPath() + secondaryPath + fileName;
+        QString completeFileName = this->getDefaultPath() + secondaryPath + fileName;
         return QDir().cleanPath(completeFileName);
     }
     else if (fileName.left(1) == ".")
     {
-        QString completeFileName = this->getPath() + fileName;
+        QString completeFileName = this->getProjectPath() + fileName;
         return QDir().cleanPath(completeFileName);
     }
     else
@@ -1250,23 +1282,23 @@ QString Project::getCompleteFileName(QString fileName, QString secondaryPath)
 
 bool Project::loadProject()
 {
-    if (! loadParameters(parametersFile))
+    if (! loadParameters(parametersFileName))
         return false;
 
     if (logFileName != "")
         if (! setLogFile(logFileName))
             return false;
 
-    if (demName != "")
-        if (! loadDEM(demName))
+    if (demFileName != "")
+        if (! loadDEM(demFileName))
             return false;
 
-    if (dbPointsName != "")
-        if (! loadMeteoPointsDB(dbPointsName))
+    if (dbPointsFileName != "")
+        if (! loadMeteoPointsDB(dbPointsFileName))
             return false;
 
-    if (dbGridXMLName != "")
-        if (! loadMeteoGridDB(dbGridXMLName))
+    if (dbGridXMLFileName != "")
+        if (! loadMeteoGridDB(dbGridXMLFileName))
             return false;
 
     return true;

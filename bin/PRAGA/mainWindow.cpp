@@ -371,7 +371,7 @@ void MainWindow::on_actionNewMeteoPointsArkimet_triggered()
 {
     resetMeteoPoints();
 
-    QString templateFileName = myProject.getPath() + "DATA/TEMPLATE/template_meteo_arkimet.db";
+    QString templateFileName = myProject.getDefaultPath() + PATH_TEMPLATE + "template_meteo_arkimet.db";
 
     QString dbName = QFileDialog::getSaveFileName(this, tr("Save as"), "", tr("DB files (*.db)"));
     if (dbName == "")
@@ -1928,7 +1928,7 @@ void MainWindow::on_actionOpen_aggregation_DB_triggered()
 
 void MainWindow::on_actionNew_aggregation_DB_triggered()
 {
-    QString templateFileName = myProject.getPath() + "DATA/TEMPLATE/template_meteo_aggregation.db";
+    QString templateFileName = myProject.getDefaultPath() + PATH_TEMPLATE + "template_meteo_aggregation.db";
 
     QString dbName = QFileDialog::getSaveFileName(this, tr("Save as"), "", tr("DB files (*.db)"));
     if (dbName == "")
@@ -1984,7 +1984,7 @@ void MainWindow::on_actionClose_project_triggered()
     on_actionClose_meteo_points_triggered();
     on_actionClose_meteo_grid_triggered();
 
-    if (! myProject.loadPragaProject(myProject.appPath + "default.ini")) return;
+    if (! myProject.loadPragaProject(myProject.getApplicationPath() + "default.ini")) return;
 
     drawProject();
 }

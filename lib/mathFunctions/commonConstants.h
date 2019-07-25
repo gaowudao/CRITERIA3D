@@ -29,17 +29,27 @@
         #define DAY_SECONDS 86400.
     #endif
 
-    // --------------- modalities -----------------
+    // --------------- modalities ------------------
     #define MODE_GUI 0
     #define MODE_BATCH 1
     #define MODE_CONSOLE 2
 
-    // --------------- DB types -----------------
+    // --------------- DB types --------------------
     #define DB_SQLITE 0
     #define DB_MYSQL 1
     #define DB_POSTGRES 2
 
-    // --------------- soilFluxes3D -----------------
+    // --------------- path ------------------------
+    #define PATH_DEM "DEM/"
+    #define PATH_METEOPOINT "METEOPOINT/"
+    #define PATH_METEOGRID "METEOGRID/"
+    #define PATH_GEO "GEO/"
+    #define PATH_PROJECT "PROJECT/"
+    #define PATH_TEMPLATE "TEMPLATE/"
+    #define PATH_SETTINGS "SETTINGS/"
+    #define PATH_TAD "GEO/TAD/"
+
+    // --------------- soilFluxes3D ----------------
     #define NOLINK -1
 
     #define PROCESS_WATER 0
