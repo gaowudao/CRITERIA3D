@@ -5,10 +5,8 @@
 #include <QSettings>
 #include <QGridLayout>
 #include <QComboBox>
-
 #include <QtWidgets>
-#include "pragaProject.h"
-#include "mainWindow.h"
+
 
 class DialogAnomaly : public QDialog
 {

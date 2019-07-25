@@ -1281,18 +1281,26 @@ bool Project::loadProjectSettings(QString settingsFileName)
 }
 
 
+bool Project::createDefaultSettings(QString fileName)
+{
+
+    return true;
+}
+
+
+
 bool Project::start(QString appPath)
 {
     if (appPath.right(1) != "/") appPath += "/";
     setApplicationPath(appPath);
 
-    QString defaultSettings = getApplicationPath() + "default.ini";
-    if (! QFile(defaultSettings).exists() || ! QFileInfo(defaultSettings).isFile())
+    QString defaultFileName = getApplicationPath() + "default.ini";
+    if (! QFile(defaultFileName).exists())
     {
-        // TODO: create file
+        createDefaultSettings(defaultFileName);
     }
 
-    if (! loadProjectSettings(defaultSettings))
+    if (! loadProjectSettings(defaultFileName))
         return false;
 
     setDefaultPath(getProjectPath());

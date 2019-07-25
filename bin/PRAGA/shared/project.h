@@ -38,6 +38,9 @@
         QString defaultPath;
         QString projectPath;
 
+        bool createDefaultSettings(QString fileName);
+
+
     protected:
         frequencyType currentFrequency;
         meteoVariable currentVariable;
