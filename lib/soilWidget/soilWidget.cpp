@@ -200,6 +200,7 @@ void Crit3DSoilWidget::on_actionChooseSoil(QString soilCode)
         QMessageBox::critical(nullptr, "Error!", error);
         return;
     }
+    SoilFromDb = mySoil;
     horizonsTab->clearSelections();
     horizonsTab->insertSoilHorizons(&mySoil, textureClassList);
     addHorizon->setEnabled(true);
@@ -272,12 +273,13 @@ void Crit3DSoilWidget::on_actionSave()
     // TO DO
 }
 
-void Crit3DSoilWidget::on_actionAddHorizon()
+void Crit3DSoilWidget::on_actionRestoreData()
 {
-
+    mySoil = SoilFromDb;
+    horizonsTab->insertSoilHorizons(&mySoil, textureClassList);
 }
 
-void Crit3DSoilWidget::on_actionRestoreData()
+void Crit3DSoilWidget::on_actionAddHorizon()
 {
     horizonsTab->addRowClicked();
 }
