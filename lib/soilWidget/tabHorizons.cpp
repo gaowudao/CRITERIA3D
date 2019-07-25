@@ -506,7 +506,7 @@ void TabHorizons::removeRowClicked()
     }
     tableDb->removeRow(row);
     tableModel->removeRow(row);
-    // LC inserire una funzione di removeHorizon
+    mySoil->deleteHorizon(row);
     checkDepths();
     tableDb->blockSignals(false);
 }

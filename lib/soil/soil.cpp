@@ -32,6 +32,7 @@
 
 #include "soil.h"
 #include "commonConstants.h"
+#include <iostream> //debug
 
 namespace soil
 {
@@ -162,7 +163,10 @@ namespace soil
     void Crit3DSoil::deleteHorizon(int nHorizon)
     {
         this->nrHorizons = nrHorizons - 1;
-        // TO DO
+        Crit3DHorizon* tmp = horizon;
+        this->horizon = new Crit3DHorizon[unsigned(this->nrHorizons)];
+        std::copy(tmp, tmp+nHorizon, this->horizon);
+        std::copy(tmp+nHorizon+1, tmp+this->nrHorizons+1, this->horizon+nHorizon);
     }
 
     void Crit3DSoil::cleanSoil()
