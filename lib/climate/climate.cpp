@@ -146,9 +146,9 @@ bool anomalyOnPoint(Crit3DMeteoPoint* meteoPoint, float refValue)
 
 }
 
+
 bool passingClimateToAnomaly(QString *myError, Crit3DMeteoPoint* meteoPointTemp, Crit3DClimate* clima, Crit3DMeteoPoint* meteoPoints, int nrMeteoPoints, Crit3DElaborationSettings *elabSettings)
 {
-
     QList<float> valueList;
     QString table = getTable(clima->climateElab());
     int index = clima->getParam1ClimateIndex();
@@ -172,7 +172,6 @@ bool passingClimateToAnomaly(QString *myError, Crit3DMeteoPoint* meteoPointTemp,
         {
             idList = getIdListFromElab(clima->db(), table, myError, clima->climateElab(), index);
         }
-
 
         float minDist = NODATA;
         float currentDist = NODATA;
@@ -220,10 +219,10 @@ bool passingClimateToAnomaly(QString *myError, Crit3DMeteoPoint* meteoPointTemp,
                 return anomalyOnPoint(meteoPointTemp, NODATA);
             }
         }
+        else return false;
     }
-
-
 }
+
 
 bool passingClimateToAnomalyGrid(QString *myError, Crit3DMeteoPoint* meteoPointTemp, Crit3DClimate* clima)
 {
