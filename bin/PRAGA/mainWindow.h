@@ -194,4 +194,12 @@
     #endif
 
 
+    class KeyboardFilter : public QObject
+    {
+        Q_OBJECT
+    protected:
+        bool eventFilter(QObject* obj, QEvent* event) override;
+    };
+
+
 #endif // MAINWINDOW_H

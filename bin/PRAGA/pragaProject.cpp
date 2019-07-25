@@ -51,10 +51,10 @@ bool PragaProject::loadPragaProject(QString myFileName)
 
     isProjectLoaded = true;
 
-    QString info = "Project";
-    if (projectName != "") info += " " + projectName;
-    info += " loaded";
-    logInfo(info);
+    if (projectName != "")
+    {
+        logInfo("Project " + projectName + " loaded");
+    }
     return true;
 }
 

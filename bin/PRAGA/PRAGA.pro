@@ -98,7 +98,6 @@ SOURCES += main.cpp\
     shared/interpolationCmd.cpp \
     shared/project.cpp \
     pragaProject.cpp \
-    keyboardFilter.cpp \
     shared/colorLegend.cpp \
     dialogMeteoComputation.cpp \
     dialogDownloadMeteoData.cpp \
@@ -122,7 +121,6 @@ HEADERS  += mainWindow.h \
     shared/interpolationCmd.h \
     shared/project.h \
     pragaProject.h \
-    keyboardFilter.h \
     shared/colorLegend.h \
     dialogMeteoComputation.h \
     dialogDownloadMeteoData.h \

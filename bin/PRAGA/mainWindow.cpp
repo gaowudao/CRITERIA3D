@@ -32,7 +32,6 @@
 #include "dialogPragaSettings.h"
 #include "gis.h"
 #include "spatialControl.h"
-#include "keyboardFilter.h"
 
 extern PragaProject myProject;
 
@@ -1993,4 +1992,14 @@ void MainWindow::on_actionClose_project_triggered()
 void MainWindow::on_actionSave_project_as_triggered()
 {
 
+}
+
+
+bool KeyboardFilter::eventFilter(QObject* obj, QEvent* event)
+{
+    if (event->type() == QEvent::KeyPress) {
+        return true;
+    } else {
+        return QObject::eventFilter(obj, event);
+    }
 }
