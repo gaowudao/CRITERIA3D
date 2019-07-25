@@ -188,7 +188,7 @@ bool Vine3DProject::loadVine3DProject(QString myFileName)
 
     if (!loadFieldShape())
     {
-        myFileName = path + fieldMapName;
+        myFileName = getCompleteFileName(fieldMapName, PATH_GEO);
         if (!loadFieldMap(myFileName)) return false;
     }
 
@@ -1461,8 +1461,8 @@ bool Vine3DProject::runModels(QDateTime dateTime1, QDateTime dateTime2, bool sav
             if (saveOutput)
             {
                 //create output directories
-                myOutputPathDaily = path + dailyOutputPath + myDate.toString("yyyy/MM/dd/");
-                myOutputPathHourly = path + "hourly_output/" + myDate.toString("yyyy/MM/dd/");
+                myOutputPathDaily = getProjectPath() + dailyOutputPath + myDate.toString("yyyy/MM/dd/");
+                myOutputPathHourly = getProjectPath() + "hourly_output/" + myDate.toString("yyyy/MM/dd/");
 
                 if ((! myDir.mkpath(myOutputPathDaily)) || (! myDir.mkpath(myOutputPathHourly)))
                 {
@@ -1526,7 +1526,7 @@ bool Vine3DProject::runModels(QDateTime dateTime1, QDateTime dateTime2, bool sav
 
 bool Vine3DProject::loadStates(QDate myDate, QString myArea)
 {
-    QString statePath = path + "states/" + myDate.toString("yyyy/MM/dd/");
+    QString statePath = getProjectPath() + "states/" + myDate.toString("yyyy/MM/dd/");
 
     //if (!loadPlantState(this, tartaricAcidVar, myDate, myStatePath)) return(false);
     //if (!loadPlantState(this, pHBerryVar, myDate, myStatePath)) return(false);
@@ -1571,8 +1571,8 @@ bool Vine3DProject::loadStates(QDate myDate, QString myArea)
 bool Vine3DProject::saveStateAndOutput(QDate myDate, QString myArea, bool saveDiseases)
 {
     QDir myDir;
-    QString statePath = path + "states/" + myDate.toString("yyyy/MM/dd/");
-    QString outputPath = path + this->dailyOutputPath + myDate.toString("yyyy/MM/dd/");
+    QString statePath = getProjectPath() + "states/" + myDate.toString("yyyy/MM/dd/");
+    QString outputPath = getProjectPath() + this->dailyOutputPath + myDate.toString("yyyy/MM/dd/");
     if (! myDir.mkpath(statePath))
     {
         this->logError("Creation directory states failed." );
