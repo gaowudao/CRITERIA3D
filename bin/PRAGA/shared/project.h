@@ -94,6 +94,7 @@
 
         void initializeProject();
         void clearProject();
+        bool start(QString appPath);
         bool loadProject();
         bool loadProjectSettings(QString settingsFileName);
         bool loadParameters(QString parametersFileName);

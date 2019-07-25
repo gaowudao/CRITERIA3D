@@ -28,20 +28,15 @@ int main(int argc, char *argv[])
 
     QApplication myApp(argc, argv);
 
-    myProject.setApplicationPath(myApp.applicationDirPath() + "/");
+    QNetworkProxyFactory::setUseSystemConfiguration(true);
 
-    if (! myProject.loadProjectSettings(myProject.getApplicationPath() + "default.ini"))
-        return -1;
-
-    myProject.setDefaultPath(myProject.getProjectPath());
+    myProject.start(myApp.applicationDirPath());
 
     if (! myProject.loadParameters("parameters.ini"))
         return -1;
 
     if (! myProject.loadVine3DSettings())
         return -1;
-
-    QNetworkProxyFactory::setUseSystemConfiguration(true);
 
     if (myProject.modality == MODE_GUI)
     {

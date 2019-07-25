@@ -182,13 +182,14 @@ void Project::addProxy(std::string name_, std::string gridName_, std::string tab
     if (getProxyPragaName(name_) == height) setProxyDEM();
 }
 
+
 bool Project::loadParameters(QString parametersFileName)
 {
     parametersFileName = getCompleteFileName(parametersFileName, PATH_SETTINGS);
 
     if (! QFile(parametersFileName).exists() || ! QFileInfo(parametersFileName).isFile())
     {
-        logError("Missing file: " + parametersFileName);
+        logError("Missing parameters file: " + parametersFileName);
         return false;
     }
 
@@ -1277,6 +1278,25 @@ bool Project::loadProjectSettings(QString settingsFileName)
         logFileName = projectSettings->value("log_file").toString();
     projectSettings->endGroup();
 
+    return true;
+}
+
+
+bool Project::start(QString appPath)
+{
+    if (appPath.right(1) != "/") appPath += "/";
+    setApplicationPath(appPath);
+
+    QString defaultSettings = getApplicationPath() + "default.ini";
+    if (! QFile(defaultSettings).exists() || ! QFileInfo(defaultSettings).isFile())
+    {
+        // TODO: create file
+    }
+
+    if (! loadProjectSettings(defaultSettings))
+        return false;
+
+    setDefaultPath(getProjectPath());
     return true;
 }
 

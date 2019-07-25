@@ -33,14 +33,7 @@ int main(int argc, char *argv[])
 {
     QApplication myApp(argc, argv);
 
-    QString currentPath = myApp.applicationDirPath() + "/";
-
-    myProject.setApplicationPath(myApp.applicationDirPath() + "/");
-
-    if (! myProject.loadProjectSettings(myProject.getApplicationPath() + "default.ini"))
-        return -1;
-
-    myProject.setDefaultPath(myProject.getProjectPath());
+    myProject.start(myApp.applicationDirPath());
 
     if (! myProject.loadParameters("parameters.ini"))
         return -1;

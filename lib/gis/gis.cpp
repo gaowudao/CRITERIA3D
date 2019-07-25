@@ -43,7 +43,7 @@ namespace gis
     void Crit3DGisSettings::initialize()
     {
         startLocation.latitude = 44.5;
-        startLocation.longitude = 11.35;
+        startLocation.longitude = 11.33;
         utmZone = 32;
         timeZone = 1;
         isUTC = true;
