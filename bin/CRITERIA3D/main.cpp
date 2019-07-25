@@ -35,10 +35,14 @@ int main(int argc, char *argv[])
 
     QString currentPath = myApp.applicationDirPath() + "/";
 
-    if (! myProject.loadProjectSettings(currentPath + "default.ini"))
+    myProject.setApplicationPath(myApp.applicationDirPath() + "/");
+
+    if (! myProject.loadProjectSettings(myProject.getApplicationPath() + "default.ini"))
         return -1;
 
-    if (! myProject.loadParameters(myProject.getPath() + "DATA/settings/parameters.ini"))
+    myProject.setDefaultPath(myProject.getProjectPath());
+
+    if (! myProject.loadParameters(myProject.parametersFileName))
         return -1;
 
     if (! myProject.readCriteria3DParameters())

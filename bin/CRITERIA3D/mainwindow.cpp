@@ -225,9 +225,13 @@ void MainWindow::mouseDoubleClickEvent(QMouseEvent * event)
     this->ui->statusBar->showMessage(QString::number(newCenter.latitude()) + " " + QString::number(newCenter.longitude()));
 
     if (event->button() == Qt::LeftButton)
+    {
         this->mapView->zoomIn();
-    else
+    }
+    else if (event->button() == Qt::RightButton)
+    {
         this->mapView->zoomOut();
+    }
 
     this->mapView->centerOn(newCenter.lonLat());
 
@@ -269,7 +273,7 @@ void MainWindow::mousePressEvent(QMouseEvent *event)
             myRubberBand->isActive = true;
             myRubberBand->show();
         }
-        else
+        else if (event->flags().testFlag(Qt::MouseEventCreatedDoubleClick))
         {
             // context menu
             contextMenuRequested(event->globalPos());
