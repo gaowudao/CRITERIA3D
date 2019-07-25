@@ -1250,7 +1250,6 @@ bool Project::loadProjectSettings(QString settingsFileName)
     gisSettings.timeZone = timeZone;
 
     projectSettings->beginGroup("project");
-
         QString myPath = projectSettings->value("path").toString();
         if (! myPath.isEmpty())
         {
