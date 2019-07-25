@@ -770,7 +770,7 @@ bool Crit3DMeteoGridDbHandler::openDatabase(QString *myError)
 
     if (!_db.open())
     {
-       *myError = "Error: connection with database fail!\n" + _db.lastError().text();
+       *myError = "Connection with database fail.\n" + _db.lastError().text();
        return false;
     }
     else
