@@ -1987,6 +1987,7 @@ void MainWindow::on_actionClose_project_triggered()
     on_actionClose_meteo_grid_triggered();
     on_actionClose_meteo_points_triggered();
     clearDEM();
+
     this->mapView->centerOn(startCenter->lonLat());
 
     if (! myProject.loadPragaProject(myProject.getApplicationPath() + "default.ini")) return;

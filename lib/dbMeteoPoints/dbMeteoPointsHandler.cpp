@@ -2,6 +2,7 @@
 #include "commonConstants.h"
 #include "meteo.h"
 #include "utilities.h"
+#include <iostream>
 
 #include <QtSql>
 
@@ -57,8 +58,10 @@ Crit3DMeteoPointsDbHandler::~Crit3DMeteoPointsDbHandler()
 {
     if ((_db.isValid()) && (_db.isOpen()))
     {
+        QString connection = _db.connectionName();
         _db.close();
-        _db.removeDatabase(_db.connectionName());
+        _db = QSqlDatabase();
+        _db.removeDatabase(connection);
     }
 }
 

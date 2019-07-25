@@ -785,8 +785,10 @@ void Crit3DMeteoGridDbHandler::closeDatabase()
 {
     if ((_db.isValid()) && (_db.isOpen()))
     {
-        _db.removeDatabase(_db.connectionName());
+        QString connection = _db.connectionName();
         _db.close();
+        _db = QSqlDatabase();
+        _db.removeDatabase(connection);
     }
 }
 

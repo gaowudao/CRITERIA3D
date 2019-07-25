@@ -27,8 +27,10 @@ Crit3DAggregationsDbHandler::~Crit3DAggregationsDbHandler()
 {
     if ((_db.isValid()) && (_db.isOpen()))
     {
+        QString connection = _db.connectionName();
         _db.close();
-        _db.removeDatabase(_db.connectionName());
+        _db = QSqlDatabase();
+        _db.removeDatabase(connection);
     }
 }
 
