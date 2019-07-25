@@ -65,7 +65,7 @@ PragaProject::PragaProject()
 
 bool PragaProject::loadPragaSettings()
 {
-    pragaDefaultSettings = new QSettings(getDefaultPath() + PATH_SETTINGS + "./SETTINGS/pragaDefault.ini", QSettings::IniFormat);
+    pragaDefaultSettings = new QSettings(getDefaultPath() + PATH_SETTINGS + "pragaDefault.ini", QSettings::IniFormat);
 
     Q_FOREACH (QString group, parameters->childGroups())
     {
