@@ -1960,6 +1960,8 @@ void MainWindow::on_actionNew_aggregation_DB_triggered()
 
 void MainWindow::drawProject()
 {
+    mapView->centerOn(startCenter->lonLat());
+
     if (myProject.DEM.isLoaded)
         renderDEM();
 
