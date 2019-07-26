@@ -206,8 +206,8 @@ Crit3DInterpolationSettings::Crit3DInterpolationSettings()
 void Crit3DInterpolationSettings::initializeProxy()
 {
     currentProxy.clear();
-    selectedCombination.getIsActive().clear();
-    optimalCombination.getIsActive().clear();
+    selectedCombination.clear();
+    optimalCombination.clear();
 }
 
 void Crit3DInterpolationSettings::initialize()
@@ -514,6 +514,11 @@ void Crit3DProxyCombination::setIsActive(const std::deque<bool> &value)
 Crit3DProxyCombination::Crit3DProxyCombination()
 {
     setUseThermalInversion(false);
+}
+
+void Crit3DProxyCombination::clear()
+{
+    isActive.clear();
 }
 
 void Crit3DProxyCombination::addValue(bool isActive_)

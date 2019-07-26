@@ -1974,9 +1974,23 @@ void MainWindow::on_actionOpen_project_triggered()
     QString fileName = QFileDialog::getOpenFileName(this, tr("Open project file"), "", tr("ini files (*.ini)"));
     if (fileName == "") return;
 
-    if (! myProject.loadPragaProject(fileName)) return;
+    if (myProject.isProjectLoaded)
+    {
+        on_actionClose_meteo_grid_triggered();
+        on_actionClose_meteo_points_triggered();
+        clearDEM();
+    }
 
-    drawProject();
+    if (myProject.loadPragaProject(fileName))
+    {
+        drawProject();
+    }
+    else
+    {
+        this->mapView->centerOn(startCenter->lonLat());
+        if (myProject.loadPragaProject(myProject.getApplicationPath() + "default.ini")) drawProject();
+    }
+
 }
 
 void MainWindow::on_actionClose_project_triggered()
