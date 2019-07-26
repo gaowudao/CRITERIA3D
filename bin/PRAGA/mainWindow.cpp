@@ -783,10 +783,8 @@ void MainWindow::drawMeteoPoints()
     this->resetMeteoPoints();
     this->addMeteoPoints();
 
-    if (myProject.meteoGridDbHandler == nullptr)
-    {
-        this->updateDateTime();
-    }
+    this->updateDateTime();
+
     myProject.loadMeteoPointsData (myProject.getCurrentDate(), myProject.getCurrentDate(), true);
 
     this->ui->meteoPoints->setEnabled(true);
@@ -943,12 +941,8 @@ void MainWindow::drawMeteoGrid()
     meteoGridLegend->colorScale = myProject.meteoGridDbHandler->meteoGrid()->dataMeteoGrid.colorScale;
     ui->meteoGridOpacitySlider->setEnabled(true);
 
-    // update dateTime Edit if there are not MeteoPoints
-    if (this->pointList.isEmpty())
-    {
-        myProject.setCurrentDate(myProject.meteoGridDbHandler->lastDate());
-        this->updateDateTime();
-    }
+    myProject.setCurrentDate(myProject.meteoGridDbHandler->lastDate());
+    this->updateDateTime();
 
     myProject.loadMeteoGridData(myProject.getCurrentDate(), myProject.getCurrentDate(), true);
 
