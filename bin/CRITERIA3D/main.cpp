@@ -33,7 +33,8 @@ int main(int argc, char *argv[])
 {
     QApplication myApp(argc, argv);
 
-    myProject.start(myApp.applicationDirPath());
+    if (! myProject.start(myApp.applicationDirPath()))
+        return -1;
 
     if (! myProject.loadParameters("parameters.ini"))
         return -1;
