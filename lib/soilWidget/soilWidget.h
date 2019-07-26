@@ -48,6 +48,13 @@
             soil::Crit3DTextureClass textureClassList[13];
             int dbSoilType;
 
+            QGroupBox *infoGroup;
+            QLineEdit* soilName;
+            QLineEdit* satValue;
+            QLineEdit* fcValue;
+            QLineEdit* wpValue;
+            QLineEdit* awValue;
+            QLineEdit* potFCValue;
             QAction* restoreData;
             QAction* addHorizon;
             QAction* deleteHorizon;

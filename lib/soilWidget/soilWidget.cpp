@@ -56,10 +56,57 @@ Crit3DSoilWidget::Crit3DSoilWidget()
     QVBoxLayout *mainLayout = new QVBoxLayout();
     QHBoxLayout *soilLayout = new QHBoxLayout();
     QVBoxLayout *texturalLayout = new QVBoxLayout();
+    QGridLayout *infoLayout = new QGridLayout();
 
     QPixmap pic("../../DOC/img/textural_soil.png");
     QLabel *label = new QLabel();
     label->setPixmap (pic);
+
+    infoGroup = new QGroupBox(tr(""));
+    infoGroup->setMaximumWidth(pic.width());
+    infoGroup->hide();
+    QLabel *soilNameLabel = new QLabel(tr("Soil name: "));
+    soilName = new QLineEdit();
+
+    QLabel *satLabel = new QLabel(tr("SAT = "));
+    satValue = new QLineEdit();
+
+    QLabel *fcLabel = new QLabel(tr("FC = "));
+    fcValue = new QLineEdit();
+
+    QLabel *wpLabel = new QLabel(tr("WP = "));
+    wpValue = new QLineEdit();
+
+    QLabel *awLabel = new QLabel(tr("AW = "));
+    awValue = new QLineEdit();
+
+    QLabel *potFCLabel = new QLabel(tr("PotFC = "));
+    potFCValue = new QLineEdit();
+
+    QLabel *satLegendLabel = new QLabel(tr("SAT = Saturation [-]"));
+    QLabel *fcLegendLabel = new QLabel(tr("FC = Field Capacity [-]"));
+    QLabel *wpLegendLabel = new QLabel(tr("WP = Wilting Point [-]"));
+    QLabel *awLegendLabel = new QLabel(tr("AW = Available Water [-]"));
+    QLabel *potFCLegendLabel = new QLabel(tr("PotFC = Potential at FC  [KPa]"));
+    infoLayout->addWidget(soilNameLabel, 0 , 0);
+    infoLayout->addWidget(soilName, 0 , 1);
+    infoLayout->addWidget(satLabel, 1 , 0);
+    infoLayout->addWidget(satValue, 1 , 1);
+    infoLayout->addWidget(fcLabel, 2 , 0);
+    infoLayout->addWidget(fcValue, 2 , 1);
+    infoLayout->addWidget(wpLabel, 3 , 0);
+    infoLayout->addWidget(wpValue, 3 , 1);
+    infoLayout->addWidget(awLabel, 4 , 0);
+    infoLayout->addWidget(awValue, 4 , 1);
+    infoLayout->addWidget(potFCLabel, 5 , 0);
+    infoLayout->addWidget(potFCValue, 5 , 1);
+
+    infoLayout->addWidget(satLegendLabel, 6 , 0);
+    infoLayout->addWidget(fcLegendLabel, 7 , 0);
+    infoLayout->addWidget(wpLegendLabel, 8 , 0);
+    infoLayout->addWidget(awLegendLabel, 9 , 0);
+    infoLayout->addWidget(potFCLegendLabel, 10 , 0);
+    infoGroup->setLayout(infoLayout);
 
     soilListComboBox.setFixedWidth(pic.size().width());
 
@@ -69,7 +116,7 @@ Crit3DSoilWidget::Crit3DSoilWidget()
 
     texturalLayout->addWidget(label);
     texturalLayout->setAlignment(Qt::AlignTop);
-
+    texturalLayout->addWidget(infoGroup);
 
     soilLayout->addLayout(texturalLayout);
     tabWidget = new QTabWidget;
@@ -195,6 +242,7 @@ void Crit3DSoilWidget::on_actionChooseSoil(QString soilCode)
         return;
     }
 
+    infoGroup->setVisible(true);
     // somethig has been modified, ask for saving
     if (!horizonsTab->getSoilCodeChanged().empty())
     {
