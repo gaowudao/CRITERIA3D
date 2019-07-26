@@ -1283,17 +1283,17 @@ bool Project::loadProjectSettings(QString settingsFileName)
 bool Project::searchDefaultPath(QString* path)
 {
     QString myPath = getApplicationPath();
-    QString myVolume = myPath.left(3);
-    while (! QDir(myPath + "DATA").exists() && QDir::cleanPath(myPath) != myVolume)
+    QString myVolumeDOS = myPath.left(3);
+
+    bool isFound = false;
+    while (! isFound)
     {
         myPath += "../";
-        if (QDir::cleanPath(myPath) == "/")
-        {
-            break;
-        }
+        if (QDir(myPath + "DATA").exists()) isFound = true;
+        if (QDir::cleanPath(myPath) == "/" || QDir::cleanPath(myPath) == myVolumeDOS) break;
     }
 
-    if (QDir::cleanPath(myPath) == myVolume)
+    if (! isFound)
     {
         logError("DATA directory is missing");
         return false;
