@@ -293,6 +293,7 @@ void TabHorizons::cellClicked(int row, int column)
 {
     tableDb->selectRow(row);
     tableModel->selectRow(row);
+    emit horizonSelected(row);
 }
 
 void TabHorizons::tableDbVerticalHeaderClick(int index)
@@ -301,6 +302,7 @@ void TabHorizons::tableDbVerticalHeaderClick(int index)
     tableModel->selectRow(index);
     tableModel->horizontalHeader()->setHighlightSections(false);
     deleteRow->setEnabled(true);
+    emit horizonSelected(index);
 
 }
 

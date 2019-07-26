@@ -71,6 +71,9 @@
             void on_actionAddHorizon();
             void on_actionDeleteHorizon();
             void on_actionRestoreData();
+
+            private slots:
+            void setInfoTextural(int);
     };
 
 #endif // SOILWIDGET_H
