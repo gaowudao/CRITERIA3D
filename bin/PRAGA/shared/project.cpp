@@ -1280,24 +1280,36 @@ bool Project::loadProjectSettings(QString settingsFileName)
 }
 
 
-QString Project::searchDefaultPath()
+bool Project::searchDefaultPath(QString* path)
 {
     QString myPath = getApplicationPath();
+    QString myVolume = myPath.left(3);
 
-    while (! QDir(myPath + "DATA").exists())
+    while (! QDir(myPath + "DATA").exists() && QDir::cleanPath(myPath) != myVolume)
+    {
         myPath += "../";
+    }
 
-    return QDir::cleanPath(myPath + "DATA") + "/";
+    if (QDir::cleanPath(myPath) == myVolume)
+    {
+        logError("DATA directory is missing");
+        return false;
+    }
+
+    *path = QDir::cleanPath(myPath) + "/DATA/";
+    return true;
 }
 
 
 bool Project::createDefaultSettings(QString fileName)
 {
+    QString path;
+    if (! searchDefaultPath(&path)) return false;
+
     QSettings* defaultSettings = new QSettings(fileName, QSettings::IniFormat);
 
     defaultSettings->beginGroup("project");
-        QString defaultPath = searchDefaultPath();
-        defaultSettings->setValue("path", defaultPath);
+        defaultSettings->setValue("path", path);
     defaultSettings->endGroup();
 
     defaultSettings->beginGroup("location");
@@ -1327,7 +1339,8 @@ bool Project::start(QString appPath)
 
     if (! QFile(defaultSettings).exists())
     {
-        createDefaultSettings(defaultSettings);
+        if (! createDefaultSettings(defaultSettings))
+            return false;
     }
 
     if (! loadProjectSettings(defaultSettings))
