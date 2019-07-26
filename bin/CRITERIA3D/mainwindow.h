@@ -103,6 +103,8 @@
 
         void on_actionCompute_AllMeteoMaps_triggered();
 
+        void on_actionOpen_Project_triggered();
+
     protected:
         /*!
          * \brief mouseReleaseEvent call moveCenter
@@ -162,6 +164,10 @@
         bool checkMapVariable(bool isComputed);
         void setMapVariable(meteoVariable myVar, gis::Crit3DRasterGrid *myGrid);
         void contextMenuRequested(const QPoint globalPos);
+
+        void drawProject();
+        void renderDEM();
+        void clearDEM();
     };
 
 

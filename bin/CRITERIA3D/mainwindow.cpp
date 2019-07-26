@@ -319,14 +319,17 @@ void MainWindow::on_actionRectangle_Selection_triggered()
 }
 
 
-void MainWindow::on_actionLoadDEM_triggered()
+void MainWindow::clearDEM()
 {
-    QString fileName = QFileDialog::getOpenFileName(this, tr("Open Digital Elevation Model"), "", tr("ESRI grid files (*.flt)"));
+    this->rasterObj->clear();
+    this->rasterObj->redrawRequested();
+    ui->labelRasterScale->setText("");
+    this->ui->rasterOpacitySlider->setEnabled(false);
+}
 
-    if (fileName == "") return;
 
-    if (! myProject.setDEM(fileName)) return;
-
+void MainWindow::renderDEM()
+{
     this->setCurrentRaster(&(myProject.DEM));
     ui->labelRasterScale->setText(QString::fromStdString(getVariableString(noMeteoTerrain)));
     this->ui->rasterOpacitySlider->setEnabled(true);
@@ -353,6 +356,18 @@ void MainWindow::on_actionLoadDEM_triggered()
 }
 
 
+void MainWindow::on_actionLoadDEM_triggered()
+{
+    QString fileName = QFileDialog::getOpenFileName(this, tr("Open Digital Elevation Model"), "", tr("ESRI grid files (*.flt)"));
+
+    if (fileName == "") return;
+
+    if (! myProject.setDEM(fileName)) return;
+
+    this->renderDEM();
+}
+
+
 void MainWindow::on_actionOpen_meteo_points_DB_triggered()
 {
     QString dbName = QFileDialog::getOpenFileName(this, tr("Open meteo points DB"), "", tr("DB files (*.db)"));
@@ -376,6 +391,45 @@ void MainWindow::on_actionOpen_meteo_grid_triggered()
         if (this->loadMeteoGridDB(xmlName))
             ui->groupBoxMeteoGrid->setVisible(true);
     }
+}
+
+
+void MainWindow::drawProject()
+{
+    mapView->centerOn(startCenter->lonLat());
+
+    if (myProject.DEM.isLoaded)
+        this->renderDEM();
+
+    // drawMeteoPoints();
+    // drawMeteoGrid();
+
+    QString title = "CRITERIA3D";
+    if (myProject.projectName != "")
+        title += " - " + myProject.projectName;
+
+    this->setWindowTitle(title);
+}
+
+
+void MainWindow::on_actionOpen_Project_triggered()
+{
+    QString fileName = QFileDialog::getOpenFileName(this, tr("Open project file"), "", tr("ini files (*.ini)"));
+    if (fileName == "") return;
+
+    if (myProject.isProjectLoaded)
+    {
+        on_actionClose_meteo_grid_triggered();
+        on_actionClose_meteo_points_triggered();
+        //clearDEM();
+    }
+
+    if (! myProject.loadCriteria3DProject(fileName))
+    {
+        myProject.loadCriteria3DProject(myProject.getApplicationPath() + "default.ini");
+    }
+
+    drawProject();
 }
 
 

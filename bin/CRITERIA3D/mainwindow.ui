@@ -2574,6 +2574,8 @@
     <property name="title">
      <string>Fi&amp;le</string>
     </property>
+    <addaction name="actionOpen_Project"/>
+    <addaction name="separator"/>
     <addaction name="actionLoadDEM"/>
     <addaction name="separator"/>
     <addaction name="actionOpen_meteo_points_DB"/>
@@ -2915,6 +2917,11 @@
   <action name="actionView_Wind_intensity">
    <property name="text">
     <string>Wind intensity</string>
+   </property>
+  </action>
+  <action name="actionOpen_Project">
+   <property name="text">
+    <string>Open Project</string>
    </property>
   </action>
  </widget>

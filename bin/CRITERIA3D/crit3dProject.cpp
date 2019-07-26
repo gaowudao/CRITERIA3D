@@ -43,7 +43,34 @@ Crit3DProject::Crit3DProject() : Project3D()
 }
 
 
-bool Crit3DProject::readCriteria3DParameters()
+bool Crit3DProject::loadCriteria3DProject(QString myFileName)
+{
+    clearCriteria3DProject();
+    if (isProjectLoaded) clearProject();
+    initializeProject();
+
+    if (myFileName == "") return(false);
+
+    if (! loadProjectSettings(myFileName))
+        return false;
+
+    if (! loadProject())
+        return false;
+
+    if (! loadCriteria3DSettings())
+        return false;
+
+    isProjectLoaded = true;
+
+    if (projectName != "")
+    {
+        logInfo("Project " + projectName + " loaded");
+    }
+    return true;
+}
+
+
+bool Crit3DProject::loadCriteria3DSettings()
 {          
     // TODO
     return true;

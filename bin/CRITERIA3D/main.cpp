@@ -39,7 +39,7 @@ int main(int argc, char *argv[])
     if (! myProject.loadParameters("parameters.ini"))
         return -1;
 
-    if (! myProject.readCriteria3DParameters())
+    if (! myProject.loadCriteria3DSettings())
         return -1;
 
     QNetworkProxyFactory::setUseSystemConfiguration(true);
