@@ -1283,7 +1283,7 @@ bool Project::loadProjectSettings(QString settingsFileName)
 bool Project::searchDefaultPath(QString* path)
 {
     QString myPath = getApplicationPath();
-    QString myVolume = "/";
+    QString myVolume = myPath.left(3);
     while (! QDir(myPath + "DATA").exists() && QDir::cleanPath(myPath) != myVolume)
     {
         myPath += "../";
