@@ -348,10 +348,7 @@ bool Project::loadParameters(QString parametersFileName)
 
     // check proxy grids for detrending
     if (!loadProxyGrids())
-    {
-        errorString = "Error loading proxy grids";
         return false;
-    }
 
     return true;
 }
@@ -933,11 +930,14 @@ bool Project::loadProxyGrids()
 
         if (interpolationSettings.getSelectedCombination().getValue(i) || myProxy->getForQualityControl())
         {
-            if (myGrid == nullptr && gridName != "")
+            if (! myGrid->isLoaded && gridName != "")
             {
                 myGrid = new gis::Crit3DRasterGrid();
                 if (!gis::readEsriGrid(gridName, myGrid, myError))
+                {
+                    logError("Error loading proxy grid " + QString::fromStdString(gridName));
                     return false;
+                }
             }
         }
     }
