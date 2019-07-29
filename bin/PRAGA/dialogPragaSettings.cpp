@@ -62,15 +62,10 @@ ElaborationTab::ElaborationTab(Crit3DElaborationSettings *elabSettings)
 }
 
 
-DialogPragaSettings::DialogPragaSettings(QSettings *projectSettings,
-                                         QSettings *settings,
-                                         gis::Crit3DGisSettings *gisSettings,
-                                         Crit3DQuality *quality,
-                                         Crit3DMeteoSettings *meteoSettings,
-                                         Crit3DElaborationSettings *elabSettings) : DialogSettings(projectSettings, settings, gisSettings, quality, meteoSettings)
+DialogPragaSettings::DialogPragaSettings(PragaProject *myProject) : DialogSettings(myProject)
 {
-    _elabSettings = elabSettings;
-    elabTab = new ElaborationTab(elabSettings);
+    _elabSettings = myProject->clima->getElabSettings();
+    elabTab = new ElaborationTab(_elabSettings);
 
     getTabWidget()->addTab(elabTab, tr("ELABORATION"));
 }
@@ -104,7 +99,7 @@ bool DialogPragaSettings::acceptPragaValues()
     _elabSettings->setAutomaticETP(elabTab->automaticETPEdit.isChecked());
     _elabSettings->setMergeJointStations(elabTab->mergeJointStationsEdit.isChecked());
 
-    savePragaSettings();
+    project_.savePragaSettings();
 
     return true;
 }
@@ -118,14 +113,3 @@ void DialogPragaSettings::accept()
     }
 }
 
-void DialogPragaSettings::savePragaSettings()
-{
-    getParamSettings()->beginGroup("elaboration");
-    getParamSettings()->setValue("anomaly_pts_max_distance", elabTab->anomalyPtsMaxDisEdit.text());
-    getParamSettings()->setValue("anomaly_pts_max_delta_z", elabTab->anomalyPtsMaxDeltaZEdit.text());
-    getParamSettings()->setValue("grid_min_coverage", elabTab->gridMinCoverageEdit.text());
-    getParamSettings()->setValue("compute_tmed", elabTab->automaticTmedEdit.isChecked());
-    getParamSettings()->setValue("compute_et0hs", elabTab->automaticETPEdit.isChecked());
-    getParamSettings()->setValue("merge_joint_stations", elabTab->mergeJointStationsEdit.isChecked());
-    getParamSettings()->endGroup();
-}

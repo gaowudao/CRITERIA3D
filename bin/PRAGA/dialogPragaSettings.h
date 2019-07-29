@@ -3,6 +3,10 @@
 
 #include <QWidget>
 
+#ifndef PRAGAPROJECT_H
+    #include "pragaProject.h"
+#endif
+
 #ifndef ELABORATIONSETTINGS_H
     #include "elaborationSettings.h"
 #endif
@@ -33,16 +37,13 @@ class DialogPragaSettings : public DialogSettings
     Q_OBJECT
 
     public:
-        explicit DialogPragaSettings(QSettings *projectSettings,
-                                     QSettings *settings,
-                                     gis::Crit3DGisSettings *gisSettings,
-                                     Crit3DQuality *quality,
-                                     Crit3DMeteoSettings *meteoSettings,
-                                     Crit3DElaborationSettings *elabSettings);
+        explicit DialogPragaSettings(PragaProject* myProject);
 
         bool acceptPragaValues();
-        void savePragaSettings();
         void accept();
+
+    protected:
+        PragaProject project_;
 
     private:
         Crit3DElaborationSettings *_elabSettings;

@@ -1681,7 +1681,7 @@ void MainWindow::on_actionInterpolationSettings_triggered()
 
 void MainWindow::on_actionParameters_triggered()
 {
-    DialogPragaSettings* mySettingsDialog = new DialogPragaSettings(myProject.projectSettings, myProject.pragaDefaultSettings, &myProject.gisSettings, myProject.quality, myProject.meteoSettings, myProject.clima->getElabSettings());
+    DialogPragaSettings* mySettingsDialog = new DialogPragaSettings(&myProject);
     mySettingsDialog->exec();
     if (startCenter->latitude() != myProject.gisSettings.startLocation.latitude
         || startCenter->longitude() != myProject.gisSettings.startLocation.longitude)

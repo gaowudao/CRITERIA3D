@@ -169,20 +169,15 @@ MeteoTab::MeteoTab(Crit3DMeteoSettings *meteoSettings)
 }
 
 
-DialogSettings::DialogSettings(QSettings *projectSettings, QSettings *settings, gis::Crit3DGisSettings *gisSettings, Crit3DQuality *quality, Crit3DMeteoSettings *meteoSettings)
+DialogSettings::DialogSettings(Project* myProject)
 {
-    _pathSettings = projectSettings;
-    _paramSettings = settings;
-
-    _geoSettings = gisSettings;
-    _qualitySettings = quality;
-    _meteoSettings = meteoSettings;
+    project_ = myProject;
 
     setWindowTitle(tr("Parameters"));
     setFixedSize(650,700);
-    geoTab = new GeoTab(gisSettings);
-    qualityTab = new QualityTab(quality);
-    metTab = new MeteoTab(meteoSettings);
+    geoTab = new GeoTab(&(project_->gisSettings));
+    qualityTab = new QualityTab(myProject->quality);
+    metTab = new MeteoTab(myProject->meteoSettings);
 
     tabWidget = new QTabWidget;
     tabWidget->addTab(geoTab, tr("GEO"));
@@ -296,23 +291,24 @@ bool DialogSettings::acceptValues()
 
     // store elaboration values
 
-    _geoSettings->startLocation.latitude = geoTab->startLocationLatEdit.text().toDouble();
-    _geoSettings->startLocation.longitude = geoTab->startLocationLonEdit.text().toDouble();
-    _geoSettings->utmZone = geoTab->utmZoneEdit.text().toInt();
-    _geoSettings->timeZone = geoTab->timeZoneEdit.text().toInt();
-    _geoSettings->isUTC = geoTab->utc.isChecked();
+    project_->gisSettings.startLocation.latitude = geoTab->startLocationLatEdit.text().toDouble();
+    project_->gisSettings.startLocation.longitude = geoTab->startLocationLonEdit.text().toDouble();
+    project_->gisSettings.utmZone = geoTab->utmZoneEdit.text().toInt();
+    project_->gisSettings.timeZone = geoTab->timeZoneEdit.text().toInt();
+    project_->gisSettings.isUTC = geoTab->utc.isChecked();
 
-    _qualitySettings->setReferenceHeight(qualityTab->referenceClimateHeightEdit.text().toFloat());
-    _qualitySettings->setDeltaTSuspect(qualityTab->deltaTSuspectEdit.text().toFloat());
-    _qualitySettings->setDeltaTWrong(qualityTab->deltaTWrongEdit.text().toFloat());
-    _qualitySettings->setRelHumTolerance(qualityTab->humidityToleranceEdit.text().toFloat());
+    project_->quality->setReferenceHeight(qualityTab->referenceClimateHeightEdit.text().toFloat());
+    project_->quality->setDeltaTSuspect(qualityTab->deltaTSuspectEdit.text().toFloat());
+    project_->quality->setDeltaTWrong(qualityTab->deltaTWrongEdit.text().toFloat());
+    project_->quality->setRelHumTolerance(qualityTab->humidityToleranceEdit.text().toFloat());
 
-    _meteoSettings->setMinimumPercentage(metTab->minimumPercentageEdit.text().toFloat());
-    _meteoSettings->setRainfallThreshold(metTab->rainfallThresholdEdit.text().toFloat());
-    _meteoSettings->setThomThreshold(metTab->thomThresholdEdit.text().toFloat());
-    _meteoSettings->setTransSamaniCoefficient(metTab->transSamaniCoefficientEdit.text().toFloat());
+    project_->meteoSettings->setMinimumPercentage(metTab->minimumPercentageEdit.text().toFloat());
+    project_->meteoSettings->setRainfallThreshold(metTab->rainfallThresholdEdit.text().toFloat());
+    project_->meteoSettings->setThomThreshold(metTab->thomThresholdEdit.text().toFloat());
+    project_->meteoSettings->setTransSamaniCoefficient(metTab->transSamaniCoefficientEdit.text().toFloat());
 
-    saveSettings();
+    project_->saveSettings();
+    project_->saveParameters();
 
     return true;
 }
@@ -326,30 +322,6 @@ void DialogSettings::accept()
     }
 }
 
-void DialogSettings::saveSettings()
-{
-    _pathSettings->beginGroup("location");
-    _pathSettings->setValue("lat", geoTab->startLocationLatEdit.text());
-    _pathSettings->setValue("lon", geoTab->startLocationLonEdit.text());
-    _pathSettings->setValue("utm_zone", geoTab->utmZoneEdit.text());
-    _pathSettings->setValue("time_zone", geoTab->timeZoneEdit.text());
-    _pathSettings->setValue("is_utc", geoTab->utc.isChecked());
-    _pathSettings->endGroup();
-
-    _paramSettings->beginGroup("quality");
-    _paramSettings->setValue("reference_height", qualityTab->referenceClimateHeightEdit.text());
-    _paramSettings->setValue("delta_temperature_suspect", qualityTab->deltaTSuspectEdit.text());
-    _paramSettings->setValue("delta_temperature_wrong", qualityTab->deltaTWrongEdit.text());
-    _paramSettings->setValue("relhum_tolerance", qualityTab->humidityToleranceEdit.text());
-    _paramSettings->endGroup();
-
-    _paramSettings->beginGroup("meteo");
-    _paramSettings->setValue("min_percentage", metTab->minimumPercentageEdit.text());
-    _paramSettings->setValue("prec_threshold", metTab->rainfallThresholdEdit.text());
-    _paramSettings->setValue("samani_coefficient", metTab->transSamaniCoefficientEdit.text());
-    _paramSettings->setValue("thom_threshold", metTab->thomThresholdEdit.text());
-    _paramSettings->endGroup();
-}
 
 QTabWidget *DialogSettings::getTabWidget() const
 {
@@ -359,14 +331,4 @@ QTabWidget *DialogSettings::getTabWidget() const
 void DialogSettings::setTabWidget(QTabWidget *value)
 {
     tabWidget = value;
-}
-
-QSettings *DialogSettings::getParamSettings() const
-{
-    return _paramSettings;
-}
-
-void DialogSettings::setParamSettings(QSettings *paramSettings)
-{
-    _paramSettings = paramSettings;
 }

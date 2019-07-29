@@ -1316,10 +1316,10 @@ void Project::saveSettings()
     projectSettings->endGroup();
 
     projectSettings->beginGroup("project");
-        projectSettings->setValue("name", projectName);
-        projectSettings->setValue("dem", demFileName);
-        projectSettings->setValue("meteo_points", dbPointsFileName);
-        projectSettings->setValue("meteo_grid", dbGridXMLFileName);
+        if (projectName != "") projectSettings->setValue("name", projectName);
+        if (demFileName != "") projectSettings->setValue("dem", demFileName);
+        if (dbPointsFileName != "") projectSettings->setValue("meteo_points", dbPointsFileName);
+        if (dbGridXMLFileName != "") projectSettings->setValue("meteo_grid", dbGridXMLFileName);
     projectSettings->endGroup();
 
     projectSettings->sync();
@@ -1328,13 +1328,22 @@ void Project::saveSettings()
 void Project::saveParameters()
 {
     parameters->beginGroup("meteo");
-        parameters->setValue("min_percentage", meteoSettings->getMinimumPercentage());
-        parameters->setValue("prec_threshold", meteoSettings->getRainfallThreshold());
-        parameters->setValue("samani_coefficient", meteoSettings->getTransSamaniCoefficient());
-        parameters->setValue("thom_threshold", meteoSettings->getThomThreshold());
-        parameters->setValue("wind_intensity_default", meteoSettings->getWindIntensityDefault());
-        parameters->setValue("hourly_intervals", meteoSettings->getHourlyIntervals());
+        parameters->setValue("min_percentage", QString::number(meteoSettings->getMinimumPercentage()));
+        parameters->setValue("prec_threshold", QString::number(meteoSettings->getRainfallThreshold()));
+        parameters->setValue("samani_coefficient", QString::number(meteoSettings->getTransSamaniCoefficient()));
+        parameters->setValue("thom_threshold", QString::number(meteoSettings->getThomThreshold()));
+        parameters->setValue("wind_intensity_default", QString::number(meteoSettings->getWindIntensityDefault()));
+        parameters->setValue("hourly_intervals", QString::number(meteoSettings->getHourlyIntervals()));
     parameters->endGroup();
+
+    parameters->beginGroup("quality");
+        parameters->setValue("reference_height", QString::number(quality->getReferenceHeight()));
+        parameters->setValue("delta_temperature_suspect", QString::number(quality->getDeltaTSuspect()));
+        parameters->setValue("delta_temperature_wrong", QString::number(quality->getDeltaTWrong()));
+        parameters->setValue("relhum_tolerance", QString::number(quality->getRelHumTolerance()));
+    parameters->endGroup();
+
+    parameters->sync();
 }
 
 bool Project::createProjectSettings(QString name_, QString settings_, QString parameters_)

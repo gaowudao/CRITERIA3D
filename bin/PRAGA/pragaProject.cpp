@@ -1325,3 +1325,16 @@ bool PragaProject::averageSeriesOnZonesMeteoGrid(meteoVariable variable, meteoCo
      return true;
 
 }
+
+
+void PragaProject::savePragaSettings()
+{
+    parameters->beginGroup("elaboration");
+        parameters->setValue("anomaly_pts_max_distance", QString::number(double(clima->getElabSettings()->getAnomalyPtsMaxDistance())));
+        parameters->setValue("anomaly_pts_max_delta_z", QString::number(double(clima->getElabSettings()->getAnomalyPtsMaxDeltaZ())));
+        parameters->setValue("grid_min_coverage", QString::number(double(clima->getElabSettings()->getGridMinCoverage())));
+        parameters->setValue("compute_tmed", clima->getElabSettings()->getAutomaticTmed());
+        parameters->setValue("compute_et0hs", clima->getElabSettings()->getAutomaticETP());
+        parameters->setValue("merge_joint_stations", clima->getElabSettings()->getMergeJointStations());
+    parameters->endGroup();
+}
