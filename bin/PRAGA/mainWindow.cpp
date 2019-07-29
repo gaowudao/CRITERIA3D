@@ -150,8 +150,6 @@ void MainWindow::resizeEvent(QResizeEvent *event)
 
 void MainWindow::mouseReleaseEvent(QMouseEvent *event)
 {
-    Q_UNUSED(event)
-
     this->rasterObj->updateCenter();
     this->meteoGridObj->updateCenter();
 
@@ -168,14 +166,13 @@ void MainWindow::mouseReleaseEvent(QMouseEvent *event)
         {
             if (firstCornerOffset.x() > lastCornerOffset.x())
             {
-                qDebug() << "bottom to left";
+                // bottom to left
                 pixelTopLeft = lastCornerOffset.toPoint();
                 pixelBottomRight = firstCornerOffset.toPoint();
             }
             else
             {
-                qDebug() << "bottom to right";
-
+                // bottom to right
                 pixelTopLeft = QPoint(firstCornerOffset.toPoint().x(), lastCornerOffset.toPoint().y());
                 pixelBottomRight = QPoint(lastCornerOffset.toPoint().x(), firstCornerOffset.toPoint().y());
             }
@@ -184,13 +181,13 @@ void MainWindow::mouseReleaseEvent(QMouseEvent *event)
         {
             if (firstCornerOffset.x() > lastCornerOffset.x())
             {
-                qDebug() << "top to left";
+                // top to left
                 pixelTopLeft = QPoint(lastCornerOffset.toPoint().x(), firstCornerOffset.toPoint().y());
                 pixelBottomRight = QPoint(firstCornerOffset.toPoint().x(), lastCornerOffset.toPoint().y());
             }
             else
             {
-                qDebug() << "top to right";
+                // top to right
                 pixelTopLeft = firstCornerOffset.toPoint();
                 pixelBottomRight = lastCornerOffset.toPoint();
             }
