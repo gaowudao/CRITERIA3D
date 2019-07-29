@@ -43,7 +43,7 @@ class DialogPragaSettings : public DialogSettings
         void accept();
 
     protected:
-        PragaProject project_;
+        PragaProject* project_;
 
     private:
         Crit3DElaborationSettings *_elabSettings;

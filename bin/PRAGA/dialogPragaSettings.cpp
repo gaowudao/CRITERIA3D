@@ -99,7 +99,7 @@ bool DialogPragaSettings::acceptPragaValues()
     _elabSettings->setAutomaticETP(elabTab->automaticETPEdit.isChecked());
     _elabSettings->setMergeJointStations(elabTab->mergeJointStationsEdit.isChecked());
 
-    project_.savePragaSettings();
+    project_->savePragaSettings();
 
     return true;
 }
