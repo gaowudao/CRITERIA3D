@@ -7,6 +7,7 @@
 #include <QListWidget>
 #include <QRadioButton>
 #include <QTextBrowser>
+#include <QIODevice>
 
 #include <sstream>
 #include <iostream>
@@ -2011,6 +2012,13 @@ void MainWindow::on_actionClose_project_triggered()
 
 void MainWindow::on_actionSave_project_as_triggered()
 {
+    QString templateFileName = myProject.getDefaultPath() + PATH_TEMPLATE + "template_meteo_arkimet.db";
+
+    QString projectName = QFileDialog::getSaveFileName(this, tr("Save as"), "", tr("ini files (*.ini)"));
+    if (projectName == "") return;
+
+    QFile* projectFile = new QFile(projectName);
+    if (! projectFile->open(QIODevice::WriteOnly)) return;
 
 }
 
