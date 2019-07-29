@@ -393,7 +393,7 @@ void Crit3DSoilWidget::setInfoTextural(int nHorizon)
         painter.begin(&pic);
         painter.setBrush(Qt::red);
         QPointF center(widthOffset + cx, heightOffset + cy);
-        painter.drawEllipse(center,6,6);
+        painter.drawEllipse(center,4.5,4.5);
         painter.end();
         labelPic->setPixmap(pic);
     }
