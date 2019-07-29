@@ -2012,14 +2012,16 @@ void MainWindow::on_actionClose_project_triggered()
 
 void MainWindow::on_actionSave_project_as_triggered()
 {
-    QString templateFileName = myProject.getDefaultPath() + PATH_TEMPLATE + "template_meteo_arkimet.db";
+    QString projectFileName = QFileDialog::getSaveFileName(this, tr("Save project as"), "", tr("ini files (*.ini)"));
+    if (projectFileName == "") return;
 
-    QString projectName = QFileDialog::getSaveFileName(this, tr("Save as"), "", tr("ini files (*.ini)"));
-    if (projectName == "") return;
+    bool isOk;
+    QString projectName = QInputDialog::getText(this, tr("Project name"), tr("Enter project name"), QLineEdit::Normal, "", &isOk);
 
-    QFile* projectFile = new QFile(projectName);
-    if (! projectFile->open(QIODevice::WriteOnly)) return;
+    QString parametersFileName = QFileDialog::getSaveFileName(this, tr("Save parameters as"), "", tr("ini files (*.ini)"));
+    if (parametersFileName == "") return;
 
+    myProject.createProjectSettings(projectName, projectFileName, parametersFileName);
 }
 
 

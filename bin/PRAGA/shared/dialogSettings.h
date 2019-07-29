@@ -5,9 +5,21 @@
 #include <QSettings>
 #include <QtWidgets>
 
-#include "gis.h"
-#include "quality.h"
-#include "meteo.h"
+#ifndef PROJECT_H
+    #include "project.h"
+#endif
+
+#ifndef GIS_H
+    #include "gis.h"
+#endif
+
+#ifndef QUALITY_H
+    #include "quality.h"
+#endif
+
+#ifndef METEO_H
+    #include "meteo.h"
+#endif
 
 
 class QDialogButtonBox;

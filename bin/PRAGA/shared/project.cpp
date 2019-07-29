@@ -193,6 +193,7 @@ bool Project::loadParameters(QString parametersFileName)
         return false;
     }
 
+    delete parameters;
     parameters = new QSettings(parametersFileName, QSettings::IniFormat);
 
     //interpolation settings
@@ -1226,6 +1227,7 @@ bool Project::loadProjectSettings(QString settingsFileName)
     QString filePath = getFilePath(settingsFileName);
     setProjectPath(filePath);
 
+    delete projectSettings;
     projectSettings = new QSettings(settingsFileName, QSettings::IniFormat);
 
     projectSettings->beginGroup("location");
@@ -1303,6 +1305,67 @@ bool Project::searchDefaultPath(QString* path)
     return true;
 }
 
+void Project::saveSettings()
+{
+    projectSettings->beginGroup("location");
+        projectSettings->setValue("lat", gisSettings.startLocation.latitude);
+        projectSettings->setValue("lon", gisSettings.startLocation.longitude);
+        projectSettings->setValue("utm_zone", gisSettings.utmZone);
+        projectSettings->setValue("time_zone", gisSettings.timeZone);
+        projectSettings->setValue("is_utc", gisSettings.isUTC);
+    projectSettings->endGroup();
+
+    projectSettings->beginGroup("project");
+        projectSettings->setValue("name", projectName);
+        projectSettings->setValue("dem", demFileName);
+        projectSettings->setValue("meteo_points", dbPointsFileName);
+        projectSettings->setValue("meteo_grid", dbGridXMLFileName);
+    projectSettings->endGroup();
+
+    projectSettings->sync();
+}
+
+void Project::saveParameters()
+{
+    parameters->beginGroup("meteo");
+        parameters->setValue("min_percentage", meteoSettings->getMinimumPercentage());
+        parameters->setValue("prec_threshold", meteoSettings->getRainfallThreshold());
+        parameters->setValue("samani_coefficient", meteoSettings->getTransSamaniCoefficient());
+        parameters->setValue("thom_threshold", meteoSettings->getThomThreshold());
+        parameters->setValue("wind_intensity_default", meteoSettings->getWindIntensityDefault());
+        parameters->setValue("hourly_intervals", meteoSettings->getHourlyIntervals());
+    parameters->endGroup();
+}
+
+bool Project::createProjectSettings(QString name_, QString settings_, QString parameters_)
+{
+    projectName = name_;
+
+    delete projectSettings;
+    projectSettings = new QSettings(settings_, QSettings::IniFormat);
+
+    saveSettings();
+
+    if (parametersFileName == "")
+    {
+        projectSettings->beginGroup("settings");
+            projectSettings->setValue("parameters_file", parametersFileName);
+        projectSettings->endGroup();
+    }
+    else {
+        projectSettings->beginGroup("settings");
+            projectSettings->setValue("parameters_file", parameters_);
+        projectSettings->endGroup();
+
+        delete parameters;
+        parameters = nullptr;
+        parameters = new QSettings(parameters_, QSettings::IniFormat);
+
+        saveParameters();
+    }
+
+    return true;
+}
 
 bool Project::createDefaultSettings(QString fileName)
 {

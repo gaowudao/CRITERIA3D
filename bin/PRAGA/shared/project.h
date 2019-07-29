@@ -41,7 +41,6 @@
         bool createDefaultSettings(QString fileName);
         bool searchDefaultPath(QString* path);
 
-
     protected:
         frequencyType currentFrequency;
         meteoVariable currentVariable;
@@ -101,7 +100,10 @@
         bool start(QString appPath);
         bool loadProject();
         bool loadProjectSettings(QString settingsFileName);
+        bool createProjectSettings(QString projectName, QString settingsFileName, QString parametersFileName);
+        void saveSettings();
         bool loadParameters(QString parametersFileName);
+        void saveParameters();
         void setProxyDEM();
         void clearProxyDEM();
         bool checkProxy(std::string name_, std::string gridName_, std::string table_, std::string field_, QString *error);
