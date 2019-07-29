@@ -32,6 +32,7 @@
 #include "soilDbTools.h"
 #include "commonConstants.h"
 
+#include <math.h>
 #include <QSqlDatabase>
 #include <QSqlQuery>
 #include <QString>
@@ -58,9 +59,10 @@ Crit3DSoilWidget::Crit3DSoilWidget()
     QVBoxLayout *texturalLayout = new QVBoxLayout();
     QGridLayout *infoLayout = new QGridLayout();
 
-    QPixmap pic("../../DOC/img/textural_soil.png");
-    QLabel *label = new QLabel();
-    label->setPixmap (pic);
+    picPath = "../../DOC/img/textural_soil.png";
+    pic.load(picPath);
+    labelPic = new QLabel();
+    labelPic->setPixmap(pic);
 
     infoGroup = new QGroupBox(tr(""));
     infoGroup->setMaximumWidth(pic.width());
@@ -121,7 +123,7 @@ Crit3DSoilWidget::Crit3DSoilWidget()
     mainLayout->addLayout(soilLayout);
     mainLayout->setAlignment(Qt::AlignTop);
 
-    texturalLayout->addWidget(label);
+    texturalLayout->addWidget(labelPic);
     texturalLayout->setAlignment(Qt::AlignTop);
     texturalLayout->addWidget(infoGroup);
 
@@ -244,6 +246,10 @@ void Crit3DSoilWidget::on_actionOpenSoilDB()
 
 void Crit3DSoilWidget::on_actionChooseSoil(QString soilCode)
 {
+
+    // re load textural triangle to clean previous circle
+    pic.load(picPath);
+    labelPic->setPixmap(pic);
     // soilListComboBox has been cleared
     if (soilCode.isEmpty())
     {
@@ -371,6 +377,27 @@ void Crit3DSoilWidget::on_actionDeleteHorizon()
 
 void Crit3DSoilWidget::setInfoTextural(int nHorizon)
 {
+
+    // re load textural triangle to clean previous circle
+    pic.load(picPath);
+    labelPic->setPixmap(pic);
+    if (mySoil.horizon[nHorizon].dbData.sand + mySoil.horizon[nHorizon].dbData.silt + mySoil.horizon[nHorizon].dbData.clay == 100)
+    {
+        // the pic has white space around the triangle: widthTriangle and heightTriangle define triangle size without white space
+        double widthOffset = (pic.width() - widthTriangle)/2;
+        double heightOffset = (pic.height() - heightTriangle)/2;
+        double factor = ( pow ( (pow(100.0, 2.0) - pow(50.0, 2.0)), 0.5) ) / 100;
+        // draw new point
+        double cx = widthTriangle * ((mySoil.horizon[nHorizon].dbData.silt + mySoil.horizon[nHorizon].dbData.clay / 2) / 100);
+        double cy =  heightTriangle * (1 - mySoil.horizon[nHorizon].dbData.clay  / 2 * pow (3, 0.5) / 100 / factor); // tg(60°)=3^0.5
+        painter.begin(&pic);
+        painter.setBrush(Qt::red);
+        QPointF center(widthOffset + cx, heightOffset + cy);
+        painter.drawEllipse(center,6,6);
+        painter.end();
+        labelPic->setPixmap(pic);
+    }
+
     if (mySoil.horizon[nHorizon].vanGenuchten.thetaS == NODATA)
     {
         satValue->setText(QString::number(NODATA));
@@ -417,3 +444,4 @@ void Crit3DSoilWidget::setInfoTextural(int nHorizon)
     }
 
 }
+
