@@ -67,27 +67,34 @@ Crit3DSoilWidget::Crit3DSoilWidget()
     infoGroup->hide();
     QLabel *soilNameLabel = new QLabel(tr("Soil name: "));
     soilName = new QLineEdit();
+    soilName->setReadOnly(true);
 
     QLabel *satLabel = new QLabel(tr("SAT = "));
     satValue = new QLineEdit();
 
+    satValue->setReadOnly(true);
+
     QLabel *fcLabel = new QLabel(tr("FC = "));
     fcValue = new QLineEdit();
+    fcValue->setReadOnly(true);
 
     QLabel *wpLabel = new QLabel(tr("WP = "));
     wpValue = new QLineEdit();
+    wpValue->setReadOnly(true);
 
     QLabel *awLabel = new QLabel(tr("AW = "));
     awValue = new QLineEdit();
+    awValue->setReadOnly(true);
 
     QLabel *potFCLabel = new QLabel(tr("PotFC = "));
     potFCValue = new QLineEdit();
+    potFCValue->setReadOnly(true);
 
     QLabel *satLegendLabel = new QLabel(tr("SAT = Saturation [-]"));
-    QLabel *fcLegendLabel = new QLabel(tr("FC = Field Capacity [-]"));
-    QLabel *wpLegendLabel = new QLabel(tr("WP = Wilting Point [-]"));
+    QLabel *fcLegendLabel = new QLabel(tr("FC = Water content at Field Capacity [-]"));
+    QLabel *wpLegendLabel = new QLabel(tr("WP = Water content at Wilting Point [-]"));
     QLabel *awLegendLabel = new QLabel(tr("AW = Available Water [-]"));
-    QLabel *potFCLegendLabel = new QLabel(tr("PotFC = Potential at FC  [KPa]"));
+    QLabel *potFCLegendLabel = new QLabel(tr("PotFC = Potential at Field Capacity [KPa]"));
     infoLayout->addWidget(soilNameLabel, 0 , 0);
     infoLayout->addWidget(soilName, 0 , 1);
     infoLayout->addWidget(satLabel, 1 , 0);
@@ -181,6 +188,7 @@ Crit3DSoilWidget::Crit3DSoilWidget()
     connect(airEntry, &QAction::triggered, this, &Crit3DSoilWidget::on_actionAirEntry);
 
     connect(&soilListComboBox, &QComboBox::currentTextChanged, this, &Crit3DSoilWidget::on_actionChooseSoil);
+    connect(horizonsTab, SIGNAL(horizonSelected(int)), this, SLOT(setInfoTextural(int)));
 
     fileMenu->addAction(openSoilDB);
     fileMenu->addAction(saveChanges);
@@ -242,7 +250,6 @@ void Crit3DSoilWidget::on_actionChooseSoil(QString soilCode)
         return;
     }
 
-    infoGroup->setVisible(true);
     // somethig has been modified, ask for saving
     if (!horizonsTab->getSoilCodeChanged().empty())
     {
@@ -265,12 +272,20 @@ void Crit3DSoilWidget::on_actionChooseSoil(QString soilCode)
         return;
     }
     mySoil.code = soilCode.toStdString();
+    satValue->clear();
+    fcValue->clear();
+    wpValue->clear();
+    awValue->clear();
+    potFCValue->clear();
+
     SoilFromDb = mySoil;
     horizonsTab->clearSelections();
     horizonsTab->insertSoilHorizons(&mySoil, textureClassList);
     addHorizon->setEnabled(true);
     deleteHorizon->setEnabled(true);
     restoreData->setEnabled(true);
+    infoGroup->setVisible(true);
+    soilName->setText(QString::fromStdString(mySoil.code));
 }
 
 
@@ -352,4 +367,53 @@ void Crit3DSoilWidget::on_actionAddHorizon()
 void Crit3DSoilWidget::on_actionDeleteHorizon()
 {
     horizonsTab->removeRowClicked();
+}
+
+void Crit3DSoilWidget::setInfoTextural(int nHorizon)
+{
+    if (mySoil.horizon[nHorizon].vanGenuchten.thetaS == NODATA)
+    {
+        satValue->setText(QString::number(NODATA));
+    }
+    else
+    {
+        satValue->setText(QString::number(mySoil.horizon[nHorizon].vanGenuchten.thetaS, 'f', 3));
+    }
+
+    if (mySoil.horizon[nHorizon].waterContentFC == NODATA)
+    {
+        fcValue->setText(QString::number(NODATA));
+    }
+    else
+    {
+        fcValue->setText(QString::number(mySoil.horizon[nHorizon].waterContentFC, 'f', 3));
+    }
+
+    if (mySoil.horizon[nHorizon].waterContentWP == NODATA)
+    {
+        wpValue->setText(QString::number(NODATA));
+    }
+    else
+    {
+        wpValue->setText(QString::number(mySoil.horizon[nHorizon].waterContentWP, 'f', 3));
+    }
+
+    if (mySoil.horizon[nHorizon].waterContentFC == NODATA || mySoil.horizon[nHorizon].waterContentWP == NODATA)
+    {
+        awValue->setText(QString::number(NODATA));
+    }
+    else
+    {
+        awValue->setText(QString::number(mySoil.horizon[nHorizon].waterContentFC-mySoil.horizon[nHorizon].waterContentWP, 'f', 3));
+    }
+
+    if (mySoil.horizon[nHorizon].fieldCapacity == NODATA)
+    {
+        potFCValue->setText(QString::number(NODATA));
+    }
+    else
+    {
+        potFCValue->setText(QString::number(mySoil.horizon[nHorizon].fieldCapacity, 'f', 3));
+    }
+
 }

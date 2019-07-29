@@ -40,6 +40,8 @@ private:
     soil::Crit3DSoil* mySoil;
     soil::Crit3DTextureClass* myTextureClassList;
     std::string soilCodeChanged;
+signals:
+    void horizonSelected(int nHorizon);
 
 };
 

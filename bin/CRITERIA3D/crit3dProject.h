@@ -18,6 +18,8 @@
     class Crit3DProject : public Project3D
     {
     private:
+        void clearCriteria3DProject();
+
 
     public:
         // same header of DEM
@@ -31,13 +33,14 @@
         Crit3DProject();
 
 
-        bool readCriteria3DParameters();
+        bool loadCriteria3DProject(QString myFileName);
+
+        bool loadCriteria3DSettings();
 
         bool loadModelParameters(QString dbName);
         bool loadSoilData(QString dbName);
         bool loadSoilMap(QString fileName);
 
-        void clearCriteria3DProject();
         bool initializeCriteria3D();
 
         bool setSoilIndexMap();
