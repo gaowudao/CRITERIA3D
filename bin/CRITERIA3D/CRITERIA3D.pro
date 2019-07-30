@@ -67,8 +67,7 @@ CONFIG(debug, debug|release) {
 }
 
 
-SOURCES += main.cpp\
-    mainwindow.cpp \
+SOURCES += mainwindow.cpp \
     ../PRAGA/shared/dialogSelection.cpp \
     ../PRAGA/shared/stationMarker.cpp \
     ../PRAGA/shared/dialogSettings.cpp \
@@ -81,10 +80,10 @@ SOURCES += main.cpp\
     ../PRAGA/shared/formInfo.cpp \
     shared/meteoMaps.cpp \
     shared/project3D.cpp \
-    shared/sharedMainWindow.cpp \
     waterBalance3D.cpp \
     viewer3d.cpp \
-    crit3dProject.cpp
+    crit3dProject.cpp \
+    main.cpp\
 
 
 HEADERS += mainwindow.h \

@@ -2,6 +2,9 @@
 #define MAINWINDOW_H
 
     #include "sharedMainWindow.h"
+    #include "viewer3d.h"
+
+    enum mapType {mapNone, mapDEM, mapSoil, mapVariable};
 
     namespace Ui
     {
@@ -21,6 +24,8 @@
 
     private slots:
 
+        void on_rasterOpacitySlider_sliderMoved(int position);
+        void on_meteoGridOpacitySlider_sliderMoved(int position);
         void on_actionLoadDEM_triggered();
         void on_actionOpen_meteo_points_DB_triggered();
         void on_actionOpen_meteo_grid_triggered();
@@ -131,7 +136,7 @@
         void setMapVariable(meteoVariable myVar, gis::Crit3DRasterGrid *myGrid);
         void contextMenuRequested(const QPoint globalPos);
 
-
+        void addMeteoPoints();
         void drawProject();
         void renderDEM();
         void clearDEM();
