@@ -121,6 +121,8 @@
 
         void on_actionSave_project_as_triggered();
 
+        void on_actionSave_project_triggered();
+
     protected:
         /*!
          * \brief mouseReleaseEvent call moveCenter

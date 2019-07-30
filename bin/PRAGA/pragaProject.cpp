@@ -42,6 +42,12 @@ bool PragaProject::createPragaProject(QString path_, QString name_, QString desc
     return true;
 }
 
+void PragaProject::savePragaProject()
+{
+    saveProject();
+    savePragaParameters();
+}
+
 bool PragaProject::loadPragaProject(QString myFileName)
 {
     clearPragaProject();

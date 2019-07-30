@@ -2021,6 +2021,10 @@ void MainWindow::on_actionSave_project_as_triggered()
     myProjectDialog->close();
 }
 
+void MainWindow::on_actionSave_project_triggered()
+{
+    myProject.saveProject();
+}
 
 bool KeyboardFilter::eventFilter(QObject* obj, QEvent* event)
 {
@@ -2030,3 +2034,4 @@ bool KeyboardFilter::eventFilter(QObject* obj, QEvent* event)
         return QObject::eventFilter(obj, event);
     }
 }
+

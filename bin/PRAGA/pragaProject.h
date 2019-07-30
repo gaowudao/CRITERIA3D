@@ -34,6 +34,7 @@
         void clearPragaProject();
         bool loadPragaProject(QString myFileName);
         bool createPragaProject(QString path_, QString name_, QString description_);
+        void savePragaProject();
 
         bool loadPragaSettings();
         void savePragaParameters();

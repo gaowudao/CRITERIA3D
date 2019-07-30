@@ -1383,6 +1383,13 @@ void Project::saveParameters()
     parameters->sync();
 }
 
+void Project::saveProject()
+{
+    saveSettings();
+    saveParameters();
+    saveInterpolationParameters();
+}
+
 bool Project::createProject(QString path_, QString name_, QString description_)
 {
     // name
@@ -1398,7 +1405,6 @@ bool Project::createProject(QString path_, QString name_, QString description_)
     // settings
     delete projectSettings;
     projectSettings = new QSettings(projectPath + name_ + ".ini", QSettings::IniFormat);
-    saveSettings();
 
     // parameters
     QString oldParameters = parametersFileName;
@@ -1413,8 +1419,7 @@ bool Project::createProject(QString path_, QString name_, QString description_)
     delete parameters;
     parameters = new QSettings(parametersFileName, QSettings::IniFormat);
 
-    saveParameters();
-    saveInterpolationParameters();
+    saveProject();
 
     return true;
 }

@@ -101,6 +101,7 @@
         bool loadProject();
         bool loadProjectSettings(QString settingsFileName);
         bool createProject(QString path_, QString name_, QString filename_);
+        void saveProject();
         void saveSettings();
         bool loadParameters(QString parametersFileName);
         void saveParameters();
