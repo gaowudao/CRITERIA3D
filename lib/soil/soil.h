@@ -146,6 +146,7 @@
         public:
             std::string code;
             int id;
+            std::string name;
             int nrHorizons;
             double totalDepth;                  /*!<   [m]  */
             Crit3DHorizon* horizon;

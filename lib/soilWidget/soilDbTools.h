@@ -30,6 +30,7 @@
     bool loadAllSoils(QString dbSoilName, std::vector <soil::Crit3DSoil> *soilList, soil::Crit3DTextureClass *textureClassList, QString* error);
     bool loadAllSoils(QSqlDatabase* dbSoil, std::vector <soil::Crit3DSoil> *soilList, soil::Crit3DTextureClass *textureClassList, QString* error);
 
+    bool loadSoilInfo(QSqlDatabase* dbSoil, QString soilCode, soil::Crit3DSoil* mySoil, QString *error);
     bool getSoilList(QSqlDatabase* dbSoil, QStringList* soilList, QString* error);
 
 #endif // SOILDBTOOLS_H

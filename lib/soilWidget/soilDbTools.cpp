@@ -135,6 +135,39 @@ bool loadDriessenParameters(QSqlDatabase* dbSoil, soil::Crit3DTextureClass* text
     return true;
 }
 
+bool loadSoilInfo(QSqlDatabase* dbSoil, QString soilCode, soil::Crit3DSoil* mySoil, QString *error)
+{
+    QSqlQuery qry(*dbSoil);
+    if (soilCode.isEmpty())
+    {
+        *error = "soilCode missing";
+        return false;
+    }
+
+    qry.prepare( "SELECT * FROM `soils` WHERE soil_code = :soil_code");
+    qry.bindValue(":soil_code", soilCode);
+    if( !qry.exec() )
+    {
+        *error = qry.lastError().text();
+        return false;
+    }
+    else
+    {
+        QString name;
+        if (qry.next())
+        {
+            getValue(qry.value("name"), &name);
+            mySoil->name = name.toStdString();
+            return true;
+        }
+        else
+        {
+            *error = "soilCode not found";
+            return false;
+        }
+    }
+}
+
 
 bool loadSoilData(QSqlDatabase* dbSoil, QString soilCode, soil::Crit3DSoil* mySoil, QString *error)
 {
@@ -218,6 +251,10 @@ bool loadSoil(QSqlDatabase* dbSoil, QString soilCode, soil::Crit3DSoil* mySoil,
               soil::Crit3DTextureClass* textureClassList, QString* error)
 {
     if (!loadSoilData(dbSoil, soilCode, mySoil, error))
+    {
+        return false;
+    }
+    if (!loadSoilInfo(dbSoil, soilCode, mySoil, error))
     {
         return false;
     }
@@ -348,7 +385,6 @@ QString getIdSoilString(QSqlDatabase* dbSoil, int idSoilNumber, QString *myError
     return idSoilStr;
 }
 
-
 bool getSoilList(QSqlDatabase* dbSoil, QStringList* soilList, QString* error)
 {
     // query soil list
@@ -406,7 +442,7 @@ bool loadAllSoils(QSqlDatabase* dbSoil, std::vector <soil::Crit3DSoil> *soilList
     }
 
     // query soil list
-    QString queryString = "SELECT id_soil, soil_code FROM soils";
+    QString queryString = "SELECT id_soil, soil_code, name FROM soils";
     QSqlQuery query = dbSoil->exec(queryString);
 
     query.first();
@@ -426,11 +462,13 @@ bool loadAllSoils(QSqlDatabase* dbSoil, std::vector <soil::Crit3DSoil> *soilList
     // load soil properties
     QString soilCode;
     int idSoil;
+    QString soilName;
     QString wrongSoils = "";
     do
     {
         getValue(query.value("id_soil"), &idSoil);
         getValue(query.value("soil_code"), &soilCode);
+        getValue(query.value("name"), &soilName);
         if (idSoil != NODATA && soilCode != "")
         {
             soil::Crit3DSoil *mySoil = new soil::Crit3DSoil;
@@ -438,6 +476,7 @@ bool loadAllSoils(QSqlDatabase* dbSoil, std::vector <soil::Crit3DSoil> *soilList
             {
                 mySoil->id = idSoil;
                 mySoil->code = soilCode.toStdString();
+                mySoil->name = soilName.toStdString();
                 soilList->push_back(*mySoil);
             }
             if (*error != "")

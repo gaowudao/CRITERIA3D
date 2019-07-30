@@ -67,9 +67,10 @@ Crit3DSoilWidget::Crit3DSoilWidget()
     infoGroup = new QGroupBox(tr(""));
     infoGroup->setMaximumWidth(pic.width());
     infoGroup->hide();
-    QLabel *soilNameLabel = new QLabel(tr("Soil name: "));
-    soilName = new QLineEdit();
-    soilName->setReadOnly(true);
+
+    QLabel *soilCodeLabel = new QLabel(tr("Soil code: "));
+    soilCodeValue = new QLineEdit();
+    soilCodeValue->setReadOnly(true);
 
     QLabel *satLabel = new QLabel(tr("SAT = "));
     satValue = new QLineEdit();
@@ -92,13 +93,15 @@ Crit3DSoilWidget::Crit3DSoilWidget()
     potFCValue = new QLineEdit();
     potFCValue->setReadOnly(true);
 
-    QLabel *satLegendLabel = new QLabel(tr("SAT = Saturation [-]"));
+    QLabel *satLegendLabel = new QLabel(tr("SAT = Water content at saturation [-]"));
     QLabel *fcLegendLabel = new QLabel(tr("FC = Water content at Field Capacity [-]"));
     QLabel *wpLegendLabel = new QLabel(tr("WP = Water content at Wilting Point [-]"));
     QLabel *awLegendLabel = new QLabel(tr("AW = Available Water [-]"));
     QLabel *potFCLegendLabel = new QLabel(tr("PotFC = Potential at Field Capacity [KPa]"));
-    infoLayout->addWidget(soilNameLabel, 0 , 0);
-    infoLayout->addWidget(soilName, 0 , 1);
+
+    infoGroup->setTitle(soilName);
+    infoLayout->addWidget(soilCodeLabel, 0 , 0);
+    infoLayout->addWidget(soilCodeValue, 0 , 1);
     infoLayout->addWidget(satLabel, 1 , 0);
     infoLayout->addWidget(satValue, 1 , 1);
     infoLayout->addWidget(fcLabel, 2 , 0);
@@ -282,6 +285,7 @@ void Crit3DSoilWidget::on_actionChooseSoil(QString soilCode)
         return;
     }
     mySoil.code = soilCode.toStdString();
+    soilName = QString::fromStdString(mySoil.name);
     satValue->clear();
     fcValue->clear();
     wpValue->clear();
@@ -294,7 +298,8 @@ void Crit3DSoilWidget::on_actionChooseSoil(QString soilCode)
     deleteHorizon->setEnabled(true);
     restoreData->setEnabled(true);
     infoGroup->setVisible(true);
-    soilName->setText(QString::fromStdString(mySoil.code));
+    infoGroup->setTitle(soilName);
+    soilCodeValue->setText(QString::fromStdString(mySoil.code));
 }
 
 
