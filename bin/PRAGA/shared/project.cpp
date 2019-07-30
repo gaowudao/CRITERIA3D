@@ -28,6 +28,8 @@ Project::Project()
     defaultPath = "";
 
     initializeProject();
+
+    modality = MODE_GUI;
 }
 
 void Project::initializeProject()
@@ -36,7 +38,6 @@ void Project::initializeProject()
 
     projectName = "";
     isProjectLoaded = false;
-    modality = MODE_GUI;
     requestedExit = false;
     logFileName = "";
     errorString = "";

@@ -79,7 +79,7 @@ bool executeCommand(QStringList argumentList, PragaProject* myProject)
 
     myProject->logInfo(getTimeStamp(argumentList));
 
-    isExecuted = myProject->executeSharedCommand(argumentList, &isCommandFound);
+    isExecuted = executeSharedCommand(myProject, argumentList, &isCommandFound);
     if (isCommandFound) return isExecuted;
 
     isExecuted = myProject->executePragaCommand(argumentList, &isCommandFound);

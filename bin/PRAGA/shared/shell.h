@@ -16,6 +16,8 @@
     QString getCommandLine(QString programName);
     QStringList getSharedCommandList();
 
+    bool executeSharedCommand(Project* myProject, QStringList argumentList, bool *isCommandFound);
+
     bool cmdLoadDEM(Project* myProject, QStringList argumentList);
     bool cmdSetLogFile(Project* myProject, QStringList argumentList);
     bool cmdExit(Project* myProject);
