@@ -293,6 +293,7 @@ void TabHorizons::cellClicked(int row, int column)
 {
     tableDb->selectRow(row);
     tableModel->selectRow(row);
+    deleteRow->setEnabled(true);
     emit horizonSelected(row);
 }
 
@@ -572,6 +573,7 @@ void TabHorizons::addRowClicked()
     mySoil->addHorizon(numRow,newHor);
     checkDepths();
     tableDb->blockSignals(false);
+    soilCodeChanged = mySoil->code;
 
 }
 
@@ -593,6 +595,7 @@ void TabHorizons::removeRowClicked()
     mySoil->deleteHorizon(row);
     checkDepths();
     tableDb->blockSignals(false);
+    soilCodeChanged = mySoil->code;
 }
 
 std::string TabHorizons::getSoilCodeChanged() const

@@ -256,22 +256,26 @@ void Crit3DSoilWidget::on_actionChooseSoil(QString soilCode)
         return;
     }
 
+    QString error;
     // somethig has been modified, ask for saving
     if (!horizonsTab->getSoilCodeChanged().empty())
     {
-        std::string soilCode = horizonsTab->getSoilCodeChanged();
+        std::string soilCodeChanged = horizonsTab->getSoilCodeChanged();
         QMessageBox::StandardButton confirm;
-        QString msg = "Do you want to save changes to soil "+QString::fromStdString(soilCode)+" ?";
+        QString msg = "Do you want to save changes to soil "+QString::fromStdString(soilCodeChanged)+" ?";
         confirm = QMessageBox::question(nullptr, "Warning", msg, QMessageBox::Yes|QMessageBox::No, QMessageBox::Yes);
 
         if (confirm == QMessageBox::Yes)
         {
-            qDebug() << "Yes was clicked";
-            //TO DO
+            if (!updateSoilData(&dbSoil, QString::fromStdString(soilCodeChanged), &mySoil, &error))
+            {
+                QMessageBox::critical(nullptr, "Error!", error);
+                return;
+            }
         }
         horizonsTab->resetSoilCodeChanged();
     }
-    QString error;
+
     if (! loadSoil(&dbSoil, soilCode, &mySoil, textureClassList, &error))
     {
         QMessageBox::critical(nullptr, "Error!", error);
@@ -285,7 +289,6 @@ void Crit3DSoilWidget::on_actionChooseSoil(QString soilCode)
     potFCValue->clear();
 
     SoilFromDb = mySoil;
-    horizonsTab->clearSelections();
     horizonsTab->insertSoilHorizons(&mySoil, textureClassList);
     addHorizon->setEnabled(true);
     deleteHorizon->setEnabled(true);
@@ -355,8 +358,14 @@ void Crit3DSoilWidget::on_actionAirEntry()
 
 void Crit3DSoilWidget::on_actionSave()
 {
-    qDebug() << "save changes";
-    // TO DO
+    QString error;
+    std::string soilCodeChanged = horizonsTab->getSoilCodeChanged();
+    if (!updateSoilData(&dbSoil, QString::fromStdString(soilCodeChanged), &mySoil, &error))
+    {
+        QMessageBox::critical(nullptr, "Error!", error);
+        return;
+    }
+    horizonsTab->resetSoilCodeChanged();
 }
 
 void Crit3DSoilWidget::on_actionRestoreData()
