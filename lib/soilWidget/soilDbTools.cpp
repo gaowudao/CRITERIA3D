@@ -252,7 +252,80 @@ bool loadSoil(QSqlDatabase* dbSoil, QString soilCode, soil::Crit3DSoil* mySoil,
         }
  */
 
+bool updateSoilData(QSqlDatabase* dbSoil, QString soilCode, soil::Crit3DSoil* mySoil, QString *error)
+{
 
+    QSqlQuery qry(*dbSoil);
+    if (soilCode.isEmpty())
+    {
+        *error = "soilCode missing";
+        return false;
+    }
+
+    // delete all row from table horizons of soil:soilCode
+    qry.prepare( "DELETE FROM `horizons` WHERE soil_code = :soil_code");
+    qry.bindValue(":soil_code", soilCode);
+
+    if( !qry.exec() )
+    {
+        *error = qry.lastError().text();
+        return false;
+    }
+
+    // insert new rows
+    qry.prepare( "INSERT INTO `horizons` (soil_code, horizon_nr, upper_depth, lower_depth, coarse_fragment, organic_matter, sand, silt, clay, bulk_density, theta_sat, k_sat)"
+                                              " VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)" );
+
+    QVariantList soil_code;
+    QVariantList horizon_nr;
+    QVariantList upper_depth;
+    QVariantList lower_depth;
+    QVariantList coarse_fragment;
+    QVariantList organic_matter;
+    QVariantList sand;
+    QVariantList silt;
+    QVariantList clay;
+    QVariantList bulk_density;
+    QVariantList theta_sat;
+    QVariantList k_sat;
+
+    for (int i=0; i<mySoil->nrHorizons; i++)
+    {
+        soil_code << soilCode;
+        horizon_nr << i+1;
+        upper_depth << mySoil->horizon[i].dbData.upperDepth;
+        lower_depth << mySoil->horizon[i].dbData.lowerDepth;
+        coarse_fragment << mySoil->horizon[i].dbData.coarseFragments;
+        organic_matter << mySoil->horizon[i].dbData.organicMatter;
+        sand << mySoil->horizon[i].dbData.sand;
+        silt << mySoil->horizon[i].dbData.silt;
+        clay << mySoil->horizon[i].dbData.clay;
+        bulk_density << mySoil->horizon[i].dbData.bulkDensity;
+        theta_sat << mySoil->horizon[i].dbData.thetaSat;
+        k_sat << mySoil->horizon[i].dbData.kSat;
+    }
+
+    qry.addBindValue(soil_code);
+    qry.addBindValue(horizon_nr);
+    qry.addBindValue(upper_depth);
+    qry.addBindValue(lower_depth);
+    qry.addBindValue(coarse_fragment);
+    qry.addBindValue(organic_matter);
+    qry.addBindValue(sand);
+    qry.addBindValue(silt);
+    qry.addBindValue(clay);
+    qry.addBindValue(bulk_density);
+    qry.addBindValue(theta_sat);
+    qry.addBindValue(k_sat);
+
+    if( !qry.execBatch() )
+    {
+        *error = qry.lastError().text();
+        return false;
+    }
+    else
+        return true;
+}
 
 QString getIdSoilString(QSqlDatabase* dbSoil, int idSoilNumber, QString *myError)
 {
