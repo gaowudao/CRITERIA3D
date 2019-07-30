@@ -91,6 +91,7 @@ unix:{
 SOURCES += main.cpp\
     mainWindow.cpp \
     saveClimaLayout.cpp \
+    shared/dialogProject.cpp \
     shared/stationMarker.cpp \
     shared/rubberBand.cpp \
     shared/formInfo.cpp \
@@ -114,6 +115,7 @@ SOURCES += main.cpp\
 
 HEADERS  += mainWindow.h \
     saveClimaLayout.h \
+    shared/dialogProject.h \
     shared/stationMarker.h \
     shared/rubberBand.h \
     shared/formInfo.h \

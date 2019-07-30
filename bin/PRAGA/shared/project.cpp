@@ -1347,32 +1347,36 @@ void Project::saveParameters()
     parameters->sync();
 }
 
-bool Project::createProjectSettings(QString name_, QString settings_, QString parameters_)
+bool Project::createProject(QString path_, QString name_, QString description_)
 {
-    projectName = name_;
+    // name
+    projectName = description_;
 
+    // folder
+    QString myPath = path_ + "/" + name_ + "/";
+    if (! QDir(myPath).exists())
+        QDir().mkdir(myPath);
+
+    projectPath = myPath;
+
+    // settings
     delete projectSettings;
-    projectSettings = new QSettings(settings_, QSettings::IniFormat);
-
+    projectSettings = new QSettings(projectPath + name_, QSettings::IniFormat);
     saveSettings();
 
-    if (parametersFileName == "")
-    {
-        projectSettings->beginGroup("settings");
-            projectSettings->setValue("parameters_file", parametersFileName);
-        projectSettings->endGroup();
-    }
-    else {
-        projectSettings->beginGroup("settings");
-            projectSettings->setValue("parameters_file", parameters_);
-        projectSettings->endGroup();
+    // parameters
+    QString oldParameters = parametersFileName;
+    QString newParameters = projectPath + "parameters.ini";
+    QFile::copy(oldParameters, newParameters);
 
-        delete parameters;
-        parameters = nullptr;
-        parameters = new QSettings(parameters_, QSettings::IniFormat);
+    projectSettings->beginGroup("settings");
+        projectSettings->setValue("parameters_file", parametersFileName);
+    projectSettings->endGroup();
 
-        saveParameters();
-    }
+    delete parameters;
+    parameters = new QSettings(parametersFileName, QSettings::IniFormat);
+
+    saveParameters();
 
     return true;
 }

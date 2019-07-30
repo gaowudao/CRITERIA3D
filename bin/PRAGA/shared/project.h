@@ -100,7 +100,7 @@
         bool start(QString appPath);
         bool loadProject();
         bool loadProjectSettings(QString settingsFileName);
-        bool createProjectSettings(QString projectName, QString settingsFileName, QString parametersFileName);
+        bool createProject(QString path_, QString name_, QString filename_);
         void saveSettings();
         bool loadParameters(QString parametersFileName);
         void saveParameters();

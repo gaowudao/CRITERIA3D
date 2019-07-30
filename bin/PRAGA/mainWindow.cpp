@@ -33,6 +33,8 @@
 #include "dialogPragaSettings.h"
 #include "gis.h"
 #include "spatialControl.h"
+#include "dialogProject.h"
+
 
 extern PragaProject myProject;
 
@@ -2009,16 +2011,10 @@ void MainWindow::on_actionClose_project_triggered()
 
 void MainWindow::on_actionSave_project_as_triggered()
 {
-    QString projectFileName = QFileDialog::getSaveFileName(this, tr("Save project as"), "", tr("ini files (*.ini)"));
-    if (projectFileName == "") return;
+    QString myName, myFilename, myPath;
 
-    bool isOk;
-    QString projectName = QInputDialog::getText(this, tr("Project name"), tr("Enter project name"), QLineEdit::Normal, "", &isOk);
-
-    QString parametersFileName = QFileDialog::getSaveFileName(this, tr("Save parameters as"), "", tr("ini files (*.ini)"));
-    if (parametersFileName == "") return;
-
-    myProject.createProjectSettings(projectName, projectFileName, parametersFileName);
+    DialogProject* myProjectDialog = new DialogProject(&myProject);
+    myProjectDialog->close();
 }
 
 
