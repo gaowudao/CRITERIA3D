@@ -4,6 +4,7 @@
 #include "MapGraphics_global.h"
 #include "MapGraphicsObject.h"
 
+
 class MAPGRAPHICSSHARED_EXPORT CircleObject : public MapGraphicsObject
 {
     Q_OBJECT
