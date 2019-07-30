@@ -4,21 +4,23 @@ ElaborationTab::ElaborationTab(Crit3DElaborationSettings *elabSettings)
 {
 
     QLabel *anomalyPtsMaxDis = new QLabel(tr("maximum distance between points for anomaly [m]:"));
-    QDoubleValidator *doubleValAnomalyDis = new QDoubleValidator( -100.0, 100.0, 5, this );
+    QDoubleValidator *doubleValAnomalyDis = new QDoubleValidator();
+    doubleValAnomalyDis->setBottom(0);
     doubleValAnomalyDis->setNotation(QDoubleValidator::StandardNotation);
     anomalyPtsMaxDisEdit.setFixedWidth(130);
     anomalyPtsMaxDisEdit.setValidator(doubleValAnomalyDis);
     anomalyPtsMaxDisEdit.setText(QString::number(elabSettings->getAnomalyPtsMaxDistance()));
 
     QLabel *anomalyPtsMaxDeltaZ = new QLabel(tr("maximum height difference between points for anomaly [m]:"));
-    QDoubleValidator *doubleValAnomalyDelta = new QDoubleValidator( -100.0, 100.0, 5, this );
+    QDoubleValidator *doubleValAnomalyDelta = new QDoubleValidator();
+    doubleValAnomalyDelta->setBottom(0);
     doubleValAnomalyDelta->setNotation(QDoubleValidator::StandardNotation);
     anomalyPtsMaxDeltaZEdit.setFixedWidth(130);
     anomalyPtsMaxDeltaZEdit.setValidator(doubleValAnomalyDelta);
     anomalyPtsMaxDeltaZEdit.setText(QString::number(elabSettings->getAnomalyPtsMaxDeltaZ()));
 
     QLabel *gridMinCoverage = new QLabel(tr("minimum coverage for grid computation [%]:"));
-    QDoubleValidator *doubleValPerc = new QDoubleValidator( 0.0, 100.0, 5, this );
+    QDoubleValidator *doubleValPerc = new QDoubleValidator( 0.0, 100.0, 2, this );
     gridMinCoverageEdit.setFixedWidth(130);
     gridMinCoverageEdit.setValidator(doubleValPerc);
     gridMinCoverageEdit.setText(QString::number(elabSettings->getGridMinCoverage()));
@@ -101,17 +103,13 @@ bool DialogPragaSettings::acceptPragaValues()
     _elabSettings->setAutomaticETP(elabTab->automaticETPEdit.isChecked());
     _elabSettings->setMergeJointStations(elabTab->mergeJointStationsEdit.isChecked());
 
-    project_->savePragaSettings();
+    project_->savePragaParameters();
 
     return true;
 }
 
 void DialogPragaSettings::accept()
 {
-    if (acceptValues() && acceptPragaValues())
-    {
-        QDialog::done(QDialog::Accepted);
-        return;
-    }
+    if (acceptValues() && acceptPragaValues()) QDialog::done(QDialog::Accepted);
 }
 

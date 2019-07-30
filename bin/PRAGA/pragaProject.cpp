@@ -32,6 +32,16 @@ void PragaProject::clearPragaProject()
     if (isProjectLoaded) clearProject();
 }
 
+bool PragaProject::createPragaProject(QString path_, QString name_, QString description_)
+{
+    if (! createProject(path_, name_, description_))
+        return false;
+
+    savePragaParameters();
+
+    return true;
+}
+
 bool PragaProject::loadPragaProject(QString myFileName)
 {
     clearPragaProject();
@@ -1327,7 +1337,7 @@ bool PragaProject::averageSeriesOnZonesMeteoGrid(meteoVariable variable, meteoCo
 }
 
 
-void PragaProject::savePragaSettings()
+void PragaProject::savePragaParameters()
 {
     parameters->beginGroup("elaboration");
         parameters->setValue("anomaly_pts_max_distance", QString::number(double(clima->getElabSettings()->getAnomalyPtsMaxDistance())));

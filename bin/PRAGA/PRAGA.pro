@@ -89,6 +89,8 @@ unix:{
 
 
 SOURCES += main.cpp\
+    dialogPragaProject.cpp \
+    dialogpragaproject.cpp \
     mainWindow.cpp \
     saveClimaLayout.cpp \
     shared/dialogProject.cpp \

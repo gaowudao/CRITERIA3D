@@ -565,4 +565,3 @@ bool Crit3DInterpolationSettings::getCombination(int combinationInteger, Crit3DP
 
     return true;
 }
-

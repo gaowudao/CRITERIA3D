@@ -33,7 +33,7 @@
 #include "dialogPragaSettings.h"
 #include "gis.h"
 #include "spatialControl.h"
-#include "dialogProject.h"
+#include "dialogPragaProject.h"
 
 
 extern PragaProject myProject;
@@ -781,23 +781,27 @@ void MainWindow::on_timeEdit_timeChanged(const QTime &time)
 void MainWindow::drawMeteoPoints()
 {
     this->resetMeteoPoints();
-    this->addMeteoPoints();
+
+    if (myProject.nrMeteoPoints > 0)
+    {
+        this->addMeteoPoints();
+
+        myProject.loadMeteoPointsData (myProject.getCurrentDate(), myProject.getCurrentDate(), true);
+
+        this->ui->meteoPoints->setEnabled(true);
+        this->ui->meteoPoints->setChecked(true);
+        showPointsGroup->setEnabled(true);
+        this->ui->actionShowPointsCurrent->setEnabled(false);
+        this->ui->actionShowPointsElab->setEnabled(false);
+        this->ui->actionShowPointsClimate->setEnabled(false);
+
+        this->ui->grid->setChecked(false);
+
+        currentPointsVisualization = showLocation;
+        redrawMeteoPoints(currentPointsVisualization, true);
+    }
 
     this->updateDateTime();
-
-    myProject.loadMeteoPointsData (myProject.getCurrentDate(), myProject.getCurrentDate(), true);
-
-    this->ui->meteoPoints->setEnabled(true);
-    this->ui->meteoPoints->setChecked(true);
-    showPointsGroup->setEnabled(true);
-    this->ui->actionShowPointsCurrent->setEnabled(false);
-    this->ui->actionShowPointsElab->setEnabled(false);
-    this->ui->actionShowPointsClimate->setEnabled(false);
-
-    this->ui->grid->setChecked(false);
-
-    currentPointsVisualization = showLocation;
-    redrawMeteoPoints(currentPointsVisualization, true);
 }
 
 void MainWindow::redrawMeteoPoints(visualizationType showType, bool updateColorSCale)
@@ -1971,7 +1975,7 @@ void MainWindow::drawProject()
 
 void MainWindow::on_actionOpen_project_triggered()
 {
-    QString fileName = QFileDialog::getOpenFileName(this, tr("Open project file"), "", tr("ini files (*.ini)"));
+    QString fileName = QFileDialog::getOpenFileName(this, tr("Open project file"), myProject.getDefaultPath() + PATH_PROJECT, tr("ini files (*.ini)"));
     if (fileName == "") return;
 
     if (myProject.isProjectLoaded)
@@ -2013,7 +2017,7 @@ void MainWindow::on_actionSave_project_as_triggered()
 {
     QString myName, myFilename, myPath;
 
-    DialogProject* myProjectDialog = new DialogProject(&myProject);
+    DialogPragaProject* myProjectDialog = new DialogPragaProject(&myProject);
     myProjectDialog->close();
 }
 

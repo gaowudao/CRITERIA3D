@@ -1317,13 +1317,43 @@ void Project::saveSettings()
     projectSettings->endGroup();
 
     projectSettings->beginGroup("project");
-        if (projectName != "") projectSettings->setValue("name", projectName);
-        if (demFileName != "") projectSettings->setValue("dem", demFileName);
-        if (dbPointsFileName != "") projectSettings->setValue("meteo_points", dbPointsFileName);
-        if (dbGridXMLFileName != "") projectSettings->setValue("meteo_grid", dbGridXMLFileName);
+        projectSettings->setValue("name", projectName);
+        projectSettings->setValue("dem", demFileName);
+        projectSettings->setValue("meteo_points", dbPointsFileName);
+        projectSettings->setValue("meteo_grid", dbGridXMLFileName);
     projectSettings->endGroup();
 
     projectSettings->sync();
+}
+
+void Project::saveInterpolationParameters()
+{
+    parameters->beginGroup("interpolation");
+        parameters->setValue("aggregationMethod", QString::fromStdString(getKeyStringAggregationMethod(interpolationSettings.getMeteoGridAggrMethod())));
+        parameters->setValue("algorithm", QString::fromStdString(getKeyStringInterpolationMethod(interpolationSettings.getInterpolationMethod())));
+        parameters->setValue("lapseRateCode", interpolationSettings.getUseLapseRateCode());
+        parameters->setValue("thermalInversion", interpolationSettings.getUseThermalInversion());
+        parameters->setValue("topographicDistance", interpolationSettings.getUseTAD());
+        parameters->setValue("optimalDetrending", interpolationSettings.getUseBestDetrending());
+        parameters->setValue("useDewPoint", interpolationSettings.getUseDewPoint());
+        parameters->setValue("thermalInversion", interpolationSettings.getUseThermalInversion());
+        parameters->setValue("minRegressionR2", QString::number(interpolationSettings.getMinRegressionR2()));
+    parameters->endGroup();
+
+    Crit3DProxy* myProxy;
+    for (int i=0; i < interpolationSettings.getProxyNr(); i++)
+    {
+        myProxy = interpolationSettings.getProxy(i);
+        parameters->beginGroup("proxy_" + QString::fromStdString(myProxy->getName()));
+            parameters->setValue("active", interpolationSettings.getSelectedCombination().getValue(i));
+            parameters->setValue("table", QString::fromStdString(myProxy->getProxyTable()));
+            parameters->setValue("field", QString::fromStdString(myProxy->getProxyField()));
+            parameters->setValue("useForSpatialQualityControl", myProxy->getForQualityControl());
+            parameters->setValue("raster", QString::fromStdString(myProxy->getGridName()));
+        parameters->endGroup();
+    }
+
+    parameters->sync();
 }
 
 void Project::saveParameters()
@@ -1361,13 +1391,14 @@ bool Project::createProject(QString path_, QString name_, QString description_)
 
     // settings
     delete projectSettings;
-    projectSettings = new QSettings(projectPath + name_, QSettings::IniFormat);
+    projectSettings = new QSettings(projectPath + name_ + ".ini", QSettings::IniFormat);
     saveSettings();
 
     // parameters
     QString oldParameters = parametersFileName;
     QString newParameters = projectPath + "parameters.ini";
     QFile::copy(oldParameters, newParameters);
+    parametersFileName = newParameters;
 
     projectSettings->beginGroup("settings");
         projectSettings->setValue("parameters_file", parametersFileName);
@@ -1377,6 +1408,7 @@ bool Project::createProject(QString path_, QString name_, QString description_)
     parameters = new QSettings(parametersFileName, QSettings::IniFormat);
 
     saveParameters();
+    saveInterpolationParameters();
 
     return true;
 }

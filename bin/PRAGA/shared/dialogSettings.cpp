@@ -315,11 +315,7 @@ bool DialogSettings::acceptValues()
 
 void DialogSettings::accept()
 {
-    if (acceptValues())
-    {
-        QDialog::done(QDialog::Accepted);
-        return;
-    }
+    if (acceptValues()) QDialog::done(QDialog::Accepted);
 }
 
 

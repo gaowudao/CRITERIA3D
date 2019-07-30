@@ -33,9 +33,10 @@
         void initializePragaProject();
         void clearPragaProject();
         bool loadPragaProject(QString myFileName);
+        bool createPragaProject(QString path_, QString name_, QString description_);
 
         bool loadPragaSettings();
-        void savePragaSettings();
+        void savePragaParameters();
 
         bool downloadDailyDataArkimet(QStringList variables, bool prec0024, QDate startDate, QDate endDate, bool showInfo);
         bool downloadHourlyDataArkimet(QStringList variables, QDate startDate, QDate endDate, bool showInfo);
