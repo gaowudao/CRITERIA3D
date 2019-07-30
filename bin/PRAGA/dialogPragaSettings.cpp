@@ -67,6 +67,8 @@ DialogPragaSettings::DialogPragaSettings(PragaProject *myProject) : DialogSettin
     _elabSettings = myProject->clima->getElabSettings();
     elabTab = new ElaborationTab(_elabSettings);
 
+    project_ = myProject;
+
     getTabWidget()->addTab(elabTab, tr("ELABORATION"));
 }
 
