@@ -114,6 +114,7 @@ SOURCES += main.cpp\
 
 
 HEADERS  += mainWindow.h \
+    dialogPragaProject.h \
     saveClimaLayout.h \
     shared/dialogProject.h \
     shared/stationMarker.h \
