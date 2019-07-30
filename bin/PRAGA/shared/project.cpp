@@ -530,6 +530,8 @@ bool Project::loadDEM(QString myFileName)
 
     myFileName = getCompleteFileName(myFileName, PATH_DEM);
 
+    demFileName = myFileName;
+
     std::string error, fileName;
     if (myFileName.right(4).left(1) == ".")
     {
@@ -581,6 +583,8 @@ bool Project::loadMeteoPointsDB(QString dbName)
     closeMeteoPointsDB();
 
     dbName = getCompleteFileName(dbName, PATH_METEOPOINT);
+
+    dbPointsFileName = dbName;
 
     meteoPointsDbHandler = new Crit3DMeteoPointsDbHandler(dbName);
     if (meteoPointsDbHandler->error != "")
@@ -636,6 +640,8 @@ bool Project::loadMeteoGridDB(QString xmlName)
         return false;
 
     xmlName = getCompleteFileName(xmlName, PATH_METEOGRID);
+
+    dbGridXMLFileName = xmlName;
 
     meteoGridDbHandler = new Crit3DMeteoGridDbHandler();
     meteoGridDbHandler->meteoGrid()->setGisSettings(this->gisSettings);
