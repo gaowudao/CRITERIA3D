@@ -71,6 +71,9 @@ void Project::initializeProject()
 
     dbPointsFileName = "";
     dbGridXMLFileName = "";
+
+    meteoPointsLoaded = false;
+    meteoGridLoaded = false;
 }
 
 void Project::clearProject()
@@ -502,6 +505,8 @@ void Project::closeMeteoPointsDB()
     }
 
     meteoPointsSelected.clear();
+
+    meteoPointsLoaded = false;
 }
 
 
@@ -516,6 +521,7 @@ void Project::closeMeteoGridDB()
 
     meteoGridDbHandler = nullptr;
 
+    meteoGridLoaded = false;
 }
 
 
@@ -631,6 +637,8 @@ bool Project::loadMeteoPointsDB(QString dbName)
     if (DEM.isLoaded)
         checkMeteoPointsDEM();
 
+    meteoPointsLoaded = true;
+
     return true;
 }
 
@@ -669,6 +677,8 @@ bool Project::loadMeteoGridDB(QString xmlName)
         logError();
         return false;
     }
+
+    meteoGridLoaded = true;
 
     return true;
 }
@@ -1479,21 +1489,13 @@ bool Project::loadProject()
     if (! loadParameters(parametersFileName))
         return false;
 
-    if (logFileName != "")
-        if (! setLogFile(logFileName))
-            return false;
+    if (logFileName != "") setLogFile(logFileName);
 
-    if (demFileName != "")
-        if (! loadDEM(demFileName))
-            return false;
+    if (demFileName != "") loadDEM(demFileName);
 
-    if (dbPointsFileName != "")
-        if (! loadMeteoPointsDB(dbPointsFileName))
-            return false;
+    if (dbPointsFileName != "") loadMeteoPointsDB(dbPointsFileName);
 
-    if (dbGridXMLFileName != "")
-        if (! loadMeteoGridDB(dbGridXMLFileName))
-            return false;
+    if (dbGridXMLFileName != "") loadMeteoGridDB(dbGridXMLFileName);
 
     return true;
 }

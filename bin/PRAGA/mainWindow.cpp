@@ -782,26 +782,25 @@ void MainWindow::drawMeteoPoints()
 {
     this->resetMeteoPoints();
 
-    if (myProject.nrMeteoPoints > 0)
-    {
-        this->addMeteoPoints();
+    if (! myProject.meteoPointsLoaded || myProject.nrMeteoPoints == 0) return;
 
-        myProject.loadMeteoPointsData (myProject.getCurrentDate(), myProject.getCurrentDate(), true);
+    this->addMeteoPoints();
 
-        this->ui->meteoPoints->setEnabled(true);
-        this->ui->meteoPoints->setChecked(true);
-        showPointsGroup->setEnabled(true);
-        this->ui->actionShowPointsCurrent->setEnabled(false);
-        this->ui->actionShowPointsElab->setEnabled(false);
-        this->ui->actionShowPointsClimate->setEnabled(false);
+    myProject.loadMeteoPointsData (myProject.getCurrentDate(), myProject.getCurrentDate(), true);
 
-        this->ui->grid->setChecked(false);
+    this->ui->meteoPoints->setEnabled(true);
+    this->ui->meteoPoints->setChecked(true);
+    showPointsGroup->setEnabled(true);
+    this->ui->actionShowPointsCurrent->setEnabled(false);
+    this->ui->actionShowPointsElab->setEnabled(false);
+    this->ui->actionShowPointsClimate->setEnabled(false);
 
-        currentPointsVisualization = showLocation;
-        redrawMeteoPoints(currentPointsVisualization, true);
-    }
+    this->ui->grid->setChecked(false);
 
-    this->updateDateTime();
+    currentPointsVisualization = showLocation;
+    redrawMeteoPoints(currentPointsVisualization, true);
+
+    updateDateTime();
 }
 
 void MainWindow::redrawMeteoPoints(visualizationType showType, bool updateColorSCale)
@@ -809,8 +808,7 @@ void MainWindow::redrawMeteoPoints(visualizationType showType, bool updateColorS
     currentPointsVisualization = showType;
     ui->groupBoxElab->hide();
 
-    if (myProject.nrMeteoPoints == 0)
-        return;
+    if (! myProject.meteoPointsLoaded || myProject.nrMeteoPoints == 0) return;
 
     // hide all meteo points
     for (int i = 0; i < myProject.nrMeteoPoints; i++)
@@ -929,7 +927,7 @@ bool MainWindow::loadMeteoPoints(QString dbName)
 
 void MainWindow::drawMeteoGrid()
 {
-    if (myProject.meteoGridDbHandler == nullptr) return;
+    if (! myProject.meteoGridLoaded || myProject.meteoGridDbHandler == nullptr) return;
 
     myProject.meteoGridDbHandler->meteoGrid()->createRasterGrid();
 
@@ -978,8 +976,7 @@ void MainWindow::redrawMeteoGrid(visualizationType showType)
     currentGridVisualization = showType;
     ui->groupBoxElab->hide();
 
-    if (myProject.meteoGridDbHandler == nullptr)
-        return;
+    if (! myProject.meteoGridLoaded || myProject.meteoGridDbHandler == nullptr) return;
 
     switch(currentGridVisualization)
     {

@@ -66,11 +66,14 @@
         QSettings* parameters;
         QSettings* projectSettings;
 
+        bool meteoPointsLoaded;
         int nrMeteoPoints;
         Crit3DMeteoPoint* meteoPoints;
         Crit3DMeteoPointsDbHandler* meteoPointsDbHandler;
         Crit3DAggregationsDbHandler* aggregationDbHandler;
         QList<gis::Crit3DGeoPoint> meteoPointsSelected;
+
+        bool meteoGridLoaded;
         Crit3DMeteoGridDbHandler* meteoGridDbHandler;
         Crit3DColorScale* meteoPointsColorScale;
 
