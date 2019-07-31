@@ -1280,12 +1280,14 @@ void MainWindow::on_actionCompute_AllMeteoMaps_triggered()
 void MainWindow::contextMenuRequested(const QPoint globalPos)
 {
     QMenu submenu;
+    int nrItems = 0;
 
-    submenu.addAction("Test");
     if (myProject.soilMap.isLoaded && myProject.nrSoils > 0)
     {
         submenu.addAction("Soil data");
+        nrItems++;
     }
+    if (nrItems == 0) return;
 
     QAction* myAction = submenu.exec(globalPos);
 
