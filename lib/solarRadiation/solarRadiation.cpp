@@ -477,19 +477,17 @@ namespace radiation
         supponiamo di avere gia' controllato se siamo dopo l'alba e prima del tramonto
         inizializzazione a sole visibile*/
 
-        float shadowFactor = mySettings->getShadowDistanceFactor();
-
         shadowComputed = false;
         x = float(myPoint->x);
         y = float(myPoint->y);
         z = float(myPoint->height);
-        sunMaskStepX = float(shadowFactor * getSinDecimalDegree(mySunPosition->azimuth) * myDEM.header->cellSize);
-        sunMaskStepY = float(shadowFactor * getCosDecimalDegree(mySunPosition->azimuth) * myDEM.header->cellSize);
+        sunMaskStepX = float(SHADOW_FACTOR * getSinDecimalDegree(mySunPosition->azimuth) * myDEM.header->cellSize);
+        sunMaskStepY = float(SHADOW_FACTOR * getCosDecimalDegree(mySunPosition->azimuth) * myDEM.header->cellSize);
         cosElev = getCosDecimalDegree(mySunPosition->elevation);
         sinElev = getSinDecimalDegree(mySunPosition->elevation);
         tgElev = sinElev / cosElev;
-        sunMaskStepZ = float(myDEM.header->cellSize * shadowFactor * tgElev);
-        maxDeltaH = float(myDEM.header->cellSize * shadowFactor * 2.0);
+        sunMaskStepZ = float(myDEM.header->cellSize * SHADOW_FACTOR * tgElev);
+        maxDeltaH = float(myDEM.header->cellSize * SHADOW_FACTOR * 2.0);
 
         if (sunMaskStepZ == 0)
             maxDistCount = myDEM.maximum - z;

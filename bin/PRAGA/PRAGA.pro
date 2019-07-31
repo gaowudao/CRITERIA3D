@@ -112,7 +112,8 @@ SOURCES += main.cpp\
     dialogSeriesOnZones.cpp \
     dialogAnomaly.cpp \
     shared/shell.cpp \
-    pragaShell.cpp
+    pragaShell.cpp \
+    shared/dialogRadiation.cpp
 
 
 HEADERS  += mainWindow.h \
@@ -137,7 +138,8 @@ HEADERS  += mainWindow.h \
     dialogSeriesOnZones.h \
     dialogAnomaly.h \
     shared/shell.h \
-    pragaShell.h
+    pragaShell.h \
+    shared/dialogRadiation.h
 
 
 FORMS    += mainWindow.ui \

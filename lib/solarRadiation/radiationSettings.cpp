@@ -36,10 +36,7 @@ Crit3DRadiationSettings::Crit3DRadiationSettings()
 void Crit3DRadiationSettings::initialize()
 {
     computeRealData = true;
-    usePotentialIfMissing = false;
-    timeStepIntegration = 1;
     computeShadowing = true;
-    shadowDistanceFactor = 1;
     linkeMode = PARAM_MODE_FIXED;
     linke = 4.f;
     landUse = LAND_USE_RURAL;
@@ -64,21 +61,11 @@ void Crit3DRadiationSettings::setGisSettings(const gis::Crit3DGisSettings* mySet
     gisSettings->isUTC = mySettings->isUTC;
 }
 
-
 bool Crit3DRadiationSettings::getComputeRealData()
 { return computeRealData;}
 
-bool Crit3DRadiationSettings::getUsePotentialIfMissing()
-{ return usePotentialIfMissing;}
-
-float Crit3DRadiationSettings::getTimeStepIntegration()
-{ return timeStepIntegration;}
-
 bool Crit3DRadiationSettings::getComputeShadowing()
 { return computeShadowing;}
-
-float Crit3DRadiationSettings::getShadowDistanceFactor()
-{ return shadowDistanceFactor;}
 
 TparameterMode Crit3DRadiationSettings::getLinkeMode()
 { return linkeMode;}

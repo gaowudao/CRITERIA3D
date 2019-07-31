@@ -20,6 +20,7 @@
     #define SBSKY 0.04f
 
     #define CLEAR_SKY_TRANSMISSIVITY_DEFAULT     0.75f
+    #define SHADOW_FACTOR 1
 
     enum TlandUse{LAND_USE_MOUNTAIN = 0, LAND_USE_RURAL=1, LAND_USE_CITY=2, LAND_USE_INDUSTRIAL=3};
     enum TparameterMode {PARAM_MODE_FIXED = 0, PARAM_MODE_MAP = 1} ;

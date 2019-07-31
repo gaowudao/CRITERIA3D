@@ -27,10 +27,7 @@
         TtiltMode tiltMode;
 
         bool computeRealData;
-        bool usePotentialIfMissing;
-        float timeStepIntegration;
         bool computeShadowing;
-        float shadowDistanceFactor;
         float linke;
         float albedo;
         float tilt;
@@ -49,7 +46,6 @@
         bool getUsePotentialIfMissing();
         float getTimeStepIntegration();
         bool getComputeShadowing();
-        float getShadowDistanceFactor();
         float getLinke();
         float getAlbedo();
         float getTilt();
