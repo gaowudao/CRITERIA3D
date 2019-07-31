@@ -32,6 +32,7 @@ public:
     void removeRowClicked();
     std::string getSoilCodeChanged() const;
     void resetSoilCodeChanged();
+    void resetAll();
 
 private:
     TableDbOrModel* tableDb;
