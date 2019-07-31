@@ -5,3 +5,4 @@ SUBDIRS =   ../../lib/crit3dDate ../../lib/mathFunctions ../../lib/soil  \
             ../TestSoilWidget
 
 CONFIG += ordered
+

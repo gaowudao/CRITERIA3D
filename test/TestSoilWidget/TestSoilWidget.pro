@@ -23,6 +23,9 @@ win32:{
 }
 
 INCLUDEPATH += ../../lib/mathFunctions ../../lib/crit3dDate ../../lib/utilities ../../lib/soil ../../lib/soilWidget
+unix:{
+    INCLUDEPATH += /usr/include/qwt/
+}
 
 CONFIG(debug, debug|release) {
     LIBS += -L../../lib/soilWidget/debug -lsoilWidget
@@ -43,4 +46,10 @@ CONFIG(debug, debug|release) {
 SOURCES += \
         main.cpp
 
+win32:{
+    include($$(QWT_ROOT)\features\qwt.prf)
+}
+unix:{
+    include(/usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/qwt.prf)
+}
 
