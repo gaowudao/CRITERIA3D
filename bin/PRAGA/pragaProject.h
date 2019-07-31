@@ -43,6 +43,7 @@
         bool downloadHourlyDataArkimet(QStringList variables, QDate startDate, QDate endDate, bool showInfo);
 
         bool interpolationMeteoGrid(meteoVariable myVar, frequencyType myFrequency, const Crit3DTime& myTime, gis::Crit3DRasterGrid *myRaster, bool showInfo);
+        bool interpolationMeteoGridPeriod(QDate dateIni, QDate dateFin, std::vector <meteoVariable> variables);
         bool saveGrid(meteoVariable myVar, frequencyType myFrequency, const Crit3DTime& myTime, bool showInfo);
 
         bool elaborationPointsCycle(bool isAnomaly, bool showInfo);
