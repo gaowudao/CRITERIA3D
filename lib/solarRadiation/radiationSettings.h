@@ -65,10 +65,10 @@
         int getWindowNrData();
         void setWindowNrData(int myNrData);
         float getThresholdPotential();
-
-        std::string getKeyStringRadAlgorithm(TradiationAlgorithm value);
-        std::string getKeyStringParamMode(TparameterMode value);
-        std::string getKeyStringParamMode(TtiltMode value);
     } ;
+
+    std::string getKeyStringRadAlgorithm(TradiationAlgorithm value);
+    std::string getKeyStringParamMode(TparameterMode value);
+    std::string getKeyStringParamMode(TtiltMode value);
 
 #endif // RADIATIONSETTINGS_H
