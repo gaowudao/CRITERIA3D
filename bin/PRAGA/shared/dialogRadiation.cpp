@@ -9,28 +9,35 @@ DialogRadiation::DialogRadiation(Project* myProject)
     project_ = myProject;
 
     setWindowTitle(tr("Radiation settings"));
-    QVBoxLayout *layoutMain = new QVBoxLayout;
+    QVBoxLayout layoutMain;
 
     // algorithm
+    QHBoxLayout layoutAlgorithm;
+
+    QLabel labelAlgorithm("algorithm");
+    layoutAlgorithm.addWidget(&labelAlgorithm);
+
     std::map<std::string, TradiationAlgorithm>::const_iterator itAggr;
     for (itAggr = radAlgorithmToString.begin(); itAggr != radAlgorithmToString.end(); ++itAggr)
         comboAlgorithm.addItem(QString::fromStdString(itAggr->first), QString::fromStdString(itAggr->first));
 
-    /*QString radString = QString::fromStdString(getKeyStringRadAlgorithm(project_->radSettings.getAlgorithm()));
+    QString radString = QString::fromStdString(getKeyStringRadAlgorithm(project_->radSettings.getAlgorithm()));
     int indexRad = comboAlgorithm.findData(radString);
     if (indexRad != -1)
-       gridAggregationMethodEdit.setCurrentIndex(indexRad);
+       comboAlgorithm.setCurrentIndex(indexRad);
 
+    layoutAlgorithm.addWidget(&comboAlgorithm);
 
+    layoutMain.addLayout(&layoutAlgorithm);
 
+    // transmissivity settings
+    QHBoxLayout layoutTransmissivity;
 
+    checkRealSky.setText("Real sky");
+    checkRealSky.setChecked(project_->radSettings.getComputeRealData());
+    layoutTransmissivity.addWidget(&checkRealSky);
 
-    layoutAggregation->addWidget(&gridAggregationMethodEdit);
-    layoutMain->addLayout(layoutAggregation);
-
-
-    QLabel*
-    algorithmEdit;
+/*
 
     QCheckBox checkRealSky;
     QComboBox comboTransmissAlgorithm;
