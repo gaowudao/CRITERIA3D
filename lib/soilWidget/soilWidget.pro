@@ -24,6 +24,9 @@ win32:{
 }
 
 INCLUDEPATH += ../mathFunctions ../soil ../utilities
+unix:{
+    INCLUDEPATH += /usr/include/qwt/
+}
 
 SOURCES += \
         soilWidget.cpp \
@@ -50,4 +53,10 @@ unix {
     INSTALLS += target
 }
 
+win32:{
+    include($$(QWT_ROOT)\features\qwt.prf)
+}
+unix:{
+    include(/usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/qwt.prf)
+}
 
