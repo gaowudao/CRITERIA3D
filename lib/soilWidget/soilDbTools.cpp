@@ -364,6 +364,39 @@ bool updateSoilData(QSqlDatabase* dbSoil, QString soilCode, soil::Crit3DSoil* my
         return true;
 }
 
+bool deleteSoilData(QSqlDatabase* dbSoil, QString soilCode, QString *error)
+{
+
+    QSqlQuery qry(*dbSoil);
+    if (soilCode.isEmpty())
+    {
+        *error = "soilCode missing";
+        return false;
+    }
+
+    // delete all row from table horizons of soil:soilCode
+    qry.prepare( "DELETE FROM `horizons` WHERE soil_code = :soil_code");
+    qry.bindValue(":soil_code", soilCode);
+
+    if( !qry.exec() )
+    {
+        *error = qry.lastError().text();
+        return false;
+    }
+
+    // delete all row from table soils of soil:soilCode
+    qry.prepare( "DELETE FROM `soils` WHERE soil_code = :soil_code");
+    qry.bindValue(":soil_code", soilCode);
+
+    if( !qry.exec() )
+    {
+        *error = qry.lastError().text();
+        return false;
+    }
+    return true;
+}
+
+
 QString getIdSoilString(QSqlDatabase* dbSoil, int idSoilNumber, QString *myError)
 {
     *myError = "";

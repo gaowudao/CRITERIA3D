@@ -256,6 +256,7 @@ void Crit3DSoilWidget::on_actionChooseSoil(QString soilCode)
     // soilListComboBox has been cleared
     if (soilCode.isEmpty())
     {
+        horizonsTab->resetAll();
         return;
     }
 
@@ -329,11 +330,15 @@ void Crit3DSoilWidget::on_actionDeleteSoil()
         QMessageBox::StandardButton confirm;
         msg = "Are you sure you want to delete "+soilListComboBox.currentText()+" ?";
         confirm = QMessageBox::question(nullptr, "Warning", msg, QMessageBox::Yes|QMessageBox::No, QMessageBox::No);
+        QString error;
 
         if (confirm == QMessageBox::Yes)
         {
-            qDebug() << "Yes was clicked";
-            //TO DO
+            if (deleteSoilData(&dbSoil, soilListComboBox.currentText(), &error))
+            {
+                soilListComboBox.removeItem(soilListComboBox.currentIndex());
+                horizonsTab->resetSoilCodeChanged();
+            }
         }
         else
         {

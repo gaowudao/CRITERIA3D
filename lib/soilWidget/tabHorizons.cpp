@@ -683,3 +683,9 @@ void TabHorizons::resetSoilCodeChanged()
 {
     soilCodeChanged.clear();
 }
+
+void TabHorizons::resetAll()
+{
+    tableDb->setRowCount(0);
+    tableModel->setRowCount(0);
+}
