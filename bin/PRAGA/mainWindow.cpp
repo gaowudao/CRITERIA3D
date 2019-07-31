@@ -30,10 +30,12 @@
 #include "dialogClimateFields.h"
 #include "dialogSeriesOnZones.h"
 #include "dialogInterpolation.h"
+#include "dialogRadiation.h"
 #include "dialogPragaSettings.h"
 #include "gis.h"
 #include "spatialControl.h"
 #include "dialogPragaProject.h"
+#include "utilities.h"
 
 
 extern PragaProject myProject;
@@ -1678,6 +1680,11 @@ void MainWindow::on_actionInterpolationSettings_triggered()
     myDialogInterpolation->close();
 }
 
+void MainWindow::on_actionRadiationSettings_triggered()
+{
+    DialogRadiation* myDialogRadiation = new DialogRadiation(&myProject);
+    myDialogRadiation->close();
+}
 
 void MainWindow::on_actionParameters_triggered()
 {
@@ -1991,7 +1998,6 @@ void MainWindow::on_actionOpen_project_triggered()
         this->mapView->centerOn(startCenter->lonLat());
         if (myProject.loadPragaProject(myProject.getApplicationPath() + "default.ini")) drawProject();
     }
-
 }
 
 void MainWindow::on_actionClose_project_triggered()

@@ -3070,10 +3070,17 @@
     <addaction name="actionNew_aggregation_DB"/>
     <addaction name="actionAggregate_from_grid"/>
    </widget>
+   <widget class="QMenu" name="menuRadiation">
+    <property name="title">
+     <string>Radiation</string>
+    </property>
+    <addaction name="actionRadiationSettings"/>
+   </widget>
    <addaction name="menuFile"/>
    <addaction name="menuShow"/>
    <addaction name="menuVariable"/>
    <addaction name="menuInterpolation"/>
+   <addaction name="menuRadiation"/>
    <addaction name="menuClimate"/>
    <addaction name="menuAnalysis"/>
    <addaction name="menuGIS_settings"/>
@@ -3444,8 +3451,16 @@
    </property>
   </action>
   <action name="actionSave_project">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
    <property name="text">
     <string>Save project</string>
+   </property>
+  </action>
+  <action name="actionRadiationSettings">
+   <property name="text">
+    <string>Settings...</string>
    </property>
   </action>
  </widget>

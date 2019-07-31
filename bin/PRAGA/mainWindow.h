@@ -123,6 +123,8 @@
 
         void on_actionSave_project_triggered();
 
+        void on_actionRadiationSettings_triggered();
+
     protected:
         /*!
          * \brief mouseReleaseEvent call moveCenter

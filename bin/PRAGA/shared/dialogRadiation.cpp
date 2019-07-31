@@ -32,18 +32,28 @@ DialogRadiation::DialogRadiation(Project* myProject)
 
     // transmissivity settings
     QHBoxLayout layoutTransmissivity;
+    QLabel labelTrans("Real sky settings");
+    layoutTransmissivity.addWidget(&labelTrans);
+    QVBoxLayout layoutTransSettings;
 
     checkRealSky.setText("Real sky");
     checkRealSky.setChecked(project_->radSettings.getComputeRealData());
-    layoutTransmissivity.addWidget(&checkRealSky);
+    layoutTransSettings.addWidget(&checkRealSky);
 
+    checkUseTotalTransmiss.setText("use total transmissivity");
+    checkUseTotalTransmiss.setChecked(project_->radSettings.getTransmissivityUseTotal());
+    layoutTransSettings.addWidget(&checkUseTotalTransmiss);
+
+    QLabel labelTransClear("Clear sky transmissivity");
+    editTransClearSky.setText(QString::number(project_->radSettings.getClearSky()));
+    QDoubleValidator *doubleVal = new QDoubleValidator(0.0, 1.0, 2, this);
+    editTransClearSky.setValidator(doubleVal);
+    layoutTransSettings.addWidget(&labelTransClear);
+    layoutTransSettings.addWidget(&editTransClearSky);
+    layoutTransmissivity.addLayout(&layoutTransSettings);
+
+    layoutMain.addLayout(&layoutTransmissivity);
 /*
-
-    QCheckBox checkRealSky;
-    QComboBox comboTransmissAlgorithm;
-    QComboBox comboTransmissPeriod;
-    QCheckBox checkUseTotalTransmiss;
-    QLineEdit editTransClearSky;
 
     QComboBox comboLinkeMode;
     QLineEdit editLinke;
@@ -60,6 +70,11 @@ DialogRadiation::DialogRadiation(Project* myProject)
 
     QCheckBox checkShadowing;
     */
+
+    layoutMain.addStretch(1);
+    setLayout(&layoutMain);
+
+    exec();
 }
 
 void DialogRadiation::accept()
