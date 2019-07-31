@@ -1,6 +1,6 @@
 #include <QtWidgets>
 
-#include "radiationDefinitions.h"
+#include "project.h"
 #include "radiationSettings.h"
 #include "dialogRadiation.h"
 
@@ -11,20 +11,19 @@ DialogRadiation::DialogRadiation(Project* myProject)
     setWindowTitle(tr("Radiation settings"));
     QVBoxLayout *layoutMain = new QVBoxLayout;
 
-    /*
-    QHBoxLayout *layoutTransmissivity = new QVBoxLayout();
-    QLabel *labelAggregation = new QLabel(tr("aggregation method"));
-    layoutAggregation->addWidget(labelAggregation);
-
-
+    // algorithm
     std::map<std::string, TradiationAlgorithm>::const_iterator itAggr;
     for (itAggr = radAlgorithmToString.begin(); itAggr != radAlgorithmToString.end(); ++itAggr)
         comboAlgorithm.addItem(QString::fromStdString(itAggr->first), QString::fromStdString(itAggr->first));
 
-    QString radString = QString::fromStdString(getkeys(_interpolationSettings->getMeteoGridAggrMethod()));
-    int indexAggregation = gridAggregationMethodEdit.findData(aggregationString);
-    if (indexAggregation != -1)
-       gridAggregationMethodEdit.setCurrentIndex(indexAggregation);
+    /*QString radString = QString::fromStdString(getKeyStringRadAlgorithm(project_->radSettings.getAlgorithm()));
+    int indexRad = comboAlgorithm.findData(radString);
+    if (indexRad != -1)
+       gridAggregationMethodEdit.setCurrentIndex(indexRad);
+
+
+
+
 
     layoutAggregation->addWidget(&gridAggregationMethodEdit);
     layoutMain->addLayout(layoutAggregation);
