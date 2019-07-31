@@ -1,6 +1,14 @@
 #ifndef RADIATIONDEFINITIONS_H
 #define RADIATIONDEFINITIONS_H
 
+    #ifndef _STRING_
+        #include <string>
+    #endif
+
+    #ifndef _MAP_
+        #include <map>
+    #endif
+
     #ifndef GIS_H
         #include "gis.h"
     #endif
@@ -22,13 +30,26 @@
     #define CLEAR_SKY_TRANSMISSIVITY_DEFAULT     0.75f
     #define SHADOW_FACTOR 1
 
-    enum TlandUse{LAND_USE_MOUNTAIN = 0, LAND_USE_RURAL=1, LAND_USE_CITY=2, LAND_USE_INDUSTRIAL=3};
-    enum TparameterMode {PARAM_MODE_FIXED = 0, PARAM_MODE_MAP = 1} ;
-    enum TtiltMode{TILT_TYPE_HORIZONTAL=0, TILT_TYPE_INCLINED=1,TILT_TYPE_DEM=2};
     enum TradiationAlgorithm{RADIATION_ALGORITHM_RSUN = 0,RADIATION_ALGORITHM_BROOKS = 1};
-    enum TtransmissivityAlgorithm{TRANSMISSIVITY_MODEL_HOURLY = 0, TRANSMISSIVITY_MODEL_DAILY = 1, TRANSMISSIVITY_MODEL_SAMANI = 2};
-    enum TtransmissivityComputationPeriod{TRANSMISSIVITY_COMPUTATION_DYNAMIC = 0,TRANSMISSIVITY_COMPUTATION_DAILY = 1};
-    enum TperiodType {GENERIC_TIME = 0, HOURLY = 1, DAILY = 2, DECADAL = 3, MONTHLY = 4, SEASONAL = 5, ANNUAL = 6, GENERIC_PERIOD = 7};
+    enum TparameterMode {PARAM_MODE_FIXED = 0, PARAM_MODE_MAP = 1} ;
+    enum TtiltMode{TILT_TYPE_FIXED=1, TILT_TYPE_DEM=2};
+    //enum TtransmissivityAlgorithm{TRANSMISSIVITY_MODEL_HOURLY = 0, TRANSMISSIVITY_MODEL_DAILY = 1, TRANSMISSIVITY_MODEL_SAMANI = 2};
+    //enum TtransmissivityComputationPeriod{TRANSMISSIVITY_COMPUTATION_DYNAMIC = 0,TRANSMISSIVITY_COMPUTATION_DAILY = 1};
+
+    const std::map<std::string, TradiationAlgorithm> radAlgorithmToString = {
+      { "r.sun", RADIATION_ALGORITHM_RSUN },
+      { "brooks", RADIATION_ALGORITHM_BROOKS }
+    };
+
+    const std::map<std::string, TparameterMode> paramModeToString = {
+      { "fixed", PARAM_MODE_FIXED },
+      { "map", PARAM_MODE_MAP }
+    };
+
+    const std::map<std::string, TtiltMode> tiltModeToString = {
+      { "fixed", TILT_TYPE_FIXED },
+      { "dem", TILT_TYPE_DEM }
+    };
 
     struct TsunPosition
     {

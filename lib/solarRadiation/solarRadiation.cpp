@@ -177,6 +177,7 @@ float getCosDecimalDegree(float angle)
 
 namespace radiation
 {
+/*
     double linkeMountain[13] = {1.5, 1.6, 1.8, 1.9, 2.0, 2.3, 2.3, 2.3, 2.1, 1.8, 1.6, 1.5, 1.9};
     double linkeRural[13] = {2.1, 2.2, 2.5, 2.9, 3.2, 3.4, 3.5, 3.3, 2.9, 2.6, 2.3, 2.2, 2.75};
     double linkeCity[13] = {3.1, 3.2, 3.5, 4.0, 4.2, 4.3, 4.4, 4.3, 4.0, 3.6, 3.3, 3.1, 3.75};
@@ -187,12 +188,6 @@ namespace radiation
         return float(amplitude * (1.0 - cos(doy / 365.0 * 2.0 * PI - phase)) + average);
     }
 
-    /*!
-     * \brief Average monthly values of the Linke turbidity coefficient for a mild Climate
-     * \param landUse
-     * \param myMonth
-     * \return result
-     */
     float linkeMonthly(int landUse,int myMonth)
     {
         switch(landUse)
@@ -213,6 +208,7 @@ namespace radiation
         return NODATA;
     }
 
+*/
 
     float readAlbedo(Crit3DRadiationSettings* mySettings, int myRow, int myCol, const gis::Crit3DRasterGrid& albedoMap)
     {
@@ -272,10 +268,7 @@ namespace radiation
         float output = NODATA;
         switch (mySettings->getTiltMode())
         {
-            case TILT_TYPE_HORIZONTAL:
-                output = mySettings->getTilt();
-                break;
-            case TILT_TYPE_INCLINED:
+            case TILT_TYPE_FIXED:
                 output = mySettings->getTilt();
                 break;
             case TILT_TYPE_DEM:
@@ -291,10 +284,7 @@ namespace radiation
 
         switch (mySettings->getTiltMode())
         {
-            case TILT_TYPE_HORIZONTAL:
-                output = mySettings->getAspect();
-                break;
-            case TILT_TYPE_INCLINED:
+            case TILT_TYPE_FIXED:
                 output = mySettings->getAspect();
                 break;
             case TILT_TYPE_DEM:
@@ -304,16 +294,13 @@ namespace radiation
         return output;
     }
 
-    float readSlope(Crit3DRadiationSettings* mySettings, gis::Crit3DRasterGrid* slopeMap,int myRow,int myCol)
+    float readSlope(Crit3DRadiationSettings* mySettings, gis::Crit3DRasterGrid* slopeMap, int myRow,int myCol)
     {
         float output = NODATA;
 
         switch (mySettings->getTiltMode())
         {
-            case TILT_TYPE_HORIZONTAL:
-                output = mySettings->getTilt();
-                break;
-            case TILT_TYPE_INCLINED:
+            case TILT_TYPE_FIXED:
                 output = mySettings->getTilt();
                 break;
             case TILT_TYPE_DEM:
@@ -460,8 +447,7 @@ namespace radiation
     }
 
 
-    bool computeShadow(Crit3DRadiationSettings* mySettings, TradPoint* myPoint, TsunPosition* mySunPosition,
-                       const gis::Crit3DRasterGrid& myDEM)
+    bool computeShadow(TradPoint* myPoint, TsunPosition* mySunPosition, const gis::Crit3DRasterGrid& myDEM)
     {
         float sunMaskStepX, sunMaskStepY;
         float sunMaskStepZ, maxDeltaH;
@@ -598,7 +584,7 @@ bool computeRadiationPointRsun(Crit3DRadiationSettings* mySettings, float myTemp
             else
             {
                 if (isPointIlluminated)
-                    (*mySunPosition).shadow = computeShadow(mySettings, myPoint, mySunPosition, myDEM);
+                    (*mySunPosition).shadow = computeShadow(myPoint, mySunPosition, myDEM);
                 else
                     (*mySunPosition).shadow = true;
             }
@@ -649,7 +635,7 @@ bool computeRadiationPointRsun(Crit3DRadiationSettings* mySettings, float myTemp
                 Bh = 0;
                 Gh = dH; // approximation (portion of shadowed sky should be considered)
             }
-            if (mySettings->getTiltMode() == TILT_TYPE_HORIZONTAL)
+            if (mySettings->getTilt() == 0)
             {
                 (*myPoint).beam = Bh;
                 (*myPoint).diffuse = dH;
@@ -948,7 +934,7 @@ bool computeRadiationPointRsun(Crit3DRadiationSettings* mySettings, float myTemp
 
         radDiffuse = extraTerrestrialRad * td;
 
-        if (mySettings->getTiltMode() == TILT_TYPE_HORIZONTAL)
+        if (mySettings->getTilt() == 0)
         {
             radBeam = extraTerrestrialRad * coeffBH;
             radReflected = 0;

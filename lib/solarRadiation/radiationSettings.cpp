@@ -39,7 +39,6 @@ void Crit3DRadiationSettings::initialize()
     computeShadowing = true;
     linkeMode = PARAM_MODE_FIXED;
     linke = 4.f;
-    landUse = LAND_USE_RURAL;
     albedoMode = PARAM_MODE_FIXED;
     albedo = 0.2f;
     tiltMode = TILT_TYPE_DEM;
@@ -47,8 +46,8 @@ void Crit3DRadiationSettings::initialize()
     aspect = NODATA;
 
     algorithm = RADIATION_ALGORITHM_RSUN;
-    transSettings.model = TRANSMISSIVITY_MODEL_HOURLY;
-    transSettings.periodType = TRANSMISSIVITY_COMPUTATION_DYNAMIC;
+    //transSettings.model = TRANSMISSIVITY_MODEL_HOURLY;
+    //transSettings.periodType = TRANSMISSIVITY_COMPUTATION_DYNAMIC;
     transSettings.useTotal = false;
     transSettings.clearSky = CLEAR_SKY_TRANSMISSIVITY_DEFAULT;
 }
@@ -73,9 +72,6 @@ TparameterMode Crit3DRadiationSettings::getLinkeMode()
 float Crit3DRadiationSettings::getLinke()
 { return linke;}
 
-TlandUse Crit3DRadiationSettings::getLandUse()
-{ return landUse;}
-
 TparameterMode Crit3DRadiationSettings::getAlbedoMode()
 { return albedoMode;}
 
@@ -88,11 +84,11 @@ TtiltMode Crit3DRadiationSettings::getTiltMode()
 TradiationAlgorithm Crit3DRadiationSettings::getAlgorithm()
 { return algorithm;}
 
-TtransmissivityAlgorithm Crit3DRadiationSettings::getTransmissivityAlgorithm()
-{ return transSettings.model;}
+//TtransmissivityAlgorithm Crit3DRadiationSettings::getTransmissivityAlgorithm()
+//{ return 0; }// transSettings.model;}
 
-TtransmissivityComputationPeriod Crit3DRadiationSettings::getTransmissivityPeriod()
-{ return transSettings.periodType;}
+//TtransmissivityComputationPeriod Crit3DRadiationSettings::getTransmissivityPeriod()
+//{ return transSettings.periodType;}
 
 bool Crit3DRadiationSettings::getTransmissivityUseTotal()
 { return transSettings.useTotal;}
@@ -108,3 +104,51 @@ float Crit3DRadiationSettings::getAspect()
 
 float Crit3DRadiationSettings::getClearSky()
 { return transSettings.clearSky;}
+
+std::string getKeyStringRadAlgorithm(TradiationAlgorithm value)
+{
+    std::map<std::string, TradiationAlgorithm>::const_iterator it;
+    std::string key = "";
+
+    for (it = radAlgorithmToString.begin(); it != radAlgorithmToString.end(); ++it)
+    {
+        if (it->second == value)
+        {
+            key = it->first;
+            break;
+        }
+    }
+    return key;
+}
+
+std::string getKeyStringParamMode(TparameterMode value)
+{
+    std::map<std::string, TparameterMode>::const_iterator it;
+    std::string key = "";
+
+    for (it = paramModeToString.begin(); it != paramModeToString.end(); ++it)
+    {
+        if (it->second == value)
+        {
+            key = it->first;
+            break;
+        }
+    }
+    return key;
+}
+
+std::string getKeyStringParamMode(TtiltMode value)
+{
+    std::map<std::string, TtiltMode>::const_iterator it;
+    std::string key = "";
+
+    for (it = tiltModeToString.begin(); it != tiltModeToString.end(); ++it)
+    {
+        if (it->second == value)
+        {
+            key = it->first;
+            break;
+        }
+    }
+    return key;
+}

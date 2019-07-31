@@ -17,11 +17,9 @@ class DialogRadiation : public QDialog
     public:
         explicit DialogRadiation(Project* myProject);
 
-        QComboBox algorithmEdit;
+        QComboBox comboAlgorithm;
 
         QCheckBox checkRealSky;
-        QComboBox comboTransmissAlgorithm;
-        QComboBox comboTransmissPeriod;
         QCheckBox checkUseTotalTransmiss;
         QLineEdit editTransClearSky;
 

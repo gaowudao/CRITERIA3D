@@ -8,7 +8,7 @@ DialogPragaProject::DialogPragaProject(PragaProject *myProject) : DialogProject(
 
 void DialogPragaProject::accept()
 {
-    project_->createProject(lineEditProjectPath->text(), lineEditProjectName->text(), lineEditProjectDescription->text());
+    project_->createPragaProject(lineEditProjectPath->text(), lineEditProjectName->text(), lineEditProjectDescription->text());
 
     QDialog::done(QDialog::Accepted);
 }

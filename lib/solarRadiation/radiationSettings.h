@@ -10,8 +10,8 @@
 
     struct TtransmissivitySettings
     {
-        TtransmissivityAlgorithm model;
-        TtransmissivityComputationPeriod periodType;
+        //TtransmissivityAlgorithm model;
+        //TtransmissivityComputationPeriod periodType;
         bool useTotal;
         float clearSky ;
     } ;
@@ -22,7 +22,6 @@
         TradiationAlgorithm algorithm;
         TtransmissivitySettings transSettings;
         TparameterMode linkeMode;
-        TlandUse landUse;
         TparameterMode albedoMode;
         TtiltMode tiltMode;
 
@@ -51,13 +50,12 @@
         float getTilt();
         float getAspect();
         TparameterMode getLinkeMode();
-        TlandUse getLandUse();
         TparameterMode getAlbedoMode();
         TtiltMode getTiltMode();
         TradiationAlgorithm getAlgorithm();
 
-        TtransmissivityAlgorithm getTransmissivityAlgorithm();
-        TtransmissivityComputationPeriod getTransmissivityPeriod();
+        //TtransmissivityAlgorithm getTransmissivityAlgorithm();
+        //TtransmissivityComputationPeriod getTransmissivityPeriod();
         Crit3DDate* getWindowDate();
         bool getTransmissivityUseTotal();
         float getTransmissivityClearSky();
