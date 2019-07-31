@@ -113,8 +113,8 @@ void TabHorizons::insertSoilHorizons(soil::Crit3DSoil *soil, soil::Crit3DTexture
 
     connect(tableDb, &QTableWidget::cellDoubleClicked, [=](int row, int column){ this->editItem(row, column); });
     connect(tableDb, &QTableWidget::cellChanged, [=](int row, int column){ this->cellChanged(row, column); });
-    connect(tableDb, &QTableWidget::cellClicked, [=](int row, int column){ this->cellClicked(row, column); });
-    connect(tableModel, &QTableWidget::cellClicked, [=](int row, int column){ this->cellClicked(row, column); });
+    connect(tableDb, &QTableWidget::cellClicked, [=](int row, int column){ this->cellClickedDb(row, column); });
+    connect(tableModel, &QTableWidget::cellClicked, [=](int row, int column){ this->cellClickedModel(row, column); });
 
 
 }
@@ -289,16 +289,92 @@ void TabHorizons::editItem(int row, int column)
     tableDb->itemAt(row,column)->setFlags(Qt::ItemIsSelectable|Qt::ItemIsEnabled|Qt::ItemIsEditable);
 }
 
-void TabHorizons::cellClicked(int row, int column)
+void TabHorizons::cellClickedDb(int row, int column)
 {
-    tableDb->selectRow(row);
-    tableModel->selectRow(row);
+
+    clearSelections();
+    tableDb->setSelectionBehavior(QAbstractItemView::SelectItems);
+    tableModel->setSelectionBehavior(QAbstractItemView::SelectItems);
+    tableDb->setItemSelected(tableDb->item(row,column), true);
+
+    switch (column) {
+        case 5:
+        {
+            tableModel->setItemSelected(tableModel->item(row,1), true);
+            break;
+        }
+        case 6:
+        {
+            tableModel->setItemSelected(tableModel->item(row,2), true);
+            break;
+        }
+        case 7:
+        {
+            tableModel->setItemSelected(tableModel->item(row,3), true);
+            break;
+        }
+        case 8:
+        {
+            tableModel->setItemSelected(tableModel->item(row,4), true);
+            break;
+        }
+        case 9:
+        {
+            tableModel->setItemSelected(tableModel->item(row,5), true);
+            break;
+        }
+    }
+
+    deleteRow->setEnabled(true);
+    emit horizonSelected(row);
+}
+
+void TabHorizons::cellClickedModel(int row, int column)
+{
+
+    clearSelections();
+    tableDb->setSelectionBehavior(QAbstractItemView::SelectItems);
+    tableModel->setSelectionBehavior(QAbstractItemView::SelectItems);
+    tableModel->setItemSelected(tableModel->item(row,column), true);
+
+    switch (column) {
+        case 1:
+        {
+            tableDb->setItemSelected(tableDb->item(row,5), true);
+            break;
+        }
+        case 2:
+        {
+            tableDb->setItemSelected(tableDb->item(row,6), true);
+            break;
+        }
+        case 3:
+        {
+            tableDb->setItemSelected(tableDb->item(row,7), true);
+            break;
+        }
+        case 4:
+        {
+            tableDb->setItemSelected(tableDb->item(row,8), true);
+            break;
+        }
+        case 5:
+        {
+            tableDb->setItemSelected(tableDb->item(row,9), true);
+            break;
+        }
+    }
+
     deleteRow->setEnabled(true);
     emit horizonSelected(row);
 }
 
 void TabHorizons::tableDbVerticalHeaderClick(int index)
 {
+    tableDb->setSelectionBehavior(QAbstractItemView::SelectRows);
+    tableModel->setSelectionBehavior(QAbstractItemView::SelectRows);
+
+    tableDb->selectRow(index);
     tableDb->horizontalHeader()->setHighlightSections(false);
     tableModel->selectRow(index);
     tableModel->horizontalHeader()->setHighlightSections(false);

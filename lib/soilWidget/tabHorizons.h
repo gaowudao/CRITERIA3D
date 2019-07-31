@@ -26,7 +26,8 @@ public:
     void tableDbVerticalHeaderClick(int index);
     void editItem(int row, int column);
     void cellChanged(int row, int column);
-    void cellClicked(int row, int column);
+    void cellClickedDb(int row, int column);
+    void cellClickedModel(int row, int column);
     void addRowClicked();
     void removeRowClicked();
     std::string getSoilCodeChanged() const;
