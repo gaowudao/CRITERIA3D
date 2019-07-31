@@ -273,11 +273,7 @@ void MainWindow::mousePressEvent(QMouseEvent *event)
             myRubberBand->isActive = true;
             myRubberBand->show();
         }
-        else if (event->type() != QEvent::MouseButtonDblClick)
-        {
-            // context menu
-            contextMenuRequested(event->globalPos());
-        }
+        else contextMenuRequested(event->globalPos());
 
         #ifdef NETCDF
         if (myProject.netCDF.isLoaded)
@@ -1286,7 +1282,7 @@ void MainWindow::contextMenuRequested(const QPoint globalPos)
     QMenu submenu;
 
     submenu.addAction("Test");
-    if (myProject.soilMap.isLoaded)
+    if (myProject.soilMap.isLoaded && myProject.nrSoils > 0)
     {
         submenu.addAction("Soil data");
     }
