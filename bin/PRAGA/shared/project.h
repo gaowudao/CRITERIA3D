@@ -38,7 +38,7 @@
         QString defaultPath;
         QString projectPath;
 
-        bool createDefaultSettings(QString fileName);
+        bool createDefaultProject(QString fileName);
         bool searchDefaultPath(QString* path);
 
     protected:

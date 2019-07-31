@@ -1434,7 +1434,7 @@ bool Project::createProject(QString path_, QString name_, QString description_)
     return true;
 }
 
-bool Project::createDefaultSettings(QString fileName)
+bool Project::createDefaultProject(QString fileName)
 {
     QString path;
     if (! searchDefaultPath(&path)) return false;
@@ -1443,6 +1443,7 @@ bool Project::createDefaultSettings(QString fileName)
 
     defaultSettings->beginGroup("project");
         defaultSettings->setValue("path", path);
+        defaultSettings->setValue("name", "default");
     defaultSettings->endGroup();
 
     defaultSettings->beginGroup("location");
@@ -1468,15 +1469,15 @@ bool Project::start(QString appPath)
     if (appPath.right(1) != "/") appPath += "/";
     setApplicationPath(appPath);
 
-    QString defaultSettings = getApplicationPath() + "default.ini";
+    QString defaultProject = getApplicationPath() + "default.ini";
 
-    if (! QFile(defaultSettings).exists())
+    if (! QFile(defaultProject).exists())
     {
-        if (! createDefaultSettings(defaultSettings))
+        if (! createDefaultProject(defaultProject))
             return false;
     }
 
-    if (! loadProjectSettings(defaultSettings))
+    if (! loadProjectSettings(defaultProject))
         return false;
 
     setDefaultPath(getProjectPath());
