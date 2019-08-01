@@ -413,7 +413,9 @@ void MainWindow::on_actionLoadDEM_triggered()
 
     if (fileName == "") return;
 
-    if (! myProject.setDEM(fileName)) return;
+    if (! myProject.loadDEM(fileName)) return;
+
+    myProject.meteoMaps = new Crit3DMeteoMaps(myProject.DEM);
 
     this->renderDEM();
 }

@@ -45,11 +45,11 @@ Crit3DProject::Crit3DProject() : Project3D()
 
 bool Crit3DProject::loadCriteria3DProject(QString myFileName)
 {
+    if (myFileName == "") return(false);
+
     clearCriteria3DProject();
     if (isProjectLoaded) clearProject();
     initializeProject();
-
-    if (myFileName == "") return(false);
 
     if (! loadProjectSettings(myFileName))
         return false;
@@ -60,12 +60,15 @@ bool Crit3DProject::loadCriteria3DProject(QString myFileName)
     if (! loadCriteria3DSettings())
         return false;
 
-    isProjectLoaded = true;
+    // initialize meteo maps
+    meteoMaps = new Crit3DMeteoMaps(DEM);
 
     if (projectName != "")
     {
         logInfo("Project " + projectName + " loaded");
     }
+
+    isProjectLoaded = true;
     return true;
 }
 
@@ -224,16 +227,6 @@ void Crit3DProject::clearCriteria3DProject()
 }
 
 
-bool Crit3DProject::setDEM(QString myFileName)
-{
-    if (! this->loadDEM(myFileName))
-        return false;
-
-    this->meteoMaps = new Crit3DMeteoMaps(this->DEM);
-    return true;
-}
-
-
 bool Crit3DProject::interpolationRelHumidity(const Crit3DTime& myTime, gis::Crit3DRasterGrid *myRaster, bool showInfo)
 {
     if (! this->DEM.isLoaded)
@@ -277,6 +270,11 @@ bool Crit3DProject::computeAllMeteoMaps(const Crit3DTime& myTime, bool showInfo)
     if (! this->DEM.isLoaded)
     {
         errorString = "Load a Digital Elevation Model before.";
+        return false;
+    }
+    if (this->meteoMaps == nullptr)
+    {
+        errorString = "Meteo maps not initialized.";
         return false;
     }
 
