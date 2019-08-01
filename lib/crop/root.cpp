@@ -29,7 +29,7 @@
 
 
 #include <math.h>
-#include <malloc.h>
+#include <stdlib.h>
 #include <iostream>
 
 #include "commonConstants.h"

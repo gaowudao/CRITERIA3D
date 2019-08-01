@@ -1,7 +1,6 @@
 #include <stdio.h>
-#include <stdlib.h>
 #include <math.h>
-#include <malloc.h>
+#include <stdlib.h>
 #include <time.h>
 #include <iostream>
 
@@ -13,8 +12,6 @@
 #include "gammaFunction.h"
 #include "crit3dDate.h"
 #include "eispack.h"
-
-
 
 
 

@@ -23,7 +23,6 @@
 */
 
 #include <math.h>
-#include <malloc.h>
 #include <stdlib.h>
 #include <iostream>
 #include <time.h>

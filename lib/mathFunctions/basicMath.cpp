@@ -25,7 +25,7 @@
 #include "commonConstants.h"
 #include "basicMath.h"
 #include <math.h>
-#include <malloc.h>
+#include <stdlib.h>
 
 
     bool sameSignNoZero(float a, float b)
