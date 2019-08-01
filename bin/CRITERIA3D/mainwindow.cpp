@@ -1012,8 +1012,9 @@ void MainWindow::initializeViewer3D()
     {
         if (! myProject.isCriteria3DInitialized)
         {
-            myProject.setIndexMaps();
+            if (!myProject.setIndexMaps()) return;
         }
+
         viewer3D->initialize(&myProject);
     }
 }
