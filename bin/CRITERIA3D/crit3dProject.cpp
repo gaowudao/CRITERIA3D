@@ -283,33 +283,53 @@ bool Crit3DProject::computeAllMeteoMaps(const Crit3DTime& myTime, bool showInfo)
     FormInfo myInfo;
     if (showInfo)
     {
-        myInfo.start("Compute meteo maps...", 6);
+        myInfo.start("Compute air temperature...", 6);
     }
 
     if (! interpolationDemMain(airTemperature, myTime, this->meteoMaps->airTemperatureMap, false))
         return false;
 
-    if (showInfo) myInfo.setValue(1);
+    if (showInfo)
+    {
+        myInfo.setText("Compute relative humidity...");
+        myInfo.setValue(1);
+    }
 
     if (! interpolationRelHumidity(myTime, this->meteoMaps->airRelHumidityMap, false))
         return false;
 
-    if (showInfo) myInfo.setValue(2);
+    if (showInfo)
+    {
+        myInfo.setText("Compute relative precipitation...");
+        myInfo.setValue(2);
+    }
 
     if (! interpolationDemMain(precipitation, myTime, this->meteoMaps->precipitationMap, false))
         return false;
 
-    if (showInfo) myInfo.setValue(3);
+    if (showInfo)
+    {
+        myInfo.setText("Compute wind intensity...");
+        myInfo.setValue(3);
+    }
 
     if (! interpolationDemMain(windIntensity, myTime, this->meteoMaps->windIntensityMap, false))
         return false;
 
-    if (showInfo) myInfo.setValue(4);
+    if (showInfo)
+    {
+        myInfo.setText("Compute solar radiation...");
+        myInfo.setValue(4);
+    }
 
     if (! interpolationDemMain(globalIrradiance, myTime, this->radiationMaps->globalRadiationMap, false))
         return false;
 
-    if (showInfo) myInfo.setValue(5);
+    if (showInfo)
+    {
+        myInfo.setText("Compute ET0...");
+        myInfo.setValue(5);
+    }
 
     if (! this->meteoMaps->computeET0Map(&(this->DEM), this->radiationMaps))
         return false;
