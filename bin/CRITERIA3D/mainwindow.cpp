@@ -132,7 +132,7 @@ void MainWindow::resizeEvent(QResizeEvent * event)
     mapView->resize(ui->widgetMap->size());
 
     ui->groupBoxVariable->move(MAPBORDER/2, this->height()/2
-                          - ui->groupBoxVariable->height() - ui->groupBoxMeteoPoints->height()*0.66);
+                          - ui->groupBoxVariable->height() - ui->groupBoxMeteoPoints->height());
     ui->groupBoxVariable->resize(TOOLSWIDTH, ui->groupBoxVariable->height());
 
     ui->groupBoxMeteoPoints->move(MAPBORDER/2, ui->groupBoxVariable->y() + ui->groupBoxVariable->height() + MAPBORDER);
