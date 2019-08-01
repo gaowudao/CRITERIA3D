@@ -544,7 +544,6 @@ bool computeRadiationPointRsun(Crit3DRadiationSettings* mySettings, float myTemp
         float Dhc, dH;
         float Ghc, Gh;
         //float td, Tt;
-        float normalizedTransmittance;
         float globalTransmittance;  /*!<   real sky global irradiation coefficient (global transmittance) */
         float diffuseTransmittance; /*!<   real sky mypoint.diffuse irradiation coefficient (mypoint.diffuse transmittance) */
         float dhsOverGhs;           /*!<  ratio horizontal mypoint.diffuse over horizontal global */
@@ -577,7 +576,7 @@ bool computeRadiationPointRsun(Crit3DRadiationSettings* mySettings, float myTemp
 
         /*! Shadowing */
         isPointIlluminated = isIlluminated(localTime.time, (*mySunPosition).rise, (*mySunPosition).set, (*mySunPosition).elevationRefr);
-        if (mySettings->getComputeShadowing())
+        if (mySettings->getShadowing())
         {
             if (gis::isOutOfGridXY(myPoint->x, myPoint->y, myDEM.header))
                 (*mySunPosition).shadow = ! isPointIlluminated;
@@ -591,75 +590,75 @@ bool computeRadiationPointRsun(Crit3DRadiationSettings* mySettings, float myTemp
         }
 
         /*! Radiation */
-        if (isPointIlluminated)
-        {
-            Bhc = clearSkyBeamHorizontal(myLinke, mySunPosition);
-            Dhc = clearSkyDiffuseHorizontal(myLinke, mySunPosition);
-            Ghc = Dhc + Bhc;
-
-            if (mySettings->getComputeRealData())
-            {
-                if (myTransmissivity != NODATA)
-                {
-                    if (mySettings->getTransmissivityUseTotal())
-                    {
-                        Gh = mySunPosition->extraIrradianceHorizontal * myTransmissivity;
-                        separateTransmissivity (myClearSkyTransmissivity, myTransmissivity, &diffuseTransmittance, &globalTransmittance);
-                        dH = mySunPosition->extraIrradianceHorizontal * diffuseTransmittance;
-                    }
-                    else
-                    {
-                        normalizedTransmittance = myTransmissivity / myClearSkyTransmissivity;
-                        Gh = Ghc * normalizedTransmittance;
-                        separateTransmissivity (myClearSkyTransmissivity, myTransmissivity, &diffuseTransmittance, &globalTransmittance);
-                        dhsOverGhs = diffuseTransmittance / globalTransmittance;
-                        dH = dhsOverGhs * Gh;
-                    }
-                }
-                else
-                {
-                    Gh = Ghc;
-                    dH = Dhc;
-                }
-            }
-            else
-            {
-                Gh = Ghc;
-                dH = Dhc;
-            }
-
-            if ((!(*mySunPosition).shadow) && ((*mySunPosition).incidence > 0.))
-                Bh = Gh - dH;
-            else
-            {
-                Bh = 0;
-                Gh = dH; // approximation (portion of shadowed sky should be considered)
-            }
-            if (mySettings->getTilt() == 0)
-            {
-                (*myPoint).beam = Bh;
-                (*myPoint).diffuse = dH;
-                (*myPoint).reflected = 0;
-                (*myPoint).global = Gh;
-            }
-            else
-            {
-                if ((!(*mySunPosition).shadow) && ((*mySunPosition).incidence > 0.))
-                    myPoint->beam = clearSkyBeamInclined(Bh, mySunPosition);
-                else
-                    myPoint->beam = 0;
-
-                myPoint->diffuse = clearSkyDiffuseInclined(Bh, dH, mySunPosition, myPoint);
-                myPoint->reflected = getReflectedIrradiance(Bh, dH, myAlbedo, float(myPoint->slope));
-                myPoint->global = myPoint->beam + myPoint->diffuse + myPoint->reflected;
-            }
-        }
-        else
+        if (! isPointIlluminated)
         {
             myPoint->beam = 0;
             myPoint->diffuse = 0;
             myPoint->reflected = 0;
             myPoint->global = 0;
+
+            return true;
+        }
+
+        if (mySettings->getRealSky() && myTransmissivity == NODATA)
+            return false;
+
+        // real sky horizontal
+        if (mySettings->getRealSkyAlgorithm() == RADIATION_REALSKY_TOTALTRANSMISSIVITY)
+        {
+            if (mySettings->getRealSky()) myTransmissivity = myClearSkyTransmissivity;
+
+            Gh = mySunPosition->extraIrradianceHorizontal * myTransmissivity;
+            separateTransmissivity (myClearSkyTransmissivity, myTransmissivity, &diffuseTransmittance, &globalTransmittance);
+            dH = mySunPosition->extraIrradianceHorizontal * diffuseTransmittance;
+        }
+        else
+        {
+            Bhc = clearSkyBeamHorizontal(myLinke, mySunPosition);
+            Dhc = clearSkyDiffuseHorizontal(myLinke, mySunPosition);
+            Ghc = Dhc + Bhc;
+
+            if (mySettings->getRealSky())
+            {
+                Gh = Ghc * myTransmissivity / myClearSkyTransmissivity;
+                // todo: trovare un metodo migliore (che non usi la clearSkyTransmissivity, non coerente con l'utilizzo di Linke)
+                separateTransmissivity (myClearSkyTransmissivity, myTransmissivity, &diffuseTransmittance, &globalTransmittance);
+                dhsOverGhs = diffuseTransmittance / globalTransmittance;
+                dH = dhsOverGhs * Gh;
+            }
+            else {
+                Gh = Ghc;
+                dH = Dhc;
+            }
+        }
+
+        // shadowing
+        if ((!(*mySunPosition).shadow) && ((*mySunPosition).incidence > 0.))
+            Bh = Gh - dH;
+        else
+        {
+            Bh = 0;
+            Gh = dH; // approximation (portion of shadowed sky should be considered)
+        }
+
+        // inclined
+        if (myPoint->slope == 0)
+        {
+            (*myPoint).beam = Bh;
+            (*myPoint).diffuse = dH;
+            (*myPoint).reflected = 0;
+            (*myPoint).global = Gh;
+        }
+        else
+        {
+            if ((!(*mySunPosition).shadow) && ((*mySunPosition).incidence > 0.))
+                myPoint->beam = clearSkyBeamInclined(Bh, mySunPosition);
+            else
+                myPoint->beam = 0;
+
+            myPoint->diffuse = clearSkyDiffuseInclined(Bh, dH, mySunPosition, myPoint);
+            myPoint->reflected = getReflectedIrradiance(Bh, dH, myAlbedo, float(myPoint->slope));
+            myPoint->global = myPoint->beam + myPoint->diffuse + myPoint->reflected;
         }
 
         return true;
@@ -922,7 +921,7 @@ bool computeRadiationPointRsun(Crit3DRadiationSettings* mySettings, float myTemp
 
         float Tt = myClearSkyTransmissivity;
         float td = float(0.1);
-        if (mySettings->getComputeRealData())
+        if (mySettings->getRealSky())
         {
             if (myTransmissivity != NODATA)
             {

@@ -1,10 +1,7 @@
 #ifndef DIALOGRADIATION_H
 #define DIALOGRADIATION_H
 
-#include <QDialog>
-#include <QComboBox>
-#include <QCheckBox>
-#include <QLineEdit>
+#include <QtWidgets>
 
 class QDialogButtonBox;
 
@@ -20,9 +17,10 @@ class DialogRadiation : public QDialog
         QComboBox* comboAlgorithm;
 
         QCheckBox* checkRealSky;
-        QCheckBox* checkUseTotalTransmiss;
+        QComboBox* comboRealSky;
         QLineEdit* editTransClearSky;
 
+        QGroupBox* groupLinke;
         QComboBox* comboLinkeMode;
         QLineEdit* editLinke;
         QLineEdit* editLinkeMap;
@@ -31,15 +29,18 @@ class DialogRadiation : public QDialog
         QLineEdit* editAlbedo;
         QLineEdit* editAlbedoMap;
 
-        QComboBox* tiltMode;
+        QComboBox* comboTiltMode;
         QLineEdit* editTilt;
-        QLineEdit* editTiltMap;
         QLineEdit* editAspect;
 
         QCheckBox* checkShadowing;
 
         void loadLinke();
         void loadAlbedo();
+        void updateAlgorithm(const QString myString);
+        void updateLinke();
+        void updateAlbedo();
+        void updateTilt();
 
         void accept();
 
