@@ -2122,7 +2122,7 @@
      <x>0</x>
      <y>0</y>
      <width>1280</width>
-     <height>21</height>
+     <height>26</height>
     </rect>
    </property>
    <property name="palette">
@@ -2623,7 +2623,7 @@
    </widget>
    <widget class="QMenu" name="menuCriteria3D">
     <property name="title">
-     <string>Model</string>
+     <string>3D Model</string>
     </property>
     <addaction name="actionCriteria3D_Initialize"/>
     <addaction name="actionCriteria3D_settings"/>
@@ -2928,7 +2928,7 @@
   </action>
   <action name="actionRadiationSettings">
    <property name="text">
-    <string>Solar radiation settings</string>
+    <string>Solar radiation settings...</string>
    </property>
   </action>
  </widget>

@@ -28,7 +28,7 @@
         gis::Crit3DRasterGrid cropIndexMap;
 
         bool isParametersLoaded;
-        bool isInitialized;
+        bool isCriteria3DInitialized;
 
         Crit3DProject();
 

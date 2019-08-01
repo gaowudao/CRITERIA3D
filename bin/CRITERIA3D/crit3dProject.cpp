@@ -39,7 +39,7 @@
 Crit3DProject::Crit3DProject() : Project3D()
 {
     isParametersLoaded = false;
-    isInitialized = false;
+    isCriteria3DInitialized = false;
 }
 
 
@@ -223,7 +223,7 @@ void Crit3DProject::clearCriteria3DProject()
     clearWaterBalance3D();
     cropIndexMap.clear();
 
-    isInitialized = false;
+    isCriteria3DInitialized = false;
 }
 
 
@@ -383,11 +383,11 @@ bool Crit3DProject::initializeCriteria3D()
 
     if (! initializeWaterBalance3D(this))
     {
-        this->clearCriteria3DProject();
+        clearCriteria3DProject();
         return false;
     }
 
-    this->isInitialized = true;
+    isCriteria3DInitialized = true;
     logInfoGUI("Criteria3D model initialized");
 
     return true;

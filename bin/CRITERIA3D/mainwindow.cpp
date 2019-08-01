@@ -1010,7 +1010,7 @@ void MainWindow::initializeViewer3D()
 {
     if (viewer3D != nullptr)
     {
-        if (! myProject.isInitialized)
+        if (! myProject.isCriteria3DInitialized)
         {
             myProject.setIndexMaps();
         }
