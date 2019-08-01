@@ -133,7 +133,7 @@
         void setCurrentRaster(gis::Crit3DRasterGrid *myRaster);
         void interpolateDemGUI();
         void showElabResult(bool updateColorSCale, bool isMeteoGrid, bool isAnomaly);
-        void initializeViewer3D();
+        bool initializeViewer3D();
         bool checkMapVariable(bool isComputed);
         void setMapVariable(meteoVariable myVar, gis::Crit3DRasterGrid *myGrid);
         void contextMenuRequested(const QPoint globalPos);

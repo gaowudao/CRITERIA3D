@@ -1006,16 +1006,20 @@ void MainWindow::on_viewer3DClosed()
 }
 
 
-void MainWindow::initializeViewer3D()
+bool MainWindow::initializeViewer3D()
 {
     if (viewer3D != nullptr)
     {
-        if (! myProject.isCriteria3DInitialized)
+        if (myProject.isCriteria3DInitialized)
         {
-            if (!myProject.setIndexMaps()) return;
+            viewer3D->initialize(&myProject);
+            return true;
         }
-
-        viewer3D->initialize(&myProject);
+        else
+        {
+            myProject.logError("Initialize 3D model before");
+            return false;
+        }
     }
 }
 
@@ -1031,7 +1035,7 @@ void MainWindow::on_actionView_3D_triggered()
     if (viewer3D == nullptr || !viewer3D->isVisible())
     {
         viewer3D = new Viewer3D(this);
-        initializeViewer3D();
+        if (! initializeViewer3D()) return;
     }
 
     viewer3D->show();
