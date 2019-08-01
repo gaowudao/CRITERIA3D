@@ -91,6 +91,8 @@
 
         void on_actionOpen_Project_triggered();
 
+        void on_actionRadiationSettings_triggered();
+
     protected:
         /*!
          * \brief mouseReleaseEvent call moveCenter

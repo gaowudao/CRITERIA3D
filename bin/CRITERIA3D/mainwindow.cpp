@@ -30,6 +30,7 @@
 #include "spatialControl.h"
 #include "dialogInterpolation.h"
 #include "dialogSettings.h"
+#include "dialogRadiation.h"
 
 #include <Qt3DRender/QCamera>
 #include <Qt3DExtras/Qt3DWindow>
@@ -923,6 +924,13 @@ void MainWindow::on_actionInterpolationSettings_triggered()
 
     DialogInterpolation* myInterpolationDialog = new DialogInterpolation(&myProject);
     myInterpolationDialog->close();
+}
+
+
+void MainWindow::on_actionRadiationSettings_triggered()
+{
+    DialogRadiation* myDialogRadiation = new DialogRadiation(&myProject);
+    myDialogRadiation->close();
 }
 
 

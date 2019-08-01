@@ -504,7 +504,7 @@
     <property name="geometry">
      <rect>
       <x>0</x>
-      <y>280</y>
+      <y>290</y>
       <width>261</width>
       <height>131</height>
      </rect>
@@ -1901,9 +1901,9 @@
     <property name="geometry">
      <rect>
       <x>0</x>
-      <y>420</y>
+      <y>430</y>
       <width>261</width>
-      <height>111</height>
+      <height>121</height>
      </rect>
     </property>
     <property name="autoFillBackground">
@@ -1916,7 +1916,7 @@
      <property name="geometry">
       <rect>
        <x>0</x>
-       <y>60</y>
+       <y>70</y>
        <width>261</width>
        <height>41</height>
       </rect>
@@ -1974,7 +1974,7 @@
      <property name="geometry">
       <rect>
        <x>20</x>
-       <y>40</y>
+       <y>50</y>
        <width>221</width>
        <height>21</height>
       </rect>
@@ -2032,7 +2032,7 @@
       <x>0</x>
       <y>170</y>
       <width>261</width>
-      <height>101</height>
+      <height>111</height>
      </rect>
     </property>
     <property name="autoFillBackground">
@@ -2045,7 +2045,7 @@
      <property name="geometry">
       <rect>
        <x>0</x>
-       <y>50</y>
+       <y>60</y>
        <width>261</width>
        <height>41</height>
       </rect>
@@ -2063,7 +2063,7 @@
      <property name="geometry">
       <rect>
        <x>20</x>
-       <y>30</y>
+       <y>40</y>
        <width>231</width>
        <height>21</height>
       </rect>
@@ -2597,7 +2597,9 @@
     <addaction name="actionInterpolationSettings"/>
     <addaction name="actionInterpolation_to_DEM"/>
     <addaction name="separator"/>
+    <addaction name="actionRadiationSettings"/>
     <addaction name="actionCompute_solar_radiation"/>
+    <addaction name="separator"/>
     <addaction name="actionCompute_AllMeteoMaps"/>
     <addaction name="separator"/>
     <addaction name="actionVariableQualitySpatial"/>
@@ -2759,7 +2761,7 @@
   </action>
   <action name="actionInterpolation_to_DEM">
    <property name="text">
-    <string>Interpolation to DEM</string>
+    <string>Interpolate variable</string>
    </property>
   </action>
   <action name="actionOpen_model_parameters">
@@ -2922,6 +2924,11 @@
   <action name="actionOpen_Project">
    <property name="text">
     <string>Open Project</string>
+   </property>
+  </action>
+  <action name="actionRadiationSettings">
+   <property name="text">
+    <string>Solar radiation settings</string>
    </property>
   </action>
  </widget>
