@@ -301,6 +301,8 @@ void Crit3DSoilWidget::on_actionChooseSoil(QString soilCode)
     infoGroup->setVisible(true);
     infoGroup->setTitle(soilName);
     soilCodeValue->setText(QString::fromStdString(mySoil.code));
+
+    wrCurveTab->insertVerticalLines(&mySoil);
 }
 
 
