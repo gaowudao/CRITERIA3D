@@ -1998,6 +1998,8 @@ void MainWindow::on_actionOpen_project_triggered()
         this->mapView->centerOn(startCenter->lonLat());
         if (myProject.loadPragaProject(myProject.getApplicationPath() + "default.ini")) drawProject();
     }
+
+    checkSaveProject();
 }
 
 void MainWindow::on_actionClose_project_triggered()
@@ -2014,6 +2016,8 @@ void MainWindow::on_actionClose_project_triggered()
     if (! myProject.loadPragaProject(myProject.getApplicationPath() + "default.ini")) return;
 
     drawProject();
+
+    checkSaveProject();
 }
 
 void MainWindow::on_actionSave_project_as_triggered()
@@ -2022,11 +2026,22 @@ void MainWindow::on_actionSave_project_as_triggered()
 
     DialogPragaProject* myProjectDialog = new DialogPragaProject(&myProject);
     myProjectDialog->close();
+
+    checkSaveProject();
 }
 
 void MainWindow::on_actionSave_project_triggered()
 {
     myProject.saveProject();
+}
+
+void MainWindow::checkSaveProject()
+{
+    QString myName = myProject.projectSettings->fileName();
+    if (getFileName(myName) == "default.ini" && getFilePath(myName) == myProject.getApplicationPath())
+        ui->actionSave_project->setEnabled(false);
+    else
+        ui->actionSave_project->setEnabled(true);
 }
 
 bool KeyboardFilter::eventFilter(QObject* obj, QEvent* event)

@@ -182,6 +182,8 @@
         void redrawMeteoGrid(visualizationType showType);
         void drawProject();
 
+        void checkSaveProject();
+
         bool loadMeteoPoints(QString dbName);
         bool loadMeteoGrid(QString xmlName);
         bool openRaster(QString fileName, gis::Crit3DRasterGrid *myRaster);

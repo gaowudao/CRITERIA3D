@@ -1443,7 +1443,6 @@ bool Project::createDefaultProject(QString fileName)
 
     defaultSettings->beginGroup("project");
         defaultSettings->setValue("path", path);
-        defaultSettings->setValue("name", "default");
     defaultSettings->endGroup();
 
     defaultSettings->beginGroup("location");
