@@ -28,6 +28,126 @@
 #include "radiationSettings.h"
 
 
+TradiationRealSkyAlgorithm Crit3DRadiationSettings::getRealSkyAlgorithm() const
+{
+    return realSkyAlgorithm;
+}
+
+void Crit3DRadiationSettings::setRealSkyAlgorithm(const TradiationRealSkyAlgorithm &value)
+{
+    realSkyAlgorithm = value;
+}
+
+float Crit3DRadiationSettings::getClearSky() const
+{
+    return clearSky;
+}
+
+void Crit3DRadiationSettings::setClearSky(float value)
+{
+    clearSky = value;
+}
+
+bool Crit3DRadiationSettings::getRealSky() const
+{
+    return realSky;
+}
+
+void Crit3DRadiationSettings::setRealSky(bool value)
+{
+    realSky = value;
+}
+
+bool Crit3DRadiationSettings::getShadowing() const
+{
+    return shadowing;
+}
+
+void Crit3DRadiationSettings::setShadowing(bool value)
+{
+    shadowing = value;
+}
+
+float Crit3DRadiationSettings::getLinke() const
+{
+    return linke;
+}
+
+void Crit3DRadiationSettings::setLinke(float value)
+{
+    linke = value;
+}
+
+float Crit3DRadiationSettings::getAlbedo() const
+{
+    return albedo;
+}
+
+void Crit3DRadiationSettings::setAlbedo(float value)
+{
+    albedo = value;
+}
+
+float Crit3DRadiationSettings::getTilt() const
+{
+    return tilt;
+}
+
+void Crit3DRadiationSettings::setTilt(float value)
+{
+    tilt = value;
+}
+
+float Crit3DRadiationSettings::getAspect() const
+{
+    return aspect;
+}
+
+void Crit3DRadiationSettings::setAspect(float value)
+{
+    aspect = value;
+}
+
+TradiationAlgorithm Crit3DRadiationSettings::getAlgorithm() const
+{
+    return algorithm;
+}
+
+void Crit3DRadiationSettings::setAlgorithm(const TradiationAlgorithm &value)
+{
+    algorithm = value;
+}
+
+TparameterMode Crit3DRadiationSettings::getLinkeMode() const
+{
+    return linkeMode;
+}
+
+void Crit3DRadiationSettings::setLinkeMode(const TparameterMode &value)
+{
+    linkeMode = value;
+}
+
+TparameterMode Crit3DRadiationSettings::getAlbedoMode() const
+{
+    return albedoMode;
+}
+
+void Crit3DRadiationSettings::setAlbedoMode(const TparameterMode &value)
+{
+    albedoMode = value;
+}
+
+TtiltMode Crit3DRadiationSettings::getTiltMode() const
+{
+    return tiltMode;
+}
+
+void Crit3DRadiationSettings::setTiltMode(const TtiltMode &value)
+{
+    tiltMode = value;
+}
+
 Crit3DRadiationSettings::Crit3DRadiationSettings()
 {
     initialize();
@@ -35,21 +155,19 @@ Crit3DRadiationSettings::Crit3DRadiationSettings()
 
 void Crit3DRadiationSettings::initialize()
 {
-    computeRealData = true;
-    computeShadowing = true;
+    realSky = true;
+    shadowing = true;
     linkeMode = PARAM_MODE_FIXED;
     linke = 4.f;
     albedoMode = PARAM_MODE_FIXED;
     albedo = 0.2f;
     tiltMode = TILT_TYPE_DEM;
-    tilt = NODATA;
-    aspect = NODATA;
+    tilt = 0;
+    aspect = 0;
 
     algorithm = RADIATION_ALGORITHM_RSUN;
-    //transSettings.model = TRANSMISSIVITY_MODEL_HOURLY;
-    //transSettings.periodType = TRANSMISSIVITY_COMPUTATION_DYNAMIC;
-    transSettings.useTotal = false;
-    transSettings.clearSky = CLEAR_SKY_TRANSMISSIVITY_DEFAULT;
+    realSkyAlgorithm = RADIATION_REALSKY_LINKE;
+    clearSky = CLEAR_SKY_TRANSMISSIVITY_DEFAULT;
 }
 
 void Crit3DRadiationSettings::setGisSettings(const gis::Crit3DGisSettings* mySettings)
@@ -59,51 +177,6 @@ void Crit3DRadiationSettings::setGisSettings(const gis::Crit3DGisSettings* mySet
     gisSettings->timeZone = mySettings->timeZone;
     gisSettings->isUTC = mySettings->isUTC;
 }
-
-bool Crit3DRadiationSettings::getComputeRealData()
-{ return computeRealData;}
-
-bool Crit3DRadiationSettings::getComputeShadowing()
-{ return computeShadowing;}
-
-TparameterMode Crit3DRadiationSettings::getLinkeMode()
-{ return linkeMode;}
-
-float Crit3DRadiationSettings::getLinke()
-{ return linke;}
-
-TparameterMode Crit3DRadiationSettings::getAlbedoMode()
-{ return albedoMode;}
-
-float Crit3DRadiationSettings::getAlbedo()
-{ return albedo;}
-
-TtiltMode Crit3DRadiationSettings::getTiltMode()
-{ return tiltMode;}
-
-TradiationAlgorithm Crit3DRadiationSettings::getAlgorithm()
-{ return algorithm;}
-
-//TtransmissivityAlgorithm Crit3DRadiationSettings::getTransmissivityAlgorithm()
-//{ return 0; }// transSettings.model;}
-
-//TtransmissivityComputationPeriod Crit3DRadiationSettings::getTransmissivityPeriod()
-//{ return transSettings.periodType;}
-
-bool Crit3DRadiationSettings::getTransmissivityUseTotal()
-{ return transSettings.useTotal;}
-
-float Crit3DRadiationSettings::getTransmissivityClearSky()
-{ return transSettings.clearSky;}
-
-float Crit3DRadiationSettings::getTilt()
-{ return tilt;}
-
-float Crit3DRadiationSettings::getAspect()
-{ return aspect;}
-
-float Crit3DRadiationSettings::getClearSky()
-{ return transSettings.clearSky;}
 
 std::string getKeyStringRadAlgorithm(TradiationAlgorithm value)
 {
@@ -137,7 +210,7 @@ std::string getKeyStringParamMode(TparameterMode value)
     return key;
 }
 
-std::string getKeyStringParamMode(TtiltMode value)
+std::string getKeyStringTiltMode(TtiltMode value)
 {
     std::map<std::string, TtiltMode>::const_iterator it;
     std::string key = "";
@@ -152,3 +225,20 @@ std::string getKeyStringParamMode(TtiltMode value)
     }
     return key;
 }
+
+std::string getKeyStringRealSky(TradiationRealSkyAlgorithm value)
+{
+    std::map<std::string, TradiationRealSkyAlgorithm>::const_iterator it;
+    std::string key = "";
+
+    for (it = realSkyAlgorithmToString.begin(); it != realSkyAlgorithmToString.end(); ++it)
+    {
+        if (it->second == value)
+        {
+            key = it->first;
+            break;
+        }
+    }
+    return key;
+}
+

@@ -31,6 +31,7 @@
     #define SHADOW_FACTOR 1
 
     enum TradiationAlgorithm{RADIATION_ALGORITHM_RSUN = 0,RADIATION_ALGORITHM_BROOKS = 1};
+    enum TradiationRealSkyAlgorithm{RADIATION_REALSKY_TOTALTRANSMISSIVITY, RADIATION_REALSKY_LINKE};
     enum TparameterMode {PARAM_MODE_FIXED = 0, PARAM_MODE_MAP = 1} ;
     enum TtiltMode{TILT_TYPE_FIXED=1, TILT_TYPE_DEM=2};
     //enum TtransmissivityAlgorithm{TRANSMISSIVITY_MODEL_HOURLY = 0, TRANSMISSIVITY_MODEL_DAILY = 1, TRANSMISSIVITY_MODEL_SAMANI = 2};
@@ -39,6 +40,11 @@
     const std::map<std::string, TradiationAlgorithm> radAlgorithmToString = {
       { "r.sun", RADIATION_ALGORITHM_RSUN },
       { "brooks", RADIATION_ALGORITHM_BROOKS }
+    };
+
+    const std::map<std::string, TradiationRealSkyAlgorithm> realSkyAlgorithmToString = {
+      { "Linke turbidity factor", RADIATION_REALSKY_LINKE },
+      { "Total transmissivity", RADIATION_REALSKY_TOTALTRANSMISSIVITY }
     };
 
     const std::map<std::string, TparameterMode> paramModeToString = {
