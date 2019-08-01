@@ -17,26 +17,29 @@ class DialogRadiation : public QDialog
     public:
         explicit DialogRadiation(Project* myProject);
 
-        QComboBox comboAlgorithm;
+        QComboBox* comboAlgorithm;
 
-        QCheckBox checkRealSky;
-        QCheckBox checkUseTotalTransmiss;
-        QLineEdit editTransClearSky;
+        QCheckBox* checkRealSky;
+        QCheckBox* checkUseTotalTransmiss;
+        QLineEdit* editTransClearSky;
 
-        QComboBox comboLinkeMode;
-        QLineEdit editLinke;
-        QLineEdit editLinkeMap;
+        QComboBox* comboLinkeMode;
+        QLineEdit* editLinke;
+        QLineEdit* editLinkeMap;
 
-        QComboBox comboAlbedoMode;
-        QLineEdit editAlbedo;
-        QLineEdit editAlbedoMap;
+        QComboBox* comboAlbedoMode;
+        QLineEdit* editAlbedo;
+        QLineEdit* editAlbedoMap;
 
-        QComboBox tiltMode;
-        QLineEdit editTilt;
-        QLineEdit editTiltMap;
-        QLineEdit editAspect;
+        QComboBox* tiltMode;
+        QLineEdit* editTilt;
+        QLineEdit* editTiltMap;
+        QLineEdit* editAspect;
 
-        QCheckBox checkShadowing;
+        QCheckBox* checkShadowing;
+
+        void loadLinke();
+        void loadAlbedo();
 
         void accept();
 
