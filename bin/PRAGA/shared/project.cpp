@@ -246,6 +246,7 @@ bool Project::loadParameters(QString parametersFileName)
         if (group == "radiation")
         {
             parameters->beginGroup(group);
+
             if (parameters->contains("algorithm"))
             {
                 std::string algorithm = parameters->value("algorithm").toString().toStdString();
@@ -257,6 +258,83 @@ bool Project::loadParameters(QString parametersFileName)
                 else
                     radSettings.setAlgorithm(radAlgorithmToString.at(algorithm));
             }
+
+            if (parameters->contains("real_sky_algorithm"))
+            {
+                std::string realSkyAlgorithm = parameters->value("real_sky_algorithm").toString().toStdString();
+                if (realSkyAlgorithmToString.find(realSkyAlgorithm) == realSkyAlgorithmToString.end())
+                {
+                    errorString = "Unknown radiation real sky algorithm";
+                    return false;
+                }
+                else
+                    radSettings.setRealSkyAlgorithm(realSkyAlgorithmToString.at(realSkyAlgorithm));
+            }
+
+            if (parameters->contains("linke_mode"))
+            {
+                std::string linkeMode = parameters->value("linke_mode").toString().toStdString();
+                if (paramModeToString.find(linkeMode) == paramModeToString.end())
+                {
+                    errorString = "Unknown Linke mode";
+                    return false;
+                }
+                else
+                    radSettings.setLinkeMode(paramModeToString.at(linkeMode));
+            }
+
+            if (parameters->contains("albedo_mode"))
+            {
+                std::string albedoMode = parameters->value("albedo_mode").toString().toStdString();
+                if (paramModeToString.find(albedoMode) == paramModeToString.end())
+                {
+                    errorString = "Unknown albedo mode";
+                    return false;
+                }
+                else
+                    radSettings.setAlbedoMode(paramModeToString.at(albedoMode));
+            }
+
+            if (parameters->contains("tilt_mode"))
+            {
+                std::string tiltMode = parameters->value("tilt_mode").toString().toStdString();
+                if (tiltModeToString.find(tiltMode) == tiltModeToString.end())
+                {
+                    errorString = "Unknown albedo mode";
+                    return false;
+                }
+                else
+                    radSettings.setTiltMode(tiltModeToString.at("tilt_mode"));
+            }
+
+            if (parameters->contains("real_sky"))
+                radSettings.setRealSky(parameters->value("real_sky").toBool());
+
+            if (parameters->contains("shadowing"))
+                radSettings.setShadowing(parameters->value("shadowing").toBool());
+
+            if (parameters->contains("linke"))
+                radSettings.setLinke(parameters->value("linke").toFloat());
+
+            if (parameters->contains("albedo"))
+                radSettings.setAlbedo(parameters->value("albedo").toFloat());
+
+            if (parameters->contains("tilt"))
+                radSettings.setTilt(parameters->value("tilt").toFloat());
+
+            if (parameters->contains("aspect"))
+                radSettings.setAspect(parameters->value("aspect").toFloat());
+
+            if (parameters->contains("clear_sky"))
+                radSettings.setClearSky(parameters->value("clear_sky").toFloat());
+
+            if (parameters->contains("linke_map"))
+                radSettings.setLinkeMapName(parameters->value("linke_map").toString().toStdString());
+
+            if (parameters->contains("albedo_map"))
+                radSettings.setAlbedoMapName(parameters->value("albedo_map").toString().toStdString());
+
+            parameters->endGroup();
         }
 
         //interpolation
@@ -1362,6 +1440,19 @@ void Project::saveRadiationParameters()
 {
     parameters->beginGroup("radiation");
         parameters->setValue("algorithm", QString::fromStdString(getKeyStringRadAlgorithm(radSettings.getAlgorithm())));
+        parameters->setValue("real_sky_algorithm", QString::fromStdString(getKeyStringRealSky(radSettings.getRealSkyAlgorithm())));
+        parameters->setValue("linke_mode", QString::fromStdString(getKeyStringParamMode(radSettings.getLinkeMode())));
+        parameters->setValue("albedo_mode", QString::fromStdString(getKeyStringParamMode(radSettings.getAlbedoMode())));
+        parameters->setValue("tilt_mode", QString::fromStdString(getKeyStringTiltMode(radSettings.getTiltMode())));
+        parameters->setValue("real_sky", radSettings.getRealSky());
+        parameters->setValue("shadowing", radSettings.getShadowing());
+        parameters->setValue("linke", QString::number(radSettings.getLinke()));
+        parameters->setValue("albedo", QString::number(radSettings.getAlbedo()));
+        parameters->setValue("tilt", QString::number(radSettings.getTilt()));
+        parameters->setValue("aspect", QString::number(radSettings.getAspect()));
+        parameters->setValue("clear_sky", QString::number(radSettings.getClearSky()));
+        parameters->setValue("linke_map", QString::fromStdString(radSettings.getLinkeMapName()));
+        parameters->setValue("albedo_map", QString::fromStdString(radSettings.getAlbedoMapName()));
     parameters->endGroup();
 }
 
