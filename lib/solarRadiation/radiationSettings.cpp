@@ -211,8 +211,6 @@ void Crit3DRadiationSettings::initialize()
 
     linkeMapName = "";
     albedoMapName = "";
-    if (linkeMap->isLoaded) delete linkeMap;
-    if (albedoMap->isLoaded) delete albedoMap;
     linkeMap = nullptr;
     albedoMap = nullptr;
 }
