@@ -147,9 +147,9 @@
             int id;
             std::string code;
             std::string name;
-            int nrHorizons;
+            unsigned int nrHorizons;
             double totalDepth;                  /*!<   [m]  */
-            Crit3DHorizon* horizon;
+            std::vector <Crit3DHorizon> horizon;
 
             Crit3DSoil();
             void initialize(int idSoil, int nrHorizons);
