@@ -25,7 +25,12 @@
         float aspect;
         float clearSky;
 
-    public:        
+        std::string linkeMapName;
+        std::string albedoMapName;
+        gis::Crit3DRasterGrid* linkeMap;
+        gis::Crit3DRasterGrid* albedoMap;
+
+    public:
         gis::Crit3DGisSettings* gisSettings;
 
         Crit3DRadiationSettings();
@@ -57,6 +62,14 @@
         void setAlbedoMode(const TparameterMode &value);
         TtiltMode getTiltMode() const;
         void setTiltMode(const TtiltMode &value);
+        gis::Crit3DRasterGrid *getLinkeMap() const;
+        void setLinkeMap(gis::Crit3DRasterGrid *value);
+        gis::Crit3DRasterGrid *getAlbedoMap() const;
+        void setAlbedoMap(gis::Crit3DRasterGrid *value);
+        std::string getLinkeMapName() const;
+        void setLinkeMapName(const std::string &value);
+        std::string getAlbedoMapName() const;
+        void setAlbedoMapName(const std::string &value);
     } ;
 
     std::string getKeyStringRadAlgorithm(TradiationAlgorithm value);

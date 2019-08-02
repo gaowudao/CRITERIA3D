@@ -243,6 +243,22 @@ bool Project::loadParameters(QString parametersFileName)
             parameters->endGroup();
         }
 
+        if (group == "radiation")
+        {
+            parameters->beginGroup(group);
+            if (parameters->contains("algorithm"))
+            {
+                std::string algorithm = parameters->value("algorithm").toString().toStdString();
+                if (radAlgorithmToString.find(algorithm) == radAlgorithmToString.end())
+                {
+                    errorString = "Unknown radiation algorithm";
+                    return false;
+                }
+                else
+                    radSettings.setAlgorithm(radAlgorithmToString.at(algorithm));
+            }
+        }
+
         //interpolation
         if (group == "interpolation")
         {
@@ -1340,6 +1356,13 @@ void Project::saveSettings()
     projectSettings->endGroup();
 
     projectSettings->sync();
+}
+
+void Project::saveRadiationParameters()
+{
+    parameters->beginGroup("radiation");
+        parameters->setValue("algorithm", QString::fromStdString(getKeyStringRadAlgorithm(radSettings.getAlgorithm())));
+    parameters->endGroup();
 }
 
 void Project::saveInterpolationParameters()

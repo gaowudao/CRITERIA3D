@@ -13,7 +13,6 @@ GeoTab::GeoTab(gis::Crit3DGisSettings *gisSettings)
     startLocationLatEdit.setValidator(doubleValLat);
     startLocationLatEdit.setText(QString::number(gisSettings->startLocation.latitude));
 
-
     QLabel *startLocationLon = new QLabel(tr("<b>start location longitude </b> [decimal degrees]:"));
     QDoubleValidator *doubleValLon = new QDoubleValidator( -180.0, 180.0, 5, this );
     doubleValLon->setNotation(QDoubleValidator::StandardNotation);

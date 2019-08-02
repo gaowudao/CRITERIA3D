@@ -148,6 +148,46 @@ void Crit3DRadiationSettings::setTiltMode(const TtiltMode &value)
     tiltMode = value;
 }
 
+gis::Crit3DRasterGrid *Crit3DRadiationSettings::getLinkeMap() const
+{
+    return linkeMap;
+}
+
+void Crit3DRadiationSettings::setLinkeMap(gis::Crit3DRasterGrid *value)
+{
+    linkeMap = value;
+}
+
+gis::Crit3DRasterGrid *Crit3DRadiationSettings::getAlbedoMap() const
+{
+    return albedoMap;
+}
+
+void Crit3DRadiationSettings::setAlbedoMap(gis::Crit3DRasterGrid *value)
+{
+    albedoMap = value;
+}
+
+std::string Crit3DRadiationSettings::getLinkeMapName() const
+{
+    return linkeMapName;
+}
+
+void Crit3DRadiationSettings::setLinkeMapName(const std::string &value)
+{
+    linkeMapName = value;
+}
+
+std::string Crit3DRadiationSettings::getAlbedoMapName() const
+{
+    return albedoMapName;
+}
+
+void Crit3DRadiationSettings::setAlbedoMapName(const std::string &value)
+{
+    albedoMapName = value;
+}
+
 Crit3DRadiationSettings::Crit3DRadiationSettings()
 {
     initialize();
@@ -168,6 +208,13 @@ void Crit3DRadiationSettings::initialize()
     algorithm = RADIATION_ALGORITHM_RSUN;
     realSkyAlgorithm = RADIATION_REALSKY_LINKE;
     clearSky = CLEAR_SKY_TRANSMISSIVITY_DEFAULT;
+
+    linkeMapName = "";
+    albedoMapName = "";
+    if (linkeMap->isLoaded) delete linkeMap;
+    if (albedoMap->isLoaded) delete albedoMap;
+    linkeMap = nullptr;
+    albedoMap = nullptr;
 }
 
 void Crit3DRadiationSettings::setGisSettings(const gis::Crit3DGisSettings* mySettings)

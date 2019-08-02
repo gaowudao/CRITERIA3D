@@ -32,7 +32,6 @@ DialogRadiation::DialogRadiation(Project* myProject)
     editTilt = new QLineEdit(QString::number(double(project_->radSettings.getTilt())));
     editAspect = new QLineEdit(QString::number(double(project_->radSettings.getAspect())));
 
-
     // --------------------------------------------------------
     // algorithm
     QLabel* labelAlgorithm = new QLabel("algorithm");
@@ -122,6 +121,7 @@ DialogRadiation::DialogRadiation(Project* myProject)
     layoutLinke->addLayout(layoutLinkeFixed);
 
     QHBoxLayout* layoutLinkeMap = new QHBoxLayout();
+    editLinkeMap->setText(QString::fromStdString(project_->radSettings.getLinkeMapName()));
     editLinkeMap->setEnabled(false);
     layoutLinkeMap->addWidget(editLinkeMap);
     layoutLinkeMap->addWidget(buttonLinke);
@@ -165,6 +165,7 @@ DialogRadiation::DialogRadiation(Project* myProject)
     layoutAlbedo->addLayout(layoutAlbedoFixed);
 
     QHBoxLayout* layoutAlbedoMap = new QHBoxLayout();
+    editAlbedoMap->setText(QString::fromStdString(project_->radSettings.getAlbedoMapName()));
     editAlbedoMap->setEnabled(false);
     layoutAlbedoMap->addWidget(editAlbedoMap);
     layoutAlbedoMap->addWidget(buttonAlbedo);
@@ -289,13 +290,11 @@ void DialogRadiation::loadLinke()
 
     std::string fileName = qFileName.toStdString();
     std::string error_;
-    gis::Crit3DRasterGrid* grid_ = new gis::Crit3DRasterGrid();
-    if (gis::readEsriGrid(fileName, grid_, &error_))
+    linkeMap = new gis::Crit3DRasterGrid();
+    if (gis::readEsriGrid(fileName, linkeMap, &error_))
         editLinkeMap->setText(qFileName);
     else
         QMessageBox::information(nullptr, "Error", "Error opening " + qFileName);
-
-    grid_ = nullptr;
 }
 
 void DialogRadiation::loadAlbedo()
@@ -306,17 +305,122 @@ void DialogRadiation::loadAlbedo()
 
     std::string fileName = qFileName.toStdString();
     std::string error_;
-    gis::Crit3DRasterGrid* grid_ = new gis::Crit3DRasterGrid();
-    if (gis::readEsriGrid(fileName, grid_, &error_))
+    albedoMap = new gis::Crit3DRasterGrid();
+    if (gis::readEsriGrid(fileName, albedoMap, &error_))
         editAlbedoMap->setText(qFileName);
     else
         QMessageBox::information(nullptr, "Error", "Error opening " + qFileName);
-
-    grid_ = nullptr;
 }
 
 
 void DialogRadiation::accept()
 {
+    TradiationAlgorithm algorithm = radAlgorithmToString.at(comboAlgorithm->currentText().toStdString());
+    TradiationRealSkyAlgorithm realSkyAlgorihtm = realSkyAlgorithmToString.at(comboRealSky->currentText().toStdString());
+    TparameterMode linkeMode = paramModeToString.at(comboLinkeMode->currentText().toStdString());
+    TparameterMode albedoMode = paramModeToString.at(comboAlbedoMode->currentText().toStdString());
+    TtiltMode tiltMode = tiltModeToString.at(comboTiltMode->currentText().toStdString());
+
+    bool realSky = checkRealSky->isChecked();
+
+    float linke = NODATA, albedo = NODATA, tilt = NODATA, aspect = NODATA;
+
+    if (editTransClearSky->text().isEmpty())
+    {
+        QMessageBox::information(nullptr, "Missing value", "Missing clear sky transmissivity");
+        return;
+    }
+
+    if (algorithm == RADIATION_ALGORITHM_RSUN)
+    {
+        if (realSkyAlgorihtm == RADIATION_REALSKY_LINKE)
+        {
+            if (linkeMode == PARAM_MODE_FIXED)
+            {
+                if (editLinke->text().isEmpty())
+                {
+                    QMessageBox::information(nullptr, "Missing value", "Insert Linke value");
+                    return;
+                }
+                else {
+                    linke = editLinke->text().toFloat();
+                }
+            }
+            else if (linkeMode == PARAM_MODE_MAP)
+            {
+                if (! linkeMap->isLoaded)
+                {
+                    QMessageBox::information(nullptr, "Missing value", "Select Linke map");
+                    return;
+                }
+            }
+        }
+    }
+
+    if (albedoMode == PARAM_MODE_FIXED)
+    {
+        if (editAlbedo->text().isEmpty())
+        {
+            QMessageBox::information(nullptr, "Missing value", "Insert albedo value");
+            return;
+        }
+        else {
+            albedo = editAlbedo->text().toFloat();
+        }
+
+    }
+    else if (albedoMode == PARAM_MODE_MAP)
+    {
+        if (! albedoMap->isLoaded)
+        {
+            QMessageBox::information(nullptr, "Missing value", "Select albedo map");
+            return;
+        }
+    }
+
+    if (tiltMode == TILT_TYPE_FIXED)
+    {
+        if (editTilt->text().isEmpty())
+        {
+            QMessageBox::information(nullptr, "Missing value", "Insert tilt value");
+            return;
+        }
+        else {
+            tilt = editTilt->text().toFloat();
+        }
+
+
+        if (editAspect->text().isEmpty())
+        {
+            QMessageBox::information(nullptr, "Missing value", "Insert aspect value");
+            return;
+        }
+        else {
+            aspect = editAspect->text().toFloat();
+        }
+    }
+
+    project_->radSettings.setAlgorithm(algorithm);
+    project_->radSettings.setRealSkyAlgorithm(realSkyAlgorihtm);
+    project_->radSettings.setLinkeMode(linkeMode);
+    project_->radSettings.setAlbedoMode(albedoMode);
+    project_->radSettings.setTiltMode(tiltMode);
+    project_->radSettings.setRealSky(realSky);
+    if (linke != NODATA) project_->radSettings.setLinke(linke);
+    if (linkeMap->isLoaded)
+    {
+        project_->radSettings.setLinkeMapName(editLinkeMap->text().toStdString());
+        project_->radSettings.setLinkeMap(linkeMap);
+    }
+    if (albedoMap->isLoaded)
+    {
+        project_->radSettings.setAlbedoMapName(editAlbedoMap->text().toStdString());
+        project_->radSettings.setAlbedoMap(albedoMap);
+    }
+
+    project_->saveRadiationParameters();
+
+    QDialog::done(QDialog::Accepted);
+    return;
 
 }

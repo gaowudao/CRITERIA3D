@@ -3,8 +3,11 @@
 
 #include <QtWidgets>
 
+#ifndef PROJECT_H
+    #include "project.h"
+#endif
+
 class QDialogButtonBox;
-class Project;
 
 class DialogRadiation : public QDialog
 {
@@ -50,6 +53,8 @@ class DialogRadiation : public QDialog
 
     protected:
         Project* project_;
+        gis::Crit3DRasterGrid* linkeMap;
+        gis::Crit3DRasterGrid* albedoMap;
 
     private:
         QDialogButtonBox *buttonBox;
