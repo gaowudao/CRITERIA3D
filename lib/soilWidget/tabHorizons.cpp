@@ -168,10 +168,13 @@ void TabHorizons::checkDepths()
     }
 }
 
+
 bool TabHorizons::checkHorizonData(int horizonNum)
 {
     bool goOn = true;
-    if (mySoil->horizon[horizonNum].dbData.sand + mySoil->horizon[horizonNum].dbData.silt + mySoil->horizon[horizonNum].dbData.clay != 100)
+    soil::Crit3DHorizonDbData* dbData = &(mySoil->horizon[horizonNum].dbData);
+
+    if (soil::getUSDATextureClass(dbData->sand, dbData->silt, dbData->clay) == NODATA)
     {
         tableDb->item(horizonNum,2)->setBackgroundColor(Qt::red);
         tableDb->item(horizonNum,3)->setBackgroundColor(Qt::red);
@@ -181,33 +184,34 @@ bool TabHorizons::checkHorizonData(int horizonNum)
         goOn = false;
     }
 
-    if (mySoil->horizon[horizonNum].dbData.coarseFragments != NODATA && (mySoil->horizon[horizonNum].dbData.coarseFragments < 0 || mySoil->horizon[horizonNum].dbData.coarseFragments >= 100))
+    if (dbData->coarseFragments != NODATA && (dbData->coarseFragments < 0 || dbData->coarseFragments >= 100))
     {
         tableDb->item(horizonNum,5)->setBackgroundColor(Qt::red);
     }
 
-    if (mySoil->horizon[horizonNum].dbData.organicMatter != NODATA && (mySoil->horizon[horizonNum].dbData.organicMatter < 0 || mySoil->horizon[horizonNum].dbData.organicMatter > 100))
+    if (dbData->organicMatter != NODATA && (dbData->organicMatter < 0 || dbData->organicMatter > 100))
     {
         tableDb->item(horizonNum,6)->setBackgroundColor(Qt::red);
     }
 
-    if (mySoil->horizon[horizonNum].dbData.bulkDensity != NODATA && (mySoil->horizon[horizonNum].dbData.bulkDensity <= 0 || mySoil->horizon[horizonNum].dbData.bulkDensity > QUARTZ_DENSITY))
+    if (dbData->bulkDensity != NODATA && (dbData->bulkDensity <= 0 || dbData->bulkDensity > QUARTZ_DENSITY))
     {
         tableDb->item(horizonNum,7)->setBackgroundColor(Qt::red);
     }
 
-    if (mySoil->horizon[horizonNum].dbData.kSat != NODATA && mySoil->horizon[horizonNum].dbData.kSat <= 0)
+    if (dbData->kSat != NODATA && dbData->kSat <= 0)
     {
         tableDb->item(horizonNum,8)->setBackgroundColor(Qt::red);
     }
 
-    if (mySoil->horizon[horizonNum].dbData.thetaSat != NODATA && (mySoil->horizon[horizonNum].dbData.thetaSat <= 0 || mySoil->horizon[horizonNum].dbData.thetaSat >= 1))
+    if (dbData->thetaSat != NODATA && (dbData->thetaSat <= 0 || dbData->thetaSat >= 1))
     {
         tableDb->item(horizonNum,9)->setBackgroundColor(Qt::red);
     }
-    return goOn;
 
+    return goOn;
 }
+
 
 void TabHorizons::setInvalidTableModelRow(int horizonNum)
 {

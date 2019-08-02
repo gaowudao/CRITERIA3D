@@ -137,15 +137,19 @@ bool loadDriessenParameters(QSqlDatabase* dbSoil, soil::Crit3DTextureClass* text
 
 bool loadSoilInfo(QSqlDatabase* dbSoil, QString soilCode, soil::Crit3DSoil* mySoil, QString *error)
 {
-    QSqlQuery qry(*dbSoil);
     if (soilCode.isEmpty())
     {
         *error = "soilCode missing";
         return false;
     }
 
+    QSqlQuery qry(*dbSoil);
     qry.prepare( "SELECT * FROM `soils` WHERE soil_code = :soil_code");
     qry.bindValue(":soil_code", soilCode);
+
+    /*QString queryString = "SELECT * FROM `soils` WHERE soil_code = '" + soilCode + "'";
+    QSqlQuery qry = dbSoil->exec(queryString);*/
+
     if( !qry.exec() )
     {
         *error = qry.lastError().text();
@@ -254,10 +258,10 @@ bool loadSoil(QSqlDatabase* dbSoil, QString soilCode, soil::Crit3DSoil* mySoil,
     {
         return false;
     }
-    /*if (!loadSoilInfo(dbSoil, soilCode, mySoil, error))
+    if (!loadSoilInfo(dbSoil, soilCode, mySoil, error))
     {
         return false;
-    }*/
+    }
 
     // TODO check nr horizons and depth
 
