@@ -240,11 +240,11 @@ DialogRadiation::DialogRadiation(Project* myProject)
 void DialogRadiation::updateAlgorithm(const QString myString)
 {
     TradiationAlgorithm myAlgorithm = radAlgorithmToString.at(myString.toStdString());
-    if (myAlgorithm == RADIATION_ALGORITHM_BROOKS)
+    /*if (myAlgorithm == RADIATION_ALGORITHM_BROOKS)
     {
         groupLinke->setEnabled(false);
-    }
-    else if (myAlgorithm == RADIATION_ALGORITHM_RSUN)
+    }*/
+    if (myAlgorithm == RADIATION_ALGORITHM_RSUN)
     {
         groupLinke->setEnabled(true);
     }

@@ -990,11 +990,11 @@ bool computeRadiationPointRsun(Crit3DRadiationSettings* mySettings, float myTemp
         {
             return computeRadiationGridRsun(mySettings, myDEM, radiationMaps, myCrit3DTime);
         }
-        else if (mySettings->getAlgorithm() == RADIATION_ALGORITHM_BROOKS)
+        /*else if (mySettings->getAlgorithm() == RADIATION_ALGORITHM_BROOKS)
         {
             // to do
             return false;
-        }
+        }*/
         else
             return false;
     }
