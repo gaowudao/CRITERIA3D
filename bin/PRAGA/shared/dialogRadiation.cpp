@@ -108,7 +108,7 @@ DialogRadiation::DialogRadiation(Project* myProject)
         comboLinkeMode->addItem(QString::fromStdString(itParam->first), QString::fromStdString(itParam->first));
 
     QString linkeString = QString::fromStdString(getKeyStringParamMode(project_->radSettings.getLinkeMode()));
-    indexCombo = comboLinkeMode->findData(radString);
+    indexCombo = comboLinkeMode->findData(linkeString);
     if (indexCombo != -1)
        comboLinkeMode->setCurrentIndex(indexCombo);
 
@@ -152,7 +152,7 @@ DialogRadiation::DialogRadiation(Project* myProject)
         comboAlbedoMode->addItem(QString::fromStdString(itParam->first), QString::fromStdString(itParam->first));
 
     QString albedoString = QString::fromStdString(getKeyStringParamMode(project_->radSettings.getAlbedoMode()));
-    indexCombo = comboAlbedoMode->findData(radString);
+    indexCombo = comboAlbedoMode->findData(albedoString);
     if (indexCombo != -1)
        comboAlbedoMode->setCurrentIndex(indexCombo);
 
