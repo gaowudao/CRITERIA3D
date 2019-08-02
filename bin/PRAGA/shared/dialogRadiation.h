@@ -4,7 +4,6 @@
 #include <QtWidgets>
 
 class QDialogButtonBox;
-
 class Project;
 
 class DialogRadiation : public QDialog
@@ -24,10 +23,12 @@ class DialogRadiation : public QDialog
         QComboBox* comboLinkeMode;
         QLineEdit* editLinke;
         QLineEdit* editLinkeMap;
+        QPushButton* buttonLinke;
 
         QComboBox* comboAlbedoMode;
         QLineEdit* editAlbedo;
         QLineEdit* editAlbedoMap;
+        QPushButton* buttonAlbedo;
 
         QComboBox* comboTiltMode;
         QLineEdit* editTilt;
@@ -37,10 +38,13 @@ class DialogRadiation : public QDialog
 
         void loadLinke();
         void loadAlbedo();
+
+        void updateRealSky();
         void updateAlgorithm(const QString myString);
-        void updateLinke();
-        void updateAlbedo();
-        void updateTilt();
+        void updateRealSkyAlgorithm(const QString myString);
+        void updateLinkeMode(const QString myString);
+        void updateAlbedoMode(const QString myString);
+        void updateTiltMode(const QString myString);
 
         void accept();
 

@@ -22,13 +22,16 @@ DialogRadiation::DialogRadiation(Project* myProject)
     comboLinkeMode = new QComboBox();
     groupLinke = new QGroupBox("Linke turbidity factor");
     editLinke = new QLineEdit(QString::number(double(project_->radSettings.getLinke())));
+    buttonLinke = new QPushButton("Load Linke map...");
     editLinkeMap = new QLineEdit();
     comboAlbedoMode = new QComboBox();
+    buttonAlbedo = new QPushButton("Load albedo map...");
     editAlbedoMap = new QLineEdit();
     editAlbedo = new QLineEdit(QString::number(double(project_->radSettings.getAlbedo())));
     comboTiltMode = new QComboBox();
     editTilt = new QLineEdit(QString::number(double(project_->radSettings.getTilt())));
     editAspect = new QLineEdit(QString::number(double(project_->radSettings.getAspect())));
+
 
     // --------------------------------------------------------
     // algorithm
@@ -60,8 +63,15 @@ DialogRadiation::DialogRadiation(Project* myProject)
     QVBoxLayout* layoutTransmissivity = new QVBoxLayout();
     QVBoxLayout* layoutTransSettings = new QVBoxLayout();
 
+    connect(checkRealSky, &QCheckBox::clicked, [=](){ this->updateRealSky(); });
     checkRealSky->setChecked(project_->radSettings.getRealSky());
     layoutTransSettings->addWidget(checkRealSky);
+
+    QHBoxLayout* layoutTransAlgorithm = new QHBoxLayout();
+    QLabel* labelTransAlgorithm = new QLabel("algorithm");
+    layoutTransAlgorithm->addWidget(labelTransAlgorithm);
+
+    connect(comboRealSky,  &QComboBox::currentTextChanged, [=](const QString &newVar){ this->updateRealSkyAlgorithm(newVar); });
 
     std::map<std::string, TradiationRealSkyAlgorithm>::const_iterator itRealSky;
     for (itRealSky = realSkyAlgorithmToString.begin(); itRealSky != realSkyAlgorithmToString.end(); ++itRealSky)
@@ -72,7 +82,8 @@ DialogRadiation::DialogRadiation(Project* myProject)
     if (indexCombo != -1)
        comboRealSky->setCurrentIndex(indexCombo);
 
-    layoutTransSettings->addWidget(comboRealSky);
+    layoutTransAlgorithm->addWidget(comboRealSky);
+    layoutTransSettings->addLayout(layoutTransAlgorithm);
 
     QLabel* labelTransClear = new QLabel("clear sky transmissivity");
     editTransClearSky = new QLineEdit(QString::number(double(project_->radSettings.getClearSky())));
@@ -84,16 +95,23 @@ DialogRadiation::DialogRadiation(Project* myProject)
 
     QVBoxLayout* layoutLinke = new QVBoxLayout();
 
+    QHBoxLayout* layoutLinkeMode = new QHBoxLayout();
+    QLabel* labelLinkeMode = new QLabel("mode");
+    layoutLinkeMode->addWidget(labelLinkeMode);
+
+    connect(comboLinkeMode,  &QComboBox::currentTextChanged, [=](const QString &newVar){ this->updateLinkeMode(newVar); });
+
     std::map<std::string, TparameterMode>::const_iterator itParam;
     for (itParam = paramModeToString.begin(); itParam != paramModeToString.end(); ++itParam)
         comboLinkeMode->addItem(QString::fromStdString(itParam->first), QString::fromStdString(itParam->first));
 
     QString linkeString = QString::fromStdString(getKeyStringParamMode(project_->radSettings.getLinkeMode()));
-    indexCombo = comboAlgorithm->findData(radString);
+    indexCombo = comboLinkeMode->findData(radString);
     if (indexCombo != -1)
-       comboAlgorithm->setCurrentIndex(indexCombo);
+       comboLinkeMode->setCurrentIndex(indexCombo);
 
-    layoutLinke->addWidget(comboLinkeMode);
+    layoutLinkeMode->addWidget(comboLinkeMode);
+    layoutLinke->addLayout(layoutLinkeMode);
 
     QHBoxLayout* layoutLinkeFixed = new QHBoxLayout();
     QLabel* linkeFixed = new QLabel("fixed Linke value");
@@ -103,9 +121,12 @@ DialogRadiation::DialogRadiation(Project* myProject)
     layoutLinkeFixed->addWidget(editLinke);
     layoutLinke->addLayout(layoutLinkeFixed);
 
+    QHBoxLayout* layoutLinkeMap = new QHBoxLayout();
     editLinkeMap->setEnabled(false);
-    QPushButton *buttonLinke = new QPushButton("Load Linke map...");
-    layoutLinke->addWidget(buttonLinke);
+    layoutLinkeMap->addWidget(editLinkeMap);
+    layoutLinkeMap->addWidget(buttonLinke);
+    layoutLinke->addLayout(layoutLinkeMap);
+
     connect(buttonLinke, &QPushButton::clicked, [=](){ this->loadLinke(); });
 
     groupLinke->setLayout(layoutLinke);
@@ -118,6 +139,12 @@ DialogRadiation::DialogRadiation(Project* myProject)
     QGroupBox* groupAlbedo = new QGroupBox("albedo");
     QVBoxLayout* layoutAlbedo = new QVBoxLayout();
 
+    QHBoxLayout* layoutAlbedoMode = new QHBoxLayout();
+    QLabel* labelAlbedoMode = new QLabel("mode");
+    layoutAlbedoMode->addWidget(labelAlbedoMode);
+
+    connect(comboAlbedoMode,  &QComboBox::currentTextChanged, [=](const QString &newVar){ this->updateAlbedoMode(newVar); });
+
     for (itParam = paramModeToString.begin(); itParam != paramModeToString.end(); ++itParam)
         comboAlbedoMode->addItem(QString::fromStdString(itParam->first), QString::fromStdString(itParam->first));
 
@@ -126,7 +153,8 @@ DialogRadiation::DialogRadiation(Project* myProject)
     if (indexCombo != -1)
        comboAlbedoMode->setCurrentIndex(indexCombo);
 
-    layoutAlbedo->addWidget(comboAlbedoMode);
+    layoutAlbedoMode->addWidget(comboAlbedoMode);
+    layoutAlbedo->addLayout(layoutAlbedoMode);
 
     QHBoxLayout* layoutAlbedoFixed = new QHBoxLayout();
     QLabel* albedoFixed = new QLabel("fixed albedo value");
@@ -136,9 +164,12 @@ DialogRadiation::DialogRadiation(Project* myProject)
     layoutAlbedoFixed->addWidget(editAlbedo);
     layoutAlbedo->addLayout(layoutAlbedoFixed);
 
+    QHBoxLayout* layoutAlbedoMap = new QHBoxLayout();
     editAlbedoMap->setEnabled(false);
-    QPushButton *buttonAlbedo = new QPushButton("Load albedo map...");
-    layoutLinke->addWidget(buttonAlbedo);
+    layoutAlbedoMap->addWidget(editAlbedoMap);
+    layoutAlbedoMap->addWidget(buttonAlbedo);
+    layoutAlbedo->addLayout(layoutAlbedoMap);
+
     connect(buttonAlbedo, &QPushButton::clicked, [=](){ this->loadAlbedo(); });
 
     groupAlbedo->setLayout(layoutAlbedo);
@@ -149,6 +180,12 @@ DialogRadiation::DialogRadiation(Project* myProject)
     QGroupBox* groupTilt = new QGroupBox("tilt");
     QVBoxLayout* layoutTilt = new QVBoxLayout();
 
+    QHBoxLayout* layoutTiltMode = new QHBoxLayout();
+    QLabel* labelTiltMode = new QLabel("mode");
+    layoutTiltMode->addWidget(labelTiltMode);
+
+    connect(comboTiltMode,  &QComboBox::currentTextChanged, [=](const QString &newVar){ this->updateTiltMode(newVar); });
+
     std::map<std::string, TtiltMode>::const_iterator itTilt;
     for (itTilt = tiltModeToString.begin(); itTilt != tiltModeToString.end(); ++itTilt)
         comboTiltMode->addItem(QString::fromStdString(itTilt->first), QString::fromStdString(itTilt->first));
@@ -158,7 +195,8 @@ DialogRadiation::DialogRadiation(Project* myProject)
     if (indexCombo != -1)
        comboTiltMode->setCurrentIndex(indexCombo);
 
-    layoutTilt->addWidget(comboTiltMode);
+    layoutTiltMode->addWidget(comboTiltMode);
+    layoutTilt->addLayout(layoutTiltMode);
 
     QHBoxLayout* layoutTiltFixed = new QHBoxLayout();
     QLabel* tiltFixed = new QLabel("fixed tilt value");
@@ -206,6 +244,41 @@ void DialogRadiation::updateAlgorithm(const QString myString)
     {
         groupLinke->setEnabled(true);
     }
+}
+
+void DialogRadiation::updateRealSkyAlgorithm(const QString myString)
+{
+    TradiationRealSkyAlgorithm myAlgorithm = realSkyAlgorithmToString.at(myString.toStdString());
+    groupLinke->setEnabled(myAlgorithm == RADIATION_REALSKY_LINKE);
+}
+
+void DialogRadiation::updateLinkeMode(const QString myString)
+{
+    TparameterMode myMode = paramModeToString.at(myString.toStdString());
+    buttonLinke->setEnabled(myMode == PARAM_MODE_MAP);
+    editLinke->setEnabled(myMode == PARAM_MODE_FIXED);
+}
+
+void DialogRadiation::updateAlbedoMode(const QString myString)
+{
+    TparameterMode myMode = paramModeToString.at(myString.toStdString());
+    buttonAlbedo->setEnabled(myMode == PARAM_MODE_MAP);
+    editAlbedo->setEnabled(myMode == PARAM_MODE_FIXED);
+}
+
+void DialogRadiation::updateTiltMode(const QString myString)
+{
+    TtiltMode myMode = tiltModeToString.at(myString.toStdString());
+    editTilt->setEnabled(myMode == TILT_TYPE_FIXED);
+    editAspect->setEnabled(myMode == TILT_TYPE_FIXED);
+}
+
+void DialogRadiation::updateRealSky()
+{
+    comboRealSky->setEnabled(checkRealSky->isChecked());
+    comboLinkeMode->setEnabled(checkRealSky->isChecked());
+    editLinke->setEnabled(checkRealSky->isChecked());
+    buttonLinke->setEnabled(checkRealSky->isChecked());
 }
 
 void DialogRadiation::loadLinke()

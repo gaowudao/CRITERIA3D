@@ -606,7 +606,7 @@ bool computeRadiationPointRsun(Crit3DRadiationSettings* mySettings, float myTemp
         // real sky horizontal
         if (mySettings->getRealSkyAlgorithm() == RADIATION_REALSKY_TOTALTRANSMISSIVITY)
         {
-            if (mySettings->getRealSky()) myTransmissivity = myClearSkyTransmissivity;
+            if (! mySettings->getRealSky()) myTransmissivity = myClearSkyTransmissivity;
 
             Gh = mySunPosition->extraIrradianceHorizontal * myTransmissivity;
             separateTransmissivity (myClearSkyTransmissivity, myTransmissivity, &diffuseTransmittance, &globalTransmittance);
