@@ -787,14 +787,11 @@ bool Vine3DProject::loadAggregatedMeteoVarCodes()
 
 bool Vine3DProject::loadSoils()
 {
-    QString error;
-
-    if (! loadAllSoils(&dbConnection, &soilList, texturalClassList, &error))
+    if (! loadAllSoils(&dbConnection, &soilList, texturalClassList, &errorString))
     {
         logError();
         return false;
     }
-
     nrSoils = soilList.size();
 
     double maxSoilDepth = 0;
