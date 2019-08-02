@@ -11,9 +11,6 @@ TabWaterRetentionCurve::TabWaterRetentionCurve()
     QHBoxLayout *mainLayout = new QHBoxLayout;
     QVBoxLayout *plotLayout = new QVBoxLayout;
     linesLabel = new QLabel(this);
-    linesLabel->size().setHeight(mainLayout->geometry().height());
-    linesLabel->setMinimumWidth(30);
-    linesLabel->setMaximumWidth(100);
 
     QwtPlot *myPlot = new QwtPlot;
     QwtPlotCurve *curve1 = new QwtPlotCurve;
@@ -42,6 +39,8 @@ TabWaterRetentionCurve::TabWaterRetentionCurve()
 void TabWaterRetentionCurve::insertVerticalLines(soil::Crit3DSoil *soil)
 {
     mySoil = soil;
+    //linesLabel->size().setHeight(this->geometry().height());
+    linesLabel->setFixedSize(30, this->geometry().height());
     QRect labelSize = linesLabel->geometry();
 
     qDebug() << "linesLabel.topLeft().x() " << labelSize.topLeft().x();
@@ -54,9 +53,10 @@ void TabWaterRetentionCurve::insertVerticalLines(soil::Crit3DSoil *soil)
 
     for (int i = 0; i<mySoil->nrHorizons; i++)
     {
-        int length = (mySoil->horizon[i].lowerDepth*100 - mySoil->horizon[i].upperDepth*100) / linesLabel->height();
+        int length = (mySoil->horizon[i].lowerDepth*100 - mySoil->horizon[i].upperDepth*100) * linesLabel->height() / (mySoil->totalDepth*100);
         qDebug() << "mySoil->horizon[i].upperDepth " << mySoil->horizon[i].upperDepth*100;
         qDebug() << "mySoil->horizon[i].lowerDepth " << mySoil->horizon[i].lowerDepth*100;
+        qDebug() << "mySoil->totalDepth " << mySoil->totalDepth *100;
         qDebug() << "linesLabel->height() " << linesLabel->height();
         qDebug() << "length " << length;
         LineHorizont* line = new LineHorizont(linesLabel);
