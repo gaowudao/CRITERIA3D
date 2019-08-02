@@ -213,7 +213,8 @@ bool Vine3DProject::loadVine3DProject(QString myFileName)
 
 bool Vine3DProject::loadGrapevineParameters()
 {
-    logInfo ("Read Grapevine parameters...");
+    logInfo ("Read grapevine parameters...");
+
     QString myQueryString =
             " SELECT id_cultivar, name,"
             " phenovitis_force_physiological_maturity, miglietta_radiation_use_efficiency,"
@@ -231,7 +232,7 @@ bool Vine3DProject::loadGrapevineParameters()
     if (myQuery.size() == -1)
     {
         errorString = "wrong Grapevine parameters" + myQuery.lastError().text();
-        return(false);
+        return false;
     }
     //initialize vines
     this->nrCultivar = myQuery.size();
@@ -263,7 +264,7 @@ bool Vine3DProject::loadGrapevineParameters()
         i++;
     }
 
-    return(true);
+    return true;
 }
 
 
@@ -1686,11 +1687,11 @@ bool Vine3DProject::setSoilIndexMap()
     if (!DEM.isLoaded || !modelCaseIndexMap.isLoaded || nrSoils == 0)
     {
         if (!DEM.isLoaded)
-            logError("Missing Digital Elevation Model.");
+            logError("setSoilIndexMap: missing Digital Elevation Model.");
         else if (!modelCaseIndexMap.isLoaded)
-            logError("Missing field map.");
+            logError("setSoilIndexMap: missing field map.");
         else if (nrSoils == 0)
-            logError("Missing soil properties.");
+            logError("setSoilIndexMap: missing soil properties.");
         return false;
     }
 

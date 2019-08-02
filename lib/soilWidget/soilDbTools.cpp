@@ -254,10 +254,10 @@ bool loadSoil(QSqlDatabase* dbSoil, QString soilCode, soil::Crit3DSoil* mySoil,
     {
         return false;
     }
-    if (!loadSoilInfo(dbSoil, soilCode, mySoil, error))
+    /*if (!loadSoilInfo(dbSoil, soilCode, mySoil, error))
     {
         return false;
-    }
+    }*/
 
     // TODO check nr horizons and depth
 
@@ -522,7 +522,7 @@ bool loadAllSoils(QSqlDatabase* dbSoil, std::vector <soil::Crit3DSoil> *soilList
 
     if (soilList->size() == 0)
     {
-       *error = "Missing soil properties";
+       *error += "\nMissing soil properties";
        return false;
     }
     else if (wrongSoils != "")
