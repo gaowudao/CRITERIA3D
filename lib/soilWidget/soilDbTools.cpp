@@ -135,6 +135,7 @@ bool loadDriessenParameters(QSqlDatabase* dbSoil, soil::Crit3DTextureClass* text
     return true;
 }
 
+
 bool loadSoilInfo(QSqlDatabase* dbSoil, QString soilCode, soil::Crit3DSoil* mySoil, QString *error)
 {
     if (soilCode.isEmpty())
@@ -144,11 +145,8 @@ bool loadSoilInfo(QSqlDatabase* dbSoil, QString soilCode, soil::Crit3DSoil* mySo
     }
 
     QSqlQuery qry(*dbSoil);
-    qry.prepare( "SELECT * FROM `soils` WHERE soil_code = :soil_code");
+    qry.prepare( "SELECT * FROM soils WHERE soil_code = :soil_code");
     qry.bindValue(":soil_code", soilCode);
-
-    /*QString queryString = "SELECT * FROM `soils` WHERE soil_code = '" + soilCode + "'";
-    QSqlQuery qry = dbSoil->exec(queryString);*/
 
     if( !qry.exec() )
     {
