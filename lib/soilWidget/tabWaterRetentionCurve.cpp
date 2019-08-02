@@ -10,10 +10,10 @@ TabWaterRetentionCurve::TabWaterRetentionCurve()
     // test
     QHBoxLayout *mainLayout = new QHBoxLayout;
     QVBoxLayout *plotLayout = new QVBoxLayout;
-    linesLabel = new QLabel;
+    linesLabel = new QLabel(this);
     linesLabel->size().setHeight(mainLayout->geometry().height());
-    linesLabel->setMinimumWidth(10);
-    linesLabel->setMaximumWidth(20);
+    linesLabel->setMinimumWidth(30);
+    linesLabel->setMaximumWidth(100);
 
     QwtPlot *myPlot = new QwtPlot;
     QwtPlotCurve *curve1 = new QwtPlotCurve;
@@ -43,27 +43,41 @@ void TabWaterRetentionCurve::insertVerticalLines(soil::Crit3DSoil *soil)
 {
     mySoil = soil;
     QRect labelSize = linesLabel->geometry();
-    LineHorizont* line;
+
     qDebug() << "linesLabel.topLeft().x() " << labelSize.topLeft().x();
     qDebug() << "linesLabel.topLeft().y() " << labelSize.topLeft().y();
     qDebug() << "linesLabel.w " << linesLabel->width();
     qDebug() << "linesLabel.h " << linesLabel->height();
-    painter.begin(linesLabel);
+
+    int x1 = labelSize.topLeft().x();
+    int width = 15;
+
     for (int i = 0; i<mySoil->nrHorizons; i++)
     {
-        int length = (mySoil->horizon[i].upperDepth-mySoil->horizon[i].lowerDepth) / labelSize.y();
+        int length = (mySoil->horizon[i].lowerDepth*100 - mySoil->horizon[i].upperDepth*100) / linesLabel->height();
+        qDebug() << "mySoil->horizon[i].upperDepth " << mySoil->horizon[i].upperDepth*100;
+        qDebug() << "mySoil->horizon[i].lowerDepth " << mySoil->horizon[i].lowerDepth*100;
+        qDebug() << "linesLabel->height() " << linesLabel->height();
+        qDebug() << "length " << length;
+        LineHorizont* line = new LineHorizont(linesLabel);
         if (i == 0)
         {
-            line = new LineHorizont(labelSize.topLeft().x(),labelSize.topLeft().y(),labelSize.topLeft().x(), labelSize.topLeft().y() + length,"prova");
+
+            int y1 = labelSize.topLeft().y();
+            int height = length;
+            line->initialize(x1,y1,width,height,"prova");
+
         }
         else
         {
-            line = new LineHorizont(labelSize.topLeft().x(),lineList.at(i-1)->y2(),labelSize.topLeft().x(), lineList.at(i-1)->y2() + length,"prova");
+            int y1 = lineList.at(i-1)->getY1()+lineList.at(i-1)->getHeight();
+            int height = length;
+            line->initialize(x1,y1,width,height,"prova");
         }
+        line->draw();
 
         lineList.push_back(line);
-        painter.drawLine(*line);
     }
-    painter.end();
+
 }
 

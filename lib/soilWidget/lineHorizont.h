@@ -1,16 +1,42 @@
 #ifndef LINEHORIZONT_H
 #define LINEHORIZONT_H
 
-#include <QLine>
-#include <QObject>
+#include <QWidget>
+#include <QPainter>
 
-class LineHorizont : public QObject, public QLine
+class LineHorizont : public QWidget
 {
     Q_OBJECT
 public:
-    LineHorizont(int x1, int y1, int x2, int y2, QString colorName);
+    //LineHorizont(QWidget* parent, QPainter* painter);
+    LineHorizont(QWidget* parent);
+    void initialize(int x1, int y1, int width, int height, QString colorName);
+
+    int getX1() const;
+    void setX1(int value);
+
+    int getY1() const;
+    void setY1(int value);
+
+    int getWidth() const;
+    void setWidth(int value);
+
+    int getHeight() const;
+    void setHeight(int value);
+
+    void draw();
+
+protected:
+    void paintEvent(QPaintEvent *event);
+
 private:
+    //QPainter *p;
     QString colorName;
+    int x1;
+    int y1;
+    int width;
+    int height;
+
 };
 
 #endif // LINEHORIZONT_H

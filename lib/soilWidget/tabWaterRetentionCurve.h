@@ -16,7 +16,7 @@ private:
     soil::Crit3DSoil* mySoil;
     QLabel* linesLabel;
     QList<LineHorizont*> lineList;
-    QPainter painter;
+
 };
 
 #endif // WATERRETENTIONCURVE_H
