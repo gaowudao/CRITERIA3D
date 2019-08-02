@@ -197,13 +197,13 @@ DialogSettings::DialogSettings(Project* myProject)
 
 bool DialogSettings::acceptValues()
 {
-    if (geoTab->startLocationLatEdit.text().isEmpty())
+    if (geoTab->startLocationLatEdit.text().isEmpty() || geoTab->startLocationLatEdit.text() == "0")
     {
         QMessageBox::information(nullptr, "Missing Parameter", "insert start location latitude");
         return false;
     }
 
-    if (geoTab->startLocationLonEdit.text().isEmpty())
+    if (geoTab->startLocationLonEdit.text().isEmpty() || geoTab->startLocationLonEdit.text() == "0")
     {
         QMessageBox::information(nullptr, "Missing Parameter", "insert start location longitude");
         return false;
