@@ -191,7 +191,7 @@ bool loadSoilData(QSqlDatabase* dbSoil, QString soilCode, soil::Crit3DSoil* mySo
     int nrHorizons = query.at() + 1;     //SQLITE doesn't support SIZE
     mySoil->initialize(1, nrHorizons);
 
-    int i = 0;
+    unsigned int i = 0;
     float sand, silt, clay;
     double organicMatter, coarseFragments, lowerDepth, upperDepth, bulkDensity, theta_sat, ksat;
 
@@ -265,7 +265,7 @@ bool loadSoil(QSqlDatabase* dbSoil, QString soilCode, soil::Crit3DSoil* mySoil,
 
     std::string errorString;
     *error = "";
-    for (int i = 0; i < mySoil->nrHorizons; i++)
+    for (unsigned int i = 0; i < mySoil->nrHorizons; i++)
     {
         if (! soil::setHorizon(&(mySoil->horizon[i]), textureClassList, &errorString))
         {
@@ -274,22 +274,12 @@ bool loadSoil(QSqlDatabase* dbSoil, QString soilCode, soil::Crit3DSoil* mySoil,
         }
     }
 
-    int lastHorizon = mySoil->nrHorizons -1;
+    unsigned int lastHorizon = mySoil->nrHorizons -1;
     mySoil->totalDepth = mySoil->horizon[lastHorizon].lowerDepth;
 
     return true;
 }
 
-/* check depth
- * if ((mySoil->horizon[i].upperDepth == NODATA) || (mySoil->horizon[i].lowerDepth == NODATA)
-            || (mySoil->horizon[i].lowerDepth < mySoil->horizon[i].upperDepth)
-            || ((idHorizon == 1) && (mySoil->horizon[i].upperDepth > 0))
-            || ((idHorizon > 1) && (fabs(mySoil->horizon[i].upperDepth - mySoil->horizon[i-1].lowerDepth) > EPSILON)))
-        {
-            *myError = "Wrong soil: " + idSoilStr + " - wrong depth horizon: " + QString::number(idHorizon);
-            return false;
-        }
- */
 
 bool updateSoilData(QSqlDatabase* dbSoil, QString soilCode, soil::Crit3DSoil* mySoil, QString *error)
 {
@@ -328,7 +318,7 @@ bool updateSoilData(QSqlDatabase* dbSoil, QString soilCode, soil::Crit3DSoil* my
     QVariantList theta_sat;
     QVariantList k_sat;
 
-    for (int i=0; i<mySoil->nrHorizons; i++)
+    for (unsigned int i=0; i < mySoil->nrHorizons; i++)
     {
         soil_code << soilCode;
         horizon_nr << i+1;
@@ -365,6 +355,7 @@ bool updateSoilData(QSqlDatabase* dbSoil, QString soilCode, soil::Crit3DSoil* my
     else
         return true;
 }
+
 
 bool deleteSoilData(QSqlDatabase* dbSoil, QString soilCode, QString *error)
 {
