@@ -302,7 +302,7 @@ bool updateSoilData(QSqlDatabase* dbSoil, QString soilCode, soil::Crit3DSoil* my
     }
 
     // delete all row from table horizons of soil:soilCode
-    qry.prepare( "DELETE FROM `horizons` WHERE soil_code = :soil_code");
+    qry.prepare( "DELETE FROM horizons WHERE soil_code = :soil_code");
     qry.bindValue(":soil_code", soilCode);
 
     if( !qry.exec() )
@@ -312,7 +312,7 @@ bool updateSoilData(QSqlDatabase* dbSoil, QString soilCode, soil::Crit3DSoil* my
     }
 
     // insert new rows
-    qry.prepare( "INSERT INTO `horizons` (soil_code, horizon_nr, upper_depth, lower_depth, coarse_fragment, organic_matter, sand, silt, clay, bulk_density, theta_sat, k_sat)"
+    qry.prepare( "INSERT INTO horizons (soil_code, horizon_nr, upper_depth, lower_depth, coarse_fragment, organic_matter, sand, silt, clay, bulk_density, theta_sat, k_sat)"
                                               " VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)" );
 
     QVariantList soil_code;
@@ -377,7 +377,7 @@ bool deleteSoilData(QSqlDatabase* dbSoil, QString soilCode, QString *error)
     }
 
     // delete all row from table horizons of soil:soilCode
-    qry.prepare( "DELETE FROM `horizons` WHERE soil_code = :soil_code");
+    qry.prepare( "DELETE FROM horizons WHERE soil_code = :soil_code");
     qry.bindValue(":soil_code", soilCode);
 
     if( !qry.exec() )
@@ -387,7 +387,7 @@ bool deleteSoilData(QSqlDatabase* dbSoil, QString soilCode, QString *error)
     }
 
     // delete all row from table soils of soil:soilCode
-    qry.prepare( "DELETE FROM `soils` WHERE soil_code = :soil_code");
+    qry.prepare( "DELETE FROM soils WHERE soil_code = :soil_code");
     qry.bindValue(":soil_code", soilCode);
 
     if( !qry.exec() )
