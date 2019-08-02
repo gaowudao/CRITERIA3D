@@ -144,8 +144,8 @@
         class Crit3DSoil
         {
         public:
-            std::string code;
             int id;
+            std::string code;
             std::string name;
             int nrHorizons;
             double totalDepth;                  /*!<   [m]  */

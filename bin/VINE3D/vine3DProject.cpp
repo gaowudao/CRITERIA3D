@@ -787,6 +787,8 @@ bool Vine3DProject::loadAggregatedMeteoVarCodes()
 
 bool Vine3DProject::loadSoils()
 {
+    logInfo("Read soils...");
+
     if (! loadAllSoils(&dbConnection, &soilList, texturalClassList, &errorString))
     {
         logError();
