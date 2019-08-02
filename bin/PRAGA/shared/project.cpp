@@ -304,7 +304,7 @@ bool Project::loadParameters(QString parametersFileName)
                     return false;
                 }
                 else
-                    radSettings.setTiltMode(tiltModeToString.at("tilt_mode"));
+                    radSettings.setTiltMode(tiltModeToString.at(tiltMode));
             }
 
             if (parameters->contains("real_sky"))

@@ -9,6 +9,9 @@ DialogRadiation::DialogRadiation(Project* myProject)
 {
     project_ = myProject;
 
+    linkeMap = project_->radSettings.getLinkeMap();
+    albedoMap = project_->radSettings.getAlbedoMap();
+
     setWindowTitle(tr("Radiation settings"));
     QHBoxLayout* layoutMain = new QHBoxLayout();
     QVBoxLayout* layoutMainLeft = new QVBoxLayout();
@@ -406,17 +409,19 @@ void DialogRadiation::accept()
     project_->radSettings.setAlbedoMode(albedoMode);
     project_->radSettings.setTiltMode(tiltMode);
     project_->radSettings.setRealSky(realSky);
+    project_->radSettings.setShadowing(checkShadowing->isChecked());
+    project_->radSettings.setClearSky(editTransClearSky->text().toFloat());
+
     if (linke != NODATA) project_->radSettings.setLinke(linke);
-    if (linkeMap->isLoaded)
-    {
+    if (albedo != NODATA) project_->radSettings.setAlbedo(albedo);
+    if (tilt != NODATA) project_->radSettings.setTilt(tilt);
+    if (aspect != NODATA) project_->radSettings.setAspect(aspect);
+
+    if (linkeMap != nullptr && linkeMap->isLoaded)
         project_->radSettings.setLinkeMapName(editLinkeMap->text().toStdString());
-        project_->radSettings.setLinkeMap(linkeMap);
-    }
-    if (albedoMap->isLoaded)
-    {
+
+    if (albedoMap != nullptr && albedoMap->isLoaded)
         project_->radSettings.setAlbedoMapName(editAlbedoMap->text().toStdString());
-        project_->radSettings.setAlbedoMap(albedoMap);
-    }
 
     project_->saveRadiationParameters();
 
