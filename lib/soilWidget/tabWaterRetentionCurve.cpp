@@ -65,14 +65,14 @@ void TabWaterRetentionCurve::insertVerticalLines(soil::Crit3DSoil *soil)
 
             int y1 = labelSize.topLeft().y();
             int height = length;
-            line->initialize(x1,y1,width,height,"prova");
+            line->initialize(x1,y1,width,height,"rosso");
 
         }
         else
         {
             int y1 = lineList.at(i-1)->getY1()+lineList.at(i-1)->getHeight();
             int height = length;
-            line->initialize(x1,y1,width,height,"prova");
+            line->initialize(x1,y1,width,height,"blue");
         }
         line->draw();
 

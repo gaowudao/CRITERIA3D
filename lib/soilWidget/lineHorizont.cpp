@@ -47,12 +47,21 @@ void LineHorizont::setY1(int value)
 void LineHorizont::paintEvent(QPaintEvent *)
 {
     QPainter p(this);
+    if (colorName == "rosso")
+    {
+        p.setBrush(Qt::red);
+    }
+    if (colorName == "blu")
+    {
+        p.setBrush(Qt::blue);
+    }
     qDebug() << "x1 = " << x1;
     qDebug() << "y1 = " << y1;
     qDebug() << "width = " << width;
     qDebug() << "height = " << height;
     p.drawRect(x1,y1,width,height);
-    p.setPen(QColor(146, 146, 146));
+
+
 }
 
 int LineHorizont::getHeight() const
