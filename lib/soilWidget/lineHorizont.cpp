@@ -1,86 +1,85 @@
 #include "lineHorizont.h"
 #include <qdebug.h>
 
-LineHorizont::LineHorizont(QWidget* parent)
-: QWidget(parent)
+LineHorizont::LineHorizont()
 {
 
 }
 
-void LineHorizont::initialize(int x1, int y1, int width, int height, QString colorName)
+void LineHorizont::setClass(int classUSDA)
 {
-    this->x1 = x1;
-    this->y1 = y1;
-    this->width = width;
-    this->height = height;
-    this->colorName = colorName;
-}
 
-void LineHorizont::draw()
-{
-    qDebug() << "draw" ;
-    this->show();
-}
+    this->classUSDA = classUSDA;
+    QPalette pal = palette();
 
-int LineHorizont::getX1() const
-{
-    return x1;
-}
-
-void LineHorizont::setX1(int value)
-{
-    x1 = value;
-}
-
-int LineHorizont::getY1() const
-{
-    return y1;
-}
-
-void LineHorizont::setY1(int value)
-{
-    y1 = value;
-}
-
-
-
-void LineHorizont::paintEvent(QPaintEvent *)
-{
-    QPainter p(this);
-    if (colorName == "rosso")
+    switch (classUSDA) {
+    case 1:
     {
-        p.setBrush(Qt::red);
+        pal.setColor(QPalette::Background, Qt::darkYellow);
+        break;
     }
-    if (colorName == "blu")
+    case 2:
     {
-        p.setBrush(Qt::blue);
+        pal.setColor(QPalette::Background, Qt::magenta);
+        break;
     }
-    qDebug() << "x1 = " << x1;
-    qDebug() << "y1 = " << y1;
-    qDebug() << "width = " << width;
-    qDebug() << "height = " << height;
-    p.drawRect(x1,y1,width,height);
+    case 3:
+    {
+        pal.setColor(QPalette::Background, Qt::darkMagenta);
+        break;
+    }
+    case 4:
+    {
+        pal.setColor(QPalette::Background, Qt::darkGreen);
+        break;
+    }
+    case 5:
+    {
+        pal.setColor(QPalette::Background, Qt::green);
+        break;
+    }
+    case 6:
+    {
+        pal.setColor(QPalette::Background, Qt::cyan);
+        break;
+    }
+    case 7:
+    {
+        pal.setColor(QPalette::Background, Qt::darkCyan);
+        break;
+    }
+    case 8:
+    {
+        pal.setColor(QPalette::Background, Qt::red);
+        break;
+    }
+    case 9:
+    {
+        pal.setColor(QPalette::Background, Qt::darkRed);
+        break;
+    }
+    case 10:
+    {
+        pal.setColor(QPalette::Background, Qt::blue);
+        break;
+    }
+    case 11:
+    {
+        pal.setColor(QPalette::Background, Qt::darkBlue);
+        break;
+    }
+    case 12:
+    {
+        pal.setColor(QPalette::Background, Qt::black);
+        break;
+    }
+
+
+    }
+    this->setAutoFillBackground(true);
+    this->setPalette(pal);
 
 
 }
 
-int LineHorizont::getHeight() const
-{
-    return height;
-}
-
-void LineHorizont::setHeight(int value)
-{
-    height = value;
-}
-
-int LineHorizont::getWidth() const
-{
-    return width;
-}
-
-void LineHorizont::setWidth(int value)
-{
-    width = value;
-}
 

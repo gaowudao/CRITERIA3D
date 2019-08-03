@@ -10,7 +10,7 @@ TabWaterRetentionCurve::TabWaterRetentionCurve()
     // test
     QHBoxLayout *mainLayout = new QHBoxLayout;
     QVBoxLayout *plotLayout = new QVBoxLayout;
-    linesLabel = new QLabel(this);
+    linesLayout = new QVBoxLayout;
 
     QwtPlot *myPlot = new QwtPlot;
     QwtPlotCurve *curve1 = new QwtPlotCurve;
@@ -30,7 +30,7 @@ TabWaterRetentionCurve::TabWaterRetentionCurve()
 
     curve1->attach(myPlot);
 
-    mainLayout->addWidget(linesLabel);
+    mainLayout->addLayout(linesLayout);
     plotLayout->addWidget(myPlot);
     mainLayout->addLayout(plotLayout);
     setLayout(mainLayout);
@@ -39,43 +39,25 @@ TabWaterRetentionCurve::TabWaterRetentionCurve()
 void TabWaterRetentionCurve::insertVerticalLines(soil::Crit3DSoil *soil)
 {
     mySoil = soil;
-    //linesLabel->size().setHeight(this->geometry().height());
-    linesLabel->setFixedSize(30, this->geometry().height());
-    QRect labelSize = linesLabel->geometry();
+    int border = 30;
+    int totWidth = 20;
+    linesLayout->geometry().setWidth(totWidth);
+    linesLayout->geometry().setHeight(this->geometry().height() - border);
 
-    qDebug() << "linesLabel.topLeft().x() " << labelSize.topLeft().x();
-    qDebug() << "linesLabel.topLeft().y() " << labelSize.topLeft().y();
-    qDebug() << "linesLabel.w " << linesLabel->width();
-    qDebug() << "linesLabel.h " << linesLabel->height();
-
-    int x1 = labelSize.topLeft().x();
-    int width = 15;
+    QRect layoutSize = linesLayout->geometry();
+    int x1 = layoutSize.topLeft().x();
+    int totHeight = layoutSize.height();
 
     for (int i = 0; i<mySoil->nrHorizons; i++)
     {
-        int length = (mySoil->horizon[i].lowerDepth*100 - mySoil->horizon[i].upperDepth*100) * linesLabel->height() / (mySoil->totalDepth*100);
-        qDebug() << "mySoil->horizon[i].upperDepth " << mySoil->horizon[i].upperDepth*100;
-        qDebug() << "mySoil->horizon[i].lowerDepth " << mySoil->horizon[i].lowerDepth*100;
-        qDebug() << "mySoil->totalDepth " << mySoil->totalDepth *100;
-        qDebug() << "linesLabel->height() " << linesLabel->height();
-        qDebug() << "length " << length;
-        LineHorizont* line = new LineHorizont(linesLabel);
-        if (i == 0)
-        {
 
-            int y1 = labelSize.topLeft().y();
-            int height = length;
-            line->initialize(x1,y1,width,height,"rosso");
-
-        }
-        else
-        {
-            int y1 = lineList.at(i-1)->getY1()+lineList.at(i-1)->getHeight();
-            int height = length;
-            line->initialize(x1,y1,width,height,"blue");
-        }
-        line->draw();
-
+        int length = (mySoil->horizon[i].lowerDepth*100 - mySoil->horizon[i].upperDepth*100) * totHeight / (mySoil->totalDepth*100);
+        LineHorizont* line = new LineHorizont();
+        line->setFixedWidth(totWidth);
+        line->setFixedHeight(length);
+        qDebug() << "mySoil->horizon[i].texture.classUSDA " << mySoil->horizon[i].texture.classUSDA;
+        line->setClass(mySoil->horizon[i].texture.classUSDA);
+        linesLayout->addWidget(line);
         lineList.push_back(line);
     }
 

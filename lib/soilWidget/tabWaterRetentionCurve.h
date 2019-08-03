@@ -14,7 +14,7 @@ public:
     void insertVerticalLines(soil::Crit3DSoil* soil);
 private:
     soil::Crit3DSoil* mySoil;
-    QLabel* linesLabel;
+    QVBoxLayout* linesLayout;
     QList<LineHorizont*> lineList;
 
 };
