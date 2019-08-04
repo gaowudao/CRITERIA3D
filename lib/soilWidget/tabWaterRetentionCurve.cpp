@@ -40,16 +40,23 @@ void TabWaterRetentionCurve::insertVerticalLines(soil::Crit3DSoil *soil)
 {
 
     // delete widget
-    while (QLayoutItem* item = linesLayout->takeAt(0))
+//    while (QLayoutItem* item = linesLayout->takeAt(0))
+//    {
+//        delete item->widget();
+//        delete item;
+//    }
+    // delete all Widgets
+    if (!lineList.isEmpty())
     {
-        delete item->widget();
-        delete item;
+        qDeleteAll(lineList);
+        lineList.clear();
     }
+
+
     mySoil = soil;
-    int border = 30;
     int totWidth = 20;
     linesLayout->geometry().setWidth(totWidth);
-    linesLayout->geometry().setHeight(this->geometry().height() - border);
+    linesLayout->geometry().setHeight(this->geometry().height());
 
     QRect layoutSize = linesLayout->geometry();
     int x1 = layoutSize.topLeft().x();
@@ -67,6 +74,7 @@ void TabWaterRetentionCurve::insertVerticalLines(soil::Crit3DSoil *soil)
         linesLayout->addWidget(line);
         lineList.push_back(line);
     }
+    show();
 
 }
 
