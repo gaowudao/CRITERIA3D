@@ -16,7 +16,7 @@ void LineHorizont::setClass(int classUSDA)
     // sand
     case 1:
     {
-        pal.setColor(QPalette::Background, QColor(255,255,156));
+        pal.setColor(QPalette::Background, QColor(255,206,156));
         break;
     }
     // loamy sand
