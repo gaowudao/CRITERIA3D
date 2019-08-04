@@ -38,6 +38,13 @@ TabWaterRetentionCurve::TabWaterRetentionCurve()
 
 void TabWaterRetentionCurve::insertVerticalLines(soil::Crit3DSoil *soil)
 {
+
+    // delete widget
+    while (QLayoutItem* item = linesLayout->takeAt(0))
+    {
+        delete item->widget();
+        delete item;
+    }
     mySoil = soil;
     int border = 30;
     int totWidth = 20;
