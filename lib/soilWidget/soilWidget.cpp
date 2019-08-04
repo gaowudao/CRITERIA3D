@@ -205,7 +205,11 @@ Crit3DSoilWidget::Crit3DSoilWidget()
     optionsMenu->addAction(useData);
     optionsMenu->addAction(airEntry);
 
-
+    // force rendering of qt layouts on all tabs
+    for (int i = tabWidget->count(); i >= 0; i--)
+    {
+        tabWidget->setCurrentIndex(i);
+    }
 }
 
 
