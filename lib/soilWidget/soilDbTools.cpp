@@ -237,13 +237,43 @@ bool loadSoilData(QSqlDatabase* dbSoil, QString soilCode, soil::Crit3DSoil* mySo
 
     } while(query.next());
 
-    // read water retention data
-    /*
+    query.clear();
+
+    // Read water retention data
     queryString = "SELECT * FROM water_retention ";
     queryString += "WHERE soil_code='" + soilCode + "' ORDER BY horizon_nr";
-    query = dbSoil.exec(queryString);
+    query = dbSoil->exec(queryString);
     query.last();
-    */
+
+    if (! query.isValid())
+    {
+        if (query.lastError().number() > 0)
+        {
+            *error = "water_retention table: " + query.lastError().text();
+            return false;
+        }
+        // no data
+        else return true;
+    }
+
+    soil::Crit3DWaterRetention waterRetention;
+
+    query.first();
+    do
+    {
+        unsigned int horizonNr = unsigned(query.value("horizon_nr").toInt());
+        if (horizonNr > 0 && horizonNr <= mySoil->nrHorizons)
+        {
+            // TODO: check data
+            waterRetention.water_potential = query.value("water_potential").toDouble();  // [kPa]
+            waterRetention.water_content = query.value("water_content").toDouble();      // [m3 m-3]
+
+            i = horizonNr-1;
+            mySoil->horizon[i].dbData.waterRetention.push_back(waterRetention);
+        }
+    } while(query.next());
+
+    query.clear();
 
     return true;
 }
