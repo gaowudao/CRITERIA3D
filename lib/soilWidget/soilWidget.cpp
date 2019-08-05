@@ -194,6 +194,7 @@ Crit3DSoilWidget::Crit3DSoilWidget()
 
     connect(&soilListComboBox, &QComboBox::currentTextChanged, this, &Crit3DSoilWidget::on_actionChooseSoil);
     connect(horizonsTab, SIGNAL(horizonSelected(int)), this, SLOT(setInfoTextural(int)));
+    connect(tabWidget, &QTabWidget::currentChanged, [=](int index){ this->tabChanged(index); });
 
     fileMenu->addAction(openSoilDB);
     fileMenu->addAction(saveChanges);
@@ -206,10 +207,12 @@ Crit3DSoilWidget::Crit3DSoilWidget()
     optionsMenu->addAction(airEntry);
 
     // force rendering of qt layouts on all tabs
+    /*
     for (int i = tabWidget->count(); i >= 0; i--)
     {
         tabWidget->setCurrentIndex(i);
     }
+    */
 }
 
 
@@ -306,7 +309,11 @@ void Crit3DSoilWidget::on_actionChooseSoil(QString soilCode)
     infoGroup->setTitle(soilName);
     soilCodeValue->setText(QString::fromStdString(mySoil.code));
 
-    wrCurveTab->insertVerticalLines(&mySoil);
+    // tab water retention curve is opened
+    if (tabWidget->currentIndex() == 2)
+    {
+        wrCurveTab->insertVerticalLines(&mySoil);
+    }
 
 }
 
@@ -469,5 +476,14 @@ void Crit3DSoilWidget::setInfoTextural(int nHorizon)
         potFCValue->setText(QString::number(mySoil.horizon[nHorizon].fieldCapacity, 'f', 3));
     }
 
+}
+
+void Crit3DSoilWidget::tabChanged(int index)
+{
+    // tab water retention curve
+    if (index == 2)
+    {
+        wrCurveTab->insertVerticalLines(&mySoil);
+    }
 }
 
