@@ -3,6 +3,11 @@
 #include "commonConstants.h"
 #include <qwt_point_data.h>
 #include <qwt_scale_engine.h>
+#include <qwt_plot_magnifier.h>
+#include <qwt_plot_grid.h>
+#include <qwt_plot_panner.h>
+#include <qwt_plot_zoomer.h>
+#include <qwt_event_pattern.h>
 #include <QWidget>
 
 #define XMIN 0.01
@@ -25,16 +30,36 @@ TabWaterRetentionCurve::TabWaterRetentionCurve()
     myPlot->setAxisScale(QwtPlot::xBottom,XMIN, XMAX);
     myPlot->setAxisScale(QwtPlot::yLeft,YMIN, YMAX);
 
-//    QwtPointSeriesData* myData = new QwtPointSeriesData;
-//    QVector<QPointF>* samples = new QVector<QPointF>;
-//    samples->push_back(QPointF(1.0,1.0));
-//    samples->push_back(QPointF(2.0,2.0));
-//    samples->push_back(QPointF(3.0,3.0));
-//    samples->push_back(QPointF(4.0,5.0));
-//    myData->setSamples(*samples);
-//    curve1->setData(myData);
+    // Setting Magnifier
+    QwtPlotMagnifier* zoom_x = new QwtPlotMagnifier(myPlot->canvas());
+    QwtPlotMagnifier* zoom_y = new QwtPlotMagnifier(myPlot->canvas());
+    // Shift+MouseWheel --> Magnifier x
+    zoom_x->setWheelModifiers(Qt::ShiftModifier);
+    zoom_x->setAxisEnabled(QwtPlot::xBottom, true);
+    zoom_x->setAxisEnabled(QwtPlot::yLeft, false);
+    // CTRL + MouseWheel --> Magnifier y
+    zoom_y->setWheelModifiers(Qt::ControlModifier);
+    zoom_y->setAxisEnabled(QwtPlot::xBottom,false);
+    zoom_y->setAxisEnabled(QwtPlot::yLeft,true);
 
-//    curve1->attach(myPlot);
+    // Left Button for panning
+    QwtPlotPanner* panner = new QwtPlotPanner (myPlot->canvas());
+    panner->setMouseButton(Qt::LeftButton);
+    QwtPlotZoomer* zoomer = new QwtPlotZoomer( QwtPlot::xBottom, QwtPlot::yLeft, myPlot->canvas()  );
+    zoomer->setRubberBandPen( QColor( Qt::black ) );
+    zoomer->setTrackerPen( QColor( Qt::red ) );
+    // CTRL+LeftButton for the zooming
+    zoomer->setMousePattern( QwtEventPattern::MouseSelect1, Qt::LeftButton, Qt::ControlModifier);
+    // CTRL+RightButton back to full size
+    zoomer->setMousePattern( QwtEventPattern::MouseSelect2, Qt::RightButton, Qt::ControlModifier);
+
+    // grid
+    QwtPlotGrid *grid = new QwtPlotGrid();
+    grid->enableY(true);
+    grid->enableYMin(true);
+    grid->setMajorPen( Qt::darkGray, 0, Qt::SolidLine );
+    grid->setMinorPen( Qt::gray, 0 , Qt::DotLine );
+    grid->attach(myPlot);
 
     mainLayout->addLayout(linesLayout);
     plotLayout->addWidget(myPlot);
