@@ -182,32 +182,6 @@ namespace radiation
     double linkeRural[13] = {2.1, 2.2, 2.5, 2.9, 3.2, 3.4, 3.5, 3.3, 2.9, 2.6, 2.3, 2.2, 2.75};
     double linkeCity[13] = {3.1, 3.2, 3.5, 4.0, 4.2, 4.3, 4.4, 4.3, 4.0, 3.6, 3.3, 3.1, 3.75};
     double linkeIndustrial[13] = {4.1, 4.3, 4.7, 5.3, 5.5, 5.7, 5.8, 5.7, 5.3, 4.9, 4.5, 4.2, 5.0};
-
-    float linkeSinusoidal(float amplitude , float phase , float average , int doy)
-    {
-        return float(amplitude * (1.0 - cos(doy / 365.0 * 2.0 * PI - phase)) + average);
-    }
-
-    float linkeMonthly(int landUse,int myMonth)
-    {
-        switch(landUse)
-        {
-            case LAND_USE_MOUNTAIN:
-                return float(linkeMountain[myMonth - 1]);
-                break ;
-            case LAND_USE_RURAL:
-                return float(linkeRural[myMonth - 1]);
-                break;
-            case LAND_USE_CITY:
-                return float(linkeCity[myMonth - 1]);
-                break;
-            case LAND_USE_INDUSTRIAL:
-                return float(linkeIndustrial[myMonth - 1]);
-                break;
-        }
-        return NODATA;
-    }
-
 */
 
     float readAlbedo(Crit3DRadiationSettings* mySettings)

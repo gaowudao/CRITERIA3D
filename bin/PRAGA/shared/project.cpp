@@ -207,7 +207,6 @@ bool Project::loadParameters(QString parametersFileName)
     QString gridName;
     std::string proxyName, proxyGridName, proxyTable, proxyField;
     bool isActive, forQuality;
-    int i;
 
     Q_FOREACH (QString group, parameters->childGroups())
     {
