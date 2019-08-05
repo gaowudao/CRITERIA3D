@@ -472,7 +472,7 @@ namespace interpolation
         // first set of estimates
         for (i = 0; i < nrData; i++)
         {
-            firstEst[i] = estimateFunction(idFunction, parameters, nrParameters, &(x[i]));
+            firstEst[i] = estimateFunction(idFunction, parameters, nrParameters, x[i]);
         }
 
         // change parameters and compute derivatives
@@ -481,7 +481,7 @@ namespace interpolation
             parameters[i] += parametersDelta[i];
             for (j = 0; j < nrData; j++)
             {
-                double newEst = estimateFunction(idFunction, parameters, nrParameters, &(x[j]));
+                double newEst = estimateFunction(idFunction, parameters, nrParameters, x[j]);
                 P[i][j] = (newEst - firstEst[j]) / parametersDelta[i];
             }
             parameters[i] -= parametersDelta[i];
@@ -568,10 +568,8 @@ namespace interpolation
     }
 
 
-    double estimateFunction(int idFunction, double *parameters, int nrParameters, double *x)
+    double estimateFunction(int idFunction, double *parameters, int nrParameters, double x)
     {
-        double output;
-        double myTmp;
         switch (idFunction)
         {
             case FUNCTION_CODE_SPHERICAL :
@@ -581,55 +579,76 @@ namespace interpolation
                     parameters(2): sill
                 */
                 if (parameters[0] == 0)
+                    return NODATA;
+                if (x < parameters[0])
                 {
-                    output = NODATA;
-                    return output;
+                    double tmp = x / parameters[0];
+                    return (parameters[1] + (parameters[2] - parameters[1]) * (1.5 * tmp - 0.5 * tmp * tmp * tmp));
                 }
-                myTmp = (*x) / parameters[0];
-                if ((*x) < parameters[0])
-                    output = (parameters[1] + (parameters[2] - parameters[1]) * (1.5 * myTmp - 0.5 * myTmp * myTmp * myTmp));
                 else
-                    output = (parameters[2]);
-                break;
+                    return parameters[2];
+
             case FUNCTION_CODE_TWOPARAMETERSPOLYNOMIAL :
-                myTmp = *x;
-                output = (twoParametersAndExponentialPolynomialFunctions(myTmp, parameters));
-                break;
+                return twoParametersAndExponentialPolynomialFunctions(x, parameters);
+
             case FUNCTION_CODE_FOURIER_2_HARMONICS :
-                myTmp = *x;
-                output = (twoHarmonicsFourier(myTmp, parameters));
-                break;
+                return twoHarmonicsFourier(x, parameters);
+
             case FUNCTION_CODE_FOURIER_GENERAL_HARMONICS :
-                myTmp = *x;
-                output = harmonicsFourierGeneral(myTmp, parameters,nrParameters);
-                break;
+                return harmonicsFourierGeneral(x, parameters, nrParameters);
+
+            case FUNCTION_CODE_MODIFIED_VAN_GENUCHTEN :
+                return modifiedVanGenuchten(x, parameters);
 
             default:
-                output = NODATA ;
-
+                return NODATA ;
         }
-        return output;
     }
 
 
     double normGeneric(int idFunction, double *parameters,int nrParameters, double *x, double *y, int nrData)
     {
         double estimate, error;
-        double output = 0;
+        double norm = 0;
 
         for (int i = 0; i < nrData; i++)
         {
-            estimate = estimateFunction(idFunction, parameters, nrParameters, &(x[i]));
+            estimate = estimateFunction(idFunction, parameters, nrParameters, x[i]);
             if (estimate == NODATA)
             {
-                output = NODATA;
-                return output;
+                return NODATA;
             }
             error = y[i] - estimate;
-            output += error * error;
+            norm += error * error;
         }
 
-        return output;
+        return norm;
+    }
+
+
+    /*!
+     * \brief Compute soil water content from water potential
+     * \param water potential (psi) [kPa]
+     * \return volumetric water content [m^3 m-3]
+     */
+    double modifiedVanGenuchten(double psi, double *parameters)
+    {
+        psi = fabs(psi);
+        double thetaS = parameters[0];      // water content at saturation [m^3 m-3]
+        double thetaR = parameters[1];      // water content residual [m^3 m-3]
+        double he = parameters[2];          // air entry [kPa]
+        double alpha = parameters[3];       // Van Genuchten curve parameter [kPa^-1]
+        double n = parameters[4];           // Van Genuchten curve parameter [-]
+        double m = 1 - 1/n;                 // Van Genuchten curve parameter (restricted: 1-1/n) [-]
+        double sc = pow(1 + pow(alpha * he, n), -m);   // reduction factor for modified VG (Ippisch, 2006) [-]
+
+        if (psi <= he) return thetaS;
+
+        // degree of saturation [-]
+        double Se = pow(1 + pow(alpha * psi, n), -m) / sc;
+
+        // volumetri water content [m^3 m-3]
+        return Se * (thetaS - thetaR) + thetaR;
     }
 
 

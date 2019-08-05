@@ -8,10 +8,11 @@
         #include <string>
     #endif
 
-    enum estimateFunction {FUNCTION_CODE_SPHERICAL, FUNCTION_CODE_LINEAR, FUNCTION_CODE_PARABOLIC,
+    enum estimatedFunction {FUNCTION_CODE_SPHERICAL, FUNCTION_CODE_LINEAR, FUNCTION_CODE_PARABOLIC,
                        FUNCTION_CODE_EXPONENTIAL, FUNCTION_CODE_LOGARITMIC,
                        FUNCTION_CODE_TWOPARAMETERSPOLYNOMIAL, FUNCTION_CODE_FOURIER_2_HARMONICS,
-                       FUNCTION_CODE_FOURIER_GENERAL_HARMONICS};
+                       FUNCTION_CODE_FOURIER_GENERAL_HARMONICS,
+                       FUNCTION_CODE_MODIFIED_VAN_GENUCHTEN};
 
     double twoParametersAndExponentialPolynomialFunctions(double x, double* par);
     double twoHarmonicsFourier(double x, double* par);
@@ -68,12 +69,14 @@
                     double *myPar, int nrMyPar, double *parametersDelta, int myMaxIterations,
                     double myEpsilon, int idFunction, double *x, double *y, int nrData);
 
-        double estimateFunction(int idFunction, double *parameters, int nrParameters, double *x);
+        double estimateFunction(int idFunction, double *parameters, int nrParameters, double x);
         double normGeneric(int idFunction, double *parameters, int nrParameters, double *x, double *y,  int nrData);
 
+        double modifiedVanGenuchten(double psi, double *parameters);
         double cubicSpline(double x , double *firstColumn , double *secondColumn, int dim); // not working to be checked
         void punctualSecondDerivative(int dim, double *firstColumn , double *secondColumn, double* secondDerivative); // not working to be checked
         void tridiagonalThomasAlgorithm (int n, double *subDiagonal, double *mainDiagonal, double *superDiagonal, double *constantTerm, double* output); // not working to be checked
+
     }
 
     namespace matricial
