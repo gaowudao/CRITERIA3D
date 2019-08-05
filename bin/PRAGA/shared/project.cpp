@@ -252,7 +252,7 @@ bool Project::loadParameters(QString parametersFileName)
                 std::string algorithm = parameters->value("algorithm").toString().toStdString();
                 if (radAlgorithmToString.find(algorithm) == radAlgorithmToString.end())
                 {
-                    errorString = "Unknown radiation algorithm";
+                    errorString = "Unknown radiation algorithm: " + QString::fromStdString(algorithm);
                     return false;
                 }
                 else
@@ -264,7 +264,7 @@ bool Project::loadParameters(QString parametersFileName)
                 std::string realSkyAlgorithm = parameters->value("real_sky_algorithm").toString().toStdString();
                 if (realSkyAlgorithmToString.find(realSkyAlgorithm) == realSkyAlgorithmToString.end())
                 {
-                    errorString = "Unknown radiation real sky algorithm";
+                    errorString = "Unknown radiation real sky algorithm: " + QString::fromStdString(realSkyAlgorithm);
                     return false;
                 }
                 else
@@ -276,7 +276,7 @@ bool Project::loadParameters(QString parametersFileName)
                 std::string linkeMode = parameters->value("linke_mode").toString().toStdString();
                 if (paramModeToString.find(linkeMode) == paramModeToString.end())
                 {
-                    errorString = "Unknown Linke mode";
+                    errorString = "Unknown Linke mode: " + QString::fromStdString(linkeMode);
                     return false;
                 }
                 else
@@ -288,7 +288,7 @@ bool Project::loadParameters(QString parametersFileName)
                 std::string albedoMode = parameters->value("albedo_mode").toString().toStdString();
                 if (paramModeToString.find(albedoMode) == paramModeToString.end())
                 {
-                    errorString = "Unknown albedo mode";
+                    errorString = "Unknown albedo mode: " + QString::fromStdString(albedoMode);
                     return false;
                 }
                 else
@@ -300,7 +300,7 @@ bool Project::loadParameters(QString parametersFileName)
                 std::string tiltMode = parameters->value("tilt_mode").toString().toStdString();
                 if (tiltModeToString.find(tiltMode) == tiltModeToString.end())
                 {
-                    errorString = "Unknown albedo mode";
+                    errorString = "Unknown albedo mode: " + QString::fromStdString(tiltMode);
                     return false;
                 }
                 else
@@ -1391,6 +1391,20 @@ QString Project::getCompleteFileName(QString fileName, QString secondaryPath)
 }
 
 
+QString Project::getRelativePath(QString fileName)
+{
+    if (fileName == "" || fileName.left(1) == "." || getFilePath(fileName) == "")
+    {
+        return fileName;
+    }
+    else
+    {
+        QDir projectDir(getProjectPath());
+        return projectDir.relativeFilePath(fileName);
+    }
+}
+
+
 bool Project::loadProjectSettings(QString settingsFileName)
 {
     if (! QFile(settingsFileName).exists() || ! QFileInfo(settingsFileName).isFile())
@@ -1493,9 +1507,13 @@ void Project::saveSettings()
 
     projectSettings->beginGroup("project");
         projectSettings->setValue("name", projectName);
-        projectSettings->setValue("dem", demFileName);
-        projectSettings->setValue("meteo_points", dbPointsFileName);
-        projectSettings->setValue("meteo_grid", dbGridXMLFileName);
+        projectSettings->setValue("dem", getRelativePath(demFileName));
+        projectSettings->setValue("meteo_points", getRelativePath(dbPointsFileName));
+        projectSettings->setValue("meteo_grid", getRelativePath(dbGridXMLFileName));
+    projectSettings->endGroup();
+
+    projectSettings->beginGroup("settings");
+        projectSettings->setValue("parameters_file", getRelativePath(parametersFileName));
     projectSettings->endGroup();
 
     projectSettings->sync();
@@ -1599,13 +1617,9 @@ bool Project::createProject(QString path_, QString name_, QString description_)
     QString oldParameters = parametersFileName;
     QString newParameters = projectPath + "parameters.ini";
     QFile::copy(oldParameters, newParameters);
-    parametersFileName = newParameters;
-
-    projectSettings->beginGroup("settings");
-        projectSettings->setValue("parameters_file", parametersFileName);
-    projectSettings->endGroup();
 
     delete parameters;
+    parametersFileName = newParameters;
     parameters = new QSettings(parametersFileName, QSettings::IniFormat);
 
     saveProject();
@@ -1666,7 +1680,10 @@ bool Project::start(QString appPath)
 bool Project::loadProject()
 {
     if (! loadParameters(parametersFileName))
+    {
+        logError();
         return false;
+    }
 
     if (logFileName != "") setLogFile(logFileName);
 

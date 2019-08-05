@@ -134,6 +134,7 @@
         QString getDefaultPath();
         void setProjectPath(QString myPath);
         QString getProjectPath();
+        QString getRelativePath(QString fileName);
 
         bool setLogFile(QString fileNameWithPath);
         void logError(QString myStr);
