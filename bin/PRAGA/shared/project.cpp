@@ -1395,15 +1395,16 @@ QString Project::getCompleteFileName(QString fileName, QString secondaryPath)
 
 QString Project::getRelativePath(QString fileName)
 {
-    if (fileName == "" || fileName.left(1) == "." || getFilePath(fileName) == "")
-    {
-        return fileName;
-    }
-    else
+    if (fileName != "" && fileName.left(1) == "." && getFilePath(fileName) == "")
     {
         QDir projectDir(getProjectPath());
-        return "./" + projectDir.relativeFilePath(fileName);
+        QString relativePath = projectDir.relativeFilePath(fileName);
+        if (relativePath != fileName)
+        {
+            fileName = "./" + relativePath;
+        }
     }
+    return fileName;
 }
 
 
