@@ -207,6 +207,7 @@ bool Project::loadParameters(QString parametersFileName)
     QString gridName;
     std::string proxyName, proxyGridName, proxyTable, proxyField;
     bool isActive, forQuality;
+    int i;
 
     Q_FOREACH (QString group, parameters->childGroups())
     {
@@ -334,6 +335,30 @@ bool Project::loadParameters(QString parametersFileName)
             if (parameters->contains("albedo_map"))
                 radSettings.setAlbedoMapName(parameters->value("albedo_map").toString().toStdString());
 
+            if (parameters->contains("linke_monthly"))
+            {
+                QStringList myLinkeStr = parameters->value("linke_monthly").toStringList();
+                if (myLinkeStr.size() < 12)
+                {
+                    errorString = "Incomplete monthly Linke values";
+                    return  false;
+                }
+
+                radSettings.setLinkeMonthly(StringListToFloat(myLinkeStr));
+            }
+
+            if (parameters->contains("albedo_monthly"))
+            {
+                QStringList myAlbedoStr = parameters->value("albedo_monthly").toStringList();
+                if (myAlbedoStr.size() < 12)
+                {
+                    errorString = "Incomplete monthly albedo values";
+                    return  false;
+                }
+
+                radSettings.setAlbedoMonthly(StringListToFloat(myAlbedoStr));
+            }
+
             parameters->endGroup();
         }
 
@@ -434,7 +459,7 @@ bool Project::loadParameters(QString parametersFileName)
             proxyTable = parameters->value("table").toString().toStdString();
             proxyField = parameters->value("field").toString().toStdString();
             isActive = parameters->value("active").toBool();
-            forQuality = parameters->value("useForSpatialQualityControl").toBool();
+            forQuality = parameters->value("use_for_spatial_quality_control").toBool();
             parameters->endGroup();
 
             if (checkProxy(proxyName, proxyGridName, proxyTable, proxyField, &errorString))
@@ -1478,7 +1503,7 @@ void Project::saveInterpolationParameters()
             parameters->setValue("active", interpolationSettings.getSelectedCombination().getValue(i));
             parameters->setValue("table", QString::fromStdString(myProxy->getProxyTable()));
             parameters->setValue("field", QString::fromStdString(myProxy->getProxyField()));
-            parameters->setValue("useForSpatialQualityControl", myProxy->getForQualityControl());
+            parameters->setValue("use_for_spatial_quality_control", myProxy->getForQualityControl());
             parameters->setValue("raster", QString::fromStdString(myProxy->getGridName()));
         parameters->endGroup();
     }

@@ -25,6 +25,9 @@
         float aspect;
         float clearSky;
 
+        std::vector <float> monthlyLinke;
+        std::vector <float> monthlyAlbedo;
+
         std::string linkeMapName;
         std::string albedoMapName;
         gis::Crit3DRasterGrid* linkeMap;
@@ -74,6 +77,8 @@
         void setLinkeMapName(const std::string &value);
         std::string getAlbedoMapName() const;
         void setAlbedoMapName(const std::string &value);
+        void setLinkeMonthly(std::vector <float> myLinke);
+        void setAlbedoMonthly(std::vector<float> myAlbedo);
     } ;
 
     std::string getKeyStringRadAlgorithm(TradiationAlgorithm value);
