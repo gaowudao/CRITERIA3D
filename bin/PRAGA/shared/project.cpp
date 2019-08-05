@@ -1402,7 +1402,7 @@ QString Project::getRelativePath(QString fileName)
     else
     {
         QDir projectDir(getProjectPath());
-        return projectDir.relativeFilePath(fileName);
+        return "./" + projectDir.relativeFilePath(fileName);
     }
 }
 
