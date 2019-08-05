@@ -474,6 +474,9 @@ bool Project::loadParameters(QString parametersFileName)
     if (!loadProxyGrids())
         return false;
 
+    if (!loadRadiationGrids())
+        return false;
+
     return true;
 }
 
@@ -1082,6 +1085,44 @@ bool Project::loadProxyGrids()
     return true;
 }
 
+bool Project::loadRadiationGrids()
+{
+    std::string* myError = new std::string();
+    gis::Crit3DRasterGrid *grdLinke, *grdAlbedo;
+    std::string gridName;
+
+    if (radSettings.getLinkeMode() == PARAM_MODE_MAP)
+    {
+        gridName = radSettings.getLinkeMapName();
+        if (gridName != "")
+        {
+            grdLinke = new gis::Crit3DRasterGrid();
+            if (!gis::readEsriGrid(gridName, grdLinke, myError))
+            {
+                logError("Error loading Linke grid " + QString::fromStdString(gridName));
+                return false;
+            }
+            radSettings.setLinkeMap(grdLinke);
+        }
+    }
+
+    if (radSettings.getAlbedoMode() == PARAM_MODE_MAP)
+    {
+        gridName = radSettings.getAlbedoMapName();
+        if (gridName != "")
+        {
+            grdAlbedo = new gis::Crit3DRasterGrid();
+            if (!gis::readEsriGrid(gridName, grdAlbedo, myError))
+            {
+                logError("Error loading albedo grid " + QString::fromStdString(gridName));
+                return false;
+            }
+            radSettings.setAlbedoMap(grdAlbedo);
+        }
+    }
+
+    return true;
+}
 
 bool Project::readProxyValues()
 {

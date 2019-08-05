@@ -110,6 +110,9 @@
         void saveParameters();
         void saveInterpolationParameters();
         void saveRadiationParameters();
+
+        bool loadRadiationGrids();
+
         void setProxyDEM();
         void clearProxyDEM();
         bool checkProxy(std::string name_, std::string gridName_, std::string table_, std::string field_, QString *error);
