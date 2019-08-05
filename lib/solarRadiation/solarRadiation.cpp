@@ -210,7 +210,23 @@ namespace radiation
 
 */
 
-    float readAlbedo(Crit3DRadiationSettings* mySettings, int myRow, int myCol, const gis::Crit3DRasterGrid& albedoMap)
+    float readAlbedo(Crit3DRadiationSettings* mySettings)
+    {
+        float output = NODATA;
+        switch(mySettings->getAlbedoMode())
+        {
+            case PARAM_MODE_FIXED:
+                output = mySettings->getAlbedo();
+                break;
+
+            case PARAM_MODE_MAP:
+                 output = NODATA;
+                 break;
+        }
+        return output;
+    }
+
+    float readAlbedo(Crit3DRadiationSettings* mySettings, int myRow, int myCol)
     {
         float myAlbedo = NODATA;
         switch (mySettings->getAlbedoMode())
@@ -219,29 +235,23 @@ namespace radiation
                 myAlbedo = mySettings->getAlbedo();
                 break;
             case PARAM_MODE_MAP:
-                myAlbedo = albedoMap.value[myRow][myCol];
+                myAlbedo = mySettings->getAlbedo(myRow, myCol);
                 break;
         }
         return (myAlbedo);
     }
 
-
-    float readAlbedo(Crit3DRadiationSettings* mySettings)
-    {
-        return mySettings->getAlbedo();
-    }
-
-    float readLinke(Crit3DRadiationSettings* mySettings, int myRow, int myCol, const gis::Crit3DRasterGrid& linkeMap)
+    float readAlbedo(Crit3DRadiationSettings* mySettings, const gis::Crit3DPoint& myPoint)
     {
         float output = NODATA;
-        switch(mySettings->getLinkeMode())
+        switch(mySettings->getAlbedoMode())
         {
             case PARAM_MODE_FIXED:
-                output = mySettings->getLinke();
+                output = mySettings->getAlbedo();
                 break;
 
             case PARAM_MODE_MAP:
-                output = linkeMap.value[myRow][myCol];
+                output = mySettings->getAlbedo(myPoint);
                 break;
         }
         return output;
@@ -257,19 +267,52 @@ namespace radiation
                 break;
 
             case PARAM_MODE_MAP:
-                 output = mySettings->getLinke();
+                 output = NODATA;
                  break;
         }
         return output;
     }
 
-    float readSlope(Crit3DRadiationSettings* mySettings)
+    float readLinke(Crit3DRadiationSettings* mySettings, int myRow, int myCol)
     {
         float output = NODATA;
+        switch(mySettings->getLinkeMode())
+        {
+            case PARAM_MODE_FIXED:
+                output = mySettings->getLinke();
+                break;
+
+            case PARAM_MODE_MAP:
+                output = mySettings->getLinke(myRow, myCol);
+                break;
+        }
+        return output;
+    }
+
+    float readLinke(Crit3DRadiationSettings* mySettings, const gis::Crit3DPoint& myPoint)
+    {
+        float output = NODATA;
+        switch(mySettings->getLinkeMode())
+        {
+            case PARAM_MODE_FIXED:
+                output = mySettings->getLinke();
+                break;
+
+            case PARAM_MODE_MAP:
+                output = mySettings->getLinke(myPoint);
+                break;
+        }
+        return output;
+    }
+
+    float readAspect(Crit3DRadiationSettings* mySettings)
+    {
+        float output = NODATA;
+
         switch (mySettings->getTiltMode())
         {
             case TILT_TYPE_FIXED:
-                output = mySettings->getTilt();
+                output = mySettings->getAspect();
                 break;
             case TILT_TYPE_DEM:
                 output = NODATA;
@@ -294,7 +337,22 @@ namespace radiation
         return output;
     }
 
-    float readSlope(Crit3DRadiationSettings* mySettings, gis::Crit3DRasterGrid* slopeMap, int myRow,int myCol)
+    float readSlope(Crit3DRadiationSettings* mySettings)
+    {
+        float output = NODATA;
+        switch (mySettings->getTiltMode())
+        {
+            case TILT_TYPE_FIXED:
+                output = mySettings->getTilt();
+                break;
+            case TILT_TYPE_DEM:
+                output = NODATA;
+                break;
+        }
+        return output;
+    }
+
+    float readSlope(Crit3DRadiationSettings* mySettings, gis::Crit3DRasterGrid* slopeMap, int myRow, int myCol)
     {
         float output = NODATA;
 
@@ -666,7 +724,7 @@ bool computeRadiationPointRsun(Crit3DRadiationSettings* mySettings, float myTemp
 
 
     int estimateTransmissivityWindow(Crit3DRadiationSettings* mySettings, const gis::Crit3DRasterGrid& myDEM,
-                                     gis::Crit3DPoint* myPoint, Crit3DTime myTime, int timeStepSecond)
+                                     const gis::Crit3DPoint& myPoint, Crit3DTime myTime, int timeStepSecond)
     {
         double latDegrees, lonDegrees;
         TradPoint myRadPoint;
@@ -681,22 +739,22 @@ bool computeRadiationPointRsun(Crit3DRadiationSettings* mySettings, float myTemp
         int myRow, myCol;
 
         /*! assegna altezza e coordinate stazione */
-        myRadPoint.x = myPoint->utm.x;
-        myRadPoint.y = myPoint->utm.y;
-        myRadPoint.height = myPoint->z;
+        myRadPoint.x = myPoint.utm.x;
+        myRadPoint.y = myPoint.utm.y;
+        myRadPoint.height = myPoint.z;
 
-        if (myPoint->z == NODATA) myRadPoint.height = gis::getValueFromXY(myDEM, myRadPoint.x, myRadPoint.y);
+        if (myPoint.z == NODATA) myRadPoint.height = gis::getValueFromXY(myDEM, myRadPoint.x, myRadPoint.y);
 
         gis::getRowColFromXY(myDEM, myRadPoint.x, myRadPoint.y, &myRow, &myCol);
         myRadPoint.aspect = 0;
         myRadPoint.slope = 0;
 
-        gis::getLatLonFromUtm(*(mySettings->gisSettings), myPoint->utm.x, myPoint->utm.y, &latDegrees, &lonDegrees);
+        gis::getLatLonFromUtm(*(mySettings->gisSettings), myPoint.utm.x, myPoint.utm.y, &latDegrees, &lonDegrees);
         myRadPoint.lat = (float)(latDegrees);
         myRadPoint.lon = (float)(lonDegrees);
 
-        myLinke = readLinke(mySettings);
-        myAlbedo = readAlbedo(mySettings);
+        myLinke = readLinke(mySettings, myPoint);
+        myAlbedo = readAlbedo(mySettings, myPoint);
         myClearSkyTransmissivity = mySettings->getClearSky();
 
         // noon
@@ -778,10 +836,8 @@ bool computeRadiationPointRsun(Crit3DRadiationSettings* mySettings, float myTemp
                     myRadPoint.slope = readSlope(mySettings, radiationMaps->slopeMap, myRow, myCol);
                     myRadPoint.aspect = readAspect(mySettings, radiationMaps->aspectMap, myRow, myCol);
 
-                    //float linke = readLinke(mySettings, myRow, myCol, *(radiationMaps->linkeMap));
-                    //float albedo = readAlbedo(mySettings, myRow, myCol, *(radiationMaps->albedoMap));
-                    float linke = readLinke(mySettings);
-                    float albedo = readAlbedo(mySettings);
+                    float linke = readLinke(mySettings, myRow, myCol);
+                    float albedo = readAlbedo(mySettings, myRow, myCol);
 
                     float transmissivity = radiationMaps->transmissivityMap->value[myRow][myCol];
 
@@ -1035,8 +1091,8 @@ bool computeRadiationPointRsun(Crit3DRadiationSettings* mySettings, float myTemp
         myRadPoint.lat = (float)(latDegrees);
         myRadPoint.lon = (float)(lonDegrees);
 
-        myLinke = readLinke(mySettings);
-        myAlbedo = readAlbedo(mySettings);
+        myLinke = readLinke(mySettings, myPoint);
+        myAlbedo = readAlbedo(mySettings, myPoint);
         myClearSkyTransmissivity = mySettings->getClearSky();
 
         int backwardTimeStep,forwardTimeStep;

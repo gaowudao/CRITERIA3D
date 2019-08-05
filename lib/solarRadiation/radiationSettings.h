@@ -47,8 +47,12 @@
         bool getShadowing() const;
         void setShadowing(bool value);
         float getLinke() const;
+        float getLinke(int row, int col) const;
+        float getLinke(const gis::Crit3DPoint &myPoint) const;
         void setLinke(float value);
         float getAlbedo() const;
+        float getAlbedo(int row, int col) const;
+        float getAlbedo(const gis::Crit3DPoint& myPoint) const;
         void setAlbedo(float value);
         float getTilt() const;
         void setTilt(float value);

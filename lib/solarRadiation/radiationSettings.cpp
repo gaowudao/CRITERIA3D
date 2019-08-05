@@ -70,7 +70,40 @@ void Crit3DRadiationSettings::setShadowing(bool value)
 
 float Crit3DRadiationSettings::getLinke() const
 {
-    return linke;
+    if (linkeMode == PARAM_MODE_MAP)
+        return NODATA;
+    else
+        return linke;
+}
+
+float Crit3DRadiationSettings::getLinke(int row, int col) const
+{
+    if (linkeMode == PARAM_MODE_FIXED) return linke;
+
+    float myLinke = NODATA;
+
+    if (linkeMap != nullptr && linkeMap->isLoaded)
+        if (gis::isOutOfGridRowCol(row, col, *linkeMap))
+            myLinke = linkeMap->value[row][col];
+
+    return myLinke;
+}
+
+float Crit3DRadiationSettings::getLinke(const gis::Crit3DPoint& myPoint) const
+{
+    if (linkeMode == PARAM_MODE_FIXED) return linke;
+
+    float myLinke = NODATA;
+
+    if (linkeMap != nullptr && linkeMap->isLoaded)
+    {
+        int row, col;
+        gis::getRowColFromXY(*linkeMap, myPoint.utm.x, myPoint.utm.y, &row, &col);
+        if (gis::isOutOfGridRowCol(row, col, *linkeMap))
+            myLinke = linkeMap->value[row][col];
+    }
+
+    return myLinke;
 }
 
 void Crit3DRadiationSettings::setLinke(float value)
@@ -80,7 +113,40 @@ void Crit3DRadiationSettings::setLinke(float value)
 
 float Crit3DRadiationSettings::getAlbedo() const
 {
-    return albedo;
+    if (albedoMode == PARAM_MODE_MAP)
+        return NODATA;
+    else
+        return albedo;
+}
+
+float Crit3DRadiationSettings::getAlbedo(int row, int col) const
+{
+    if (albedoMode == PARAM_MODE_FIXED) return albedo;
+
+    float myAlbedo = NODATA;
+
+    if (albedoMap != nullptr && albedoMap->isLoaded)
+        if (gis::isOutOfGridRowCol(row, col, *albedoMap))
+            myAlbedo = albedoMap->value[row][col];
+
+    return myAlbedo;
+}
+
+float Crit3DRadiationSettings::getAlbedo(const gis::Crit3DPoint& myPoint) const
+{
+    if (albedoMode == PARAM_MODE_FIXED) return albedo;
+
+    float myAlbedo = NODATA;
+
+    if (albedoMap != nullptr && albedoMap->isLoaded)
+    {
+        int row, col;
+        gis::getRowColFromXY(*albedoMap, myPoint.utm.x, myPoint.utm.y, &row, &col);
+        if (gis::isOutOfGridRowCol(row, col, *albedoMap))
+            myAlbedo = albedoMap->value[row][col];
+    }
+
+    return myAlbedo;
 }
 
 void Crit3DRadiationSettings::setAlbedo(float value)
