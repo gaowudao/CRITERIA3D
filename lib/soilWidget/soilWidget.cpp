@@ -414,7 +414,7 @@ void Crit3DSoilWidget::setInfoTextural(int nHorizon)
     // re load textural triangle to clean previous circle
     pic.load(picPath);
     labelPic->setPixmap(pic);
-    if (mySoil.horizon[nHorizon].dbData.sand + mySoil.horizon[nHorizon].dbData.silt + mySoil.horizon[nHorizon].dbData.clay == 100)
+    if (soil::getUSDATextureClass(mySoil.horizon[nHorizon].dbData.sand, mySoil.horizon[nHorizon].dbData.silt, mySoil.horizon[nHorizon].dbData.clay) != NODATA)
     {
         // the pic has white space around the triangle: widthTriangle and heightTriangle define triangle size without white space
         double widthOffset = (pic.width() - widthTriangle)/2;
