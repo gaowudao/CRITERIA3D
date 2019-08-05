@@ -135,6 +135,7 @@
         void setProjectPath(QString myPath);
         QString getProjectPath();
         QString getRelativePath(QString fileName);
+        QString getCompleteFileName(QString fileName, QString secondaryPath);
 
         bool setLogFile(QString fileNameWithPath);
         void logError(QString myStr);
@@ -171,8 +172,6 @@
         bool interpolationDemMain(meteoVariable myVar, const Crit3DTime& myTime, gis::Crit3DRasterGrid *myRaster, bool showInfo);
         bool interpolationDem(meteoVariable myVar, const Crit3DTime& myTime, gis::Crit3DRasterGrid *myRaster, bool showInfo);
         bool interpolateDemRadiation(const Crit3DTime& myTime, gis::Crit3DRasterGrid *myRaster, bool showInfo);
-
-        QString getCompleteFileName(QString fileName, QString secondaryPath);
     };
 
 

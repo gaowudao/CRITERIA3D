@@ -452,7 +452,6 @@ bool Project::loadParameters(QString parametersFileName)
             parameters->beginGroup(group);
 
             gridName = parameters->value("raster").toString();
-            gridName = getCompleteFileName(gridName, PATH_GEO);
             proxyGridName = gridName.toStdString();
 
             proxyTable = parameters->value("table").toString().toStdString();
@@ -655,9 +654,14 @@ bool Project::loadDEM(QString myFileName)
 {
     this->logInfo("Read Digital Elevation Model...");
 
-    myFileName = getCompleteFileName(myFileName, PATH_DEM);
+    if (myFileName == "")
+    {
+        logError("Missing DEM filename");
+        return false;
+    }
 
-    demFileName = myFileName;
+    this->demFileName = myFileName;
+    myFileName = getCompleteFileName(myFileName, PATH_DEM);
 
     std::string error, fileName;
     if (myFileName.right(4).left(1) == ".")
@@ -709,9 +713,8 @@ bool Project::loadMeteoPointsDB(QString dbName)
 
     closeMeteoPointsDB();
 
-    dbName = getCompleteFileName(dbName, PATH_METEOPOINT);
-
     dbPointsFileName = dbName;
+    dbName = getCompleteFileName(dbName, PATH_METEOPOINT);
 
     meteoPointsDbHandler = new Crit3DMeteoPointsDbHandler(dbName);
     if (meteoPointsDbHandler->error != "")
@@ -765,12 +768,10 @@ bool Project::loadMeteoPointsDB(QString dbName)
 
 bool Project::loadMeteoGridDB(QString xmlName)
 {
-    if (xmlName == "")
-        return false;
-
-    xmlName = getCompleteFileName(xmlName, PATH_METEOGRID);
+    if (xmlName == "") return false;
 
     dbGridXMLFileName = xmlName;
+    xmlName = getCompleteFileName(xmlName, PATH_METEOGRID);
 
     meteoGridDbHandler = new Crit3DMeteoGridDbHandler();
     meteoGridDbHandler->meteoGrid()->setGisSettings(this->gisSettings);
@@ -1562,7 +1563,7 @@ void Project::saveInterpolationParameters()
             parameters->setValue("table", QString::fromStdString(myProxy->getProxyTable()));
             parameters->setValue("field", QString::fromStdString(myProxy->getProxyField()));
             parameters->setValue("use_for_spatial_quality_control", myProxy->getForQualityControl());
-            parameters->setValue("raster", QString::fromStdString(myProxy->getGridName()));
+            parameters->setValue("raster", getRelativePath(QString::fromStdString(myProxy->getGridName())));
         parameters->endGroup();
     }
 
@@ -1701,12 +1702,13 @@ bool Project::loadProject()
  * LOG functions
  * --------------------------------------------*/
 
-bool Project::setLogFile(QString fileNameWithPath)
+bool Project::setLogFile(QString myFileName)
 {
-    fileNameWithPath = getCompleteFileName(fileNameWithPath, "LOG/");
+    this->logFileName = myFileName;
+    myFileName = getCompleteFileName(myFileName, "LOG/");
 
-    QString filePath = getFilePath(fileNameWithPath);
-    QString fileName = getFileName(fileNameWithPath);
+    QString filePath = getFilePath(myFileName);
+    QString fileName = getFileName(myFileName);
 
     if (!QDir(filePath).exists())
     {
@@ -1716,17 +1718,17 @@ bool Project::setLogFile(QString fileNameWithPath)
     QString myDate = QDateTime().currentDateTime().toString("yyyyMMdd_HHmm");
     fileName = myDate + "_" + fileName;
 
-    logFileName = filePath + fileName;
+    QString currentFileName = filePath + fileName;
 
-    logFile.open(logFileName.toStdString().c_str());
+    logFile.open(currentFileName.toStdString().c_str());
     if (logFile.is_open())
     {
-        logInfo("LogFile: " + logFileName);
+        logInfo("LogFile: " + currentFileName);
         return true;
     }
     else
     {
-        logError("Unable to open file: " + logFileName);
+        logError("Unable to open file: " + currentFileName);
         return false;
     }
 }
