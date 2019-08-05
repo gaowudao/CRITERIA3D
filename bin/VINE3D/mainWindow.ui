@@ -1920,7 +1920,7 @@
      <x>0</x>
      <y>0</y>
      <width>1280</width>
-     <height>26</height>
+     <height>21</height>
     </rect>
    </property>
    <property name="palette">
@@ -2383,6 +2383,8 @@
     <addaction name="actionInterpolation_to_DEM"/>
     <addaction name="actionInterpolationSettings"/>
     <addaction name="separator"/>
+    <addaction name="actionRadiation_settings"/>
+    <addaction name="separator"/>
     <addaction name="actionVariableQualitySpatial"/>
    </widget>
    <widget class="QMenu" name="menuGIS_settings">
@@ -2555,6 +2557,11 @@
    </property>
    <property name="text">
     <string>Current variable</string>
+   </property>
+  </action>
+  <action name="actionRadiation_settings">
+   <property name="text">
+    <string>Radiation settings...</string>
    </property>
   </action>
  </widget>

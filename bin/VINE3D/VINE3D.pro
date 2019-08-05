@@ -66,6 +66,7 @@ CONFIG(debug, debug|release) {
 }
 
 SOURCES += \
+    ../PRAGA/shared/dialogRadiation.cpp \
     ../PRAGA/shared/interpolationCmd.cpp \
     ../PRAGA/shared/project.cpp \
     ../PRAGA/shared/formInfo.cpp \
@@ -92,6 +93,7 @@ SOURCES += \
     ../CRITERIA3D/shared/project3D.cpp
 
 HEADERS  += \
+    ../PRAGA/shared/dialogRadiation.h \
     ../PRAGA/shared/interpolationCmd.h \
     ../PRAGA/shared/project.h \
     ../PRAGA/shared/formInfo.h \

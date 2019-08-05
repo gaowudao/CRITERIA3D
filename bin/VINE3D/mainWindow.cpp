@@ -26,6 +26,7 @@
 #include "Position.h"
 #include "spatialControl.h"
 #include "dialogInterpolation.h"
+#include "dialogRadiation.h"
 #include "dialogSettings.h"
 #include "dialogSelection.h"
 #include "formInfo.h"
@@ -718,4 +719,10 @@ void MainWindow::on_actionShowPointsLocation_triggered()
 void MainWindow::on_actionShowPointsVariable_triggered()
 {
     redrawMeteoPoints(showCurrentVariable, true);
+}
+
+void MainWindow::on_actionRadiation_settings_triggered()
+{
+    DialogRadiation* myDialogRadiation = new DialogRadiation(&myProject);
+    myDialogRadiation->close();
 }
