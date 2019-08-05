@@ -414,22 +414,37 @@ void Crit3DSoilWidget::setInfoTextural(int nHorizon)
     // re load textural triangle to clean previous circle
     pic.load(picPath);
     labelPic->setPixmap(pic);
-    if (soil::getUSDATextureClass(mySoil.horizon[nHorizon].dbData.sand, mySoil.horizon[nHorizon].dbData.silt, mySoil.horizon[nHorizon].dbData.clay) != NODATA)
+    for (int i = 0; i < mySoil.nrHorizons; i++)
     {
-        // the pic has white space around the triangle: widthTriangle and heightTriangle define triangle size without white space
-        double widthOffset = (pic.width() - widthTriangle)/2;
-        double heightOffset = (pic.height() - heightTriangle)/2;
-        double factor = ( pow ( (pow(100.0, 2.0) - pow(50.0, 2.0)), 0.5) ) / 100;
-        // draw new point
-        double cx = widthTriangle * ((mySoil.horizon[nHorizon].dbData.silt + mySoil.horizon[nHorizon].dbData.clay / 2) / 100);
-        double cy =  heightTriangle * (1 - mySoil.horizon[nHorizon].dbData.clay  / 2 * pow (3, 0.5) / 100 / factor); // tg(60°)=3^0.5
-        painter.begin(&pic);
-        painter.setBrush(Qt::red);
-        QPointF center(widthOffset + cx, heightOffset + cy);
-        painter.drawEllipse(center,4.5,4.5);
-        painter.end();
-        labelPic->setPixmap(pic);
+        if (soil::getUSDATextureClass(mySoil.horizon[i].dbData.sand, mySoil.horizon[i].dbData.silt, mySoil.horizon[i].dbData.clay) != NODATA)
+        {
+            // the pic has white space around the triangle: widthTriangle and heightTriangle define triangle size without white space
+            double widthOffset = (pic.width() - widthTriangle)/2;
+            double heightOffset = (pic.height() - heightTriangle)/2;
+            double factor = ( pow ( (pow(100.0, 2.0) - pow(50.0, 2.0)), 0.5) ) / 100;
+            // draw new point
+            double cx = widthTriangle * ((mySoil.horizon[i].dbData.silt + mySoil.horizon[i].dbData.clay / 2) / 100);
+            double cy =  heightTriangle * (1 - mySoil.horizon[i].dbData.clay  / 2 * pow (3, 0.5) / 100 / factor); // tg(60°)=3^0.5
+            painter.begin(&pic);
+            painter.setBrush(Qt::red);
+            QPointF center(widthOffset + cx, heightOffset + cy);
+            if (i == nHorizon)
+            {
+                painter.drawEllipse(center,4.5,4.5);
+            }
+            else
+            {
+                // TO DO
+//                int startAngle = 0;
+//                int spanAngle = 360 * 16;
+//                painter.drawArc(center.x()-4.5, center.y()-4.5, startAngle, spanAngle);
+            }
+
+            painter.end();
+            labelPic->setPixmap(pic);
+        }
     }
+
 
     if (mySoil.horizon[nHorizon].vanGenuchten.thetaS == NODATA)
     {
