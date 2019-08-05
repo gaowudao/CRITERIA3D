@@ -667,7 +667,7 @@ void TabHorizons::removeRowClicked()
     }
     else
     {
-        QMessageBox::critical(nullptr, "Error!", "Select an horizon");
+        QMessageBox::critical(nullptr, "Error!", "Select a horizon");
         return;
     }
     tableDb->removeRow(row);

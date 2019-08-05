@@ -184,7 +184,7 @@ bool vine3DInterpolationDemRadiation(Vine3DProject* myProject, const Crit3DTime&
     myProject->radSettings.setGisSettings(&(myProject->gisSettings));
 
     gis::Crit3DPoint myDEMCenter = myProject->DEM.mapCenter();
-    int intervalWidth = radiation::estimateTransmissivityWindow(&(myProject->radSettings), myProject->DEM, &myDEMCenter, myCrit3DTime, (int)(3600 / myProject->meteoSettings->getHourlyIntervals()));
+    int intervalWidth = radiation::estimateTransmissivityWindow(&(myProject->radSettings), myProject->DEM, myDEMCenter, myCrit3DTime, (int)(3600 / myProject->meteoSettings->getHourlyIntervals()));
     int myTimeStep = getTimeStepFromHourlyInterval(myProject->meteoSettings->getHourlyIntervals());
 
     float myDeltaTime = (intervalWidth-1) * 0.5 * myTimeStep;

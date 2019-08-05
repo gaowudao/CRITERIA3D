@@ -254,6 +254,16 @@ void Crit3DRadiationSettings::setAlbedoMapName(const std::string &value)
     albedoMapName = value;
 }
 
+void Crit3DRadiationSettings::setLinkeMonthly(std::vector<float> myLinke)
+{
+    monthlyLinke = myLinke;
+}
+
+void Crit3DRadiationSettings::setAlbedoMonthly(std::vector<float> myAlbedo)
+{
+    monthlyAlbedo = myAlbedo;
+}
+
 Crit3DRadiationSettings::Crit3DRadiationSettings()
 {
     initialize();
@@ -274,6 +284,15 @@ void Crit3DRadiationSettings::initialize()
     algorithm = RADIATION_ALGORITHM_RSUN;
     realSkyAlgorithm = RADIATION_REALSKY_LINKE;
     clearSky = CLEAR_SKY_TRANSMISSIVITY_DEFAULT;
+
+    monthlyLinke.resize(12);
+    monthlyAlbedo.resize(12);
+
+    for (unsigned int i=0; i<12; i++)
+    {
+        monthlyLinke[i] = NODATA;
+        monthlyAlbedo[i] = NODATA;
+    }
 
     linkeMapName = "";
     albedoMapName = "";

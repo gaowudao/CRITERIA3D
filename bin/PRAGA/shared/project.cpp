@@ -334,6 +334,30 @@ bool Project::loadParameters(QString parametersFileName)
             if (parameters->contains("albedo_map"))
                 radSettings.setAlbedoMapName(parameters->value("albedo_map").toString().toStdString());
 
+            if (parameters->contains("linke_monthly"))
+            {
+                QStringList myLinkeStr = parameters->value("linke_monthly").toStringList();
+                if (myLinkeStr.size() < 12)
+                {
+                    errorString = "Incomplete monthly Linke values";
+                    return  false;
+                }
+
+                radSettings.setLinkeMonthly(StringListToFloat(myLinkeStr));
+            }
+
+            if (parameters->contains("albedo_monthly"))
+            {
+                QStringList myAlbedoStr = parameters->value("albedo_monthly").toStringList();
+                if (myAlbedoStr.size() < 12)
+                {
+                    errorString = "Incomplete monthly albedo values";
+                    return  false;
+                }
+
+                radSettings.setAlbedoMonthly(StringListToFloat(myAlbedoStr));
+            }
+
             parameters->endGroup();
         }
 
@@ -434,7 +458,7 @@ bool Project::loadParameters(QString parametersFileName)
             proxyTable = parameters->value("table").toString().toStdString();
             proxyField = parameters->value("field").toString().toStdString();
             isActive = parameters->value("active").toBool();
-            forQuality = parameters->value("useForSpatialQualityControl").toBool();
+            forQuality = parameters->value("use_for_spatial_quality_control").toBool();
             parameters->endGroup();
 
             if (checkProxy(proxyName, proxyGridName, proxyTable, proxyField, &errorString))
@@ -447,6 +471,9 @@ bool Project::loadParameters(QString parametersFileName)
 
     // check proxy grids for detrending
     if (!loadProxyGrids())
+        return false;
+
+    if (!loadRadiationGrids())
         return false;
 
     return true;
@@ -1057,6 +1084,44 @@ bool Project::loadProxyGrids()
     return true;
 }
 
+bool Project::loadRadiationGrids()
+{
+    std::string* myError = new std::string();
+    gis::Crit3DRasterGrid *grdLinke, *grdAlbedo;
+    std::string gridName;
+
+    if (radSettings.getLinkeMode() == PARAM_MODE_MAP)
+    {
+        gridName = radSettings.getLinkeMapName();
+        if (gridName != "")
+        {
+            grdLinke = new gis::Crit3DRasterGrid();
+            if (!gis::readEsriGrid(gridName, grdLinke, myError))
+            {
+                logError("Error loading Linke grid " + QString::fromStdString(gridName));
+                return false;
+            }
+            radSettings.setLinkeMap(grdLinke);
+        }
+    }
+
+    if (radSettings.getAlbedoMode() == PARAM_MODE_MAP)
+    {
+        gridName = radSettings.getAlbedoMapName();
+        if (gridName != "")
+        {
+            grdAlbedo = new gis::Crit3DRasterGrid();
+            if (!gis::readEsriGrid(gridName, grdAlbedo, myError))
+            {
+                logError("Error loading albedo grid " + QString::fromStdString(gridName));
+                return false;
+            }
+            radSettings.setAlbedoMap(grdAlbedo);
+        }
+    }
+
+    return true;
+}
 
 bool Project::readProxyValues()
 {
@@ -1478,7 +1543,7 @@ void Project::saveInterpolationParameters()
             parameters->setValue("active", interpolationSettings.getSelectedCombination().getValue(i));
             parameters->setValue("table", QString::fromStdString(myProxy->getProxyTable()));
             parameters->setValue("field", QString::fromStdString(myProxy->getProxyField()));
-            parameters->setValue("useForSpatialQualityControl", myProxy->getForQualityControl());
+            parameters->setValue("use_for_spatial_quality_control", myProxy->getForQualityControl());
             parameters->setValue("raster", QString::fromStdString(myProxy->getGridName()));
         parameters->endGroup();
     }

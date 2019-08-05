@@ -10,6 +10,10 @@
     class QStringList;
     class QSqlDatabase;
 
+#ifndef _VECTOR_
+    #include <vector>
+#endif
+
     Crit3DDate getCrit3DDate(const QDate &myDate);
     Crit3DTime getCrit3DTime(const QDateTime &myTime);
     Crit3DTime getCrit3DTime(const QDate& t, int hour);
@@ -34,5 +38,6 @@
     QString getFilePath(QString fileNameComplete);
     QString getFileName(QString fileNameComplete);
 
+    std::vector <float> StringListToFloat(QStringList myList);
 
 #endif // UTILITIES_H

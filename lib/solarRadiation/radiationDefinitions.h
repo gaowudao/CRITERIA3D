@@ -32,7 +32,7 @@
 
     enum TradiationAlgorithm{RADIATION_ALGORITHM_RSUN = 0}; // RADIATION_ALGORITHM_BROOKS = 1};
     enum TradiationRealSkyAlgorithm{RADIATION_REALSKY_TOTALTRANSMISSIVITY, RADIATION_REALSKY_LINKE};
-    enum TparameterMode {PARAM_MODE_FIXED = 0, PARAM_MODE_MAP = 1} ;
+    enum TparameterMode {PARAM_MODE_FIXED = 0, PARAM_MODE_MAP = 1, PARAM_MODE_MONTHLY = 2} ;
     enum TtiltMode{TILT_TYPE_FIXED=1, TILT_TYPE_DEM=2};
     //enum TtransmissivityAlgorithm{TRANSMISSIVITY_MODEL_HOURLY = 0, TRANSMISSIVITY_MODEL_DAILY = 1, TRANSMISSIVITY_MODEL_SAMANI = 2};
     //enum TtransmissivityComputationPeriod{TRANSMISSIVITY_COMPUTATION_DYNAMIC = 0,TRANSMISSIVITY_COMPUTATION_DAILY = 1};
@@ -49,7 +49,8 @@
 
     const std::map<std::string, TparameterMode> paramModeToString = {
       { "fixed", PARAM_MODE_FIXED },
-      { "map", PARAM_MODE_MAP }
+      { "map", PARAM_MODE_MAP },
+      { "monthly", PARAM_MODE_MONTHLY}
     };
 
     const std::map<std::string, TtiltMode> tiltModeToString = {

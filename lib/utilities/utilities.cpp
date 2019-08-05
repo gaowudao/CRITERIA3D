@@ -337,3 +337,12 @@ bool getPeriodDates(QString periodSelected, int year, QDate myDate, QDate* start
 }
 
 
+std::vector <float> StringListToFloat(QStringList myList)
+{
+    std::vector <float> myVector;
+    myVector.resize(unsigned(myList.size()));
+    for (unsigned i=0; i < unsigned(myList.size()); i++)
+        myVector[i] = myList[int(i)].toFloat();
+
+    return myVector;
+}
