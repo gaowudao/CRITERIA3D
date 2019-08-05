@@ -1067,6 +1067,7 @@ bool Project::loadProxyGrids()
         myProxy = interpolationSettings.getProxy(i);
         myGrid = myProxy->getGrid();
         gridName = myProxy->getGridName();
+        gridName = getCompleteFileName(QString::fromStdString(gridName), PATH_GEO).toStdString();
 
         if (interpolationSettings.getSelectedCombination().getValue(i) || myProxy->getForQualityControl())
         {
@@ -1076,7 +1077,7 @@ bool Project::loadProxyGrids()
                 if (!gis::readEsriGrid(gridName, myGrid, myError))
                 {
                     logError("Error loading proxy grid " + QString::fromStdString(gridName));
-                    return false;
+                    interpolationSettings.getSelectedCombination().setValue(i, false);
                 }
             }
         }
