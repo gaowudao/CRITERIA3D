@@ -1,9 +1,14 @@
 #include "tabWaterRetentionCurve.h"
-#include <qwt_plot.h>
-#include <qwt_plot_curve.h>
-#include <qwt_scale_engine.h>
 
+#include "commonConstants.h"
+#include <qwt_point_data.h>
+#include <qwt_scale_engine.h>
 #include <QWidget>
+
+#define XMIN 0.01
+#define XMAX 1000000
+#define YMIN 0.01
+#define YMAX 0.6
 
 TabWaterRetentionCurve::TabWaterRetentionCurve()
 {
@@ -13,13 +18,13 @@ TabWaterRetentionCurve::TabWaterRetentionCurve()
     QVBoxLayout *plotLayout = new QVBoxLayout;
     linesLayout = new QVBoxLayout;
 
-    QwtPlot *myPlot = new QwtPlot;
-    QwtPlotCurve *curve1 = new QwtPlotCurve;
+    myPlot = new QwtPlot;
     myPlot->setAxisScaleEngine(QwtPlot::xBottom, new QwtLogScaleEngine(10));
     myPlot->setAxisTitle(QwtPlot::yLeft,QString("Water content [%1]").arg(QString("m^3/m^3")));
     myPlot->setAxisTitle(QwtPlot::xBottom,QString("Water potential [%1]").arg(QString("J/Kg")));
-    myPlot->setAxisScale(QwtPlot::xBottom,0.01, 1000000);
-    myPlot->setAxisAutoScale(QwtPlot::yLeft);
+    myPlot->setAxisScale(QwtPlot::xBottom,XMIN, XMAX);
+    myPlot->setAxisScale(QwtPlot::yLeft,YMIN, YMAX);
+
 //    QwtPointSeriesData* myData = new QwtPointSeriesData;
 //    QVector<QPointF>* samples = new QVector<QPointF>;
 //    samples->push_back(QPointF(1.0,1.0));
@@ -29,7 +34,7 @@ TabWaterRetentionCurve::TabWaterRetentionCurve()
 //    myData->setSamples(*samples);
 //    curve1->setData(myData);
 
-    curve1->attach(myPlot);
+//    curve1->attach(myPlot);
 
     mainLayout->addLayout(linesLayout);
     plotLayout->addWidget(myPlot);
@@ -39,7 +44,7 @@ TabWaterRetentionCurve::TabWaterRetentionCurve()
 
 }
 
-void TabWaterRetentionCurve::insertVerticalLines(soil::Crit3DSoil *soil)
+void TabWaterRetentionCurve::insertElements(soil::Crit3DSoil *soil)
 {
 
     QRect layoutSize = linesLayout->geometry();
@@ -56,11 +61,18 @@ void TabWaterRetentionCurve::insertVerticalLines(soil::Crit3DSoil *soil)
             qDebug() << "delete all Widgets";
             qDeleteAll(lineList);
             lineList.clear();
+
+            qDeleteAll(curveList);
+            curveList.clear();
         }
+        QVector<double> xVector;
+        QVector<double> yVector;
+        double x;
 
         for (int i = 0; i<mySoil->nrHorizons; i++)
         {
 
+            // insertVerticalLines
             int length = (mySoil->horizon[i].lowerDepth*100 - mySoil->horizon[i].upperDepth*100) * totHeight / (mySoil->totalDepth*100);
             LineHorizont* line = new LineHorizont();
             line->setFixedWidth(20);
@@ -68,9 +80,31 @@ void TabWaterRetentionCurve::insertVerticalLines(soil::Crit3DSoil *soil)
             line->setClass(mySoil->horizon[i].texture.classUSDA);
             linesLayout->addWidget(line);
             lineList.push_back(line);
+
+            // insert Curves
+            QwtPlotCurve *curve = new QwtPlotCurve;
+            xVector.clear();
+            yVector.clear();
+            x = XMIN;
+            while (x < XMAX)
+            {
+                double y = soil::thetaFromSignPsi(-x, &mySoil->horizon[i]);
+                if (y != NODATA)
+                {
+                    xVector.push_back(x);
+                    yVector.push_back(y);
+                }
+                x=x*1.25;
+            }
+            QwtPointArrayData *data = new QwtPointArrayData(xVector,yVector);
+            curve->setSamples(data);
+            curve->attach(myPlot);
+            curveList.push_back(curve);
         }
         linesLayout->update();
+        myPlot->replot();
     }
 
 }
+
 

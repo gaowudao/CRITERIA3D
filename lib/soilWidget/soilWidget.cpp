@@ -312,7 +312,7 @@ void Crit3DSoilWidget::on_actionChooseSoil(QString soilCode)
     // tab water retention curve is opened
     if (tabWidget->currentIndex() == 2)
     {
-        wrCurveTab->insertVerticalLines(&mySoil);
+        wrCurveTab->insertElements(&mySoil);
     }
 
 }
@@ -483,7 +483,7 @@ void Crit3DSoilWidget::tabChanged(int index)
     // tab water retention curve
     if (index == 2)
     {
-        wrCurveTab->insertVerticalLines(&mySoil);
+        wrCurveTab->insertElements(&mySoil);
     }
 }
 
