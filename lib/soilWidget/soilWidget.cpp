@@ -51,7 +51,7 @@ Crit3DSoilWidget::Crit3DSoilWidget()
     dbSoilType = DB_SQLITE;
 
     this->setWindowTitle(QStringLiteral("Soil"));
-    this->resize(1400, 800);
+    this->resize(1440, 810);
 
     // layout
     QVBoxLayout *mainLayout = new QVBoxLayout();
@@ -72,32 +72,32 @@ Crit3DSoilWidget::Crit3DSoilWidget()
     soilCodeValue = new QLineEdit();
     soilCodeValue->setReadOnly(true);
 
-    QLabel *satLabel = new QLabel(tr("SAT = "));
+    QLabel *satLabel = new QLabel(tr("SAT [m3 m-3]"));
     satValue = new QLineEdit();
 
     satValue->setReadOnly(true);
 
-    QLabel *fcLabel = new QLabel(tr("FC = "));
+    QLabel *fcLabel = new QLabel(tr("FC   [m3 m-3]"));
     fcValue = new QLineEdit();
     fcValue->setReadOnly(true);
 
-    QLabel *wpLabel = new QLabel(tr("WP = "));
+    QLabel *wpLabel = new QLabel(tr("WP  [m3 m-3]"));
     wpValue = new QLineEdit();
     wpValue->setReadOnly(true);
 
-    QLabel *awLabel = new QLabel(tr("AW = "));
+    QLabel *awLabel = new QLabel(tr("AW  [m3 m-3]"));
     awValue = new QLineEdit();
     awValue->setReadOnly(true);
 
-    QLabel *potFCLabel = new QLabel(tr("PotFC = "));
+    QLabel *potFCLabel = new QLabel(tr("PotFC [kPa]"));
     potFCValue = new QLineEdit();
     potFCValue->setReadOnly(true);
 
-    QLabel *satLegendLabel = new QLabel(tr("SAT = Water content at saturation [-]"));
-    QLabel *fcLegendLabel = new QLabel(tr("FC = Water content at Field Capacity [-]"));
-    QLabel *wpLegendLabel = new QLabel(tr("WP = Water content at Wilting Point [-]"));
-    QLabel *awLegendLabel = new QLabel(tr("AW = Available Water [-]"));
-    QLabel *potFCLegendLabel = new QLabel(tr("PotFC = Potential at Field Capacity [KPa]"));
+    QLabel *satLegendLabel = new QLabel(tr("SAT = Water content at saturation"));
+    QLabel *fcLegendLabel = new QLabel(tr("FC = Water content at Field Capacity"));
+    QLabel *wpLegendLabel = new QLabel(tr("WP = Water content at Wilting Point"));
+    QLabel *awLegendLabel = new QLabel(tr("AW = Available Water"));
+    QLabel *potFCLegendLabel = new QLabel(tr("PotFC = Water Potential at Field Capacity"));
 
     infoGroup->setTitle(soilName);
     infoLayout->addWidget(soilCodeLabel, 0 , 0);
