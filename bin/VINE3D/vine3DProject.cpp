@@ -188,7 +188,7 @@ bool Vine3DProject::loadVine3DProject(QString myFileName)
 
     if (!loadFieldShape())
     {
-        myFileName = path + fieldMapName;
+        myFileName = getCompleteFileName(fieldMapName, PATH_GEO);
         if (!loadFieldMap(myFileName)) return false;
     }
 
@@ -213,7 +213,8 @@ bool Vine3DProject::loadVine3DProject(QString myFileName)
 
 bool Vine3DProject::loadGrapevineParameters()
 {
-    logInfo ("Read Grapevine parameters...");
+    logInfo ("Read grapevine parameters...");
+
     QString myQueryString =
             " SELECT id_cultivar, name,"
             " phenovitis_force_physiological_maturity, miglietta_radiation_use_efficiency,"
@@ -231,7 +232,7 @@ bool Vine3DProject::loadGrapevineParameters()
     if (myQuery.size() == -1)
     {
         errorString = "wrong Grapevine parameters" + myQuery.lastError().text();
-        return(false);
+        return false;
     }
     //initialize vines
     this->nrCultivar = myQuery.size();
@@ -263,7 +264,7 @@ bool Vine3DProject::loadGrapevineParameters()
         i++;
     }
 
-    return(true);
+    return true;
 }
 
 
@@ -787,14 +788,13 @@ bool Vine3DProject::loadAggregatedMeteoVarCodes()
 
 bool Vine3DProject::loadSoils()
 {
-    QString error;
+    logInfo("Read soils...");
 
-    if (! loadAllSoils(&dbConnection, &soilList, texturalClassList, &error))
+    if (! loadAllSoils(&dbConnection, &soilList, texturalClassList, &errorString))
     {
         logError();
         return false;
     }
-
     nrSoils = soilList.size();
 
     double maxSoilDepth = 0;
@@ -1461,8 +1461,8 @@ bool Vine3DProject::runModels(QDateTime dateTime1, QDateTime dateTime2, bool sav
             if (saveOutput)
             {
                 //create output directories
-                myOutputPathDaily = path + dailyOutputPath + myDate.toString("yyyy/MM/dd/");
-                myOutputPathHourly = path + "hourly_output/" + myDate.toString("yyyy/MM/dd/");
+                myOutputPathDaily = getProjectPath() + dailyOutputPath + myDate.toString("yyyy/MM/dd/");
+                myOutputPathHourly = getProjectPath() + "hourly_output/" + myDate.toString("yyyy/MM/dd/");
 
                 if ((! myDir.mkpath(myOutputPathDaily)) || (! myDir.mkpath(myOutputPathHourly)))
                 {
@@ -1526,7 +1526,7 @@ bool Vine3DProject::runModels(QDateTime dateTime1, QDateTime dateTime2, bool sav
 
 bool Vine3DProject::loadStates(QDate myDate, QString myArea)
 {
-    QString statePath = path + "states/" + myDate.toString("yyyy/MM/dd/");
+    QString statePath = getProjectPath() + "states/" + myDate.toString("yyyy/MM/dd/");
 
     //if (!loadPlantState(this, tartaricAcidVar, myDate, myStatePath)) return(false);
     //if (!loadPlantState(this, pHBerryVar, myDate, myStatePath)) return(false);
@@ -1571,8 +1571,8 @@ bool Vine3DProject::loadStates(QDate myDate, QString myArea)
 bool Vine3DProject::saveStateAndOutput(QDate myDate, QString myArea, bool saveDiseases)
 {
     QDir myDir;
-    QString statePath = path + "states/" + myDate.toString("yyyy/MM/dd/");
-    QString outputPath = path + this->dailyOutputPath + myDate.toString("yyyy/MM/dd/");
+    QString statePath = getProjectPath() + "states/" + myDate.toString("yyyy/MM/dd/");
+    QString outputPath = getProjectPath() + this->dailyOutputPath + myDate.toString("yyyy/MM/dd/");
     if (! myDir.mkpath(statePath))
     {
         this->logError("Creation directory states failed." );
@@ -1687,11 +1687,11 @@ bool Vine3DProject::setSoilIndexMap()
     if (!DEM.isLoaded || !modelCaseIndexMap.isLoaded || nrSoils == 0)
     {
         if (!DEM.isLoaded)
-            logError("Missing Digital Elevation Model.");
+            logError("setSoilIndexMap: missing Digital Elevation Model.");
         else if (!modelCaseIndexMap.isLoaded)
-            logError("Missing field map.");
+            logError("setSoilIndexMap: missing field map.");
         else if (nrSoils == 0)
-            logError("Missing soil properties.");
+            logError("setSoilIndexMap: missing soil properties.");
         return false;
     }
 

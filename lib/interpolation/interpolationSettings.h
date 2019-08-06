@@ -82,6 +82,7 @@
     public:
         Crit3DProxyCombination();
 
+        void clear();
         bool getUseThermalInversion() const;
         void setUseThermalInversion(bool value);
         void addValue(bool isActive_);

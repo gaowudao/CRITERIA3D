@@ -19,19 +19,26 @@ Project::Project()
     // TODO remove pointers
     meteoSettings = new Crit3DMeteoSettings();
     quality = new Crit3DQuality();
+
     // TODO ???
-    meteoPointsColorScale = new Crit3DColorScale();   
+    meteoPointsColorScale = new Crit3DColorScale();
+
+    // They not change after loading default settings
+    appPath = "";
+    defaultPath = "";
 
     initializeProject();
+
+    modality = MODE_GUI;
 }
 
 void Project::initializeProject()
 {
+    projectPath = "";
+
     projectName = "";
     isProjectLoaded = false;
-    modality = MODE_GUI;
     requestedExit = false;
-    path = "";
     logFileName = "";
     errorString = "";
 
@@ -46,7 +53,7 @@ void Project::initializeProject()
     currentHour = 12;
 
     parameters = nullptr;
-    parametersFile = "";
+    parametersFileName = "";
 
     projectSettings = nullptr;
 
@@ -57,13 +64,16 @@ void Project::initializeProject()
 
     radiationMaps = nullptr;
 
-    demName = "";
+    demFileName = "";
 
     interpolationSettings.initialize();
     qualityInterpolationSettings.initialize();
 
-    dbPointsName = "";
-    dbGridXMLName = "";
+    dbPointsFileName = "";
+    dbGridXMLFileName = "";
+
+    meteoPointsLoaded = false;
+    meteoGridLoaded = false;
 }
 
 void Project::clearProject()
@@ -176,16 +186,18 @@ void Project::addProxy(std::string name_, std::string gridName_, std::string tab
     if (getProxyPragaName(name_) == height) setProxyDEM();
 }
 
+
 bool Project::loadParameters(QString parametersFileName)
 {
-    parametersFileName = getCompleteFileName(parametersFileName, "DATA/SETTINGS/");
+    parametersFileName = getCompleteFileName(parametersFileName, PATH_SETTINGS);
 
-    if (! QFile(parametersFileName).exists())
+    if (! QFile(parametersFileName).exists() || ! QFileInfo(parametersFileName).isFile())
     {
-        logError("Missing file: " + parametersFileName);
+        logError("Missing parameters file: " + parametersFileName);
         return false;
     }
 
+    delete parameters;
     parameters = new QSettings(parametersFileName, QSettings::IniFormat);
 
     //interpolation settings
@@ -226,6 +238,124 @@ bool Project::loadParameters(QString parametersFileName)
             if (parameters->contains("wind_intensity_default") && !parameters->value("wind_intensity_default").toString().isEmpty())
             {
                 meteoSettings->setWindIntensityDefault(parameters->value("wind_intensity_default").toInt());
+            }
+
+            parameters->endGroup();
+        }
+
+        if (group == "radiation")
+        {
+            parameters->beginGroup(group);
+
+            if (parameters->contains("algorithm"))
+            {
+                std::string algorithm = parameters->value("algorithm").toString().toStdString();
+                if (radAlgorithmToString.find(algorithm) == radAlgorithmToString.end())
+                {
+                    errorString = "Unknown radiation algorithm: " + QString::fromStdString(algorithm);
+                    return false;
+                }
+                else
+                    radSettings.setAlgorithm(radAlgorithmToString.at(algorithm));
+            }
+
+            if (parameters->contains("real_sky_algorithm"))
+            {
+                std::string realSkyAlgorithm = parameters->value("real_sky_algorithm").toString().toStdString();
+                if (realSkyAlgorithmToString.find(realSkyAlgorithm) == realSkyAlgorithmToString.end())
+                {
+                    errorString = "Unknown radiation real sky algorithm: " + QString::fromStdString(realSkyAlgorithm);
+                    return false;
+                }
+                else
+                    radSettings.setRealSkyAlgorithm(realSkyAlgorithmToString.at(realSkyAlgorithm));
+            }
+
+            if (parameters->contains("linke_mode"))
+            {
+                std::string linkeMode = parameters->value("linke_mode").toString().toStdString();
+                if (paramModeToString.find(linkeMode) == paramModeToString.end())
+                {
+                    errorString = "Unknown Linke mode: " + QString::fromStdString(linkeMode);
+                    return false;
+                }
+                else
+                    radSettings.setLinkeMode(paramModeToString.at(linkeMode));
+            }
+
+            if (parameters->contains("albedo_mode"))
+            {
+                std::string albedoMode = parameters->value("albedo_mode").toString().toStdString();
+                if (paramModeToString.find(albedoMode) == paramModeToString.end())
+                {
+                    errorString = "Unknown albedo mode: " + QString::fromStdString(albedoMode);
+                    return false;
+                }
+                else
+                    radSettings.setAlbedoMode(paramModeToString.at(albedoMode));
+            }
+
+            if (parameters->contains("tilt_mode"))
+            {
+                std::string tiltMode = parameters->value("tilt_mode").toString().toStdString();
+                if (tiltModeToString.find(tiltMode) == tiltModeToString.end())
+                {
+                    errorString = "Unknown albedo mode: " + QString::fromStdString(tiltMode);
+                    return false;
+                }
+                else
+                    radSettings.setTiltMode(tiltModeToString.at(tiltMode));
+            }
+
+            if (parameters->contains("real_sky"))
+                radSettings.setRealSky(parameters->value("real_sky").toBool());
+
+            if (parameters->contains("shadowing"))
+                radSettings.setShadowing(parameters->value("shadowing").toBool());
+
+            if (parameters->contains("linke"))
+                radSettings.setLinke(parameters->value("linke").toFloat());
+
+            if (parameters->contains("albedo"))
+                radSettings.setAlbedo(parameters->value("albedo").toFloat());
+
+            if (parameters->contains("tilt"))
+                radSettings.setTilt(parameters->value("tilt").toFloat());
+
+            if (parameters->contains("aspect"))
+                radSettings.setAspect(parameters->value("aspect").toFloat());
+
+            if (parameters->contains("clear_sky"))
+                radSettings.setClearSky(parameters->value("clear_sky").toFloat());
+
+            if (parameters->contains("linke_map"))
+                radSettings.setLinkeMapName(parameters->value("linke_map").toString().toStdString());
+
+            if (parameters->contains("albedo_map"))
+                radSettings.setAlbedoMapName(parameters->value("albedo_map").toString().toStdString());
+
+            if (parameters->contains("linke_monthly"))
+            {
+                QStringList myLinkeStr = parameters->value("linke_monthly").toStringList();
+                if (myLinkeStr.size() < 12)
+                {
+                    errorString = "Incomplete monthly Linke values";
+                    return  false;
+                }
+
+                radSettings.setLinkeMonthly(StringListToFloat(myLinkeStr));
+            }
+
+            if (parameters->contains("albedo_monthly"))
+            {
+                QStringList myAlbedoStr = parameters->value("albedo_monthly").toStringList();
+                if (myAlbedoStr.size() < 12)
+                {
+                    errorString = "Incomplete monthly albedo values";
+                    return  false;
+                }
+
+                radSettings.setAlbedoMonthly(StringListToFloat(myAlbedoStr));
             }
 
             parameters->endGroup();
@@ -320,15 +450,14 @@ bool Project::loadParameters(QString parametersFileName)
             proxyName = group.right(group.size()-6).toStdString();
 
             parameters->beginGroup(group);
+
             gridName = parameters->value("raster").toString();
-            if (gridName.left(1) == ".")
-                proxyGridName = path.toStdString() + gridName.toStdString();
-            else
-                proxyGridName = gridName.toStdString();
+            proxyGridName = gridName.toStdString();
+
             proxyTable = parameters->value("table").toString().toStdString();
             proxyField = parameters->value("field").toString().toStdString();
             isActive = parameters->value("active").toBool();
-            forQuality = parameters->value("useForSpatialQualityControl").toBool();
+            forQuality = parameters->value("use_for_spatial_quality_control").toBool();
             parameters->endGroup();
 
             if (checkProxy(proxyName, proxyGridName, proxyTable, proxyField, &errorString))
@@ -341,78 +470,10 @@ bool Project::loadParameters(QString parametersFileName)
 
     // check proxy grids for detrending
     if (!loadProxyGrids())
-    {
-        errorString = "Error loading proxy grids";
         return false;
-    }
 
-    return true;
-}
-
-
-bool Project::loadProjectSettings(QString settingsFileName)
-{
-    path = getFilePath(settingsFileName);
-
-    if (! QFile(settingsFileName).exists())
-    {
-        logError("Missing settings file: " + settingsFileName);
+    if (!loadRadiationGrids())
         return false;
-    }
-
-    projectSettings = new QSettings(settingsFileName, QSettings::IniFormat);
-
-    projectSettings->beginGroup("path");
-    QString myPath = projectSettings->value("path").toString();
-    projectSettings->endGroup();
-
-    if (! myPath.isEmpty())
-    {
-        if (myPath.right(1) != "/")
-            myPath += "/";
-
-        if(myPath.left(1) == ".")
-        {
-            path += myPath;
-            path = QDir::cleanPath(path) + "/";
-        }
-        else
-        {
-            path = myPath;
-        }
-    }
-
-    projectSettings->beginGroup("location");
-        double latitude = projectSettings->value("lat").toDouble();
-        double longitude = projectSettings->value("lon").toDouble();
-        int utmZone = projectSettings->value("utm_zone").toInt();
-        int isUtc = projectSettings->value("is_utc").toBool();
-        int timeZone = projectSettings->value("time_zone").toInt();
-    projectSettings->endGroup();
-
-    if (! gis::isValidUtmTimeZone(utmZone, timeZone))
-    {
-        logError("Wrong time zone");
-        return false;
-    }
-
-    gisSettings.startLocation.latitude = latitude;
-    gisSettings.startLocation.longitude = longitude;
-    gisSettings.utmZone = utmZone;
-    gisSettings.isUTC = isUtc;
-    gisSettings.timeZone = timeZone;
-
-    projectSettings->beginGroup("project");
-        projectName = projectSettings->value("name").toString();
-        demName = projectSettings->value("dem").toString();
-        dbPointsName = projectSettings->value("meteo_points").toString();
-        dbGridXMLName = projectSettings->value("meteo_grid").toString();
-    projectSettings->endGroup();
-
-    projectSettings->beginGroup("settings");
-        parametersFile = projectSettings->value("parameters_file").toString();
-        logFileName = projectSettings->value("log_file").toString();
-    projectSettings->endGroup();
 
     return true;
 }
@@ -432,14 +493,35 @@ bool Project::getMeteoPointSelected(int i)
     return false;
 }
 
-void Project::setPath(QString myPath)
+
+void Project::setApplicationPath(QString myPath)
 {
-    this->path = myPath;
+    this->appPath = myPath;
 }
 
-QString Project::getPath()
+QString Project::getApplicationPath()
 {
-    return this->path;
+    return this->appPath;
+}
+
+void Project::setDefaultPath(QString myPath)
+{
+    this->defaultPath = myPath;
+}
+
+QString Project::getDefaultPath()
+{
+    return this->defaultPath;
+}
+
+void Project::setProjectPath(QString myPath)
+{
+    this->projectPath = myPath;
+}
+
+QString Project::getProjectPath()
+{
+    return this->projectPath;
 }
 
 void Project::setFrequency(frequencyType frequency)
@@ -519,7 +601,6 @@ void Project::getMeteoPointsRange(float *minimum, float *maximum)
 
 void Project::closeMeteoPointsDB()
 {
-
     if (meteoPointsDbHandler != nullptr)
     {
         delete meteoPointsDbHandler;
@@ -536,7 +617,6 @@ void Project::closeMeteoPointsDB()
                 meteoPoints[i].cleanObsDataD();
                 meteoPoints[i].cleanObsDataM();
             }
-
             delete [] meteoPoints;
 
             meteoPoints = nullptr;
@@ -545,7 +625,10 @@ void Project::closeMeteoPointsDB()
     }
 
     meteoPointsSelected.clear();
+
+    meteoPointsLoaded = false;
 }
+
 
 void Project::closeMeteoGridDB()
 {
@@ -558,6 +641,7 @@ void Project::closeMeteoGridDB()
 
     meteoGridDbHandler = nullptr;
 
+    meteoGridLoaded = false;
 }
 
 
@@ -570,7 +654,14 @@ bool Project::loadDEM(QString myFileName)
 {
     this->logInfo("Read Digital Elevation Model...");
 
-    myFileName = getCompleteFileName(myFileName, "DATA/DEM/");
+    if (myFileName == "")
+    {
+        logError("Missing DEM filename");
+        return false;
+    }
+
+    this->demFileName = myFileName;
+    myFileName = getCompleteFileName(myFileName, PATH_DEM);
 
     std::string error, fileName;
     if (myFileName.right(4).left(1) == ".")
@@ -622,12 +713,13 @@ bool Project::loadMeteoPointsDB(QString dbName)
 
     closeMeteoPointsDB();
 
-    dbName = getCompleteFileName(dbName, "DATA/METEOPOINT/");
+    dbPointsFileName = dbName;
+    dbName = getCompleteFileName(dbName, PATH_METEOPOINT);
 
     meteoPointsDbHandler = new Crit3DMeteoPointsDbHandler(dbName);
     if (meteoPointsDbHandler->error != "")
     {
-        logError(meteoPointsDbHandler->error);
+        logError("Function loadMeteoPointsDB:\n" + dbName + "\n" + meteoPointsDbHandler->error);
         closeMeteoPointsDB();
         return false;
     }
@@ -669,30 +761,46 @@ bool Project::loadMeteoPointsDB(QString dbName)
     if (DEM.isLoaded)
         checkMeteoPointsDEM();
 
+    meteoPointsLoaded = true;
+
     return true;
 }
 
 bool Project::loadMeteoGridDB(QString xmlName)
 {
-    if (xmlName == "")
-        return false;
+    if (xmlName == "") return false;
 
-    xmlName = getCompleteFileName(xmlName, "DATA/grid/");
+    dbGridXMLFileName = xmlName;
+    xmlName = getCompleteFileName(xmlName, PATH_METEOGRID);
 
     meteoGridDbHandler = new Crit3DMeteoGridDbHandler();
     meteoGridDbHandler->meteoGrid()->setGisSettings(this->gisSettings);
 
     if (! meteoGridDbHandler->parseXMLGrid(xmlName, &errorString))
+    {
+        logError();
         return false;
+    }
 
     if (! this->meteoGridDbHandler->openDatabase(&errorString))
+    {
+        logError();
         return false;
+    }
 
     if (! this->meteoGridDbHandler->loadCellProperties(&errorString))
+    {
+        logError();
         return false;
+    }
 
     if (! this->meteoGridDbHandler->updateGridDate(&errorString))
+    {
+        logError();
         return false;
+    }
+
+    meteoGridLoaded = true;
 
     return true;
 }
@@ -778,7 +886,7 @@ bool Project::loadMeteoGridDailyData(QDate firstDate, QDate lastDate, bool showI
 
     if (showInfo)
     {
-        QString infoStr = "Load grid daily data: " + firstDate.toString();
+        QString infoStr = "Load meteo grid daily data: " + firstDate.toString();
         if (firstDate != lastDate) infoStr += " - " + lastDate.toString();
         infoStep = myInfo.start(infoStr, this->meteoGridDbHandler->gridStructure().header().nrRows);
     }
@@ -831,7 +939,7 @@ bool Project::loadMeteoGridHourlyData(QDateTime firstDate, QDateTime lastDate, b
 
     if (showInfo)
     {
-        QString infoStr = "Load grid hourly data: " + firstDate.toString("yyyy-MM-dd:hh") + " - " + lastDate.toString("yyyy-MM-dd:hh");
+        QString infoStr = "Load meteo grid hourly data: " + firstDate.toString("yyyy-MM-dd:hh") + " - " + lastDate.toString("yyyy-MM-dd:hh");
         infoStep = myInfo.start(infoStr, this->meteoGridDbHandler->gridStructure().header().nrRows);
     }
 
@@ -959,14 +1067,18 @@ bool Project::loadProxyGrids()
         myProxy = interpolationSettings.getProxy(i);
         myGrid = myProxy->getGrid();
         gridName = myProxy->getGridName();
+        gridName = getCompleteFileName(QString::fromStdString(gridName), PATH_GEO).toStdString();
 
         if (interpolationSettings.getSelectedCombination().getValue(i) || myProxy->getForQualityControl())
         {
-            if (myGrid == nullptr && gridName != "")
+            if (! myGrid->isLoaded && gridName != "")
             {
                 myGrid = new gis::Crit3DRasterGrid();
                 if (!gis::readEsriGrid(gridName, myGrid, myError))
-                    return false;
+                {
+                    logError("Error loading proxy grid " + QString::fromStdString(gridName));
+                    interpolationSettings.getSelectedCombination().setValue(i, false);
+                }
             }
         }
     }
@@ -974,6 +1086,44 @@ bool Project::loadProxyGrids()
     return true;
 }
 
+bool Project::loadRadiationGrids()
+{
+    std::string* myError = new std::string();
+    gis::Crit3DRasterGrid *grdLinke, *grdAlbedo;
+    std::string gridName;
+
+    if (radSettings.getLinkeMode() == PARAM_MODE_MAP)
+    {
+        gridName = radSettings.getLinkeMapName();
+        if (gridName != "")
+        {
+            grdLinke = new gis::Crit3DRasterGrid();
+            if (!gis::readEsriGrid(gridName, grdLinke, myError))
+            {
+                logError("Error loading Linke grid " + QString::fromStdString(gridName));
+                return false;
+            }
+            radSettings.setLinkeMap(grdLinke);
+        }
+    }
+
+    if (radSettings.getAlbedoMode() == PARAM_MODE_MAP)
+    {
+        gridName = radSettings.getAlbedoMapName();
+        if (gridName != "")
+        {
+            grdAlbedo = new gis::Crit3DRasterGrid();
+            if (!gis::readEsriGrid(gridName, grdAlbedo, myError))
+            {
+                logError("Error loading albedo grid " + QString::fromStdString(gridName));
+                return false;
+            }
+            radSettings.setAlbedoMap(grdAlbedo);
+        }
+    }
+
+    return true;
+}
 
 bool Project::readProxyValues()
 {
@@ -1011,7 +1161,7 @@ bool Project::writeTopographicDistanceMaps()
         return false;
     }
 
-    QString mapsFolder = this->path + "DATA/GEO/TAD/";
+    QString mapsFolder = getDefaultPath() + PATH_TAD;
     if (! QDir(mapsFolder).exists())
         QDir().mkdir(mapsFolder);
 
@@ -1055,7 +1205,7 @@ bool Project::loadTopographicDistanceMaps()
         return false;
     }
 
-    QString mapsFolder = this->path + "DATA/GEO/TAD/";
+    QString mapsFolder = getDefaultPath() + PATH_TAD;
     if (! QDir(mapsFolder).exists()) return false;
 
     FormInfo myInfo;
@@ -1137,7 +1287,7 @@ bool Project::interpolateDemRadiation(const Crit3DTime& myTime, gis::Crit3DRaste
 
     gis::Crit3DPoint mapCenter = DEM.mapCenter();
 
-    int intervalWidth = radiation::estimateTransmissivityWindow(&radSettings, DEM, &mapCenter, myTime, int(HOUR_SECONDS));
+    int intervalWidth = radiation::estimateTransmissivityWindow(&radSettings, DEM, mapCenter, myTime, int(HOUR_SECONDS));
 
     // almost a meteoPoint with transmissivity data
     if (! computeTransmissivity(&radSettings, meteoPoints, nrMeteoPoints, intervalWidth, myTime, DEM))
@@ -1224,14 +1374,16 @@ float Project::meteoDataConsistency(meteoVariable myVar, const Crit3DTime& timeI
 
 QString Project::getCompleteFileName(QString fileName, QString secondaryPath)
 {
+    if (fileName == "") return fileName;
+
     if (getFilePath(fileName) == "")
     {
-        QString completeFileName = this->getPath() + secondaryPath + fileName;
+        QString completeFileName = this->getDefaultPath() + secondaryPath + fileName;
         return QDir().cleanPath(completeFileName);
     }
     else if (fileName.left(1) == ".")
     {
-        QString completeFileName = this->getPath() + fileName;
+        QString completeFileName = this->getProjectPath() + fileName;
         return QDir().cleanPath(completeFileName);
     }
     else
@@ -1241,41 +1393,328 @@ QString Project::getCompleteFileName(QString fileName, QString secondaryPath)
 }
 
 
+QString Project::getRelativePath(QString fileName)
+{
+    if (fileName != "" && fileName.left(1) != "." && getFilePath(fileName) != "")
+    {
+        QDir projectDir(getProjectPath());
+        QString relativePath = projectDir.relativeFilePath(fileName);
+        if (relativePath != fileName)
+        {
+            fileName = relativePath;
+            if (fileName.left(1) != ".")
+            {
+                fileName = "./" + relativePath;
+            }
+        }
+    }
+    return fileName;
+}
+
+
+bool Project::loadProjectSettings(QString settingsFileName)
+{
+    if (! QFile(settingsFileName).exists() || ! QFileInfo(settingsFileName).isFile())
+    {
+        logError("Missing settings file: " + settingsFileName);
+        return false;
+    }
+
+    // project path
+    QString filePath = getFilePath(settingsFileName);
+    setProjectPath(filePath);
+
+    delete projectSettings;
+    projectSettings = new QSettings(settingsFileName, QSettings::IniFormat);
+
+    projectSettings->beginGroup("location");
+        double latitude = projectSettings->value("lat").toDouble();
+        double longitude = projectSettings->value("lon").toDouble();
+        int utmZone = projectSettings->value("utm_zone").toInt();
+        int isUtc = projectSettings->value("is_utc").toBool();
+        int timeZone = projectSettings->value("time_zone").toInt();
+    projectSettings->endGroup();
+
+    if (! gis::isValidUtmTimeZone(utmZone, timeZone))
+    {
+        logError("Wrong time_zone or utm_zone in file:\n" + settingsFileName);
+        return false;
+    }
+
+    gisSettings.startLocation.latitude = latitude;
+    gisSettings.startLocation.longitude = longitude;
+    gisSettings.utmZone = utmZone;
+    gisSettings.isUTC = isUtc;
+    gisSettings.timeZone = timeZone;
+
+    projectSettings->beginGroup("project");
+        QString myPath = projectSettings->value("path").toString();
+        if (! myPath.isEmpty())
+        {
+            // modify project path
+            QString newProjectPath;
+            if(myPath.left(1) == ".")
+            {
+                newProjectPath = getProjectPath() + myPath;
+                newProjectPath = QDir::cleanPath(newProjectPath);
+            }
+            else newProjectPath = myPath;
+
+            if (newProjectPath.right(1) != "/") newProjectPath += "/";
+            setProjectPath(newProjectPath);
+        }
+
+        projectName = projectSettings->value("name").toString();
+        demFileName = projectSettings->value("dem").toString();
+        dbPointsFileName = projectSettings->value("meteo_points").toString();
+        dbGridXMLFileName = projectSettings->value("meteo_grid").toString();
+    projectSettings->endGroup();
+
+    projectSettings->beginGroup("settings");
+        parametersFileName = projectSettings->value("parameters_file").toString();
+        logFileName = projectSettings->value("log_file").toString();
+    projectSettings->endGroup();
+
+    return true;
+}
+
+
+bool Project::searchDefaultPath(QString* path)
+{
+    QString myPath = getApplicationPath();
+    QString myVolumeDOS = myPath.left(3);
+
+    bool isFound = false;
+    while (! isFound)
+    {
+        myPath += "../";
+        if (QDir(myPath + "DATA").exists()) isFound = true;
+        if (QDir::cleanPath(myPath) == "/" || QDir::cleanPath(myPath) == myVolumeDOS) break;
+    }
+
+    if (! isFound)
+    {
+        logError("DATA directory is missing");
+        return false;
+    }
+
+    *path = QDir::cleanPath(myPath) + "/DATA/";
+    return true;
+}
+
+void Project::saveSettings()
+{
+    projectSettings->beginGroup("location");
+        projectSettings->setValue("lat", gisSettings.startLocation.latitude);
+        projectSettings->setValue("lon", gisSettings.startLocation.longitude);
+        projectSettings->setValue("utm_zone", gisSettings.utmZone);
+        projectSettings->setValue("time_zone", gisSettings.timeZone);
+        projectSettings->setValue("is_utc", gisSettings.isUTC);
+    projectSettings->endGroup();
+
+    projectSettings->beginGroup("project");
+        projectSettings->setValue("name", projectName);
+        projectSettings->setValue("dem", getRelativePath(demFileName));
+        projectSettings->setValue("meteo_points", getRelativePath(dbPointsFileName));
+        projectSettings->setValue("meteo_grid", getRelativePath(dbGridXMLFileName));
+    projectSettings->endGroup();
+
+    projectSettings->beginGroup("settings");
+        projectSettings->setValue("parameters_file", getRelativePath(parametersFileName));
+    projectSettings->endGroup();
+
+    projectSettings->sync();
+}
+
+void Project::saveRadiationParameters()
+{
+    parameters->beginGroup("radiation");
+        parameters->setValue("algorithm", QString::fromStdString(getKeyStringRadAlgorithm(radSettings.getAlgorithm())));
+        parameters->setValue("real_sky_algorithm", QString::fromStdString(getKeyStringRealSky(radSettings.getRealSkyAlgorithm())));
+        parameters->setValue("linke_mode", QString::fromStdString(getKeyStringParamMode(radSettings.getLinkeMode())));
+        parameters->setValue("albedo_mode", QString::fromStdString(getKeyStringParamMode(radSettings.getAlbedoMode())));
+        parameters->setValue("tilt_mode", QString::fromStdString(getKeyStringTiltMode(radSettings.getTiltMode())));
+        parameters->setValue("real_sky", radSettings.getRealSky());
+        parameters->setValue("shadowing", radSettings.getShadowing());
+        parameters->setValue("linke", QString::number(radSettings.getLinke()));
+        parameters->setValue("albedo", QString::number(radSettings.getAlbedo()));
+        parameters->setValue("tilt", QString::number(radSettings.getTilt()));
+        parameters->setValue("aspect", QString::number(radSettings.getAspect()));
+        parameters->setValue("clear_sky", QString::number(radSettings.getClearSky()));
+        parameters->setValue("linke_map", QString::fromStdString(radSettings.getLinkeMapName()));
+        parameters->setValue("albedo_map", QString::fromStdString(radSettings.getAlbedoMapName()));
+    parameters->endGroup();
+}
+
+void Project::saveInterpolationParameters()
+{
+    parameters->beginGroup("interpolation");
+        parameters->setValue("aggregationMethod", QString::fromStdString(getKeyStringAggregationMethod(interpolationSettings.getMeteoGridAggrMethod())));
+        parameters->setValue("algorithm", QString::fromStdString(getKeyStringInterpolationMethod(interpolationSettings.getInterpolationMethod())));
+        parameters->setValue("lapseRateCode", interpolationSettings.getUseLapseRateCode());
+        parameters->setValue("thermalInversion", interpolationSettings.getUseThermalInversion());
+        parameters->setValue("topographicDistance", interpolationSettings.getUseTAD());
+        parameters->setValue("optimalDetrending", interpolationSettings.getUseBestDetrending());
+        parameters->setValue("useDewPoint", interpolationSettings.getUseDewPoint());
+        parameters->setValue("thermalInversion", interpolationSettings.getUseThermalInversion());
+        parameters->setValue("minRegressionR2", QString::number(interpolationSettings.getMinRegressionR2()));
+    parameters->endGroup();
+
+    Crit3DProxy* myProxy;
+    for (int i=0; i < interpolationSettings.getProxyNr(); i++)
+    {
+        myProxy = interpolationSettings.getProxy(i);
+        parameters->beginGroup("proxy_" + QString::fromStdString(myProxy->getName()));
+            parameters->setValue("active", interpolationSettings.getSelectedCombination().getValue(i));
+            parameters->setValue("table", QString::fromStdString(myProxy->getProxyTable()));
+            parameters->setValue("field", QString::fromStdString(myProxy->getProxyField()));
+            parameters->setValue("use_for_spatial_quality_control", myProxy->getForQualityControl());
+            parameters->setValue("raster", getRelativePath(QString::fromStdString(myProxy->getGridName())));
+        parameters->endGroup();
+    }
+
+    parameters->sync();
+}
+
+void Project::saveParameters()
+{
+    parameters->beginGroup("meteo");
+        parameters->setValue("min_percentage", QString::number(meteoSettings->getMinimumPercentage()));
+        parameters->setValue("prec_threshold", QString::number(meteoSettings->getRainfallThreshold()));
+        parameters->setValue("samani_coefficient", QString::number(meteoSettings->getTransSamaniCoefficient()));
+        parameters->setValue("thom_threshold", QString::number(meteoSettings->getThomThreshold()));
+        parameters->setValue("wind_intensity_default", QString::number(meteoSettings->getWindIntensityDefault()));
+        parameters->setValue("hourly_intervals", QString::number(meteoSettings->getHourlyIntervals()));
+    parameters->endGroup();
+
+    parameters->beginGroup("quality");
+        parameters->setValue("reference_height", QString::number(quality->getReferenceHeight()));
+        parameters->setValue("delta_temperature_suspect", QString::number(quality->getDeltaTSuspect()));
+        parameters->setValue("delta_temperature_wrong", QString::number(quality->getDeltaTWrong()));
+        parameters->setValue("relhum_tolerance", QString::number(quality->getRelHumTolerance()));
+    parameters->endGroup();
+
+    parameters->sync();
+}
+
+void Project::saveProject()
+{
+    saveSettings();
+    saveParameters();
+    saveInterpolationParameters();
+}
+
+bool Project::createProject(QString path_, QString name_, QString description_)
+{
+    // name
+    projectName = description_;
+
+    // folder
+    QString myPath = path_ + "/" + name_ + "/";
+    if (! QDir(myPath).exists())
+        QDir().mkdir(myPath);
+
+    projectPath = myPath;
+
+    // settings
+    delete projectSettings;
+    projectSettings = new QSettings(projectPath + name_ + ".ini", QSettings::IniFormat);
+
+    // parameters
+    QString oldParameters = parametersFileName;
+    QString newParameters = projectPath + "parameters.ini";
+    QFile::copy(oldParameters, newParameters);
+
+    delete parameters;
+    parametersFileName = newParameters;
+    parameters = new QSettings(parametersFileName, QSettings::IniFormat);
+
+    saveProject();
+
+    return true;
+}
+
+bool Project::createDefaultProject(QString fileName)
+{
+    QString path;
+    if (! searchDefaultPath(&path)) return false;
+
+    QSettings* defaultSettings = new QSettings(fileName, QSettings::IniFormat);
+
+    defaultSettings->beginGroup("project");
+        defaultSettings->setValue("path", path);
+    defaultSettings->endGroup();
+
+    defaultSettings->beginGroup("location");
+        defaultSettings->setValue("lat", gisSettings.startLocation.latitude);
+        defaultSettings->setValue("lon", gisSettings.startLocation.longitude);
+        defaultSettings->setValue("utm_zone", gisSettings.utmZone);
+        defaultSettings->setValue("time_zone", gisSettings.timeZone);
+        defaultSettings->setValue("is_utc", gisSettings.isUTC);
+    defaultSettings->endGroup();
+
+    defaultSettings->beginGroup("settings");
+        defaultSettings->setValue("parameters_file", "parameters.ini");
+    defaultSettings->endGroup();
+
+    defaultSettings->sync();
+
+    return true;
+}
+
+
+bool Project::start(QString appPath)
+{
+    if (appPath.right(1) != "/") appPath += "/";
+    setApplicationPath(appPath);
+
+    QString defaultProject = getApplicationPath() + "default.ini";
+
+    if (! QFile(defaultProject).exists())
+    {
+        if (! createDefaultProject(defaultProject))
+            return false;
+    }
+
+    if (! loadProjectSettings(defaultProject))
+        return false;
+
+    setDefaultPath(getProjectPath());
+    return true;
+}
 
 
 bool Project::loadProject()
 {
-    if (! loadParameters(parametersFile))
+    if (! loadParameters(parametersFileName))
+    {
+        logError();
         return false;
+    }
 
-    if (! setLogFile(logFileName))
-        return false;
+    if (logFileName != "") setLogFile(logFileName);
 
-    if (demName != "")
-        if (! loadDEM(demName))
-            return false;
+    if (demFileName != "") loadDEM(demFileName);
 
-    if (dbPointsName != "")
-        if (! loadMeteoPointsDB(dbPointsName))
-            return false;
+    if (dbPointsFileName != "") loadMeteoPointsDB(dbPointsFileName);
 
-    if (dbGridXMLName != "")
-        if (! loadMeteoGridDB(dbGridXMLName))
-            return false;
+    if (dbGridXMLFileName != "") loadMeteoGridDB(dbGridXMLFileName);
 
     return true;
 }
+
 
 /* ---------------------------------------------
  * LOG functions
  * --------------------------------------------*/
 
-bool Project::setLogFile(QString fileNameWithPath)
+bool Project::setLogFile(QString myFileName)
 {
-    fileNameWithPath = getCompleteFileName(fileNameWithPath, "LOG/");
+    this->logFileName = myFileName;
+    myFileName = getCompleteFileName(myFileName, "LOG/");
 
-    QString filePath = getFilePath(fileNameWithPath);
-    QString fileName = getFileName(fileNameWithPath);
+    QString filePath = getFilePath(myFileName);
+    QString fileName = getFileName(myFileName);
 
     if (!QDir(filePath).exists())
     {
@@ -1285,17 +1724,17 @@ bool Project::setLogFile(QString fileNameWithPath)
     QString myDate = QDateTime().currentDateTime().toString("yyyyMMdd_HHmm");
     fileName = myDate + "_" + fileName;
 
-    logFileName = filePath + fileName;
+    QString currentFileName = filePath + fileName;
 
-    logFile.open(logFileName.toStdString().c_str());
+    logFile.open(currentFileName.toStdString().c_str());
     if (logFile.is_open())
     {
-        logInfo("LogFile: " + logFileName);
+        logInfo("LogFile: " + currentFileName);
         return true;
     }
     else
     {
-        logError("Unable to open file: " + logFileName);
+        logError("Unable to open file: " + currentFileName);
         return false;
     }
 }

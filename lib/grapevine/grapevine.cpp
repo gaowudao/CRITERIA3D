@@ -8,7 +8,6 @@
 
 #include <stdio.h>
 #include <math.h>
-#include <malloc.h>
 #include "crit3dDate.h"
 #include "commonConstants.h"
 #include "basicMath.h"

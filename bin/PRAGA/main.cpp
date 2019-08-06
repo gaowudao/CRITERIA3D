@@ -59,17 +59,13 @@ int main(int argc, char *argv[])
 
     QApplication myApp(argc, argv);
 
-    QString currentPath = myApp.applicationDirPath() + "/";
-    if (! myProject.loadProjectSettings(currentPath + "default.ini"))
-        return -1;
-
-    if (! myProject.loadParameters(myProject.getPath() + "DATA/settings/parameters.ini"))
-        return -1;
-
-    if (! myProject.loadPragaSettings())
-        return -1;
-
     QNetworkProxyFactory::setUseSystemConfiguration(true);
+
+    if (! myProject.start(myApp.applicationDirPath()))
+        return -1;
+
+    if (! myProject.loadPragaProject(myProject.getApplicationPath() + "default.ini"))
+        return -1;
 
     if (myProject.modality == MODE_GUI)
     {

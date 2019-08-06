@@ -23,7 +23,10 @@ win32:{
     TARGET = soilWidget
 }
 
-INCLUDEPATH += ../mathFunctions ../soil ../utilities
+INCLUDEPATH += ../mathFunctions ../specialMathFunctions ../soil ../utilities
+unix:{
+    INCLUDEPATH += /usr/include/qwt/
+}
 
 SOURCES += \
         soilWidget.cpp \
@@ -33,7 +36,8 @@ SOURCES += \
     tabWaterRetentionData.cpp \
     tabHydraulicConductivityCurve.cpp \
     tableDelegate.cpp \
-    tableDbOrModel.cpp
+    tableDbOrModel.cpp \
+    lineHorizont.cpp
 
 HEADERS += \
         soilWidget.h \
@@ -43,11 +47,18 @@ HEADERS += \
     tabWaterRetentionData.h \
     tabHydraulicConductivityCurve.h \
     tableDelegate.h \
-    tableDbOrModel.h
+    tableDbOrModel.h \
+    lineHorizont.h
 
 unix {
     target.path = /usr/lib
     INSTALLS += target
 }
 
+win32:{
+    include($$(QWT_ROOT)\features\qwt.prf)
+}
+unix:{
+    include(/usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/qwt.prf)
+}
 

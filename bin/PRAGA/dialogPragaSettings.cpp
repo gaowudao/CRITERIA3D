@@ -4,21 +4,23 @@ ElaborationTab::ElaborationTab(Crit3DElaborationSettings *elabSettings)
 {
 
     QLabel *anomalyPtsMaxDis = new QLabel(tr("maximum distance between points for anomaly [m]:"));
-    QDoubleValidator *doubleValAnomalyDis = new QDoubleValidator( -100.0, 100.0, 5, this );
+    QDoubleValidator *doubleValAnomalyDis = new QDoubleValidator();
+    doubleValAnomalyDis->setBottom(0);
     doubleValAnomalyDis->setNotation(QDoubleValidator::StandardNotation);
     anomalyPtsMaxDisEdit.setFixedWidth(130);
     anomalyPtsMaxDisEdit.setValidator(doubleValAnomalyDis);
     anomalyPtsMaxDisEdit.setText(QString::number(elabSettings->getAnomalyPtsMaxDistance()));
 
     QLabel *anomalyPtsMaxDeltaZ = new QLabel(tr("maximum height difference between points for anomaly [m]:"));
-    QDoubleValidator *doubleValAnomalyDelta = new QDoubleValidator( -100.0, 100.0, 5, this );
+    QDoubleValidator *doubleValAnomalyDelta = new QDoubleValidator();
+    doubleValAnomalyDelta->setBottom(0);
     doubleValAnomalyDelta->setNotation(QDoubleValidator::StandardNotation);
     anomalyPtsMaxDeltaZEdit.setFixedWidth(130);
     anomalyPtsMaxDeltaZEdit.setValidator(doubleValAnomalyDelta);
     anomalyPtsMaxDeltaZEdit.setText(QString::number(elabSettings->getAnomalyPtsMaxDeltaZ()));
 
     QLabel *gridMinCoverage = new QLabel(tr("minimum coverage for grid computation [%]:"));
-    QDoubleValidator *doubleValPerc = new QDoubleValidator( 0.0, 100.0, 5, this );
+    QDoubleValidator *doubleValPerc = new QDoubleValidator( 0.0, 100.0, 2, this );
     gridMinCoverageEdit.setFixedWidth(130);
     gridMinCoverageEdit.setValidator(doubleValPerc);
     gridMinCoverageEdit.setText(QString::number(elabSettings->getGridMinCoverage()));
@@ -62,15 +64,12 @@ ElaborationTab::ElaborationTab(Crit3DElaborationSettings *elabSettings)
 }
 
 
-DialogPragaSettings::DialogPragaSettings(QSettings *projectSettings,
-                                         QSettings *settings,
-                                         gis::Crit3DGisSettings *gisSettings,
-                                         Crit3DQuality *quality,
-                                         Crit3DMeteoSettings *meteoSettings,
-                                         Crit3DElaborationSettings *elabSettings) : DialogSettings(projectSettings, settings, gisSettings, quality, meteoSettings)
+DialogPragaSettings::DialogPragaSettings(PragaProject *myProject) : DialogSettings(myProject)
 {
-    _elabSettings = elabSettings;
-    elabTab = new ElaborationTab(elabSettings);
+    _elabSettings = myProject->clima->getElabSettings();
+    elabTab = new ElaborationTab(_elabSettings);
+
+    project_ = myProject;
 
     getTabWidget()->addTab(elabTab, tr("ELABORATION"));
 }
@@ -104,28 +103,13 @@ bool DialogPragaSettings::acceptPragaValues()
     _elabSettings->setAutomaticETP(elabTab->automaticETPEdit.isChecked());
     _elabSettings->setMergeJointStations(elabTab->mergeJointStationsEdit.isChecked());
 
-    savePragaSettings();
+    project_->savePragaParameters();
 
     return true;
 }
 
 void DialogPragaSettings::accept()
 {
-    if (acceptValues() && acceptPragaValues())
-    {
-        QDialog::done(QDialog::Accepted);
-        return;
-    }
+    if (acceptValues() && acceptPragaValues()) QDialog::done(QDialog::Accepted);
 }
 
-void DialogPragaSettings::savePragaSettings()
-{
-    getParamSettings()->beginGroup("elaboration");
-    getParamSettings()->setValue("anomaly_pts_max_distance", elabTab->anomalyPtsMaxDisEdit.text());
-    getParamSettings()->setValue("anomaly_pts_max_delta_z", elabTab->anomalyPtsMaxDeltaZEdit.text());
-    getParamSettings()->setValue("grid_min_coverage", elabTab->gridMinCoverageEdit.text());
-    getParamSettings()->setValue("compute_tmed", elabTab->automaticTmedEdit.isChecked());
-    getParamSettings()->setValue("compute_et0hs", elabTab->automaticETPEdit.isChecked());
-    getParamSettings()->setValue("merge_joint_stations", elabTab->mergeJointStationsEdit.isChecked());
-    getParamSettings()->endGroup();
-}

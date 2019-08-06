@@ -28,6 +28,242 @@
 #include "radiationSettings.h"
 
 
+TradiationRealSkyAlgorithm Crit3DRadiationSettings::getRealSkyAlgorithm() const
+{
+    return realSkyAlgorithm;
+}
+
+void Crit3DRadiationSettings::setRealSkyAlgorithm(const TradiationRealSkyAlgorithm &value)
+{
+    realSkyAlgorithm = value;
+}
+
+float Crit3DRadiationSettings::getClearSky() const
+{
+    return clearSky;
+}
+
+void Crit3DRadiationSettings::setClearSky(float value)
+{
+    clearSky = value;
+}
+
+bool Crit3DRadiationSettings::getRealSky() const
+{
+    return realSky;
+}
+
+void Crit3DRadiationSettings::setRealSky(bool value)
+{
+    realSky = value;
+}
+
+bool Crit3DRadiationSettings::getShadowing() const
+{
+    return shadowing;
+}
+
+void Crit3DRadiationSettings::setShadowing(bool value)
+{
+    shadowing = value;
+}
+
+float Crit3DRadiationSettings::getLinke() const
+{
+    if (linkeMode == PARAM_MODE_MAP)
+        return NODATA;
+    else
+        return linke;
+}
+
+float Crit3DRadiationSettings::getLinke(int row, int col) const
+{
+    if (linkeMode == PARAM_MODE_FIXED) return linke;
+
+    float myLinke = NODATA;
+
+    if (linkeMap != nullptr && linkeMap->isLoaded)
+        if (gis::isOutOfGridRowCol(row, col, *linkeMap))
+            myLinke = linkeMap->value[row][col];
+
+    return myLinke;
+}
+
+float Crit3DRadiationSettings::getLinke(const gis::Crit3DPoint& myPoint) const
+{
+    if (linkeMode == PARAM_MODE_FIXED) return linke;
+
+    float myLinke = NODATA;
+
+    if (linkeMap != nullptr && linkeMap->isLoaded)
+    {
+        int row, col;
+        gis::getRowColFromXY(*linkeMap, myPoint.utm.x, myPoint.utm.y, &row, &col);
+        if (gis::isOutOfGridRowCol(row, col, *linkeMap))
+            myLinke = linkeMap->value[row][col];
+    }
+
+    return myLinke;
+}
+
+void Crit3DRadiationSettings::setLinke(float value)
+{
+    linke = value;
+}
+
+float Crit3DRadiationSettings::getAlbedo() const
+{
+    if (albedoMode == PARAM_MODE_MAP)
+        return NODATA;
+    else
+        return albedo;
+}
+
+float Crit3DRadiationSettings::getAlbedo(int row, int col) const
+{
+    if (albedoMode == PARAM_MODE_FIXED) return albedo;
+
+    float myAlbedo = NODATA;
+
+    if (albedoMap != nullptr && albedoMap->isLoaded)
+        if (gis::isOutOfGridRowCol(row, col, *albedoMap))
+            myAlbedo = albedoMap->value[row][col];
+
+    return myAlbedo;
+}
+
+float Crit3DRadiationSettings::getAlbedo(const gis::Crit3DPoint& myPoint) const
+{
+    if (albedoMode == PARAM_MODE_FIXED) return albedo;
+
+    float myAlbedo = NODATA;
+
+    if (albedoMap != nullptr && albedoMap->isLoaded)
+    {
+        int row, col;
+        gis::getRowColFromXY(*albedoMap, myPoint.utm.x, myPoint.utm.y, &row, &col);
+        if (gis::isOutOfGridRowCol(row, col, *albedoMap))
+            myAlbedo = albedoMap->value[row][col];
+    }
+
+    return myAlbedo;
+}
+
+void Crit3DRadiationSettings::setAlbedo(float value)
+{
+    albedo = value;
+}
+
+float Crit3DRadiationSettings::getTilt() const
+{
+    return tilt;
+}
+
+void Crit3DRadiationSettings::setTilt(float value)
+{
+    tilt = value;
+}
+
+float Crit3DRadiationSettings::getAspect() const
+{
+    return aspect;
+}
+
+void Crit3DRadiationSettings::setAspect(float value)
+{
+    aspect = value;
+}
+
+TradiationAlgorithm Crit3DRadiationSettings::getAlgorithm() const
+{
+    return algorithm;
+}
+
+void Crit3DRadiationSettings::setAlgorithm(const TradiationAlgorithm &value)
+{
+    algorithm = value;
+}
+
+TparameterMode Crit3DRadiationSettings::getLinkeMode() const
+{
+    return linkeMode;
+}
+
+void Crit3DRadiationSettings::setLinkeMode(const TparameterMode &value)
+{
+    linkeMode = value;
+}
+
+TparameterMode Crit3DRadiationSettings::getAlbedoMode() const
+{
+    return albedoMode;
+}
+
+void Crit3DRadiationSettings::setAlbedoMode(const TparameterMode &value)
+{
+    albedoMode = value;
+}
+
+TtiltMode Crit3DRadiationSettings::getTiltMode() const
+{
+    return tiltMode;
+}
+
+void Crit3DRadiationSettings::setTiltMode(const TtiltMode &value)
+{
+    tiltMode = value;
+}
+
+gis::Crit3DRasterGrid *Crit3DRadiationSettings::getLinkeMap() const
+{
+    return linkeMap;
+}
+
+void Crit3DRadiationSettings::setLinkeMap(gis::Crit3DRasterGrid *value)
+{
+    linkeMap = value;
+}
+
+gis::Crit3DRasterGrid *Crit3DRadiationSettings::getAlbedoMap() const
+{
+    return albedoMap;
+}
+
+void Crit3DRadiationSettings::setAlbedoMap(gis::Crit3DRasterGrid *value)
+{
+    albedoMap = value;
+}
+
+std::string Crit3DRadiationSettings::getLinkeMapName() const
+{
+    return linkeMapName;
+}
+
+void Crit3DRadiationSettings::setLinkeMapName(const std::string &value)
+{
+    linkeMapName = value;
+}
+
+std::string Crit3DRadiationSettings::getAlbedoMapName() const
+{
+    return albedoMapName;
+}
+
+void Crit3DRadiationSettings::setAlbedoMapName(const std::string &value)
+{
+    albedoMapName = value;
+}
+
+void Crit3DRadiationSettings::setLinkeMonthly(std::vector<float> myLinke)
+{
+    monthlyLinke = myLinke;
+}
+
+void Crit3DRadiationSettings::setAlbedoMonthly(std::vector<float> myAlbedo)
+{
+    monthlyAlbedo = myAlbedo;
+}
+
 Crit3DRadiationSettings::Crit3DRadiationSettings()
 {
     initialize();
@@ -35,25 +271,33 @@ Crit3DRadiationSettings::Crit3DRadiationSettings()
 
 void Crit3DRadiationSettings::initialize()
 {
-    computeRealData = true;
-    usePotentialIfMissing = false;
-    timeStepIntegration = 1;
-    computeShadowing = true;
-    shadowDistanceFactor = 1;
+    realSky = true;
+    shadowing = true;
     linkeMode = PARAM_MODE_FIXED;
     linke = 4.f;
-    landUse = LAND_USE_RURAL;
     albedoMode = PARAM_MODE_FIXED;
     albedo = 0.2f;
     tiltMode = TILT_TYPE_DEM;
-    tilt = NODATA;
-    aspect = NODATA;
+    tilt = 0;
+    aspect = 0;
 
     algorithm = RADIATION_ALGORITHM_RSUN;
-    transSettings.model = TRANSMISSIVITY_MODEL_HOURLY;
-    transSettings.periodType = TRANSMISSIVITY_COMPUTATION_DYNAMIC;
-    transSettings.useTotal = false;
-    transSettings.clearSky = CLEAR_SKY_TRANSMISSIVITY_DEFAULT;
+    realSkyAlgorithm = RADIATION_REALSKY_LINKE;
+    clearSky = CLEAR_SKY_TRANSMISSIVITY_DEFAULT;
+
+    monthlyLinke.resize(12);
+    monthlyAlbedo.resize(12);
+
+    for (unsigned int i=0; i<12; i++)
+    {
+        monthlyLinke[i] = NODATA;
+        monthlyAlbedo[i] = NODATA;
+    }
+
+    linkeMapName = "";
+    albedoMapName = "";
+    linkeMap = nullptr;
+    albedoMap = nullptr;
 }
 
 void Crit3DRadiationSettings::setGisSettings(const gis::Crit3DGisSettings* mySettings)
@@ -64,60 +308,67 @@ void Crit3DRadiationSettings::setGisSettings(const gis::Crit3DGisSettings* mySet
     gisSettings->isUTC = mySettings->isUTC;
 }
 
+std::string getKeyStringRadAlgorithm(TradiationAlgorithm value)
+{
+    std::map<std::string, TradiationAlgorithm>::const_iterator it;
+    std::string key = "";
 
-bool Crit3DRadiationSettings::getComputeRealData()
-{ return computeRealData;}
+    for (it = radAlgorithmToString.begin(); it != radAlgorithmToString.end(); ++it)
+    {
+        if (it->second == value)
+        {
+            key = it->first;
+            break;
+        }
+    }
+    return key;
+}
 
-bool Crit3DRadiationSettings::getUsePotentialIfMissing()
-{ return usePotentialIfMissing;}
+std::string getKeyStringParamMode(TparameterMode value)
+{
+    std::map<std::string, TparameterMode>::const_iterator it;
+    std::string key = "";
 
-float Crit3DRadiationSettings::getTimeStepIntegration()
-{ return timeStepIntegration;}
+    for (it = paramModeToString.begin(); it != paramModeToString.end(); ++it)
+    {
+        if (it->second == value)
+        {
+            key = it->first;
+            break;
+        }
+    }
+    return key;
+}
 
-bool Crit3DRadiationSettings::getComputeShadowing()
-{ return computeShadowing;}
+std::string getKeyStringTiltMode(TtiltMode value)
+{
+    std::map<std::string, TtiltMode>::const_iterator it;
+    std::string key = "";
 
-float Crit3DRadiationSettings::getShadowDistanceFactor()
-{ return shadowDistanceFactor;}
+    for (it = tiltModeToString.begin(); it != tiltModeToString.end(); ++it)
+    {
+        if (it->second == value)
+        {
+            key = it->first;
+            break;
+        }
+    }
+    return key;
+}
 
-TparameterMode Crit3DRadiationSettings::getLinkeMode()
-{ return linkeMode;}
+std::string getKeyStringRealSky(TradiationRealSkyAlgorithm value)
+{
+    std::map<std::string, TradiationRealSkyAlgorithm>::const_iterator it;
+    std::string key = "";
 
-float Crit3DRadiationSettings::getLinke()
-{ return linke;}
+    for (it = realSkyAlgorithmToString.begin(); it != realSkyAlgorithmToString.end(); ++it)
+    {
+        if (it->second == value)
+        {
+            key = it->first;
+            break;
+        }
+    }
+    return key;
+}
 
-TlandUse Crit3DRadiationSettings::getLandUse()
-{ return landUse;}
-
-TparameterMode Crit3DRadiationSettings::getAlbedoMode()
-{ return albedoMode;}
-
-float Crit3DRadiationSettings::getAlbedo()
-{ return albedo;}
-
-TtiltMode Crit3DRadiationSettings::getTiltMode()
-{ return tiltMode;}
-
-TradiationAlgorithm Crit3DRadiationSettings::getAlgorithm()
-{ return algorithm;}
-
-TtransmissivityAlgorithm Crit3DRadiationSettings::getTransmissivityAlgorithm()
-{ return transSettings.model;}
-
-TtransmissivityComputationPeriod Crit3DRadiationSettings::getTransmissivityPeriod()
-{ return transSettings.periodType;}
-
-bool Crit3DRadiationSettings::getTransmissivityUseTotal()
-{ return transSettings.useTotal;}
-
-float Crit3DRadiationSettings::getTransmissivityClearSky()
-{ return transSettings.clearSky;}
-
-float Crit3DRadiationSettings::getTilt()
-{ return tilt;}
-
-float Crit3DRadiationSettings::getAspect()
-{ return aspect;}
-
-float Crit3DRadiationSettings::getClearSky()
-{ return transSettings.clearSky;}

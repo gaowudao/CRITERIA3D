@@ -210,7 +210,7 @@ bool cmdSetLogFile(Project* myProject, QStringList argumentList)
 }
 
 
-bool Project::executeSharedCommand(QStringList argumentList, bool* isCommandFound)
+bool executeSharedCommand(Project* myProject, QStringList argumentList, bool* isCommandFound)
 {
     *isCommandFound = false;
     if (argumentList.size() == 0) return false;
@@ -220,17 +220,17 @@ bool Project::executeSharedCommand(QStringList argumentList, bool* isCommandFoun
     if (command == "QUIT" || command == "EXIT")
     {
         *isCommandFound = true;
-        return cmdExit(this);
+        return cmdExit(myProject);
     }
     else if (command == "DEM" || command == "LOADDEM")
     {
         *isCommandFound = true;
-        return cmdLoadDEM(this, argumentList);
+        return cmdLoadDEM(myProject, argumentList);
     }
     else if (command == "LOG" || command == "SETLOGFILE")
     {
         *isCommandFound = true;
-        return cmdSetLogFile(this, argumentList);
+        return cmdSetLogFile(myProject, argumentList);
     }
     else
     {

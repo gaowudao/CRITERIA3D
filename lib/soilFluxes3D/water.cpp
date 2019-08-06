@@ -28,7 +28,7 @@
 
 #include <stdio.h>
 #include <math.h>
-#include <malloc.h>
+#include <stdlib.h>
 
 #include "../mathFunctions/physics.h"
 #include "../mathFunctions/commonConstants.h"

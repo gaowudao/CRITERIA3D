@@ -137,7 +137,7 @@ bool executeCommand(QStringList argumentList, Vine3DProject* myProject)
 
     myProject->logInfo(getTimeStamp(argumentList));
 
-    isExecuted = myProject->executeSharedCommand(argumentList, &isCommandFound);
+    isExecuted = executeSharedCommand(myProject, argumentList, &isCommandFound);
     if (isCommandFound) return isExecuted;
 
     isExecuted = myProject->executeVine3DCommand(argumentList, &isCommandFound);

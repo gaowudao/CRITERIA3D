@@ -64,7 +64,7 @@ bool cmdOpenPragaProject(PragaProject* myProject, QStringList argumentList)
         return false;
     }
 
-    QString projectName = myProject->getCompleteFileName(argumentList.at(1), "DATA/PROJECT/");
+    QString projectName = myProject->getCompleteFileName(argumentList.at(1), PATH_PROJECT);
 
     if (! myProject->loadPragaProject(projectName))
         return false;
@@ -79,7 +79,7 @@ bool executeCommand(QStringList argumentList, PragaProject* myProject)
 
     myProject->logInfo(getTimeStamp(argumentList));
 
-    isExecuted = myProject->executeSharedCommand(argumentList, &isCommandFound);
+    isExecuted = executeSharedCommand(myProject, argumentList, &isCommandFound);
     if (isCommandFound) return isExecuted;
 
     isExecuted = myProject->executePragaCommand(argumentList, &isCommandFound);

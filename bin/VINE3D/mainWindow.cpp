@@ -26,6 +26,7 @@
 #include "Position.h"
 #include "spatialControl.h"
 #include "dialogInterpolation.h"
+#include "dialogRadiation.h"
 #include "dialogSettings.h"
 #include "dialogSelection.h"
 #include "formInfo.h"
@@ -652,7 +653,7 @@ void MainWindow::on_actionInterpolationSettings_triggered()
 
 void MainWindow::on_actionParameters_triggered()
 {
-    DialogSettings* mySettingsDialog = new DialogSettings(myProject.projectSettings, myProject.parameters, &myProject.gisSettings, myProject.quality, myProject.meteoSettings);
+    DialogSettings* mySettingsDialog = new DialogSettings(&myProject);
     mySettingsDialog->exec();
     if ((startCenter->latitude() - myProject.gisSettings.startLocation.latitude) > EPSILON || (startCenter->longitude() - myProject.gisSettings.startLocation.longitude) > EPSILON)
     {
@@ -718,4 +719,10 @@ void MainWindow::on_actionShowPointsLocation_triggered()
 void MainWindow::on_actionShowPointsVariable_triggered()
 {
     redrawMeteoPoints(showCurrentVariable, true);
+}
+
+void MainWindow::on_actionRadiation_settings_triggered()
+{
+    DialogRadiation* myDialogRadiation = new DialogRadiation(&myProject);
+    myDialogRadiation->close();
 }

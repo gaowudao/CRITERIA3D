@@ -88,7 +88,7 @@
 
         void closeDatabase();
 
-        bool parseXMLFile(QString xmlFileName, QDomDocument* xmlDoc);
+        bool parseXMLFile(QString xmlFileName, QDomDocument* xmlDoc, QString *error);
 
         void initMapMySqlVarType();
 

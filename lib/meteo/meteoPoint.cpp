@@ -24,7 +24,7 @@
 */
 
 
-#include <malloc.h>
+#include <stdlib.h>
 #include <math.h>
 
 #include "commonConstants.h"
@@ -56,6 +56,7 @@ Crit3DMeteoPoint::Crit3DMeteoPoint()
 
     this->nrObsDataDaysH = 0;
     this->nrObsDataDaysD = 0;
+    this->nrObsDataDaysM = 0;
     this->hourlyFraction = 1;
 
     this->obsDataH = nullptr;

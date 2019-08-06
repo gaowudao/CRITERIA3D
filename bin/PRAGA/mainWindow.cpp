@@ -7,6 +7,7 @@
 #include <QListWidget>
 #include <QRadioButton>
 #include <QTextBrowser>
+#include <QIODevice>
 
 #include <sstream>
 #include <iostream>
@@ -29,10 +30,13 @@
 #include "dialogClimateFields.h"
 #include "dialogSeriesOnZones.h"
 #include "dialogInterpolation.h"
+#include "dialogRadiation.h"
 #include "dialogPragaSettings.h"
 #include "gis.h"
 #include "spatialControl.h"
-#include "keyboardFilter.h"
+#include "dialogPragaProject.h"
+#include "utilities.h"
+
 
 extern PragaProject myProject;
 
@@ -123,6 +127,8 @@ MainWindow::MainWindow(QWidget *parent) :
     this->currentPointsVisualization = notShown;
     this->currentGridVisualization = notShown;
 
+    this->setWindowTitle("PRAGA");
+
     ui->groupBoxElab->hide();
 }
 
@@ -148,8 +154,6 @@ void MainWindow::resizeEvent(QResizeEvent *event)
 
 void MainWindow::mouseReleaseEvent(QMouseEvent *event)
 {
-    Q_UNUSED(event)
-
     this->rasterObj->updateCenter();
     this->meteoGridObj->updateCenter();
 
@@ -166,14 +170,13 @@ void MainWindow::mouseReleaseEvent(QMouseEvent *event)
         {
             if (firstCornerOffset.x() > lastCornerOffset.x())
             {
-                qDebug() << "bottom to left";
+                // bottom to left
                 pixelTopLeft = lastCornerOffset.toPoint();
                 pixelBottomRight = firstCornerOffset.toPoint();
             }
             else
             {
-                qDebug() << "bottom to right";
-
+                // bottom to right
                 pixelTopLeft = QPoint(firstCornerOffset.toPoint().x(), lastCornerOffset.toPoint().y());
                 pixelBottomRight = QPoint(lastCornerOffset.toPoint().x(), firstCornerOffset.toPoint().y());
             }
@@ -182,13 +185,13 @@ void MainWindow::mouseReleaseEvent(QMouseEvent *event)
         {
             if (firstCornerOffset.x() > lastCornerOffset.x())
             {
-                qDebug() << "top to left";
+                // top to left
                 pixelTopLeft = QPoint(lastCornerOffset.toPoint().x(), firstCornerOffset.toPoint().y());
                 pixelBottomRight = QPoint(firstCornerOffset.toPoint().x(), lastCornerOffset.toPoint().y());
             }
             else
             {
-                qDebug() << "top to right";
+                // top to right
                 pixelTopLeft = firstCornerOffset.toPoint();
                 pixelBottomRight = lastCornerOffset.toPoint();
             }
@@ -310,6 +313,16 @@ void MainWindow::on_actionRectangle_Selection_triggered()
      }
 }
 
+
+void MainWindow::clearDEM()
+{
+    this->rasterObj->clear();
+    this->rasterObj->redrawRequested();
+    ui->labelRasterScale->setText("");
+    this->ui->rasterOpacitySlider->setEnabled(false);
+}
+
+
 void MainWindow::renderDEM()
 {
     this->setCurrentRaster(&(myProject.DEM));
@@ -360,7 +373,7 @@ void MainWindow::on_actionNewMeteoPointsArkimet_triggered()
 {
     resetMeteoPoints();
 
-    QString templateFileName = myProject.getPath() + "DATA/TEMPLATE/template_meteo_arkimet.db";
+    QString templateFileName = myProject.getDefaultPath() + PATH_TEMPLATE + "template_meteo_arkimet.db";
 
     QString dbName = QFileDialog::getSaveFileName(this, tr("Save as"), "", tr("DB files (*.db)"));
     if (dbName == "")
@@ -770,12 +783,11 @@ void MainWindow::on_timeEdit_timeChanged(const QTime &time)
 void MainWindow::drawMeteoPoints()
 {
     this->resetMeteoPoints();
+
+    if (! myProject.meteoPointsLoaded || myProject.nrMeteoPoints == 0) return;
+
     this->addMeteoPoints();
 
-    if (myProject.meteoGridDbHandler == nullptr)
-    {
-        this->updateDateTime();
-    }
     myProject.loadMeteoPointsData (myProject.getCurrentDate(), myProject.getCurrentDate(), true);
 
     this->ui->meteoPoints->setEnabled(true);
@@ -789,6 +801,8 @@ void MainWindow::drawMeteoPoints()
 
     currentPointsVisualization = showLocation;
     redrawMeteoPoints(currentPointsVisualization, true);
+
+    updateDateTime();
 }
 
 void MainWindow::redrawMeteoPoints(visualizationType showType, bool updateColorSCale)
@@ -796,8 +810,7 @@ void MainWindow::redrawMeteoPoints(visualizationType showType, bool updateColorS
     currentPointsVisualization = showType;
     ui->groupBoxElab->hide();
 
-    if (myProject.nrMeteoPoints == 0)
-        return;
+    if (! myProject.meteoPointsLoaded || myProject.nrMeteoPoints == 0) return;
 
     // hide all meteo points
     for (int i = 0; i < myProject.nrMeteoPoints; i++)
@@ -916,6 +929,8 @@ bool MainWindow::loadMeteoPoints(QString dbName)
 
 void MainWindow::drawMeteoGrid()
 {
+    if (! myProject.meteoGridLoaded || myProject.meteoGridDbHandler == nullptr) return;
+
     myProject.meteoGridDbHandler->meteoGrid()->createRasterGrid();
 
     if (myProject.meteoGridDbHandler->gridStructure().isUTM() == false)
@@ -930,12 +945,8 @@ void MainWindow::drawMeteoGrid()
     meteoGridLegend->colorScale = myProject.meteoGridDbHandler->meteoGrid()->dataMeteoGrid.colorScale;
     ui->meteoGridOpacitySlider->setEnabled(true);
 
-    // update dateTime Edit if there are not MeteoPoints
-    if (this->pointList.isEmpty())
-    {
-        myProject.setCurrentDate(myProject.meteoGridDbHandler->lastDate());
-        this->updateDateTime();
-    }
+    myProject.setCurrentDate(myProject.meteoGridDbHandler->lastDate());
+    this->updateDateTime();
 
     myProject.loadMeteoGridData(myProject.getCurrentDate(), myProject.getCurrentDate(), true);
 
@@ -967,8 +978,7 @@ void MainWindow::redrawMeteoGrid(visualizationType showType)
     currentGridVisualization = showType;
     ui->groupBoxElab->hide();
 
-    if (myProject.meteoGridDbHandler == nullptr)
-        return;
+    if (! myProject.meteoGridLoaded || myProject.meteoGridDbHandler == nullptr) return;
 
     switch(currentGridVisualization)
     {
@@ -1169,7 +1179,9 @@ void MainWindow::on_actionClose_meteo_points_triggered()
 {
     resetMeteoPoints();
     meteoPointsLegend->setVisible(false);
+
     myProject.closeMeteoPointsDB();
+
     myProject.setIsElabMeteoPointsValue(false);
     ui->groupBoxElab->hide();
 
@@ -1184,6 +1196,7 @@ void MainWindow::on_actionClose_meteo_points_triggered()
         this->ui->grid->setChecked(true);
     }
 }
+
 
 void MainWindow::on_actionClose_meteo_grid_triggered()
 {
@@ -1257,7 +1270,7 @@ void MainWindow::on_actionCompute_elaboration_triggered()
 
     if (myProject.elaborationCheck(isMeteoGrid, isAnomaly))
     {
-        DialogMeteoComputation compDialog(myProject.parameters, isAnomaly, saveClima);
+        DialogMeteoComputation compDialog(myProject.pragaDefaultSettings, isAnomaly, saveClima);
         if (compDialog.result() != QDialog::Accepted)
             return;
 
@@ -1306,7 +1319,7 @@ void MainWindow::on_actionCompute_anomaly_triggered()
 
     if (myProject.elaborationCheck(isMeteoGrid, isAnomaly))
     {
-        DialogMeteoComputation compDialog(myProject.parameters, isAnomaly, saveClima);
+        DialogMeteoComputation compDialog(myProject.pragaDefaultSettings, isAnomaly, saveClima);
         if (compDialog.result() != QDialog::Accepted)
             return;
 
@@ -1359,7 +1372,7 @@ void MainWindow::on_actionCompute_climate_triggered()
     if (myProject.elaborationCheck(isMeteoGrid, isAnomaly))
     {
         myProject.clima->resetListElab();
-        DialogMeteoComputation compDialog(myProject.parameters, isAnomaly, saveClima);
+        DialogMeteoComputation compDialog(myProject.pragaDefaultSettings, isAnomaly, saveClima);
         if (compDialog.result() != QDialog::Accepted)
             return;
 
@@ -1667,10 +1680,15 @@ void MainWindow::on_actionInterpolationSettings_triggered()
     myDialogInterpolation->close();
 }
 
+void MainWindow::on_actionRadiationSettings_triggered()
+{
+    DialogRadiation* myDialogRadiation = new DialogRadiation(&myProject);
+    myDialogRadiation->close();
+}
 
 void MainWindow::on_actionParameters_triggered()
 {
-    DialogPragaSettings* mySettingsDialog = new DialogPragaSettings(myProject.projectSettings, myProject.parameters, &myProject.gisSettings, myProject.quality, myProject.meteoSettings, myProject.clima->getElabSettings());
+    DialogPragaSettings* mySettingsDialog = new DialogPragaSettings(&myProject);
     mySettingsDialog->exec();
     if (startCenter->latitude() != myProject.gisSettings.startLocation.latitude
         || startCenter->longitude() != myProject.gisSettings.startLocation.longitude)
@@ -1879,7 +1897,7 @@ bool MainWindow::on_actionAggregate_from_grid_triggered()
         openShape(fileName);
     }
 
-    DialogSeriesOnZones zoneDialog(myProject.parameters);
+    DialogSeriesOnZones zoneDialog(myProject.pragaDefaultSettings);
     if (zoneDialog.result() != QDialog::Accepted)
     {
         delete myRaster;
@@ -1915,7 +1933,7 @@ void MainWindow::on_actionOpen_aggregation_DB_triggered()
 
 void MainWindow::on_actionNew_aggregation_DB_triggered()
 {
-    QString templateFileName = myProject.getPath() + "DATA/TEMPLATE/template_meteo_aggregation.db";
+    QString templateFileName = myProject.getDefaultPath() + PATH_TEMPLATE + "template_meteo_aggregation.db";
 
     QString dbName = QFileDialog::getSaveFileName(this, tr("Save as"), "", tr("DB files (*.db)"));
     if (dbName == "")
@@ -1942,17 +1960,96 @@ void MainWindow::on_actionNew_aggregation_DB_triggered()
     myProject.loadAggregationdDB(dbName);
 }
 
-
-void MainWindow::on_actionOpen_project_triggered()
+void MainWindow::drawProject()
 {
-    QString fileName = QFileDialog::getOpenFileName(this, tr("Open project file"), "", tr("ini files (*.ini)"));
-    if (fileName == "") return;
-
-    if (! myProject.loadPragaProject(fileName)) return;
+    mapView->centerOn(startCenter->lonLat());
 
     if (myProject.DEM.isLoaded)
         renderDEM();
 
     drawMeteoPoints();
     drawMeteoGrid();
+
+    QString title = "PRAGA";
+    if (myProject.projectName != "")
+        title += " - " + myProject.projectName;
+
+    this->setWindowTitle(title);
 }
+
+void MainWindow::on_actionOpen_project_triggered()
+{
+    QString fileName = QFileDialog::getOpenFileName(this, tr("Open project file"), myProject.getDefaultPath() + PATH_PROJECT, tr("ini files (*.ini)"));
+    if (fileName == "") return;
+
+    if (myProject.isProjectLoaded)
+    {
+        on_actionClose_meteo_grid_triggered();
+        on_actionClose_meteo_points_triggered();
+        clearDEM();
+    }
+
+    if (myProject.loadPragaProject(fileName))
+    {
+        drawProject();
+    }
+    else
+    {
+        this->mapView->centerOn(startCenter->lonLat());
+        if (myProject.loadPragaProject(myProject.getApplicationPath() + "default.ini")) drawProject();
+    }
+
+    checkSaveProject();
+}
+
+void MainWindow::on_actionClose_project_triggered()
+{
+    if (! myProject.isProjectLoaded) return;
+
+    on_actionClose_meteo_grid_triggered();
+    on_actionClose_meteo_points_triggered();
+
+    clearDEM();
+
+    this->mapView->centerOn(startCenter->lonLat());
+
+    if (! myProject.loadPragaProject(myProject.getApplicationPath() + "default.ini")) return;
+
+    drawProject();
+
+    checkSaveProject();
+}
+
+void MainWindow::on_actionSave_project_as_triggered()
+{
+    QString myName, myFilename, myPath;
+
+    DialogPragaProject* myProjectDialog = new DialogPragaProject(&myProject);
+    myProjectDialog->close();
+
+    checkSaveProject();
+}
+
+void MainWindow::on_actionSave_project_triggered()
+{
+    myProject.saveProject();
+}
+
+void MainWindow::checkSaveProject()
+{
+    QString myName = myProject.projectSettings->fileName();
+    if (getFileName(myName) == "default.ini" && getFilePath(myName) == myProject.getApplicationPath())
+        ui->actionSave_project->setEnabled(false);
+    else
+        ui->actionSave_project->setEnabled(true);
+}
+
+bool KeyboardFilter::eventFilter(QObject* obj, QEvent* event)
+{
+    if (event->type() == QEvent::KeyPress) {
+        return true;
+    } else {
+        return QObject::eventFilter(obj, event);
+    }
+}
+

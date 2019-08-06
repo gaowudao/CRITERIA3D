@@ -26,18 +26,24 @@
         bool isElabMeteoPointsValue;
         QString climateIndex;
 
+        QSettings* pragaDefaultSettings;
+
         PragaProject();
 
         void initializePragaProject();
         void clearPragaProject();
         bool loadPragaProject(QString myFileName);
+        bool createPragaProject(QString path_, QString name_, QString description_);
+        void savePragaProject();
 
         bool loadPragaSettings();
+        void savePragaParameters();
 
         bool downloadDailyDataArkimet(QStringList variables, bool prec0024, QDate startDate, QDate endDate, bool showInfo);
         bool downloadHourlyDataArkimet(QStringList variables, QDate startDate, QDate endDate, bool showInfo);
 
         bool interpolationMeteoGrid(meteoVariable myVar, frequencyType myFrequency, const Crit3DTime& myTime, gis::Crit3DRasterGrid *myRaster, bool showInfo);
+        bool interpolationMeteoGridPeriod(QDate dateIni, QDate dateFin, std::vector <meteoVariable> variables);
         bool saveGrid(meteoVariable myVar, frequencyType myFrequency, const Crit3DTime& myTime, bool showInfo);
 
         bool elaborationPointsCycle(bool isAnomaly, bool showInfo);

@@ -30,7 +30,7 @@
 
 #include <stdio.h>
 #include <math.h>
-#include <malloc.h>
+#include <stdlib.h>
 #include <algorithm>
 
 #include "crit3dDate.h"

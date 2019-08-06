@@ -89,8 +89,10 @@ unix:{
 
 
 SOURCES += main.cpp\
+    dialogPragaProject.cpp \
     mainWindow.cpp \
     saveClimaLayout.cpp \
+    shared/dialogProject.cpp \
     shared/stationMarker.cpp \
     shared/rubberBand.cpp \
     shared/formInfo.cpp \
@@ -98,7 +100,6 @@ SOURCES += main.cpp\
     shared/interpolationCmd.cpp \
     shared/project.cpp \
     pragaProject.cpp \
-    keyboardFilter.cpp \
     shared/colorLegend.cpp \
     dialogMeteoComputation.cpp \
     dialogDownloadMeteoData.cpp \
@@ -110,11 +111,14 @@ SOURCES += main.cpp\
     dialogSeriesOnZones.cpp \
     dialogAnomaly.cpp \
     shared/shell.cpp \
-    pragaShell.cpp
+    pragaShell.cpp \
+    shared/dialogRadiation.cpp
 
 
 HEADERS  += mainWindow.h \
+    dialogPragaProject.h \
     saveClimaLayout.h \
+    shared/dialogProject.h \
     shared/stationMarker.h \
     shared/rubberBand.h \
     shared/formInfo.h \
@@ -122,7 +126,6 @@ HEADERS  += mainWindow.h \
     shared/interpolationCmd.h \
     shared/project.h \
     pragaProject.h \
-    keyboardFilter.h \
     shared/colorLegend.h \
     dialogMeteoComputation.h \
     dialogDownloadMeteoData.h \
@@ -134,7 +137,8 @@ HEADERS  += mainWindow.h \
     dialogSeriesOnZones.h \
     dialogAnomaly.h \
     shared/shell.h \
-    pragaShell.h
+    pragaShell.h \
+    shared/dialogRadiation.h
 
 
 FORMS    += mainWindow.ui \

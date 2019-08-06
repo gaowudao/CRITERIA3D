@@ -14,6 +14,7 @@ TEMPLATE = app
 INCLUDEPATH += ../../lib/mathFunctions
 INCLUDEPATH += ../../lib/gis
 INCLUDEPATH += ../../lib/soilFluxes3D/header
+
 unix:{
     INCLUDEPATH += /usr/include/qwt/
 }
@@ -45,7 +46,7 @@ FORMS    += \
     mainwindow.ui
 
 win32:{
-    include($$(QWT_ROOT)\features\qwt.prf)
+    include($$(QWT_ROOT)/features/qwt.prf)
 }
 unix:{
     include(/usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/qwt.prf)

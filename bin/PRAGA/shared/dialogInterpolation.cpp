@@ -32,6 +32,7 @@ DialogInterpolation::DialogInterpolation(Project *myProject)
        gridAggregationMethodEdit.setCurrentIndex(indexAggregation);
 
     layoutAggregation->addWidget(&gridAggregationMethodEdit);
+    layoutMain->addLayout(layoutAggregation);
 
     // topographic distances
     topographicDistanceEdit = new QCheckBox(tr("use topographic distance"));
@@ -145,30 +146,6 @@ void DialogInterpolation::editProxies()
         redrawProxies();
 }
 
-void DialogInterpolation::writeInterpolationSettings()
-{
-    _paramSettings->beginGroup("interpolation");
-    _paramSettings->setValue("aggregationMethod", gridAggregationMethodEdit.itemData(gridAggregationMethodEdit.currentIndex()).toString());
-    _paramSettings->setValue("algorithm", algorithmEdit.itemData(algorithmEdit.currentIndex()).toString());
-    _paramSettings->setValue("lapseRateCode", lapseRateCodeEdit->isChecked());
-    _paramSettings->setValue("thermalInversion", thermalInversionEdit->isChecked());
-    _paramSettings->setValue("topographicDistance", topographicDistanceEdit->isChecked());
-    _paramSettings->setValue("optimalDetrending", optimalDetrendingEdit->isChecked());
-    _paramSettings->setValue("useDewPoint", useDewPointEdit->isChecked());
-    _paramSettings->setValue("thermalInversion", thermalInversionEdit->isChecked());
-    _paramSettings->setValue("minRegressionR2", minRegressionR2Edit.text());
-    _paramSettings->endGroup();
-
-    Crit3DProxy* myProxy;
-    for (int i=0; i < _interpolationSettings->getProxyNr(); i++)
-    {
-        myProxy = _interpolationSettings->getProxy(i);
-        _paramSettings->beginGroup("proxy_" + QString::fromStdString(myProxy->getName()));
-        _paramSettings->setValue("active", _interpolationSettings->getSelectedCombination().getValue(i));
-        _paramSettings->endGroup();
-    }
-}
-
 void DialogInterpolation::accept()
 {
     if (minRegressionR2Edit.text().isEmpty())
@@ -203,7 +180,7 @@ void DialogInterpolation::accept()
     _qualityInterpolationSettings->setUseLapseRateCode(lapseRateCodeEdit->isChecked());
     _qualityInterpolationSettings->setUseThermalInversion(thermalInversionEdit->isChecked());
 
-    writeInterpolationSettings();
+    _project->saveInterpolationParameters();
 
     QDialog::done(QDialog::Accepted);
     return;

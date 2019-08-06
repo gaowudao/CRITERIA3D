@@ -1,28 +1,34 @@
 #include "dialogSettings.h"
 #include "commonConstants.h"
 
+#define EDIT_SIZE 100
+
 
 GeoTab::GeoTab(gis::Crit3DGisSettings *gisSettings)
 {
     QLabel *startLocationLat = new QLabel(tr("<b>start location latitude </b> (negative for Southern Emisphere) [decimal degrees]:"));
     QDoubleValidator *doubleValLat = new QDoubleValidator( -90.0, 90.0, 5, this );
     doubleValLat->setNotation(QDoubleValidator::StandardNotation);
-    startLocationLatEdit.setFixedWidth(130);
+    startLocationLatEdit.setFixedWidth(EDIT_SIZE);
     startLocationLatEdit.setValidator(doubleValLat);
     startLocationLatEdit.setText(QString::number(gisSettings->startLocation.latitude));
-
 
     QLabel *startLocationLon = new QLabel(tr("<b>start location longitude </b> [decimal degrees]:"));
     QDoubleValidator *doubleValLon = new QDoubleValidator( -180.0, 180.0, 5, this );
     doubleValLon->setNotation(QDoubleValidator::StandardNotation);
-    startLocationLonEdit.setFixedWidth(130);
+    startLocationLonEdit.setFixedWidth(EDIT_SIZE);
     startLocationLonEdit.setValidator(doubleValLon);
     startLocationLonEdit.setText(QString::number(gisSettings->startLocation.longitude));
 
     QLabel *utmZone = new QLabel(tr("UTM zone:"));
-    utmZoneEdit.setFixedWidth(130);
+    utmZoneEdit.setFixedWidth(EDIT_SIZE);
     utmZoneEdit.setValidator(new QIntValidator(0, 60));
     utmZoneEdit.setText(QString::number(gisSettings->utmZone));
+
+    QLabel *timeZone = new QLabel(tr("Time zone:"));
+    timeZoneEdit.setFixedWidth(EDIT_SIZE);
+    timeZoneEdit.setValidator(new QIntValidator(-12, 12));
+    timeZoneEdit.setText(QString::number(gisSettings->timeZone));
 
     QLabel *timeConvention = new QLabel(tr("Time Convention:"));
     QButtonGroup *group = new QButtonGroup();
@@ -53,6 +59,9 @@ GeoTab::GeoTab(gis::Crit3DGisSettings *gisSettings)
     mainLayout->addWidget(utmZone);
     mainLayout->addWidget(&utmZoneEdit);
 
+    mainLayout->addWidget(timeZone);
+    mainLayout->addWidget(&timeZoneEdit);
+
     buttonLayout->addWidget(timeConvention);
     buttonLayout->addWidget(&utc);
     buttonLayout->addWidget(&localTime);
@@ -68,28 +77,28 @@ QualityTab::QualityTab(Crit3DQuality *quality)
     QLabel *referenceClimateHeight = new QLabel(tr("reference height for quality control [m]:"));
     QDoubleValidator *doubleValHeight = new QDoubleValidator( -100.0, 100.0, 5, this );
     doubleValHeight->setNotation(QDoubleValidator::StandardNotation);
-    referenceClimateHeightEdit.setFixedWidth(130);
+    referenceClimateHeightEdit.setFixedWidth(EDIT_SIZE);
     referenceClimateHeightEdit.setValidator(doubleValHeight);
     referenceClimateHeightEdit.setText(QString::number(quality->getReferenceHeight()));
 
     QLabel *deltaTSuspect = new QLabel(tr("difference in temperature in climatological control (suspect value) [degC]:"));
     QDoubleValidator *doubleValT = new QDoubleValidator( -100.0, 100.0, 5, this );
     doubleValT->setNotation(QDoubleValidator::StandardNotation);
-    deltaTSuspectEdit.setFixedWidth(130);
+    deltaTSuspectEdit.setFixedWidth(EDIT_SIZE);
     deltaTSuspectEdit.setValidator(doubleValT);
     deltaTSuspectEdit.setText(QString::number(quality->getDeltaTSuspect()));
 
 
     QLabel *deltaTWrong = new QLabel(tr("difference in temperature in climatological control (wrong value) [degC]:"));
-    deltaTWrongEdit.setFixedWidth(130);
+    deltaTWrongEdit.setFixedWidth(EDIT_SIZE);
     deltaTWrongEdit.setValidator(doubleValT);
     deltaTWrongEdit.setText(QString::number(quality->getDeltaTWrong()));
 
     QLabel *humidityTolerance = new QLabel(tr("instrumental maximum allowed relative humidity [%]:"));
-    humidityToleranceEdit.setFixedWidth(130);
+    humidityToleranceEdit.setFixedWidth(EDIT_SIZE);
     QDoubleValidator *doubleValPerc = new QDoubleValidator( 0.0, 100.0, 5, this );
     doubleValPerc->setNotation(QDoubleValidator::StandardNotation);
-    humidityToleranceEdit.setFixedWidth(130);
+    humidityToleranceEdit.setFixedWidth(EDIT_SIZE);
     humidityToleranceEdit.setValidator(doubleValPerc);
     humidityToleranceEdit.setText(QString::number(quality->getRelHumTolerance()));
 
@@ -113,31 +122,31 @@ QualityTab::QualityTab(Crit3DQuality *quality)
 MeteoTab::MeteoTab(Crit3DMeteoSettings *meteoSettings)
 {
     QLabel *minimumPercentage = new QLabel(tr("minimum percentage of valid data [%]:"));
-    minimumPercentageEdit.setFixedWidth(130);
+    minimumPercentageEdit.setFixedWidth(EDIT_SIZE);
     QDoubleValidator *doubleValPerc = new QDoubleValidator( 0.0, 100.0, 5, this );
     doubleValPerc->setNotation(QDoubleValidator::StandardNotation);
-    minimumPercentageEdit.setFixedWidth(130);
+    minimumPercentageEdit.setFixedWidth(EDIT_SIZE);
     minimumPercentageEdit.setValidator(doubleValPerc);
     minimumPercentageEdit.setText(QString::number(meteoSettings->getMinimumPercentage()));
 
     QLabel *rainfallThreshold = new QLabel(tr("minimum value for valid precipitation [mm]:"));
     QDoubleValidator *doubleValThreshold = new QDoubleValidator( 0.0, 20.0, 5, this );
     doubleValThreshold->setNotation(QDoubleValidator::StandardNotation);
-    rainfallThresholdEdit.setFixedWidth(130);
+    rainfallThresholdEdit.setFixedWidth(EDIT_SIZE);
     rainfallThresholdEdit.setValidator(doubleValThreshold);
     rainfallThresholdEdit.setText(QString::number(meteoSettings->getRainfallThreshold()));
 
     QLabel *thomThreshold = new QLabel(tr("threshold for thom index [degC]:"));
     QDoubleValidator *doubleValThom = new QDoubleValidator( -100.0, 100.0, 5, this );
     doubleValThom->setNotation(QDoubleValidator::StandardNotation);
-    thomThresholdEdit.setFixedWidth(130);
+    thomThresholdEdit.setFixedWidth(EDIT_SIZE);
     thomThresholdEdit.setValidator(doubleValThom);
     thomThresholdEdit.setText(QString::number(meteoSettings->getThomThreshold()));
 
     QLabel *transSamaniCoefficient = new QLabel(tr("Samani coefficient for ET0 computation []:"));
     QDoubleValidator *doubleValSamani = new QDoubleValidator( -5.0, 5.0, 5, this );
     doubleValSamani->setNotation(QDoubleValidator::StandardNotation);
-    transSamaniCoefficientEdit.setFixedWidth(130);
+    transSamaniCoefficientEdit.setFixedWidth(EDIT_SIZE);
     transSamaniCoefficientEdit.setValidator(doubleValSamani);
     transSamaniCoefficientEdit.setText(QString::number(meteoSettings->getTransSamaniCoefficient()));
 
@@ -159,20 +168,15 @@ MeteoTab::MeteoTab(Crit3DMeteoSettings *meteoSettings)
 }
 
 
-DialogSettings::DialogSettings(QSettings *projectSettings, QSettings *settings, gis::Crit3DGisSettings *gisSettings, Crit3DQuality *quality, Crit3DMeteoSettings *meteoSettings)
+DialogSettings::DialogSettings(Project* myProject)
 {
-    _pathSettings = projectSettings;
-    _paramSettings = settings;
-
-    _geoSettings = gisSettings;
-    _qualitySettings = quality;
-    _meteoSettings = meteoSettings;
+    project_ = myProject;
 
     setWindowTitle(tr("Parameters"));
     setFixedSize(650,700);
-    geoTab = new GeoTab(gisSettings);
-    qualityTab = new QualityTab(quality);
-    metTab = new MeteoTab(meteoSettings);
+    geoTab = new GeoTab(&(project_->gisSettings));
+    qualityTab = new QualityTab(myProject->quality);
+    metTab = new MeteoTab(myProject->meteoSettings);
 
     tabWidget = new QTabWidget;
     tabWidget->addTab(geoTab, tr("GEO"));
@@ -190,16 +194,16 @@ DialogSettings::DialogSettings(QSettings *projectSettings, QSettings *settings, 
     setLayout(mainLayout);
 }
 
+
 bool DialogSettings::acceptValues()
 {
-
-    if (geoTab->startLocationLatEdit.text().isEmpty())
+    if (geoTab->startLocationLatEdit.text().isEmpty() || geoTab->startLocationLatEdit.text() == "0")
     {
         QMessageBox::information(nullptr, "Missing Parameter", "insert start location latitude");
         return false;
     }
 
-    if (geoTab->startLocationLonEdit.text().isEmpty())
+    if (geoTab->startLocationLonEdit.text().isEmpty() || geoTab->startLocationLonEdit.text() == "0")
     {
         QMessageBox::information(nullptr, "Missing Parameter", "insert start location longitude");
         return false;
@@ -211,9 +215,24 @@ bool DialogSettings::acceptValues()
         return false;
     }
 
+    if (geoTab->timeZoneEdit.text().isEmpty())
+    {
+        QMessageBox::information(nullptr, "Missing Parameter", "insert time zone");
+        return false;
+    }
+
     if (!geoTab->utc.isChecked() && !geoTab->localTime.isChecked())
     {
         QMessageBox::information(nullptr, "Missing time convention", "choose UTC or local time");
+        return false;
+    }
+
+    // check UTM/time zone
+    int utmZone = geoTab->utmZoneEdit.text().toInt();
+    int timeZone = geoTab->timeZoneEdit.text().toInt();
+    if (! gis::isValidUtmTimeZone(utmZone, timeZone))
+    {
+        QMessageBox::information(nullptr, "Wrong parameter", "Correct UTM zone or Time zone");
         return false;
     }
 
@@ -271,59 +290,33 @@ bool DialogSettings::acceptValues()
 
     // store elaboration values
 
-    _geoSettings->startLocation.latitude = geoTab->startLocationLatEdit.text().toDouble();
-    _geoSettings->startLocation.longitude = geoTab->startLocationLonEdit.text().toDouble();
-    _geoSettings->utmZone = geoTab->utmZoneEdit.text().toInt();
-    _geoSettings->isUTC = geoTab->utc.isChecked();
+    project_->gisSettings.startLocation.latitude = geoTab->startLocationLatEdit.text().toDouble();
+    project_->gisSettings.startLocation.longitude = geoTab->startLocationLonEdit.text().toDouble();
+    project_->gisSettings.utmZone = geoTab->utmZoneEdit.text().toInt();
+    project_->gisSettings.timeZone = geoTab->timeZoneEdit.text().toInt();
+    project_->gisSettings.isUTC = geoTab->utc.isChecked();
 
-    _qualitySettings->setReferenceHeight(qualityTab->referenceClimateHeightEdit.text().toFloat());
-    _qualitySettings->setDeltaTSuspect(qualityTab->deltaTSuspectEdit.text().toFloat());
-    _qualitySettings->setDeltaTWrong(qualityTab->deltaTWrongEdit.text().toFloat());
-    _qualitySettings->setRelHumTolerance(qualityTab->humidityToleranceEdit.text().toFloat());
+    project_->quality->setReferenceHeight(qualityTab->referenceClimateHeightEdit.text().toFloat());
+    project_->quality->setDeltaTSuspect(qualityTab->deltaTSuspectEdit.text().toFloat());
+    project_->quality->setDeltaTWrong(qualityTab->deltaTWrongEdit.text().toFloat());
+    project_->quality->setRelHumTolerance(qualityTab->humidityToleranceEdit.text().toFloat());
 
-    _meteoSettings->setMinimumPercentage(metTab->minimumPercentageEdit.text().toFloat());
-    _meteoSettings->setRainfallThreshold(metTab->rainfallThresholdEdit.text().toFloat());
-    _meteoSettings->setThomThreshold(metTab->thomThresholdEdit.text().toFloat());
-    _meteoSettings->setTransSamaniCoefficient(metTab->transSamaniCoefficientEdit.text().toFloat());
+    project_->meteoSettings->setMinimumPercentage(metTab->minimumPercentageEdit.text().toFloat());
+    project_->meteoSettings->setRainfallThreshold(metTab->rainfallThresholdEdit.text().toFloat());
+    project_->meteoSettings->setThomThreshold(metTab->thomThresholdEdit.text().toFloat());
+    project_->meteoSettings->setTransSamaniCoefficient(metTab->transSamaniCoefficientEdit.text().toFloat());
 
-    saveSettings();
+    project_->saveSettings();
+    project_->saveParameters();
 
     return true;
 }
 
 void DialogSettings::accept()
 {
-    if (acceptValues())
-    {
-        QDialog::done(QDialog::Accepted);
-        return;
-    }
+    if (acceptValues()) QDialog::done(QDialog::Accepted);
 }
 
-void DialogSettings::saveSettings()
-{
-
-    _pathSettings->beginGroup("location");
-    _pathSettings->setValue("lat", geoTab->startLocationLatEdit.text());
-    _pathSettings->setValue("lon", geoTab->startLocationLonEdit.text());
-    _pathSettings->setValue("utm_zone", geoTab->utmZoneEdit.text());
-    _pathSettings->setValue("is_utc", geoTab->utc.isChecked());
-    _pathSettings->endGroup();
-
-    _paramSettings->beginGroup("quality");
-    _paramSettings->setValue("reference_height", qualityTab->referenceClimateHeightEdit.text());
-    _paramSettings->setValue("delta_temperature_suspect", qualityTab->deltaTSuspectEdit.text());
-    _paramSettings->setValue("delta_temperature_wrong", qualityTab->deltaTWrongEdit.text());
-    _paramSettings->setValue("relhum_tolerance", qualityTab->humidityToleranceEdit.text());
-    _paramSettings->endGroup();
-
-    _paramSettings->beginGroup("meteo");
-    _paramSettings->setValue("min_percentage", metTab->minimumPercentageEdit.text());
-    _paramSettings->setValue("prec_threshold", metTab->rainfallThresholdEdit.text());
-    _paramSettings->setValue("samani_coefficient", metTab->transSamaniCoefficientEdit.text());
-    _paramSettings->setValue("thom_threshold", metTab->thomThresholdEdit.text());
-    _paramSettings->endGroup();
-}
 
 QTabWidget *DialogSettings::getTabWidget() const
 {
@@ -333,14 +326,4 @@ QTabWidget *DialogSettings::getTabWidget() const
 void DialogSettings::setTabWidget(QTabWidget *value)
 {
     tabWidget = value;
-}
-
-QSettings *DialogSettings::getParamSettings() const
-{
-    return _paramSettings;
-}
-
-void DialogSettings::setParamSettings(QSettings *paramSettings)
-{
-    _paramSettings = paramSettings;
 }

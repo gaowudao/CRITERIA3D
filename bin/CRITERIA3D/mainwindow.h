@@ -1,21 +1,9 @@
 #ifndef MAINWINDOW_H
 #define MAINWINDOW_H
 
-    #include <QMainWindow>
-    #include <QList>
-    #include <QActionGroup>
-
-    #include "tileSources/OSMTileSource.h"
-    #include "Position.h"
-    #include "rubberBand.h"
-    #include "MapGraphicsView.h"
-    #include "MapGraphicsScene.h"
-    #include "stationMarker.h"
-    #include "mapGraphicsRasterObject.h"
-    #include "colorLegend.h"
+    #include "sharedMainWindow.h"
     #include "viewer3d.h"
 
-    enum visualizationType {showNone, showLocation, showCurrentVariable};
     enum mapType {mapNone, mapDEM, mapSoil, mapVariable};
 
     namespace Ui
@@ -23,10 +11,8 @@
         class MainWindow;
     }
 
-    /*!
-     * \brief The MainWindow class
-     */
-    class MainWindow : public QMainWindow
+
+    class MainWindow : public SharedMainWindow
     {
         Q_OBJECT
 
@@ -38,10 +24,11 @@
 
     private slots:
 
+        void on_rasterOpacitySlider_sliderMoved(int position);
+        void on_meteoGridOpacitySlider_sliderMoved(int position);
         void on_actionLoadDEM_triggered();
         void on_actionOpen_meteo_points_DB_triggered();
         void on_actionOpen_meteo_grid_triggered();
-        void on_rasterOpacitySlider_sliderMoved(int position);
         void on_actionMapOpenStreetMap_triggered();
         void on_actionMapESRISatellite_triggered();
         void on_actionMapTerrain_triggered();
@@ -61,7 +48,6 @@
         void on_actionOpen_soil_data_triggered();
         void on_actionInterpolationSettings_triggered();
         void on_actionCriteria3D_Initialize_triggered();
-        void on_meteoGridOpacitySlider_sliderMoved(int position);
         void on_actionParameters_triggered();
 
         void on_actionView_DEM_triggered();
@@ -103,6 +89,10 @@
 
         void on_actionCompute_AllMeteoMaps_triggered();
 
+        void on_actionOpen_Project_triggered();
+
+        void on_actionRadiationSettings_triggered();
+
     protected:
         /*!
          * \brief mouseReleaseEvent call moveCenter
@@ -125,21 +115,7 @@
     private:
         Ui::MainWindow* ui;
 
-        Position* startCenter;
-        MapGraphicsScene* mapScene;
-        MapGraphicsView* mapView;
-        RasterObject* rasterObj;
-        RasterObject* meteoGridObj;
-        ColorLegend *rasterLegend;
-        ColorLegend *meteoPointsLegend;
-        ColorLegend *meteoGridLegend;
-        QList<StationMarker*> pointList;
-        RubberBand *myRubberBand;
-        visualizationType currentPointsVisualization;
-        QActionGroup *showPointsGroup;
-
         Viewer3D *viewer3D;
-
         int currentMap;
 
         void setMapSource(OSMTileSource::OSMTileType mySource);
@@ -149,7 +125,6 @@
         void updateVariable();
         void updateDateTime();
         void resetMeteoPoints();
-        void addMeteoPoints();
         void redrawMeteoPoints(visualizationType myType, bool updateColorSCale);
         void redrawMeteoGrid();
 
@@ -158,10 +133,16 @@
         void setCurrentRaster(gis::Crit3DRasterGrid *myRaster);
         void interpolateDemGUI();
         void showElabResult(bool updateColorSCale, bool isMeteoGrid, bool isAnomaly);
-        void initializeViewer3D();
+        bool initializeViewer3D();
         bool checkMapVariable(bool isComputed);
         void setMapVariable(meteoVariable myVar, gis::Crit3DRasterGrid *myGrid);
         void contextMenuRequested(const QPoint globalPos);
+
+        void addMeteoPoints();
+        void drawProject();
+        void renderDEM();
+        void clearDEM();
+        void drawMeteoPoints();
     };
 
 

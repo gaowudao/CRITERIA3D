@@ -32,6 +32,7 @@
 
 #include "soil.h"
 #include "commonConstants.h"
+#include <iostream> //debug
 
 namespace soil
 {
@@ -136,35 +137,32 @@ namespace soil
         this->id = NODATA;
         this->totalDepth = 0;
         this->nrHorizons = 0;
-        this->horizon = nullptr;
     }
 
     void Crit3DSoil::initialize(int idSoil, int nrHorizons)
     {
         this->cleanSoil();
         this->id = idSoil;
-        this->nrHorizons = nrHorizons;
-        this->horizon = new Crit3DHorizon[unsigned(this->nrHorizons)];
+        this->nrHorizons = unsigned(nrHorizons);
+        this->horizon.resize(this->nrHorizons);
         this->totalDepth = 0;
     }
 
-    void Crit3DSoil::addHorizon(int nHorizon)
+    void Crit3DSoil::addHorizon(int nHorizon, Crit3DHorizon* newHorizon)
     {
+        this->horizon.insert(this->horizon.begin() + nHorizon, *newHorizon);
         this->nrHorizons = nrHorizons + 1;
-        // TO DO
     }
 
     void Crit3DSoil::deleteHorizon(int nHorizon)
     {
+        this->horizon.erase(this->horizon.begin() + nHorizon);
         this->nrHorizons = nrHorizons - 1;
-        // TO DO
     }
 
     void Crit3DSoil::cleanSoil()
     {
-        if (this->horizon != nullptr)
-            delete [] (this->horizon);
-
+        this->horizon.clear();
         this->id = NODATA;
         this->nrHorizons = 0;
         this->totalDepth = 0;

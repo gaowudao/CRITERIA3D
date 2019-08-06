@@ -7,7 +7,6 @@
 #include "basicMath.h"
 #include "formInfo.h"
 
-#include <iostream> //debug
 
 bool PragaProject::getIsElabMeteoPointsValue() const
 {
@@ -24,11 +23,28 @@ void PragaProject::initializePragaProject()
     clima = new Crit3DClimate();
     climaFromDb = nullptr;
     referenceClima = nullptr;
+    pragaDefaultSettings = nullptr;
 }
 
 void PragaProject::clearPragaProject()
 {
     if (isProjectLoaded) clearProject();
+}
+
+bool PragaProject::createPragaProject(QString path_, QString name_, QString description_)
+{
+    if (! createProject(path_, name_, description_))
+        return false;
+
+    savePragaParameters();
+
+    return true;
+}
+
+void PragaProject::savePragaProject()
+{
+    saveProject();
+    savePragaParameters();
 }
 
 bool PragaProject::loadPragaProject(QString myFileName)
@@ -49,7 +65,11 @@ bool PragaProject::loadPragaProject(QString myFileName)
         return false;
 
     isProjectLoaded = true;
-    logInfo("Project loaded");
+
+    if (projectName != "")
+    {
+        logInfo("Project " + projectName + " loaded");
+    }
     return true;
 }
 
@@ -60,6 +80,8 @@ PragaProject::PragaProject()
 
 bool PragaProject::loadPragaSettings()
 {
+    pragaDefaultSettings = new QSettings(getDefaultPath() + PATH_SETTINGS + "pragaDefault.ini", QSettings::IniFormat);
+
     Q_FOREACH (QString group, parameters->childGroups())
     {
         if (group == "elaboration")
@@ -100,27 +122,6 @@ bool PragaProject::loadPragaSettings()
     return true;
 }
 
-bool PragaProject::interpolationMeteoGrid(meteoVariable myVar, frequencyType myFrequency, const Crit3DTime& myTime,
-                              gis::Crit3DRasterGrid *myRaster, bool showInfo)
-{
-    if (meteoGridDbHandler != nullptr)
-    {
-        if (!interpolationDem(myVar, myTime, myRaster, showInfo))
-        {
-            return false;
-        }
-        meteoGridDbHandler->meteoGrid()->aggregateMeteoGrid(myVar, myFrequency, myTime.date, myTime.getHour(),
-                            myTime.getMinutes(), &DEM, dataRaster, interpolationSettings.getMeteoGridAggrMethod());
-        meteoGridDbHandler->meteoGrid()->fillMeteoRaster();
-    }
-    else
-    {
-        errorString = "Open a Meteo Grid before.";
-        return false;
-    }
-
-    return true;
-}
 
 bool PragaProject::saveGrid(meteoVariable myVar, frequencyType myFrequency, const Crit3DTime& myTime, bool showInfo)
 {
@@ -132,7 +133,7 @@ bool PragaProject::saveGrid(meteoVariable myVar, frequencyType myFrequency, cons
     {
         if (showInfo)
         {
-            QString infoStr = "Save grid daily data";
+            QString infoStr = "Save meteo grid daily data";
             infoStep = myInfo.start(infoStr, this->meteoGridDbHandler->gridStructure().header().nrRows);
         }
 
@@ -163,7 +164,7 @@ bool PragaProject::saveGrid(meteoVariable myVar, frequencyType myFrequency, cons
     {
         if (showInfo)
         {
-            QString infoStr = "Save grid hourly data";
+            QString infoStr = "Save meteo grid hourly data";
             infoStep = myInfo.start(infoStr, this->meteoGridDbHandler->gridStructure().header().nrRows);
         }
 
@@ -1317,4 +1318,448 @@ bool PragaProject::averageSeriesOnZonesMeteoGrid(meteoVariable variable, meteoCo
      }
      return true;
 
+}
+
+
+void PragaProject::savePragaParameters()
+{
+    parameters->beginGroup("elaboration");
+        parameters->setValue("anomaly_pts_max_distance", QString::number(double(clima->getElabSettings()->getAnomalyPtsMaxDistance())));
+        parameters->setValue("anomaly_pts_max_delta_z", QString::number(double(clima->getElabSettings()->getAnomalyPtsMaxDeltaZ())));
+        parameters->setValue("grid_min_coverage", QString::number(double(clima->getElabSettings()->getGridMinCoverage())));
+        parameters->setValue("compute_tmed", clima->getElabSettings()->getAutomaticTmed());
+        parameters->setValue("compute_et0hs", clima->getElabSettings()->getAutomaticETP());
+        parameters->setValue("merge_joint_stations", clima->getElabSettings()->getMergeJointStations());
+    parameters->endGroup();
+}
+
+
+
+bool PragaProject::interpolationMeteoGridPeriod(QDate dateIni, QDate dateFin, std::vector <meteoVariable> variables)
+{
+    // check dates
+    if (dateIni.isNull() || dateFin.isNull() || dateIni > dateFin)
+    {
+        logError("Wrong period");
+        return false;
+    }
+
+    return true;
+
+    /*
+    Public Function InterpolationERG5v2(ByVal checkTables As Boolean, _
+        ByVal myStartDate As Date, ByVal myEndDate As Date, _
+        ByVal myOrogIndexMapName As String, myUrbanMapFileNames() As String, myUrbanMapYears() As Integer, _
+        ByVal writeVM As Boolean, ByVal saveRasters As Boolean, _
+        ByVal computeTemp As Boolean, ByVal computePrec As Boolean, _
+        ByVal computeRelHum As Boolean, ByVal computeRad As Boolean, _
+        ByVal computeWind As Boolean) As Boolean
+
+        Dim myHour As Byte, i As Byte
+        Dim myDate As Date
+        Dim isPeriodCorrect As Boolean
+        Dim infoString As String
+        Dim myHandleFile As Integer, myFileName As String
+
+        InterpolationERG5v2 = False
+
+        InterpolationCmd.SetInterpolationType INTERPOLATION_TYPE_DEM
+
+        ' IMPOSTAZIONI RADIAZIONE
+        Radiation.SetComputeRealData True
+        Radiation.SetTransmissivityUseTotal False
+        Radiation.SetAlgorithm Radiation.RADIATION_ALGORITHM_RSUN
+        Radiation.SetTransmissivityModel Radiation.TRANSMISSIVITY_MODEL_HOURLYRAD_FIXEDWINDOW
+        Radiation.SetTransmissivityComputationPeriod Radiation.TRANSMISSIVITY_COMPUTATION_DYNAMIC
+        Radiation.SetClearSkyTransmissivityMode Radiation.CLEAR_SKY_TRANSMISSIVITY_MODE_FIXED
+        Radiation.SetClearSkyTransmissivity Radiation.CLEAR_SKY_TRANSMISSIVITY_DEFAULT
+        Radiation.SetComputeShadowing True
+        Radiation.SetShadowFactor 1
+        Radiation.SetTiltMode Radiation.TILT_TYPE_DEM
+        Radiation.SetLandUse Radiation.LAND_USE_INDUSTRIAL
+        Radiation.SetLinkeMode Radiation.RAD_MODE_MONTHLY
+
+        'AGGREGATION POINTS
+        If Not MeteoGrid.isAggregationDefined Then
+            If Not dbGridManagement.findGridAggregationPoints(GIS.DEM, MeteoGrid, True) Then
+                PragaShell.setErrorMsg "Error defining aggregation points"
+                Exit Function
+            End If
+        End If
+
+        'LOAD OROG INDEX MAP
+        If Interpolation.GetUseOrogIndex Then
+            PragaShell.StartInfo "Loading orog index map...", 0
+            If GIS.ReadESRIGrid(myOrogIndexMapName, Interpolation.OrogIndexMap) Then
+                Dim myMap As GIS.grid
+                GIS.resampleGridWithHeader Interpolation.OrogIndexMap, myMap, GIS.DEM.header, Definitions.ELAB_MEAN, 0, False
+                GIS.clearGrid Interpolation.OrogIndexMap
+                Interpolation.OrogIndexMap = myMap
+                GIS.clearGrid myMap
+            Else
+                PragaShell.setErrorMsg "Error loading orog index map: " & myOrogIndexMapName
+                Exit Function
+            End If
+        End If
+
+        'LOAD URBAN MAPS
+        If Interpolation.GetUseUrban Then
+            PragaShell.StartInfo "Checking urban maps...", 0
+            If Not Interpolation.createUrbanMapSeries(myUrbanMapFileNames, myUrbanMapYears) Then Exit Function
+        End If
+
+        'CHECK MAPS
+        If Not checkLoadedGrids(INTERPOLATION_TYPE_DEM) Then Exit Function
+
+        Dim grdTemperature As GIS.grid, grdDewTemperature As GIS.grid
+        Dim grdHumidity As GIS.grid, grdPrecipitation As GIS.grid
+        Dim grdRadiation As GIS.grid, grdTransmissivity As GIS.grid
+        Dim grdWindX As GIS.grid, grdWindY As GIS.grid, grdWindInt As GIS.grid, grdWindDir As GIS.grid
+        Dim grdEtpPenman As GIS.grid, grdEtpHargreaves As GIS.grid, grdLeafWetness As GIS.grid, grdPrecPreviousHour As GIS.grid
+        Dim grdTmin As GIS.grid, grdTmax As GIS.grid, grdPrecDaily As GIS.grid, grdWindMax As GIS.grid
+
+        Dim myYearUrban As Integer
+        Dim myFilenamePre As String, myFilenamePost As String
+        Dim computeEtpPenman As Boolean, computeEtpHargreaves As Boolean
+        Dim computeLeafWetness As Boolean
+
+        computeLeafWetness = (computePrec And computeRelHum)
+        computeEtpPenman = (computeTemp And computeRelHum And computeWind And computeRad)
+        computeEtpHargreaves = computeTemp
+
+        myYearUrban = Definitions.NO_DATA
+
+        'LOAD TAD MAPS
+        If Interpolation.GetUseTAD() Then
+            If Not InterpolationCmd.loadTADMaps(True) Then
+                Exit Function
+            End If
+        End If
+
+        'check tables
+        If checkTables Then
+            If Not dbGridManagement.checkGridTables(True, True) Then
+                PragaShell.setErrorMsg "Error checking hourly or daily tables"
+                Exit Function
+            End If
+        End If
+
+        'log file
+        myHandleFile = FreeFile
+        myFileName = Environment.Praga_Path & Definitions.PATH_LOG & "InterpolationERG5v2_" & format(Now, "YYYYMMDDHHMM") & ".txt"
+        Open myFileName For Output As myHandleFile
+        Print #myHandleFile, "Interpolation started at " & format(Now, "YYYY-MM-DD HH:MM:SS") & vbCrLf
+        Print #myHandleFile, "From " & format(myStartDate, "YYYY-MM-DD") & " to "; format(myEndDate, "YYYY-MM-DD")
+        Print #myHandleFile, "Interpolation method: "; Interpolation.GetInterpolationMethod
+        Print #myHandleFile, "Active proxies: " & _
+            IIf(Interpolation.GetUseOrography, "orography", "") & _
+            IIf(Interpolation.GetUseInversion, " (with inversions)", "") & _
+            IIf(Interpolation.GetUseOrogIndex, ", orog index", "") & _
+            IIf(Interpolation.GetUseSeaDist, ", sea distance", "") & _
+            IIf(Interpolation.GetUseUrban, ", urban fraction", "") & _
+            IIf(Interpolation.GetUseAspect, ", aspect", "")
+        Print #myHandleFile, "tad:" & IIf(Interpolation.GetUseTAD, "active", "not active")
+        Print #myHandleFile, "JRC method: " & IIf(Interpolation.GetUseJRC, "active (threshold: " & format(Interpolation.getJRCThreshold, "0.000"), "not active")
+        Print #myHandleFile, "dew point method: " & IIf(Interpolation.GetUseDewPoint, "active", "not active")
+        Print #myHandleFile, "Min R2: " & format(Interpolation.GetSigPearsson, "0.000")
+        Print #myHandleFile, "Aggregation method: " & Interpolation.getAggregationMethod
+        Print #myHandleFile, "Optimal detrending: "; IIf(Interpolation.getUseBestDetrending, "active", "not active")
+        Print #myHandleFile, "Lapse rate classes: " & IIf(Interpolation.getUseLapseRatePrimaryStations, "active", "not active")
+        Print #myHandleFile, "RADIATION"
+        Print #myHandleFile, "computeRealData: " & IIf(Radiation.GetComputeRealData, "active", "not active")
+        Print #myHandleFile, "use total transmissivity: " & IIf(Radiation.GetTransmissivityUsetotal, "active", "not active")
+        Print #myHandleFile, "algorithm: " & Radiation.GetAlgorithmName
+        Print #myHandleFile, "transmissivity model: " & Radiation.GetTransmissivityModelName
+        Print #myHandleFile, "transmissivity period: " & Radiation.GetTransmissivityComputationPeriodName
+        Print #myHandleFile, "clear sky transmissivity mode: " & Radiation.GetClearSkyTransmissivityModeName
+        Print #myHandleFile, "clear sky transmissivity: " & Radiation.GetClearSkyTransmissivity
+        Print #myHandleFile, "computeShadowing: " & IIf(Radiation.GetComputeShadowing, "active", "not active")
+        Print #myHandleFile, "shadow factor: " & Radiation.GetShadowFactor
+        Print #myHandleFile, "tilt mode: " & Radiation.GetTiltModeName
+        Print #myHandleFile, "Linke mode: " & Radiation.GetLinkeModeName
+        Print #myHandleFile, "land use (Linke): " & Radiation.GetLandUse
+
+        For myDate = myStartDate To myEndDate
+
+            If Interpolation.GetUseUrban Then
+                If myYearUrban <> Year(myDate) And _
+                    UBound(Interpolation.UrbanFractionMapSeries) > 0 _
+                    And Interpolation.GetUseUrban Then
+
+                        myYearUrban = Year(myDate)
+
+                        PragaShell.SetInfoOnlyText "Computing urban fraction for year " & myYearUrban
+
+                        UrbanFractionFromSeries myYearUrban
+                End If
+            End If
+
+            passaggioDati.setCurrentDay myDate
+            DBPointsManagement.InitializePointsData passaggioDati.currentDay
+
+            PragaShell.SetInfoOnlyText "Loading hourly data - " & format(myDate, "DD/MM/YYYY")
+            Print #myHandleFile, vbCrLf & format(myDate, "DD/MM/YYYY")
+            Print #myHandleFile, "HOURLY VARIABLES"
+
+            If DBPointsManagement.loadPointHourly_Date(myDate, True, Definitions.INFO_NOT_VISUALIZE) Then
+
+                If computeRad Then
+                    Radiation.InitializeRadiationMaps GIS.DEM
+                    Radiation.InitializeTransmissivityMap GIS.DEM
+                End If
+
+                dbGridManagement.initializeMeteoGrid passaggioDati.currentDay
+
+                infoString = format(myDate, "DD/MM/YYYY") & " H:" & CStr(myHour) & " "
+                PragaShell.StartInfo "Interpolating data - " & infoString, 24
+
+                'PREC HOUR 0
+                If computePrec Then
+                    PragaShell.SetInfoOnlyText infoString & Definitions.HOURLY_PREC
+                    passaggioDati.setCurrentHour 0
+                    Print #myHandleFile, "HOUR:00"
+                    If InterpolationSingle(Definitions.HOURLY_PREC, False, False, False) Then
+                        grdPrecPreviousHour = GIS.DEM_Var
+                        Print #myHandleFile, vbCrLf & getInfoInterpolation(Definitions.HOURLY_PREC)
+                    End If
+                End If
+
+                For myHour = 1 To 24
+                    PragaShell.updateInfo myHour
+                    Print #myHandleFile, "HOUR:" & format(myHour, "00")
+
+                    myFilenamePre = Praga_Path & Definitions.PATH_OUTPUT
+                    myFilenamePost = "_" & format(myHour, "00") & ".flt"
+
+                    passaggioDati.setCurrentHour myHour
+
+                    infoString = format(myDate, "DD/MM/YYYY") & " H:" & CStr(myHour) & " "
+
+                    'Tavg
+                    If computeTemp Then
+                        PragaShell.SetInfoOnlyText infoString & Definitions.HOURLY_TAVG
+                        If InterpolationSingle(Definitions.HOURLY_TAVG, False, False, False) Then
+                            grdTemperature = GIS.DEM_Var
+                            Print #myHandleFile, getInfoInterpolation(Definitions.HOURLY_TAVG)
+                        End If
+                    End If
+
+                    'RHavg
+                    If computeRelHum Then
+                        If Interpolation.GetUseDewPoint Then
+                            PragaShell.SetInfoOnlyText infoString & Definitions.HOURLY_TDEW
+                            If InterpolationSingle(Definitions.HOURLY_TDEW, False, False, False) Then
+                                grdDewTemperature = GIS.DEM_Var
+                                computeGridUmedFromTdew grdTemperature, grdDewTemperature, grdHumidity
+                                Print #myHandleFile, getInfoInterpolation(Definitions.HOURLY_TDEW)
+                            End If
+                        Else
+                            PragaShell.SetInfoOnlyText infoString & Definitions.HOURLY_RHAVG
+                            If InterpolationSingle(Definitions.HOURLY_RHAVG, False, False, False) Then
+                                grdHumidity = GIS.DEM_Var
+                                Print #myHandleFile, getInfoInterpolation(Definitions.HOURLY_RHAVG)
+                            End If
+                        End If
+                    End If
+
+                    'PREC
+                    If computePrec Then
+                        PragaShell.SetInfoOnlyText infoString & Definitions.HOURLY_PREC
+                        If InterpolationSingle(Definitions.HOURLY_PREC, False, False, False) Then
+                            grdPrecipitation = GIS.DEM_Var
+                            Print #myHandleFile, getInfoInterpolation(Definitions.HOURLY_PREC)
+                        End If
+                    End If
+
+                    'WIND
+                    If computeWind Then
+                        'interpolate vector wind because we need direction
+                        PragaShell.SetInfoOnlyText infoString & Definitions.HOURLY_VMED_X
+                        If InterpolationSingle(Definitions.HOURLY_VMED_X, False, False, False) Then
+                            grdWindX = GIS.DEM_Var
+                            Print #myHandleFile, getInfoInterpolation(Definitions.HOURLY_VMED_X)
+                        End If
+                        PragaShell.SetInfoOnlyText infoString & Definitions.HOURLY_VMED_Y
+                        If InterpolationSingle(Definitions.HOURLY_VMED_Y, False, False, False) Then
+                            grdWindY = GIS.DEM_Var
+                            If grdWindX.isLoaded Then
+                                computeGridWind grdWindX, grdWindY, grdWindInt, grdWindDir
+                                Print #myHandleFile, getInfoInterpolation(Definitions.HOURLY_VMED_Y)
+                            End If
+                        End If
+                        'interpolate wind intensity as scalar
+                        PragaShell.SetInfoOnlyText infoString & Definitions.HOURLY_VMED_INT
+                        If InterpolationSingle(Definitions.HOURLY_VMED_INT, False, False, False) Then
+                            grdWindInt = GIS.DEM_Var
+                            Print #myHandleFile, getInfoInterpolation(Definitions.HOURLY_VMED_INT)
+                        End If
+                    End If
+
+                    'RAD
+                    If computeRad Then
+                        PragaShell.SetInfoOnlyText infoString & Definitions.HOURLY_RAD
+                        If Radiation.ComputeRadiationCurrentTime_GRID(GIS.DEM, True, False) Then
+                            grdRadiation = Radiation.GlobalRadiationMap
+                            grdTransmissivity = Radiation.TransmissivityMap
+                        End If
+                    End If
+
+                    'ETP PENMAN
+                    If computeEtpPenman Then
+                        If grdTemperature.isLoaded And grdHumidity.isLoaded And grdWindInt.isLoaded And grdRadiation.isLoaded Then
+                            computeGridEtpPenman GIS.DEM, grdTemperature, grdHumidity, grdWindInt, grdRadiation, grdTransmissivity, grdEtpPenman
+                        End If
+                    End If
+
+                    'LEAF WETNESS
+                    If computeLeafWetness Then
+                        If grdPrecipitation.isLoaded And grdPrecPreviousHour.isLoaded And grdHumidity.isLoaded Then
+                            computeGridLeafWetness grdPrecipitation, grdPrecPreviousHour, grdHumidity, grdLeafWetness
+                        End If
+                    End If
+
+                    'SAVE HOURLY DEM MAPS
+                    If saveRasters Then
+                        PragaShell.SetInfoOnlyText infoString & "Saving hourly maps..."
+                        If grdTemperature.isLoaded Then Output.saveGridToExport grdTemperature, "flt", myFilenamePre & Definitions.HOURLY_TAVG & myFilenamePost
+                        If grdPrecipitation.isLoaded Then Output.saveGridToExport grdPrecipitation, "flt", myFilenamePre & Definitions.HOURLY_PREC & myFilenamePost
+                        If grdHumidity.isLoaded Then Output.saveGridToExport grdHumidity, "flt", myFilenamePre & Definitions.HOURLY_RHAVG & myFilenamePost
+                        If grdWindInt.isLoaded Then Output.saveGridToExport grdWindInt, "flt", myFilenamePre & Definitions.HOURLY_VMED_INT & myFilenamePost
+                        If grdRadiation.isLoaded Then Output.saveGridToExport grdRadiation, "flt", myFilenamePre & Definitions.HOURLY_RAD & myFilenamePost
+                        If grdEtpPenman.isLoaded Then Output.saveGridToExport grdEtpPenman, "flt", myFilenamePre & Definitions.HOURLY_ET0_PM & myFilenamePost
+                        If grdLeafWetness.isLoaded Then Output.saveGridToExport grdLeafWetness, "flt", myFilenamePre & Definitions.HOURLY_LEAFWETNESS & myFilenamePost
+                    End If
+
+                    'AGGREGATE HOURLY MAPS TO GRID
+                    PragaShell.SetInfoOnlyText infoString & "Aggregating hourly maps..."
+                    If grdTemperature.isLoaded Then InterpolationCmd.AggregateMeteoGrid Definitions.HOURLY_TAVG, grdTemperature, False
+                    If grdPrecipitation.isLoaded Then InterpolationCmd.AggregateMeteoGrid Definitions.HOURLY_PREC, grdPrecipitation, False
+                    If grdHumidity.isLoaded Then InterpolationCmd.AggregateMeteoGrid Definitions.HOURLY_RHAVG, grdHumidity, False
+                    If grdWindX.isLoaded Then InterpolationCmd.AggregateMeteoGrid Definitions.HOURLY_VMED_X, grdWindX, False
+                    If grdWindY.isLoaded Then InterpolationCmd.AggregateMeteoGrid Definitions.HOURLY_VMED_Y, grdWindY, False
+                    If grdWindX.isLoaded And grdWindY.isLoaded Then dbGridManagement.gridComputePolarWind Definitions.HOURLY
+                    If grdRadiation.isLoaded Then InterpolationCmd.AggregateMeteoGrid Definitions.HOURLY_RAD, grdRadiation, False
+                    If grdEtpPenman.isLoaded Then InterpolationCmd.AggregateMeteoGrid Definitions.HOURLY_ET0_PM, grdEtpPenman, False
+                    If grdLeafWetness.isLoaded Then InterpolationCmd.AggregateMeteoGrid Definitions.HOURLY_LEAFWETNESS, grdLeafWetness, False
+
+                    grdPrecPreviousHour = grdPrecipitation
+
+                    'FREE MEMORY
+                    GIS.clearGrid grdTemperature
+                    GIS.clearGrid grdDewTemperature
+                    GIS.clearGrid grdHumidity
+                    GIS.clearGrid grdPrecipitation
+                    GIS.clearGrid grdRadiation
+                    GIS.clearGrid grdTransmissivity
+                    GIS.clearGrid grdWindX
+                    GIS.clearGrid grdWindY
+                    GIS.clearGrid grdWindInt
+                    GIS.clearGrid grdWindDir
+                    GIS.clearGrid grdEtpPenman
+                    GIS.clearGrid grdLeafWetness
+
+                Next myHour
+
+                GIS.clearGrid grdPrecPreviousHour
+
+                PragaShell.SetInfoOnlyText "Loading daily data - " & format(myDate, "DD/MM/YYYY")
+                If DBPointsManagement.loadPointDaily_Date(myDate, True, Definitions.INFO_NOT_VISUALIZE) Then
+                    infoString = format(myDate, "DD/MM/YYYY") & " "
+                    Print #myHandleFile, "DAILY VARIABLES"
+
+                    'interpolate daily minimum and maximum temperatures using consistent method
+                    PragaShell.SetInfoOnlyText infoString & "Interpolating daily maps: Tmax"
+                    If InterpolationSingle(Definitions.DAILY_TMAX, False, False, False) Then
+                        grdTmax = GIS.DEM_Var
+                        Print #myHandleFile, getInfoInterpolation(Definitions.DAILY_TMAX)
+                        If InterpolationSingle(Definitions.DAILY_TMIN, False, False, False) Then
+                            grdTmin = GIS.DEM_Var
+                            Print #myHandleFile, getInfoInterpolation(Definitions.DAILY_TMIN)
+                            If Quality.fixDailyThermalConsistencyRaster(grdTmax, grdTmin) Then
+                                Print #myHandleFile, "Temperature range incoherence errors fixed"
+                            End If
+                        End If
+                    End If
+
+                    'interpolate daily precipitation
+                    PragaShell.SetInfoOnlyText infoString & "Interpolating daily maps: Prec"
+                    If InterpolationSingle(Definitions.DAILY_PREC, False, False, False) Then
+                        grdPrecDaily = GIS.DEM_Var
+                        Print #myHandleFile, getInfoInterpolation(Definitions.DAILY_PREC)
+                    End If
+
+                    'interpolate maximum wind intensity
+                    PragaShell.SetInfoOnlyText infoString & "Interpolating daily maps: Max wind intensity"
+                    If InterpolationSingle(Definitions.DAILY_VMAX, False, False, False) Then
+                        grdWindMax = GIS.DEM_Var
+                        Print #myHandleFile, getInfoInterpolation(Definitions.DAILY_VMAX)
+                    End If
+
+                    'compute et0 Hargreaves
+                    If computeEtpHargreaves Then
+                        PragaShell.SetInfoOnlyText infoString & " Computing daily maps: Et0 Hargreaves"
+                        If grdTmin.isLoaded And grdTmax.isLoaded Then
+                            computeGridEtpHargreaves TimeUtility.DateToDOY(myDate), grdTmin, grdTmax, grdEtpHargreaves
+                        End If
+                    End If
+
+                    'save daily rasters
+                    If saveRasters Then
+                        PragaShell.SetInfoOnlyText infoString & "Saving hourly maps..."
+                        If grdTmin.isLoaded Then Output.saveGridToExport grdTmin, "flt", myFilenamePre & Definitions.DAILY_TMIN & ".flt"
+                        If grdTmax.isLoaded Then Output.saveGridToExport grdTmax, "flt", myFilenamePre & Definitions.DAILY_TMAX & ".flt"
+                        If grdPrecDaily.isLoaded Then Output.saveGridToExport grdPrecDaily, "flt", myFilenamePre & Definitions.DAILY_PREC & ".flt"
+                        If grdWindMax.isLoaded Then Output.saveGridToExport grdWindMax, "flt", myFilenamePre & Definitions.DAILY_VMAX & ".flt"
+                        If grdEtpHargreaves.isLoaded Then Output.saveGridToExport grdEtpHargreaves, "flt", myFilenamePre & Definitions.DAILY_ET0_HS & ".flt"
+                    End If
+
+                    'aggregate daily values from dem to grid
+                    PragaShell.SetInfoOnlyText infoString & "Aggregating daily maps..."
+                    If grdTmin.isLoaded Then InterpolationCmd.AggregateMeteoGrid Definitions.DAILY_TMIN, grdTmin, False
+                    If grdTmax.isLoaded Then InterpolationCmd.AggregateMeteoGrid Definitions.DAILY_TMAX, grdTmax, False
+                    If grdPrecDaily.isLoaded Then InterpolationCmd.AggregateMeteoGrid Definitions.DAILY_PREC, grdPrecDaily, False
+                    If grdWindMax.isLoaded Then InterpolationCmd.AggregateMeteoGrid Definitions.DAILY_VMAX, grdWindMax, False
+                    If grdEtpHargreaves.isLoaded Then InterpolationCmd.AggregateMeteoGrid Definitions.DAILY_ET0_HS, grdEtpHargreaves, False
+                End If
+
+                dbGridManagement.saveHourly_5VarVM True, True, True, True, True, writeVM, True
+                dbGridManagement.AggregateHourlyInDailyGridCurrentDay True, True, True, True, True, False, True, False
+                dbGridManagement.saveDaily_5VarVM True, True, True, True, True, writeVM, True
+
+            End If
+
+        Next myDate
+
+        If Interpolation.GetUseTAD Then Erase TadMaps
+        Interpolation.SetSettings previousSettings
+        PragaShell.StopInfo
+        Print #myHandleFile, "Interpolation finished at " & format(Now, "YYYY-MM-DD HH:MM:SS")
+        Close #myHandleFile
+
+        InterpolationERG5v2 = True
+
+    End Function
+    */
+}
+
+bool PragaProject::interpolationMeteoGrid(meteoVariable myVar, frequencyType myFrequency, const Crit3DTime& myTime,
+                              gis::Crit3DRasterGrid *myRaster, bool showInfo)
+{
+    if (meteoGridDbHandler != nullptr)
+    {
+        if (!interpolationDem(myVar, myTime, myRaster, showInfo))
+        {
+            return false;
+        }
+        meteoGridDbHandler->meteoGrid()->aggregateMeteoGrid(myVar, myFrequency, myTime.date, myTime.getHour(),
+                            myTime.getMinutes(), &DEM, dataRaster, interpolationSettings.getMeteoGridAggrMethod());
+        meteoGridDbHandler->meteoGrid()->fillMeteoRaster();
+    }
+    else
+    {
+        errorString = "Open a Meteo Grid before.";
+        return false;
+    }
+
+    return true;
 }

@@ -28,7 +28,6 @@ TableDbOrModel::TableDbOrModel(tableType type) : type(type)
 
     this->setHorizontalHeaderLabels(tableHeader);
     this->resizeColumnsToContents();
-    this->setSelectionBehavior(QAbstractItemView::SelectRows);
     this->setSelectionMode(QAbstractItemView::SingleSelection);
     this->setShowGrid(true);
     this->setStyleSheet("QTableView {selection-background-color: green;}");

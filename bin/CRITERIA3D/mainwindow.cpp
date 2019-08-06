@@ -30,6 +30,7 @@
 #include "spatialControl.h"
 #include "dialogInterpolation.h"
 #include "dialogSettings.h"
+#include "dialogRadiation.h"
 
 #include <Qt3DRender/QCamera>
 #include <Qt3DExtras/Qt3DWindow>
@@ -45,7 +46,7 @@ extern Crit3DProject myProject;
 #define TOOLSWIDTH 260
 
 MainWindow::MainWindow(QWidget *parent) :
-    QMainWindow(parent),
+    SharedMainWindow (),
     ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
@@ -68,7 +69,7 @@ MainWindow::MainWindow(QWidget *parent) :
     this->meteoPointsLegend->resize(this->ui->widgetColorLegendPoints->size());
     this->meteoPointsLegend->colorScale = myProject.meteoPointsColorScale;
 
-    this->currentPointsVisualization = showNone;
+    this->currentPointsVisualization = notShown;
     // show menu
     showPointsGroup = new QActionGroup(this);
     showPointsGroup->setExclusive(true);
@@ -131,7 +132,7 @@ void MainWindow::resizeEvent(QResizeEvent * event)
     mapView->resize(ui->widgetMap->size());
 
     ui->groupBoxVariable->move(MAPBORDER/2, this->height()/2
-                          - ui->groupBoxVariable->height() - ui->groupBoxMeteoPoints->height()*0.66);
+                          - ui->groupBoxVariable->height() - ui->groupBoxMeteoPoints->height());
     ui->groupBoxVariable->resize(TOOLSWIDTH, ui->groupBoxVariable->height());
 
     ui->groupBoxMeteoPoints->move(MAPBORDER/2, ui->groupBoxVariable->y() + ui->groupBoxVariable->height() + MAPBORDER);
@@ -225,9 +226,13 @@ void MainWindow::mouseDoubleClickEvent(QMouseEvent * event)
     this->ui->statusBar->showMessage(QString::number(newCenter.latitude()) + " " + QString::number(newCenter.longitude()));
 
     if (event->button() == Qt::LeftButton)
+    {
         this->mapView->zoomIn();
-    else
+    }
+    else if (event->button() == Qt::RightButton)
+    {
         this->mapView->zoomOut();
+    }
 
     this->mapView->centerOn(newCenter.lonLat());
 
@@ -269,11 +274,7 @@ void MainWindow::mousePressEvent(QMouseEvent *event)
             myRubberBand->isActive = true;
             myRubberBand->show();
         }
-        else
-        {
-            // context menu
-            contextMenuRequested(event->globalPos());
-        }
+        else contextMenuRequested(event->globalPos());
 
         #ifdef NETCDF
         if (myProject.netCDF.isLoaded)
@@ -285,18 +286,6 @@ void MainWindow::mousePressEvent(QMouseEvent *event)
         }
         #endif
     }
-}
-
-
-void MainWindow::on_rasterOpacitySlider_sliderMoved(int position)
-{
-    this->rasterObj->setOpacity(position / 100.0);
-}
-
-
-void MainWindow::on_meteoGridOpacitySlider_sliderMoved(int position)
-{
-    this->meteoGridObj->setOpacity(position / 100.0);
 }
 
 
@@ -315,14 +304,83 @@ void MainWindow::on_actionRectangle_Selection_triggered()
 }
 
 
-void MainWindow::on_actionLoadDEM_triggered()
+
+void MainWindow::on_rasterOpacitySlider_sliderMoved(int position)
 {
-    QString fileName = QFileDialog::getOpenFileName(this, tr("Open Digital Elevation Model"), "", tr("ESRI grid files (*.flt)"));
+    this->rasterObj->setOpacity(position / 100.0);
+}
 
-    if (fileName == "") return;
 
-    if (! myProject.setDEM(fileName)) return;
+void MainWindow::on_meteoGridOpacitySlider_sliderMoved(int position)
+{
+    this->meteoGridObj->setOpacity(position / 100.0);
+}
 
+
+void MainWindow::addMeteoPoints()
+{
+    myProject.meteoPointsSelected.clear();
+    for (int i = 0; i < myProject.nrMeteoPoints; i++)
+    {
+        StationMarker* point = new StationMarker(5.0, true, QColor((Qt::white)), this->mapView);
+
+        point->setFlag(MapGraphicsObject::ObjectIsMovable, false);
+        point->setLatitude(myProject.meteoPoints[i].latitude);
+        point->setLongitude(myProject.meteoPoints[i].longitude);
+
+        this->pointList.append(point);
+        this->mapView->scene()->addObject(this->pointList[i]);
+
+        point->setToolTip(&(myProject.meteoPoints[i]));
+    }
+}
+
+
+void MainWindow::drawMeteoPoints()
+{
+    this->resetMeteoPoints();
+    this->addMeteoPoints();
+
+    this->updateDateTime();
+
+    myProject.loadMeteoPointsData (myProject.getCurrentDate(), myProject.getCurrentDate(), true);
+
+    showPointsGroup->setEnabled(true);
+
+    currentPointsVisualization = showLocation;
+    redrawMeteoPoints(currentPointsVisualization, true);
+}
+
+
+void MainWindow::drawProject()
+{
+    mapView->centerOn(startCenter->lonLat());
+
+    if (myProject.DEM.isLoaded)
+        this->renderDEM();
+
+    drawMeteoPoints();
+    // drawMeteoGrid();
+
+    QString title = "CRITERIA3D";
+    if (myProject.projectName != "")
+        title += " - " + myProject.projectName;
+
+    this->setWindowTitle(title);
+}
+
+
+void MainWindow::clearDEM()
+{
+    this->rasterObj->clear();
+    this->rasterObj->redrawRequested();
+    ui->labelRasterScale->setText("");
+    this->ui->rasterOpacitySlider->setEnabled(false);
+}
+
+
+void MainWindow::renderDEM()
+{
     this->setCurrentRaster(&(myProject.DEM));
     ui->labelRasterScale->setText(QString::fromStdString(getVariableString(noMeteoTerrain)));
     this->ui->rasterOpacitySlider->setEnabled(true);
@@ -349,6 +407,20 @@ void MainWindow::on_actionLoadDEM_triggered()
 }
 
 
+void MainWindow::on_actionLoadDEM_triggered()
+{
+    QString fileName = QFileDialog::getOpenFileName(this, tr("Open Digital Elevation Model"), "", tr("ESRI grid files (*.flt)"));
+
+    if (fileName == "") return;
+
+    if (! myProject.loadDEM(fileName)) return;
+
+    myProject.meteoMaps = new Crit3DMeteoMaps(myProject.DEM);
+
+    this->renderDEM();
+}
+
+
 void MainWindow::on_actionOpen_meteo_points_DB_triggered()
 {
     QString dbName = QFileDialog::getOpenFileName(this, tr("Open meteo points DB"), "", tr("DB files (*.db)"));
@@ -372,6 +444,27 @@ void MainWindow::on_actionOpen_meteo_grid_triggered()
         if (this->loadMeteoGridDB(xmlName))
             ui->groupBoxMeteoGrid->setVisible(true);
     }
+}
+
+
+void MainWindow::on_actionOpen_Project_triggered()
+{
+    QString fileName = QFileDialog::getOpenFileName(this, tr("Open project file"), "", tr("ini files (*.ini)"));
+    if (fileName == "") return;
+
+    if (myProject.isProjectLoaded)
+    {
+        on_actionClose_meteo_grid_triggered();
+        on_actionClose_meteo_points_triggered();
+        clearDEM();
+    }
+
+    if (! myProject.loadCriteria3DProject(fileName))
+    {
+        myProject.loadCriteria3DProject(myProject.getApplicationPath() + "default.ini");
+    }
+
+    drawProject();
 }
 
 
@@ -553,7 +646,7 @@ void MainWindow::redrawMeteoPoints(visualizationType myType, bool updateColorSCa
 
     switch(currentPointsVisualization)
     {
-    case showNone:
+    case notShown:
     {
         meteoPointsLegend->setVisible(false);
         this->ui->actionView_PointsHide->setChecked(true);
@@ -731,25 +824,6 @@ bool MainWindow::loadMeteoGridDB(QString xmlName)
 }
 
 
-void MainWindow::addMeteoPoints()
-{
-    myProject.meteoPointsSelected.clear();
-    for (int i = 0; i < myProject.nrMeteoPoints; i++)
-    {
-        StationMarker* point = new StationMarker(5.0, true, QColor((Qt::white)), this->mapView);
-
-        point->setFlag(MapGraphicsObject::ObjectIsMovable, false);
-        point->setLatitude(myProject.meteoPoints[i].latitude);
-        point->setLongitude(myProject.meteoPoints[i].longitude);
-
-        this->pointList.append(point);
-        this->mapView->scene()->addObject(this->pointList[i]);
-
-        point->setToolTip(&(myProject.meteoPoints[i]));
-    }
-}
-
-
 void MainWindow::on_rasterScaleButton_clicked()
 {
     if (this->rasterObj->getRaster() == nullptr)
@@ -855,9 +929,16 @@ void MainWindow::on_actionInterpolationSettings_triggered()
 }
 
 
+void MainWindow::on_actionRadiationSettings_triggered()
+{
+    DialogRadiation* myDialogRadiation = new DialogRadiation(&myProject);
+    myDialogRadiation->close();
+}
+
+
 void MainWindow::on_actionParameters_triggered()
 {
-    DialogSettings* mySettingsDialog = new DialogSettings(myProject.projectSettings, myProject.parameters, &myProject.gisSettings, myProject.quality, myProject.meteoSettings);
+    DialogSettings* mySettingsDialog = new DialogSettings(&myProject);
     mySettingsDialog->exec();
     if (startCenter->latitude() != myProject.gisSettings.startLocation.latitude
             || startCenter->longitude() != myProject.gisSettings.startLocation.longitude)
@@ -925,15 +1006,19 @@ void MainWindow::on_viewer3DClosed()
 }
 
 
-void MainWindow::initializeViewer3D()
+bool MainWindow::initializeViewer3D()
 {
-    if (viewer3D != nullptr)
+    if (viewer3D == nullptr) return false;
+
+    if (! myProject.isCriteria3DInitialized)
     {
-        if (! myProject.isInitialized)
-        {
-            myProject.setIndexMaps();
-        }
+        myProject.logError("Initialize 3D model before");
+        return false;
+    }
+    else
+    {
         viewer3D->initialize(&myProject);
+        return true;
     }
 }
 
@@ -946,10 +1031,10 @@ void MainWindow::on_actionView_3D_triggered()
         return;
     }
 
-    if (viewer3D == nullptr || !viewer3D->isVisible())
+    if (viewer3D == nullptr || ! viewer3D->isVisible())
     {
         viewer3D = new Viewer3D(this);
-        initializeViewer3D();
+        if (! initializeViewer3D()) return;
     }
 
     viewer3D->show();
@@ -1117,7 +1202,7 @@ void MainWindow::on_actionView_Wind_intensity_triggered()
 
 void MainWindow::on_actionView_PointsHide_triggered()
 {
-    redrawMeteoPoints(showNone, true);
+    redrawMeteoPoints(notShown, true);
 }
 
 
@@ -1209,12 +1294,14 @@ void MainWindow::on_actionCompute_AllMeteoMaps_triggered()
 void MainWindow::contextMenuRequested(const QPoint globalPos)
 {
     QMenu submenu;
+    int nrItems = 0;
 
-    submenu.addAction("Test");
-    if (myProject.soilMap.isLoaded)
+    if (myProject.soilMap.isLoaded && myProject.nrSoils > 0)
     {
         submenu.addAction("Soil data");
+        nrItems++;
     }
+    if (nrItems == 0) return;
 
     QAction* myAction = submenu.exec(globalPos);
 

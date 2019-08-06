@@ -39,11 +39,41 @@
 Crit3DProject::Crit3DProject() : Project3D()
 {
     isParametersLoaded = false;
-    isInitialized = false;
+    isCriteria3DInitialized = false;
 }
 
 
-bool Crit3DProject::readCriteria3DParameters()
+bool Crit3DProject::loadCriteria3DProject(QString myFileName)
+{
+    if (myFileName == "") return(false);
+
+    clearCriteria3DProject();
+    if (isProjectLoaded) clearProject();
+    initializeProject();
+
+    if (! loadProjectSettings(myFileName))
+        return false;
+
+    if (! loadProject())
+        return false;
+
+    if (! loadCriteria3DSettings())
+        return false;
+
+    // initialize meteo maps
+    meteoMaps = new Crit3DMeteoMaps(DEM);
+
+    if (projectName != "")
+    {
+        logInfo("Project " + projectName + " loaded");
+    }
+
+    isProjectLoaded = true;
+    return true;
+}
+
+
+bool Crit3DProject::loadCriteria3DSettings()
 {          
     // TODO
     return true;
@@ -193,17 +223,7 @@ void Crit3DProject::clearCriteria3DProject()
     clearWaterBalance3D();
     cropIndexMap.clear();
 
-    isInitialized = false;
-}
-
-
-bool Crit3DProject::setDEM(QString myFileName)
-{
-    if (! this->loadDEM(myFileName))
-        return false;
-
-    this->meteoMaps = new Crit3DMeteoMaps(this->DEM);
-    return true;
+    isCriteria3DInitialized = false;
 }
 
 
@@ -252,39 +272,64 @@ bool Crit3DProject::computeAllMeteoMaps(const Crit3DTime& myTime, bool showInfo)
         errorString = "Load a Digital Elevation Model before.";
         return false;
     }
+    if (this->meteoMaps == nullptr)
+    {
+        errorString = "Meteo maps not initialized.";
+        return false;
+    }
 
     this->meteoMaps->isComputed = false;
 
     FormInfo myInfo;
     if (showInfo)
     {
-        myInfo.start("Compute meteo maps...", 6);
+        myInfo.start("Compute air temperature...", 6);
     }
 
     if (! interpolationDemMain(airTemperature, myTime, this->meteoMaps->airTemperatureMap, false))
         return false;
 
-    if (showInfo) myInfo.setValue(1);
+    if (showInfo)
+    {
+        myInfo.setText("Compute relative humidity...");
+        myInfo.setValue(1);
+    }
 
     if (! interpolationRelHumidity(myTime, this->meteoMaps->airRelHumidityMap, false))
         return false;
 
-    if (showInfo) myInfo.setValue(2);
+    if (showInfo)
+    {
+        myInfo.setText("Compute relative precipitation...");
+        myInfo.setValue(2);
+    }
 
     if (! interpolationDemMain(precipitation, myTime, this->meteoMaps->precipitationMap, false))
         return false;
 
-    if (showInfo) myInfo.setValue(3);
+    if (showInfo)
+    {
+        myInfo.setText("Compute wind intensity...");
+        myInfo.setValue(3);
+    }
 
     if (! interpolationDemMain(windIntensity, myTime, this->meteoMaps->windIntensityMap, false))
         return false;
 
-    if (showInfo) myInfo.setValue(4);
+    if (showInfo)
+    {
+        myInfo.setText("Compute solar radiation...");
+        myInfo.setValue(4);
+    }
 
     if (! interpolationDemMain(globalIrradiance, myTime, this->radiationMaps->globalRadiationMap, false))
         return false;
 
-    if (showInfo) myInfo.setValue(5);
+    if (showInfo)
+    {
+        myInfo.setText("Compute ET0...");
+        myInfo.setValue(5);
+    }
 
     if (! this->meteoMaps->computeET0Map(&(this->DEM), this->radiationMaps))
         return false;
@@ -338,11 +383,11 @@ bool Crit3DProject::initializeCriteria3D()
 
     if (! initializeWaterBalance3D(this))
     {
-        this->clearCriteria3DProject();
+        clearCriteria3DProject();
         return false;
     }
 
-    this->isInitialized = true;
+    isCriteria3DInitialized = true;
     logInfoGUI("Criteria3D model initialized");
 
     return true;

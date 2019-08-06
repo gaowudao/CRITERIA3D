@@ -30,7 +30,6 @@ class DialogInterpolation : public QDialog
         QListWidget *proxyListCheck;
 
         void redrawProxies();
-        void writeInterpolationSettings();
         void accept();
 
     private:

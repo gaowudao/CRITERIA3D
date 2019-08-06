@@ -5,9 +5,21 @@
 #include <QSettings>
 #include <QtWidgets>
 
-#include "gis.h"
-#include "quality.h"
-#include "meteo.h"
+#ifndef PROJECT_H
+    #include "project.h"
+#endif
+
+#ifndef GIS_H
+    #include "gis.h"
+#endif
+
+#ifndef QUALITY_H
+    #include "quality.h"
+#endif
+
+#ifndef METEO_H
+    #include "meteo.h"
+#endif
 
 
 class QDialogButtonBox;
@@ -25,6 +37,7 @@ public:
     QLineEdit startLocationLatEdit;
     QLineEdit startLocationLonEdit;
     QLineEdit utmZoneEdit;
+    QLineEdit timeZoneEdit;
     QCheckBox utc;
     QCheckBox localTime ;
 
@@ -69,24 +82,17 @@ class DialogSettings : public QDialog
     Q_OBJECT
 
     public:
-        explicit DialogSettings(QSettings *projectSettings, QSettings *settings, gis::Crit3DGisSettings *gisSettings, Crit3DQuality *quality, Crit3DMeteoSettings* meteoSettings);
+        explicit DialogSettings(Project* myProject);
         bool acceptValues();
         void accept();
-        void saveSettings();
 
         QTabWidget *getTabWidget() const;
         void setTabWidget(QTabWidget *value);
 
-        QSettings *getParamSettings() const;
-        void setParamSettings(QSettings *paramSettings);
+    protected:
+        Project* project_;
 
-private:
-        QSettings *_pathSettings;
-        QSettings *_paramSettings;
-        gis::Crit3DGisSettings *_geoSettings;
-        Crit3DQuality *_qualitySettings;
-        Crit3DMeteoSettings* _meteoSettings;
-
+    private:
         QTabWidget *tabWidget;
         QDialogButtonBox *buttonBox;
         GeoTab* geoTab;

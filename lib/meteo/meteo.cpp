@@ -555,7 +555,7 @@ std::string getVariableString(meteoVariable myVar)
         return "Elevation m";
 
     else
-        return "None";
+        return "No variable";
 }
 
 std::string getKeyStringMeteoMap(std::map<std::string, meteoVariable> map, meteoVariable value)

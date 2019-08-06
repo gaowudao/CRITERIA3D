@@ -144,16 +144,17 @@
         class Crit3DSoil
         {
         public:
-            std::string code;
             int id;
-            int nrHorizons;
+            std::string code;
+            std::string name;
+            unsigned int nrHorizons;
             double totalDepth;                  /*!<   [m]  */
-            Crit3DHorizon* horizon;
+            std::vector <Crit3DHorizon> horizon;
 
             Crit3DSoil();
             void initialize(int idSoil, int nrHorizons);
             void cleanSoil();
-            void addHorizon(int nHorizon);
+            void addHorizon(int nHorizon, Crit3DHorizon *newHorizon);
             void deleteHorizon(int nHorizon);
         };
 

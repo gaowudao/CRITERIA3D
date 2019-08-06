@@ -32,6 +32,7 @@
 #include "soilDbTools.h"
 #include "commonConstants.h"
 
+#include <math.h>
 #include <QSqlDatabase>
 #include <QSqlQuery>
 #include <QString>
@@ -50,16 +51,74 @@ Crit3DSoilWidget::Crit3DSoilWidget()
     dbSoilType = DB_SQLITE;
 
     this->setWindowTitle(QStringLiteral("Soil"));
-    this->resize(1400, 800);
+    this->resize(1440, 810);
 
     // layout
     QVBoxLayout *mainLayout = new QVBoxLayout();
     QHBoxLayout *soilLayout = new QHBoxLayout();
     QVBoxLayout *texturalLayout = new QVBoxLayout();
+    QGridLayout *infoLayout = new QGridLayout();
 
-    QPixmap pic("../../DOC/img/textural_soil.png");
-    QLabel *label = new QLabel();
-    label->setPixmap (pic);
+    picPath = "../../DOC/img/textural_soil.png";
+    pic.load(picPath);
+    labelPic = new QLabel();
+    labelPic->setPixmap(pic);
+
+    infoGroup = new QGroupBox(tr(""));
+    infoGroup->setMaximumWidth(pic.width());
+    infoGroup->hide();
+
+    QLabel *soilCodeLabel = new QLabel(tr("Soil code: "));
+    soilCodeValue = new QLineEdit();
+    soilCodeValue->setReadOnly(true);
+
+    QLabel *satLabel = new QLabel(tr("SAT [m3 m-3]"));
+    satValue = new QLineEdit();
+
+    satValue->setReadOnly(true);
+
+    QLabel *fcLabel = new QLabel(tr("FC   [m3 m-3]"));
+    fcValue = new QLineEdit();
+    fcValue->setReadOnly(true);
+
+    QLabel *wpLabel = new QLabel(tr("WP  [m3 m-3]"));
+    wpValue = new QLineEdit();
+    wpValue->setReadOnly(true);
+
+    QLabel *awLabel = new QLabel(tr("AW  [m3 m-3]"));
+    awValue = new QLineEdit();
+    awValue->setReadOnly(true);
+
+    QLabel *potFCLabel = new QLabel(tr("PotFC [kPa]"));
+    potFCValue = new QLineEdit();
+    potFCValue->setReadOnly(true);
+
+    QLabel *satLegendLabel = new QLabel(tr("SAT = Water content at saturation"));
+    QLabel *fcLegendLabel = new QLabel(tr("FC = Water content at Field Capacity"));
+    QLabel *wpLegendLabel = new QLabel(tr("WP = Water content at Wilting Point"));
+    QLabel *awLegendLabel = new QLabel(tr("AW = Available Water"));
+    QLabel *potFCLegendLabel = new QLabel(tr("PotFC = Water Potential at Field Capacity"));
+
+    infoGroup->setTitle(soilName);
+    infoLayout->addWidget(soilCodeLabel, 0 , 0);
+    infoLayout->addWidget(soilCodeValue, 0 , 1);
+    infoLayout->addWidget(satLabel, 1 , 0);
+    infoLayout->addWidget(satValue, 1 , 1);
+    infoLayout->addWidget(fcLabel, 2 , 0);
+    infoLayout->addWidget(fcValue, 2 , 1);
+    infoLayout->addWidget(wpLabel, 3 , 0);
+    infoLayout->addWidget(wpValue, 3 , 1);
+    infoLayout->addWidget(awLabel, 4 , 0);
+    infoLayout->addWidget(awValue, 4 , 1);
+    infoLayout->addWidget(potFCLabel, 5 , 0);
+    infoLayout->addWidget(potFCValue, 5 , 1);
+
+    infoLayout->addWidget(satLegendLabel, 6 , 0);
+    infoLayout->addWidget(fcLegendLabel, 7 , 0);
+    infoLayout->addWidget(wpLegendLabel, 8 , 0);
+    infoLayout->addWidget(awLegendLabel, 9 , 0);
+    infoLayout->addWidget(potFCLegendLabel, 10 , 0);
+    infoGroup->setLayout(infoLayout);
 
     soilListComboBox.setFixedWidth(pic.size().width());
 
@@ -67,9 +126,9 @@ Crit3DSoilWidget::Crit3DSoilWidget()
     mainLayout->addLayout(soilLayout);
     mainLayout->setAlignment(Qt::AlignTop);
 
-    texturalLayout->addWidget(label);
+    texturalLayout->addWidget(labelPic);
     texturalLayout->setAlignment(Qt::AlignTop);
-
+    texturalLayout->addWidget(infoGroup);
 
     soilLayout->addLayout(texturalLayout);
     tabWidget = new QTabWidget;
@@ -110,11 +169,12 @@ Crit3DSoilWidget::Crit3DSoilWidget()
     QAction* saveChanges = new QAction(tr("&Save Changes"), this);
     QAction* newSoil = new QAction(tr("&New Soil"), this);
     QAction* deleteSoil = new QAction(tr("&Delete Soil"), this);
+    restoreData = new QAction(tr("&Restore Data"), this);
     addHorizon = new QAction(tr("&Add Horizon"), this);
     deleteHorizon = new QAction(tr("&Delete Horizon"), this);
     addHorizon->setEnabled(false);
     deleteHorizon->setEnabled(false);
-
+    restoreData->setEnabled(false);
     useData = new QAction(tr("&Use Water Retention Data"), this);
     airEntry = new QAction(tr("&Air Entry fixed"), this);
     useData->setCheckable(true);
@@ -125,6 +185,7 @@ Crit3DSoilWidget::Crit3DSoilWidget()
     connect(saveChanges, &QAction::triggered, this, &Crit3DSoilWidget::on_actionSave);
     connect(newSoil, &QAction::triggered, this, &Crit3DSoilWidget::on_actionNewSoil);
     connect(deleteSoil, &QAction::triggered, this, &Crit3DSoilWidget::on_actionDeleteSoil);
+    connect(restoreData, &QAction::triggered, this, &Crit3DSoilWidget::on_actionRestoreData);
     connect(addHorizon, &QAction::triggered, this, &Crit3DSoilWidget::on_actionAddHorizon);
     connect(deleteHorizon, &QAction::triggered, this, &Crit3DSoilWidget::on_actionDeleteHorizon);
 
@@ -132,17 +193,26 @@ Crit3DSoilWidget::Crit3DSoilWidget()
     connect(airEntry, &QAction::triggered, this, &Crit3DSoilWidget::on_actionAirEntry);
 
     connect(&soilListComboBox, &QComboBox::currentTextChanged, this, &Crit3DSoilWidget::on_actionChooseSoil);
+    connect(horizonsTab, SIGNAL(horizonSelected(int)), this, SLOT(setInfoTextural(int)));
+    connect(tabWidget, &QTabWidget::currentChanged, [=](int index){ this->tabChanged(index); });
 
     fileMenu->addAction(openSoilDB);
     fileMenu->addAction(saveChanges);
     editMenu->addAction(newSoil);
     editMenu->addAction(deleteSoil);
+    editMenu->addAction(restoreData);
     editMenu->addAction(addHorizon);
     editMenu->addAction(deleteHorizon);
     optionsMenu->addAction(useData);
     optionsMenu->addAction(airEntry);
 
-
+    // force rendering of qt layouts on all tabs
+    /*
+    for (int i = tabWidget->count(); i >= 0; i--)
+    {
+        tabWidget->setCurrentIndex(i);
+    }
+    */
 }
 
 
@@ -180,26 +250,71 @@ void Crit3DSoilWidget::on_actionOpenSoilDB()
     {
         this->soilListComboBox.addItem(soilStringList[i]);
     }
+
 }
 
 
 void Crit3DSoilWidget::on_actionChooseSoil(QString soilCode)
 {
+
+    // re load textural triangle to clean previous circle
+    pic.load(picPath);
+    labelPic->setPixmap(pic);
     // soilListComboBox has been cleared
     if (soilCode.isEmpty())
     {
+        horizonsTab->resetAll();
         return;
     }
+
     QString error;
+    // somethig has been modified, ask for saving
+    if (!horizonsTab->getSoilCodeChanged().empty())
+    {
+        std::string soilCodeChanged = horizonsTab->getSoilCodeChanged();
+        QMessageBox::StandardButton confirm;
+        QString msg = "Do you want to save changes to soil "+QString::fromStdString(soilCodeChanged)+" ?";
+        confirm = QMessageBox::question(nullptr, "Warning", msg, QMessageBox::Yes|QMessageBox::No, QMessageBox::Yes);
+
+        if (confirm == QMessageBox::Yes)
+        {
+            if (!updateSoilData(&dbSoil, QString::fromStdString(soilCodeChanged), &mySoil, &error))
+            {
+                QMessageBox::critical(nullptr, "Error!", error);
+                return;
+            }
+        }
+        horizonsTab->resetSoilCodeChanged();
+    }
+
     if (! loadSoil(&dbSoil, soilCode, &mySoil, textureClassList, &error))
     {
         QMessageBox::critical(nullptr, "Error!", error);
         return;
     }
-    horizonsTab->clearSelections();
+    mySoil.code = soilCode.toStdString();
+    soilName = QString::fromStdString(mySoil.name);
+    satValue->clear();
+    fcValue->clear();
+    wpValue->clear();
+    awValue->clear();
+    potFCValue->clear();
+
+    SoilFromDb = mySoil;
     horizonsTab->insertSoilHorizons(&mySoil, textureClassList);
     addHorizon->setEnabled(true);
     deleteHorizon->setEnabled(true);
+    restoreData->setEnabled(true);
+    infoGroup->setVisible(true);
+    infoGroup->setTitle(soilName);
+    soilCodeValue->setText(QString::fromStdString(mySoil.code));
+
+    // tab water retention curve is opened
+    if (tabWidget->currentIndex() == 2)
+    {
+        wrCurveTab->insertElements(&mySoil);
+    }
+
 }
 
 
@@ -229,11 +344,15 @@ void Crit3DSoilWidget::on_actionDeleteSoil()
         QMessageBox::StandardButton confirm;
         msg = "Are you sure you want to delete "+soilListComboBox.currentText()+" ?";
         confirm = QMessageBox::question(nullptr, "Warning", msg, QMessageBox::Yes|QMessageBox::No, QMessageBox::No);
+        QString error;
 
         if (confirm == QMessageBox::Yes)
         {
-            qDebug() << "Yes was clicked";
-            //TO DO
+            if (deleteSoilData(&dbSoil, soilListComboBox.currentText(), &error))
+            {
+                soilListComboBox.removeItem(soilListComboBox.currentIndex());
+                horizonsTab->resetSoilCodeChanged();
+            }
         }
         else
         {
@@ -263,8 +382,20 @@ void Crit3DSoilWidget::on_actionAirEntry()
 
 void Crit3DSoilWidget::on_actionSave()
 {
-    qDebug() << "save changes";
-    // TO DO
+    QString error;
+    std::string soilCodeChanged = horizonsTab->getSoilCodeChanged();
+    if (!updateSoilData(&dbSoil, QString::fromStdString(soilCodeChanged), &mySoil, &error))
+    {
+        QMessageBox::critical(nullptr, "Error!", error);
+        return;
+    }
+    horizonsTab->resetSoilCodeChanged();
+}
+
+void Crit3DSoilWidget::on_actionRestoreData()
+{
+    mySoil = SoilFromDb;
+    horizonsTab->insertSoilHorizons(&mySoil, textureClassList);
 }
 
 void Crit3DSoilWidget::on_actionAddHorizon()
@@ -276,3 +407,98 @@ void Crit3DSoilWidget::on_actionDeleteHorizon()
 {
     horizonsTab->removeRowClicked();
 }
+
+void Crit3DSoilWidget::setInfoTextural(int nHorizon)
+{
+
+    // re load textural triangle to clean previous circle
+    pic.load(picPath);
+    labelPic->setPixmap(pic);
+    for (int i = 0; i < mySoil.nrHorizons; i++)
+    {
+        if (soil::getUSDATextureClass(mySoil.horizon[i].dbData.sand, mySoil.horizon[i].dbData.silt, mySoil.horizon[i].dbData.clay) != NODATA)
+        {
+            // the pic has white space around the triangle: widthTriangle and heightTriangle define triangle size without white space
+            double widthOffset = (pic.width() - widthTriangle)/2;
+            double heightOffset = (pic.height() - heightTriangle)/2;
+            double factor = ( pow ( (pow(100.0, 2.0) - pow(50.0, 2.0)), 0.5) ) / 100;
+            // draw new point
+            double cx = widthTriangle * ((mySoil.horizon[i].dbData.silt + mySoil.horizon[i].dbData.clay / 2) / 100);
+            double cy =  heightTriangle * (1 - mySoil.horizon[i].dbData.clay  / 2 * pow (3, 0.5) / 100 / factor); // tg(60°)=3^0.5
+            painter.begin(&pic);
+            painter.setBrush(Qt::red);
+            QPointF center(widthOffset + cx, heightOffset + cy);
+            if (i == nHorizon)
+            {
+                painter.drawEllipse(center,4.5,4.5);
+            }
+            else
+            {
+                // TO DO
+//                int startAngle = 0;
+//                int spanAngle = 360 * 16;
+//                painter.drawArc(center.x()-4.5, center.y()-4.5, startAngle, spanAngle);
+            }
+
+            painter.end();
+            labelPic->setPixmap(pic);
+        }
+    }
+
+
+    if (mySoil.horizon[nHorizon].vanGenuchten.thetaS == NODATA)
+    {
+        satValue->setText(QString::number(NODATA));
+    }
+    else
+    {
+        satValue->setText(QString::number(mySoil.horizon[nHorizon].vanGenuchten.thetaS, 'f', 3));
+    }
+
+    if (mySoil.horizon[nHorizon].waterContentFC == NODATA)
+    {
+        fcValue->setText(QString::number(NODATA));
+    }
+    else
+    {
+        fcValue->setText(QString::number(mySoil.horizon[nHorizon].waterContentFC, 'f', 3));
+    }
+
+    if (mySoil.horizon[nHorizon].waterContentWP == NODATA)
+    {
+        wpValue->setText(QString::number(NODATA));
+    }
+    else
+    {
+        wpValue->setText(QString::number(mySoil.horizon[nHorizon].waterContentWP, 'f', 3));
+    }
+
+    if (mySoil.horizon[nHorizon].waterContentFC == NODATA || mySoil.horizon[nHorizon].waterContentWP == NODATA)
+    {
+        awValue->setText(QString::number(NODATA));
+    }
+    else
+    {
+        awValue->setText(QString::number(mySoil.horizon[nHorizon].waterContentFC-mySoil.horizon[nHorizon].waterContentWP, 'f', 3));
+    }
+
+    if (mySoil.horizon[nHorizon].fieldCapacity == NODATA)
+    {
+        potFCValue->setText(QString::number(NODATA));
+    }
+    else
+    {
+        potFCValue->setText(QString::number(mySoil.horizon[nHorizon].fieldCapacity, 'f', 3));
+    }
+
+}
+
+void Crit3DSoilWidget::tabChanged(int index)
+{
+    // tab water retention curve
+    if (index == 2)
+    {
+        wrCurveTab->insertElements(&mySoil);
+    }
+}
+

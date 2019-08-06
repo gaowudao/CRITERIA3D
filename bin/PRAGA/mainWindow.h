@@ -117,6 +117,14 @@
 
         void on_actionOpen_project_triggered();
 
+        void on_actionClose_project_triggered();
+
+        void on_actionSave_project_as_triggered();
+
+        void on_actionSave_project_triggered();
+
+        void on_actionRadiationSettings_triggered();
+
     protected:
         /*!
          * \brief mouseReleaseEvent call moveCenter
@@ -163,6 +171,7 @@
         QPoint getMapPoint(QPoint* point) const;
 
         void renderDEM();
+        void clearDEM();
         void updateVariable();
         void updateDateTime();
         void resetMeteoPoints();
@@ -171,6 +180,9 @@
         void redrawMeteoPoints(visualizationType showType, bool updateColorSCale);
         void drawMeteoGrid();
         void redrawMeteoGrid(visualizationType showType);
+        void drawProject();
+
+        void checkSaveProject();
 
         bool loadMeteoPoints(QString dbName);
         bool loadMeteoGrid(QString xmlName);
@@ -186,6 +198,14 @@
     #ifdef NETCDF
         void exportNetCDFDataSeries(gis::Crit3DGeoPoint geoPoint);
     #endif
+
+
+    class KeyboardFilter : public QObject
+    {
+        Q_OBJECT
+    protected:
+        bool eventFilter(QObject* obj, QEvent* event) override;
+    };
 
 
 #endif // MAINWINDOW_H

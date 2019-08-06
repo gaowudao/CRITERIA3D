@@ -171,7 +171,7 @@
 #include <stdio.h>
 
 #ifdef USE_DBMALLOC
-#include <dbmalloc.h>
+#include <dbstdlib.h>
 #endif
 
 #ifdef USE_CPL

@@ -70,6 +70,8 @@
 
         void on_actionRun_models_triggered();
 
+        void on_actionRadiation_settings_triggered();
+
     protected:
         /*!
          * \brief mouseReleaseEvent call moveCenter

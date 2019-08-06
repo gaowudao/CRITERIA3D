@@ -21,13 +21,18 @@ public:
     bool checkHorizonData(int horizonNum);
     void checkMissingItem(int horizonNum);
     void checkComputedValues(int horizonNum);
+    void setInvalidTableModelRow(int horizonNum);
     void clearSelections();
     void tableDbVerticalHeaderClick(int index);
     void editItem(int row, int column);
     void cellChanged(int row, int column);
-    void cellClicked(int row, int column);
+    void cellClickedDb(int row, int column);
+    void cellClickedModel(int row, int column);
     void addRowClicked();
     void removeRowClicked();
+    std::string getSoilCodeChanged() const;
+    void resetSoilCodeChanged();
+    void resetAll();
 
 private:
     TableDbOrModel* tableDb;
@@ -36,6 +41,9 @@ private:
     QPushButton* deleteRow;
     soil::Crit3DSoil* mySoil;
     soil::Crit3DTextureClass* myTextureClassList;
+    std::string soilCodeChanged;
+signals:
+    void horizonSelected(int nHorizon);
 
 };
 

@@ -18,6 +18,8 @@
     class Crit3DProject : public Project3D
     {
     private:
+        void clearCriteria3DProject();
+
 
     public:
         // same header of DEM
@@ -26,18 +28,19 @@
         gis::Crit3DRasterGrid cropIndexMap;
 
         bool isParametersLoaded;
-        bool isInitialized;
+        bool isCriteria3DInitialized;
 
         Crit3DProject();
 
 
-        bool readCriteria3DParameters();
+        bool loadCriteria3DProject(QString myFileName);
+
+        bool loadCriteria3DSettings();
 
         bool loadModelParameters(QString dbName);
         bool loadSoilData(QString dbName);
         bool loadSoilMap(QString fileName);
 
-        void clearCriteria3DProject();
         bool initializeCriteria3D();
 
         bool setSoilIndexMap();
@@ -47,8 +50,6 @@
         bool setSoilProfileCrop(int row, int col);
 
         int getCrit3DSoilIndex(int demRow, int demCol);
-
-        bool setDEM(QString myFileName);
 
         bool interpolationRelHumidity(const Crit3DTime& myTime, gis::Crit3DRasterGrid *myRaster, bool showInfo);
         bool computeAllMeteoMaps(const Crit3DTime &myTime, bool showInfo);

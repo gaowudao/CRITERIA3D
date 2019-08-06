@@ -2,6 +2,7 @@
 #include "climate.h"
 #include "dbClimate.h"
 #include "utilities.h"
+#include "pragaProject.h"
 
 extern PragaProject myProject;
 

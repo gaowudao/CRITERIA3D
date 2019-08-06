@@ -34,10 +34,14 @@
 
     class Project {
     private:
+        QString appPath;
+        QString defaultPath;
+        QString projectPath;
+
+        bool createDefaultProject(QString fileName);
+        bool searchDefaultPath(QString* path);
 
     protected:
-        QString path;
-
         frequencyType currentFrequency;
         meteoVariable currentVariable;
         QDate previousDate, currentDate;
@@ -47,22 +51,30 @@
         QString projectName = "";
         bool isProjectLoaded;
         int modality;
+
         bool requestedExit;
         QString errorString;
+
         QString logFileName;
+        QString demFileName;
+        QString dbPointsFileName;
+        QString dbGridXMLFileName;
+        QString parametersFileName;
+
         std::ofstream logFile;
 
-        QString parametersFile;
         QSettings* parameters;
         QSettings* projectSettings;
 
+        bool meteoPointsLoaded;
         int nrMeteoPoints;
         Crit3DMeteoPoint* meteoPoints;
         Crit3DMeteoPointsDbHandler* meteoPointsDbHandler;
         Crit3DAggregationsDbHandler* aggregationDbHandler;
         QList<gis::Crit3DGeoPoint> meteoPointsSelected;
-        Crit3DMeteoGridDbHandler* meteoGridDbHandler;
 
+        bool meteoGridLoaded;
+        Crit3DMeteoGridDbHandler* meteoGridDbHandler;
         Crit3DColorScale* meteoPointsColorScale;
 
         Crit3DQuality* quality;
@@ -84,16 +96,23 @@
             NetCDFHandler netCDF;
         #endif
 
-        QString demName, dbPointsName, dbGridXMLName;
-
-
         Project();
 
         void initializeProject();
         void clearProject();
+        bool start(QString appPath);
         bool loadProject();
         bool loadProjectSettings(QString settingsFileName);
+        bool createProject(QString path_, QString name_, QString filename_);
+        void saveProject();
+        void saveSettings();
         bool loadParameters(QString parametersFileName);
+        void saveParameters();
+        void saveInterpolationParameters();
+        void saveRadiationParameters();
+
+        bool loadRadiationGrids();
+
         void setProxyDEM();
         void clearProxyDEM();
         bool checkProxy(std::string name_, std::string gridName_, std::string table_, std::string field_, QString *error);
@@ -109,8 +128,14 @@
         frequencyType getFrequency();
         meteoVariable getCurrentVariable();
 
-        void setPath(QString myPath);
-        QString getPath();
+        void setApplicationPath(QString myPath);
+        QString getApplicationPath();
+        void setDefaultPath(QString myPath);
+        QString getDefaultPath();
+        void setProjectPath(QString myPath);
+        QString getProjectPath();
+        QString getRelativePath(QString fileName);
+        QString getCompleteFileName(QString fileName, QString secondaryPath);
 
         bool setLogFile(QString fileNameWithPath);
         void logError(QString myStr);
@@ -147,9 +172,6 @@
         bool interpolationDemMain(meteoVariable myVar, const Crit3DTime& myTime, gis::Crit3DRasterGrid *myRaster, bool showInfo);
         bool interpolationDem(meteoVariable myVar, const Crit3DTime& myTime, gis::Crit3DRasterGrid *myRaster, bool showInfo);
         bool interpolateDemRadiation(const Crit3DTime& myTime, gis::Crit3DRasterGrid *myRaster, bool showInfo);
-
-        QString getCompleteFileName(QString fileName, QString secondaryPath);
-        bool executeSharedCommand(QStringList argumentList, bool *isCommandFound);
     };
 
 

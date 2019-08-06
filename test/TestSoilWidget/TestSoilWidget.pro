@@ -22,12 +22,17 @@ win32:{
     TARGET = TestSoilWidget
 }
 
-INCLUDEPATH += ../../lib/mathFunctions ../../lib/crit3dDate ../../lib/utilities ../../lib/soil ../../lib/soilWidget
+INCLUDEPATH +=  ../../lib/crit3dDate ../../lib/mathFunctions  ../../lib/specialMathFunctions \
+                ../../lib/utilities ../../lib/soil ../../lib/soilWidget
+unix:{
+    INCLUDEPATH += /usr/include/qwt/
+}
 
 CONFIG(debug, debug|release) {
     LIBS += -L../../lib/soilWidget/debug -lsoilWidget
     LIBS += -L../../lib/utilities/debug -lutilities
     LIBS += -L../../lib/soil/debug -lsoil
+    LIBS += -L../../lib/specialMathFunctions/debug -lspecialMathFunctions
     LIBS += -L../../lib/mathFunctions/debug -lmathFunctions
     LIBS += -L../../lib/crit3dDate/debug -lcrit3dDate
 } else {
@@ -35,6 +40,7 @@ CONFIG(debug, debug|release) {
     LIBS += -L../../lib/soilWidget/release -lsoilWidget
     LIBS += -L../../lib/utilities/release -lutilities
     LIBS += -L../../lib/soil/release -lsoil
+    LIBS += -L../../lib/specialMathFunctions/release -lspecialMathFunctions
     LIBS += -L../../lib/mathFunctions/release -lmathFunctions
     LIBS += -L../../lib/crit3dDate/release -lcrit3dDate
 }
@@ -43,4 +49,10 @@ CONFIG(debug, debug|release) {
 SOURCES += \
         main.cpp
 
+win32:{
+    include($$(QWT_ROOT)/features/qwt.prf)
+}
+unix:{
+    include(/usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/qwt.prf)
+}
 

@@ -6,7 +6,7 @@
      lang@cs.cornell.edu
 */
 
-    #include <malloc.h>
+    #include <stdlib.h>
     #include <math.h>
     #include <stdio.h>
 
