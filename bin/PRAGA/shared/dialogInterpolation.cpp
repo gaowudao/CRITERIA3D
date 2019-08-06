@@ -419,9 +419,9 @@ void ProxyDialog::saveProxies()
 
 void ProxyDialog::accept()
 {
-    if (_proxyCombo.count() > 0 && proxyIndex != _proxyCombo.currentIndex())
+    if (_proxyCombo.count() > 0)
     {
-        Crit3DProxy *myProxy = &(_proxy.at(_proxyCombo.currentIndex()));
+        Crit3DProxy *myProxy = &(_proxy.at(unsigned(_proxyCombo.currentIndex())));
         saveProxy(myProxy);
     }
 
