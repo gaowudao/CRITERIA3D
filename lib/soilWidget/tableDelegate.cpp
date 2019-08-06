@@ -22,6 +22,7 @@ void TableDelegate::setEditorData(QWidget *editor, const QModelIndex &index) con
     double value = index.model()->data(index,Qt::EditRole).toDouble();
     QLineEdit* line = static_cast<QLineEdit*>(editor);
     line->setText(QString().setNum(value));
+
 }
 
 void TableDelegate::setModelData(QWidget* editor,QAbstractItemModel* model,const QModelIndex &index) const
@@ -36,7 +37,7 @@ void TableDelegate::setModelData(QWidget* editor,QAbstractItemModel* model,const
     else
     {
         model->setData(index,value);
-    }
+    } 
 
 }
 

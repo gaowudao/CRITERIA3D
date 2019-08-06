@@ -6,6 +6,14 @@
 
 #define EMPTYVALUE -9999  //string for empty input
 
+// custom QDoubleValidator to allow empty values
+class myValidator : public QDoubleValidator {
+
+public:
+    myValidator ( double bottom, double top, int decimals, QObject* parent );
+    QValidator::State validate ( QString& input, int& ) const;
+};
+
 class TableDelegate : public QStyledItemDelegate
 {
 Q_OBJECT
@@ -18,13 +26,7 @@ public:
     void updateEditorGeometry(QWidget *editor, const QStyleOptionViewItem &option, const QModelIndex &index) const;
 };
 
-// custom QDoubleValidator to allow empty values
-class myValidator : public QDoubleValidator {
 
-public:
-    myValidator ( double bottom, double top, int decimals, QObject* parent );
-    QValidator::State validate ( QString& input, int& ) const;
-};
 
 
 #endif // TABLEDELEGATE_H
