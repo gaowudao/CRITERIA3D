@@ -121,7 +121,6 @@
         Crit3DProxyCombination *currentCombination;
         int indexHeight;
 
-        bool currentClimateParametersLoaded;
         Crit3DClimateParameters currentClimateParameters;
 
     public:

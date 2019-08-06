@@ -9,6 +9,9 @@
         #include <map>
     #endif
 
+    #ifndef VECTOR_H
+        #include <vector>
+    #endif
 
     class Crit3DColorScale;
 
@@ -188,12 +191,18 @@
     {
     public:
         Crit3DClimateParameters();
-        float tminLapseRate[12];
-        float tmaxLapseRate[12];
-        float tDewMinLapseRate[12];
-        float tDewMaxLapseRate[12];
+
+        std::vector <float> tmin;
+        std::vector <float> tmax;
+        std::vector <float> tdmin;
+        std::vector <float> tdmax;
+        std::vector <float> tminLapseRate;
+        std::vector <float> tmaxLapseRate;
+        std::vector <float> tDewMinLapseRate;
+        std::vector <float> tDewMaxLapseRate;
 
         float getClimateLapseRate(meteoVariable myVar, Crit3DDate myDate, int myHour);
+        float getClimateVar(meteoVariable myVar, Crit3DDate myDate, int myHour);
     };
 
     float relHumFromTdew(float dewT, float airT);

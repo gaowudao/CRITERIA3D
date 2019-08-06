@@ -229,7 +229,6 @@ void Crit3DInterpolationSettings::initialize()
     shepardInitialRadius = NODATA;
     indexPointCV = NODATA;
 
-    currentClimateParametersLoaded = false;
     if (currentCombination == nullptr)
         currentCombination = new Crit3DProxyCombination();
 
@@ -256,7 +255,7 @@ float Crit3DInterpolationSettings::getCurrentClimateLapseRate(meteoVariable myVa
 {
     Crit3DDate myDate = myTime.date;
     int myHour = myTime.getHour();
-    if (currentClimateParametersLoaded && (myDate != getNullDate()) && (myHour != NODATA))
+    if (myDate != getNullDate() && (myHour != NODATA))
         return (currentClimateParameters.getClimateLapseRate(myVar, myDate, myHour));
     else
         // TODO migliorare
@@ -265,7 +264,6 @@ float Crit3DInterpolationSettings::getCurrentClimateLapseRate(meteoVariable myVa
 
 void Crit3DInterpolationSettings::setClimateParameters(Crit3DClimateParameters* myParameters)
 {
-    currentClimateParametersLoaded = true;
     currentClimateParameters = *(myParameters);
 }
 
