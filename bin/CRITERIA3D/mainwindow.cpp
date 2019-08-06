@@ -674,7 +674,7 @@ void MainWindow::redrawMeteoPoints(visualizationType myType, bool updateColorSCa
         // quality control
         checkData(myProject.quality, myProject.getCurrentVariable(),
                   myProject.meteoPoints, myProject.nrMeteoPoints, myProject.getCurrentTime(),
-                  &myProject.qualityInterpolationSettings, myProject.checkSpatialQuality);
+                  &myProject.qualityInterpolationSettings, &(myProject.climateParameters), myProject.checkSpatialQuality);
 
         if (updateColorSCale)
         {
