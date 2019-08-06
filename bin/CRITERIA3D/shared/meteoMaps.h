@@ -17,6 +17,8 @@
         bool isInitialized;
 
     public:
+        bool isComputed;
+
         gis::Crit3DRasterGrid* airTemperatureMap;
         gis::Crit3DRasterGrid* precipitationMap;
         gis::Crit3DRasterGrid* airRelHumidityMap;
@@ -37,8 +39,6 @@
         bool computeET0Map(gis::Crit3DRasterGrid* DEM, Crit3DRadiationMaps *radMaps);
         bool computeRelativeHumidityMap(const gis::Crit3DRasterGrid& dewTemperatureMap);
         bool computeLeafWetnessMap(gis::Crit3DRasterGrid* myDEM);
-
-        bool isComputed;
     };
 
 

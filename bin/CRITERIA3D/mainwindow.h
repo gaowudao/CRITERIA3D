@@ -4,8 +4,6 @@
     #include "sharedMainWindow.h"
     #include "viewer3d.h"
 
-    enum mapType {mapNone, mapDEM, mapSoil, mapVariable};
-
     namespace Ui
     {
         class MainWindow;
@@ -116,7 +114,6 @@
         Ui::MainWindow* ui;
 
         Viewer3D *viewer3D;
-        int currentMap;
 
         void setMapSource(OSMTileSource::OSMTileType mySource);
 

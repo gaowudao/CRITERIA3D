@@ -53,7 +53,6 @@ MainWindow::MainWindow(QWidget *parent) :
 
     this->myRubberBand = nullptr;
     this->viewer3D = nullptr;
-    this->currentMap = mapType::mapNone;
 
     // Set the MapGraphics Scene and View
     this->mapScene = new MapGraphicsScene(this);
@@ -1049,7 +1048,6 @@ void MainWindow::on_actionView_DEM_triggered()
         setColorScale(noMeteoTerrain, myProject.DEM.colorScale);
         this->setCurrentRaster(&(myProject.DEM));
         ui->labelRasterScale->setText(QString::fromStdString(getVariableString(noMeteoTerrain)));
-        this->currentMap = mapType::mapDEM;
     }
     else
     {
@@ -1066,7 +1064,6 @@ void MainWindow::on_actionView_Soil_triggered()
         setColorScale(noMeteoTerrain, myProject.soilMap.colorScale);
         this->setCurrentRaster(&(myProject.soilMap));
         ui->labelRasterScale->setText("Soil map");
-        this->currentMap = mapType::mapSoil;
     }
     else
     {
@@ -1145,9 +1142,13 @@ bool MainWindow::checkMapVariable(bool isComputed)
 void MainWindow::setMapVariable(meteoVariable myVar, gis::Crit3DRasterGrid *myGrid)
 {
     setColorScale(myVar, myGrid->colorScale);
-    this->setCurrentRaster(myGrid);
+    setCurrentRaster(myGrid);
     ui->labelRasterScale->setText(QString::fromStdString(getVariableString(myVar)));
-    this->currentMap = mapType::mapVariable;
+
+    myProject.setCurrentVariable(myVar);
+    myProject.setFrequency(getFrequency(myVar));
+    currentPointsVisualization = showCurrentVariable;
+    updateVariable();
 }
 
 
