@@ -329,7 +329,7 @@ void TabHorizons::cellClickedDb(int row, int column)
         }
     }
 
-    deleteRow->setEnabled(true);
+    deleteRow->setEnabled(false);
     emit horizonSelected(row);
 }
 
@@ -368,8 +368,7 @@ void TabHorizons::cellClickedModel(int row, int column)
             break;
         }
     }
-
-    deleteRow->setEnabled(true);
+    deleteRow->setEnabled(false);
     emit horizonSelected(row);
 }
 
@@ -610,6 +609,11 @@ void TabHorizons::addRowClicked()
     int numRow;
     if (!tableDb->selectedItems().isEmpty())
     {
+        if (tableDb->selectedItems().size() != tableDb->columnCount())
+        {
+            QMessageBox::critical(nullptr, "Warning", "Select the row of the horizon before the one you want to add");
+            return;
+        }
         numRow = tableDb->selectedItems().at(0)->row()+1;
     }
     else
@@ -660,7 +664,13 @@ void TabHorizons::removeRowClicked()
 {
     tableDb->blockSignals(true);
     int row;
-    if (!tableDb->selectedItems().isEmpty())
+    // check if a row is selected
+    if (tableDb->selectedItems().isEmpty())
+    {
+        QMessageBox::critical(nullptr, "Error!", "Select a horizon");
+        return;
+    }
+    if (tableDb->selectedItems().size() == tableDb->columnCount())
     {
         row = tableDb->selectedItems().at(0)->row();
     }
