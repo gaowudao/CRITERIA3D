@@ -70,10 +70,7 @@ void Crit3DRadiationSettings::setShadowing(bool value)
 
 float Crit3DRadiationSettings::getLinke() const
 {
-    if (linkeMode == PARAM_MODE_MAP)
-        return NODATA;
-    else
-        return linke;
+    return linke;
 }
 
 float Crit3DRadiationSettings::getLinke(int row, int col) const
@@ -113,10 +110,7 @@ void Crit3DRadiationSettings::setLinke(float value)
 
 float Crit3DRadiationSettings::getAlbedo() const
 {
-    if (albedoMode == PARAM_MODE_MAP)
-        return NODATA;
-    else
-        return albedo;
+    return albedo;
 }
 
 float Crit3DRadiationSettings::getAlbedo(int row, int col) const

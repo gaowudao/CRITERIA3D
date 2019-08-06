@@ -139,7 +139,16 @@ aggregationMethod getKeyGridAggregationMethod(std::string value)
 
 Crit3DClimateParameters::Crit3DClimateParameters()
 {
-    for (int i=0; i<12; i++)
+    tmin.resize(12);
+    tmax.resize(12);
+    tdmin.resize(12);
+    tdmax.resize(12);
+    tminLapseRate.resize(12);
+    tmaxLapseRate.resize(12);
+    tdMinLapseRate.resize(12);
+    tdMaxLapseRate.resize(12);
+
+    for (unsigned i=0; i<12; i++)
     {
         tmin[i] = NODATA;
         tmax[i] = NODATA;
@@ -147,8 +156,8 @@ Crit3DClimateParameters::Crit3DClimateParameters()
         tdmax[i] = NODATA;
         tminLapseRate[i] = NODATA;
         tmaxLapseRate[i] = NODATA;
-        tDewMinLapseRate[i] = NODATA;
-        tDewMaxLapseRate[i] = NODATA;
+        tdMinLapseRate[i] = NODATA;
+        tdMaxLapseRate[i] = NODATA;
     }
 }
 
@@ -190,8 +199,8 @@ float Crit3DClimateParameters::getClimateLapseRate(meteoVariable myVar, Crit3DTi
         }
         else if (myVar == airDewTemperature)
         {
-            lapseTmin = tDewMinLapseRate[indexMonth];
-            lapseTmax = tDewMaxLapseRate[indexMonth];
+            lapseTmin = tdMinLapseRate[indexMonth];
+            lapseTmax = tdMaxLapseRate[indexMonth];
         }
         else
             return NODATA;

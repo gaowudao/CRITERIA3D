@@ -198,8 +198,8 @@
         std::vector <float> tdmax;
         std::vector <float> tminLapseRate;
         std::vector <float> tmaxLapseRate;
-        std::vector <float> tDewMinLapseRate;
-        std::vector <float> tDewMaxLapseRate;
+        std::vector <float> tdMinLapseRate;
+        std::vector <float> tdMaxLapseRate;
 
         float getClimateLapseRate(meteoVariable myVar, Crit3DTime myTime);
         float getClimateVar(meteoVariable myVar, Crit3DDate myDate, int myHour);

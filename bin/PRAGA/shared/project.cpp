@@ -1094,7 +1094,7 @@ bool Project::loadRadiationGrids()
 
     if (radSettings.getLinkeMode() == PARAM_MODE_MAP)
     {
-        gridName = radSettings.getLinkeMapName();
+        gridName = getCompleteFileName(QString::fromStdString(radSettings.getLinkeMapName()), PATH_GEO).toStdString();
         if (gridName != "")
         {
             grdLinke = new gis::Crit3DRasterGrid();
@@ -1109,7 +1109,7 @@ bool Project::loadRadiationGrids()
 
     if (radSettings.getAlbedoMode() == PARAM_MODE_MAP)
     {
-        gridName = radSettings.getAlbedoMapName();
+        gridName = getCompleteFileName(QString::fromStdString(radSettings.getAlbedoMapName()), PATH_GEO).toStdString();
         if (gridName != "")
         {
             grdAlbedo = new gis::Crit3DRasterGrid();
