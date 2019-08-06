@@ -1725,13 +1725,14 @@ void Project::saveProject()
     saveInterpolationParameters();
 }
 
-bool Project::createProject(QString path_, QString name_, QString description_)
+
+bool Project::createProject(QString path, QString name, QString description)
 {
     // name
-    projectName = description_;
+    projectName = description;
 
     // folder
-    QString myPath = path_ + "/" + name_ + "/";
+    QString myPath = path + "/" + name + "/";
     if (! QDir(myPath).exists())
         QDir().mkdir(myPath);
 
@@ -1739,11 +1740,11 @@ bool Project::createProject(QString path_, QString name_, QString description_)
 
     // settings
     delete projectSettings;
-    projectSettings = new QSettings(projectPath + name_ + ".ini", QSettings::IniFormat);
+    projectSettings = new QSettings(projectPath + name + ".ini", QSettings::IniFormat);
 
     // parameters
     QString oldParameters = parametersFileName;
-    QString newParameters = projectPath + "parameters.ini";
+    QString newParameters = projectPath + PATH_SETTINGS + "parameters.ini";
     QFile::copy(oldParameters, newParameters);
 
     delete parameters;
@@ -1754,6 +1755,7 @@ bool Project::createProject(QString path_, QString name_, QString description_)
 
     return true;
 }
+
 
 bool Project::createDefaultProject(QString fileName)
 {
