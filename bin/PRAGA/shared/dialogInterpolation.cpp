@@ -192,6 +192,12 @@ void ProxyDialog::changedTable()
     QSqlDatabase db = _project->meteoPointsDbHandler->getDb();
     _field.clear();
     _field.addItems(getFields(&db, _table.currentText()));
+    saveProxy();
+}
+
+void ProxyDialog::changedField()
+{
+    saveProxy();
 }
 
 void ProxyDialog::changedProxy()
@@ -216,7 +222,10 @@ void ProxyDialog::getGridFile()
     std::string error_;
     gis::Crit3DRasterGrid* grid_ = new gis::Crit3DRasterGrid();
     if (gis::readEsriGrid(fileName, grid_, &error_))
+    {
         _proxyGridName.setText(qFileName);
+        saveProxy();
+    }
     else
         QMessageBox::information(nullptr, "Error", "Error opening " + qFileName);
 
@@ -308,10 +317,6 @@ ProxyDialog::ProxyDialog(Project *myProject)
     layoutProxyCombo->addWidget(_delete);
     connect(_delete, &QPushButton::clicked, [=](){ this->deleteProxy(); });
 
-    QPushButton *_saveProxy = new QPushButton("save");
-    layoutProxyCombo->addWidget(_saveProxy);
-    connect(_saveProxy, &QPushButton::clicked, [=](){ this->saveProxy(); });
-
     layoutProxy->addLayout(layoutProxyCombo);
     layoutMain->addLayout(layoutProxy);
 
@@ -327,6 +332,8 @@ ProxyDialog::ProxyDialog(Project *myProject)
     QLabel *labelFieldList = new QLabel(tr("field for point values"));
     layoutPointValues->addWidget(labelFieldList);
     layoutPointValues->addWidget(&_field);
+    connect(&_field, &QComboBox::currentTextChanged, [=](){ this->changedField(); });
+
     layoutMain->addLayout(layoutPointValues);
 
     // grid
@@ -353,10 +360,7 @@ ProxyDialog::ProxyDialog(Project *myProject)
     setLayout(layoutMain);
 
     if (_proxyCombo.count() > 0)
-    {
         _proxyCombo.setCurrentIndex(0);
-        changedProxy();
-    }
 
     exec();
 }

@@ -59,6 +59,7 @@ class ProxyDialog : public QDialog
         bool edited(Project* myProject);
         void changedProxy();
         void changedTable();
+        void changedField();
         void getGridFile();
         void redrawProxies();
         void addProxy();
