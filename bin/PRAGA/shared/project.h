@@ -103,7 +103,7 @@
         void initializeProject();
         void clearProject();
 
-        void createProject(QString path_, QString name_, QString filename_);
+        void createProject(QString path_, QString name_, QString description);
         void saveProject();
         void saveSettings();
         void saveAllParameters();

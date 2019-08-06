@@ -50,7 +50,7 @@ class ProxyDialog : public QDialog
     public:
         explicit ProxyDialog(Project *myProject);
 
-        unsigned proxyIndex;
+        int proxyIndex;
 
         QComboBox _proxyCombo;
         QComboBox _field;
