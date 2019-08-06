@@ -243,6 +243,111 @@ bool Project::loadParameters(QString parametersFileName)
             parameters->endGroup();
         }
 
+        if (group == "climate")
+        {
+            QStringList myList;
+
+            parameters->beginGroup(group);
+
+            if (parameters->contains("tmin"))
+            {
+                myList = parameters->value("tmin").toStringList();
+                if (myList.size() < 12)
+                {
+                    errorString = "Incomplete climate monthly tmin values";
+                    return  false;
+                }
+
+                climateParameters.tmin = StringListToFloat(myList);
+            }
+
+            if (parameters->contains("tmax"))
+            {
+                myList = parameters->value("tmax").toStringList();
+                if (myList.size() < 12)
+                {
+                    errorString = "Incomplete climate monthly tmax values";
+                    return  false;
+                }
+
+                climateParameters.tmax = StringListToFloat(myList);
+            }
+
+            if (parameters->contains("tmin_lapserate"))
+            {
+                myList = parameters->value("tmin_lapserate").toStringList();
+                if (myList.size() < 12)
+                {
+                    errorString = "Incomplete climate monthly tmin lapse rate values";
+                    return  false;
+                }
+
+                climateParameters.tminLapseRate = StringListToFloat(myList);
+            }
+
+            if (parameters->contains("tmax_lapserate"))
+            {
+                myList = parameters->value("tmax_lapserate").toStringList();
+                if (myList.size() < 12)
+                {
+                    errorString = "Incomplete climate monthly tmax lapse rate values";
+                    return  false;
+                }
+
+                climateParameters.tmaxLapseRate = StringListToFloat(myList);
+            }
+
+            if (parameters->contains("tdmin"))
+            {
+                myList = parameters->value("tdmin").toStringList();
+                if (myList.size() < 12)
+                {
+                    errorString = "Incomplete climate monthly tdmin values";
+                    return  false;
+                }
+
+                climateParameters.tdmin = StringListToFloat(myList);
+            }
+
+            if (parameters->contains("tdmax"))
+            {
+                myList = parameters->value("tdmax").toStringList();
+                if (myList.size() < 12)
+                {
+                    errorString = "Incomplete climate monthly tdmax values";
+                    return  false;
+                }
+
+                climateParameters.tdmax = StringListToFloat(myList);
+            }
+
+            if (parameters->contains("tdmin_lapserate"))
+            {
+                myList = parameters->value("tdmin_lapserate").toStringList();
+                if (myList.size() < 12)
+                {
+                    errorString = "Incomplete climate monthly tdmin lapse rate values";
+                    return  false;
+                }
+
+                climateParameters.tdMinLapseRate = StringListToFloat(myList);
+            }
+
+            if (parameters->contains("tdmax_lapserate"))
+            {
+                myList = parameters->value("tdmax_lapserate").toStringList();
+                if (myList.size() < 12)
+                {
+                    errorString = "Incomplete climate monthly tdmax lapse rate values";
+                    return  false;
+                }
+
+                climateParameters.tdMaxLapseRate = StringListToFloat(myList);
+            }
+
+            parameters->endGroup();
+        }
+
         if (group == "radiation")
         {
             parameters->beginGroup(group);
