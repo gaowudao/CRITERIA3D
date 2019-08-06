@@ -30,7 +30,10 @@ TableDbOrModel::TableDbOrModel(tableType type) : type(type)
     this->resizeColumnsToContents();
     this->setSelectionMode(QAbstractItemView::SingleSelection);
     this->setShowGrid(true);
-    this->setStyleSheet("QTableView {selection-background-color: green;}");
+    //this->setStyleSheet("QTableView {selection-background-color: green;}");
+    //this->setStyleSheet("QTableView::item:selected { color:black;  border: 3px solid black}");
+    this->setStyleSheet("QTableView::item:selected { color:black;  border: 3px solid black}");
+
     if (type == dbTable)
     {
         this->setItemDelegate(new TableDelegate(this));
