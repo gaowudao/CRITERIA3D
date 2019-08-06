@@ -426,18 +426,19 @@ void Crit3DSoilWidget::setInfoTextural(int nHorizon)
             double cx = widthTriangle * ((mySoil.horizon[i].dbData.silt + mySoil.horizon[i].dbData.clay / 2) / 100);
             double cy =  heightTriangle * (1 - mySoil.horizon[i].dbData.clay  / 2 * pow (3, 0.5) / 100 / factor); // tg(60°)=3^0.5
             painter.begin(&pic);
-            painter.setBrush(Qt::red);
+            QPen pen(Qt::red);
+            painter.setPen(pen);
+
             QPointF center(widthOffset + cx, heightOffset + cy);
             if (i == nHorizon)
             {
+                painter.setBrush(Qt::red);
                 painter.drawEllipse(center,4.5,4.5);
             }
             else
             {
-                // TO DO
-//                int startAngle = 0;
-//                int spanAngle = 360 * 16;
-//                painter.drawArc(center.x()-4.5, center.y()-4.5, startAngle, spanAngle);
+                painter.setBrush(Qt::transparent);
+                painter.drawEllipse(center,4.5,4.5);
             }
 
             painter.end();
