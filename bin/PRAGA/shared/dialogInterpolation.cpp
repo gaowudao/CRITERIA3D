@@ -263,6 +263,7 @@ void ProxyDialog::addProxy()
 
 void ProxyDialog::deleteProxy()
 {
+    proxyIndex--;
     _proxy.erase(_proxy.begin() + _proxyCombo.currentIndex());
     listProxies();
     changedProxy();
