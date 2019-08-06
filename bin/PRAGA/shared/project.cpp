@@ -1675,7 +1675,7 @@ void Project::saveProxies()
 {
     Q_FOREACH (QString group, parameters->childGroups())
     {
-        if (group.left(group.size()-6) == "proxy")
+        if (group.left(5) == "proxy")
             parameters->remove(group);
     }
 

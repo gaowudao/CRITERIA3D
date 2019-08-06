@@ -265,6 +265,13 @@ void ProxyDialog::deleteProxy()
 {
     if (proxyIndex > 0)
         proxyIndex--;
+    else
+    {
+        _table.clear();
+        _field.clear();
+        _proxyGridName.setText("");
+        proxyIndex = NODATA;
+    }
 
     _proxy.erase(_proxy.begin() + _proxyCombo.currentIndex());
     listProxies();
@@ -358,10 +365,11 @@ ProxyDialog::ProxyDialog(Project *myProject)
     layoutMain->addStretch(1);
     setLayout(layoutMain);
 
-    proxyIndex = 0;
+    proxyIndex = NODATA;
 
     if (_proxyCombo.count() > 0)
     {
+        proxyIndex = 0;
         _proxyCombo.setCurrentIndex(proxyIndex);
         changedProxy();
     }
@@ -411,9 +419,9 @@ void ProxyDialog::saveProxies()
 
 void ProxyDialog::accept()
 {
-    if (proxyIndex != _proxyCombo.currentIndex())
+    if (_proxyCombo.count() > 0 && proxyIndex != _proxyCombo.currentIndex())
     {
-        Crit3DProxy *myProxy = &(_proxy.at(proxyIndex));
+        Crit3DProxy *myProxy = &(_proxy.at(_proxyCombo.currentIndex()));
         saveProxy(myProxy);
     }
 
