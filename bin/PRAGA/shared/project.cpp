@@ -1541,8 +1541,8 @@ void Project::saveRadiationParameters()
         parameters->setValue("tilt", QString::number(radSettings.getTilt()));
         parameters->setValue("aspect", QString::number(radSettings.getAspect()));
         parameters->setValue("clear_sky", QString::number(radSettings.getClearSky()));
-        parameters->setValue("linke_map", QString::fromStdString(radSettings.getLinkeMapName()));
-        parameters->setValue("albedo_map", QString::fromStdString(radSettings.getAlbedoMapName()));
+        parameters->setValue("linke_map", getRelativePath(QString::fromStdString(radSettings.getLinkeMapName())));
+        parameters->setValue("albedo_map", getRelativePath(QString::fromStdString(radSettings.getAlbedoMapName())));
     parameters->endGroup();
 }
 
