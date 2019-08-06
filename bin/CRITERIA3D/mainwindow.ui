@@ -2594,11 +2594,11 @@
     <property name="title">
      <string>Data spatialization</string>
     </property>
-    <addaction name="actionInterpolationSettings"/>
     <addaction name="actionInterpolation_to_DEM"/>
+    <addaction name="actionInterpolationSettings"/>
     <addaction name="separator"/>
-    <addaction name="actionRadiationSettings"/>
     <addaction name="actionCompute_solar_radiation"/>
+    <addaction name="actionRadiationSettings"/>
     <addaction name="separator"/>
     <addaction name="actionCompute_AllMeteoMaps"/>
     <addaction name="separator"/>
@@ -2761,7 +2761,7 @@
   </action>
   <action name="actionInterpolation_to_DEM">
    <property name="text">
-    <string>Interpolate variable</string>
+    <string>Interpolate current variable</string>
    </property>
   </action>
   <action name="actionOpen_model_parameters">
@@ -2893,7 +2893,7 @@
   </action>
   <action name="actionCompute_AllMeteoMaps">
    <property name="text">
-    <string>Compute all meteo variables</string>
+    <string>Compute all hourly variables</string>
    </property>
   </action>
   <action name="actionView_Global_radiation">
