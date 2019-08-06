@@ -601,6 +601,7 @@ void TabHorizons::cellChanged(int row, int column)
         checkComputedValues(row);
     }
 
+    clearSelections();
     tableDb->blockSignals(false);
     soilCodeChanged = mySoil->code;
 }
