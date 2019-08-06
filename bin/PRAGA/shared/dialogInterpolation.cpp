@@ -402,7 +402,7 @@ void ProxyDialog::saveProxies()
     _project->interpolationSettings.initializeProxy();
     _project->qualityInterpolationSettings.initializeProxy();
 
-    for (int i=0; i < _proxy.size(); i++)
+    for (unsigned i=0; i < _proxy.size(); i++)
     {   
         _project->addProxy(_proxy.at(i).getName(), _proxy.at(i).getGridName(),
                            _proxy.at(i).getProxyTable(), _proxy.at(i).getProxyField(),
@@ -412,7 +412,7 @@ void ProxyDialog::saveProxies()
 
 void ProxyDialog::writeProxies()
 {
-    for (int i=0; i < _proxy.size(); i++)
+    for (unsigned i=0; i < _proxy.size(); i++)
     {
         _project->parameters->beginGroup("proxy_" + QString::fromStdString(_proxy.at(i).getName()));
         _project->parameters->setValue("table", QString::fromStdString(_proxy.at(i).getProxyTable()));
