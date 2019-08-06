@@ -63,7 +63,6 @@ class ProxyDialog : public QDialog
         void redrawProxies();
         void addProxy();
         void deleteProxy();
-        void writeProxies();
         void saveProxies();
         void saveProxy();
         bool checkProxies(QString *error);

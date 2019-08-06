@@ -111,6 +111,7 @@
         bool loadParameters(QString parametersFileName);
         void saveParameters();
         void saveInterpolationParameters();
+        void saveProxies();
         void saveRadiationParameters();
 
         bool loadRadiationGrids();

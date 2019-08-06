@@ -349,10 +349,6 @@ ProxyDialog::ProxyDialog(Project *myProject)
     connect(buttonBox, &QDialogButtonBox::rejected, this, &QDialog::reject);
     layoutMain->addWidget(buttonBox);
 
-    QPushButton *_save = new QPushButton("Save proxies to settings");
-    connect(_save, &QPushButton::clicked, [=](){ this->writeProxies(); });
-    layoutMain->addWidget(_save);
-
     layoutMain->addStretch(1);
     setLayout(layoutMain);
 
@@ -376,7 +372,7 @@ bool ProxyDialog::checkProxies(QString *error)
     QStringList fields;
     std::string table_;
 
-    for (int i=0; i < _proxy.size(); i++)
+    for (unsigned i=0; i < _proxy.size(); i++)
     {
         if (!_project->checkProxy(_proxy.at(i).getName(), _proxy.at(i).getGridName(), _proxy.at(i).getProxyTable(), _proxy.at(i).getProxyField(), error))
             return false;
@@ -410,17 +406,6 @@ void ProxyDialog::saveProxies()
     }
 }
 
-void ProxyDialog::writeProxies()
-{
-    for (unsigned i=0; i < _proxy.size(); i++)
-    {
-        _project->parameters->beginGroup("proxy_" + QString::fromStdString(_proxy.at(i).getName()));
-        _project->parameters->setValue("table", QString::fromStdString(_proxy.at(i).getProxyTable()));
-        _project->parameters->setValue("field", QString::fromStdString(_proxy.at(i).getProxyField()));
-        _project->parameters->setValue("raster", QString::fromStdString(_proxy.at(i).getGridName()));
-        _project->parameters->endGroup();
-    }
-}
 
 void ProxyDialog::accept()
 {
@@ -430,6 +415,14 @@ void ProxyDialog::accept()
     {
         saveProxies();
         _project->updateProxy();
+
+        QMessageBox::StandardButton reply;
+          reply = QMessageBox::question(this, "Save interpolation proxies", "Save changes to settings?",
+                                        QMessageBox::Yes|QMessageBox::No);
+
+        if (reply == QMessageBox::Yes)
+            _project->saveProxies();
+
         QDialog::done(QDialog::Accepted);
     }
     else

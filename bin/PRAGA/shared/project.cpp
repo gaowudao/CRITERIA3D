@@ -1666,6 +1666,19 @@ void Project::saveInterpolationParameters()
         parameters->setValue("minRegressionR2", QString::number(interpolationSettings.getMinRegressionR2()));
     parameters->endGroup();
 
+    saveProxies();
+
+    parameters->sync();
+}
+
+void Project::saveProxies()
+{
+    Q_FOREACH (QString group, parameters->childGroups())
+    {
+        if (group.left(group.size()-6) == "proxy")
+            parameters->remove(group);
+    }
+
     Crit3DProxy* myProxy;
     for (int i=0; i < interpolationSettings.getProxyNr(); i++)
     {
@@ -1678,8 +1691,6 @@ void Project::saveInterpolationParameters()
             parameters->setValue("raster", getRelativePath(QString::fromStdString(myProxy->getGridName())));
         parameters->endGroup();
     }
-
-    parameters->sync();
 }
 
 void Project::saveParameters()
