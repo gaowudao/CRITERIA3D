@@ -44,7 +44,7 @@
 
             QSqlDatabase dbSoil;
             soil::Crit3DSoil mySoil;
-            soil::Crit3DSoil SoilFromDb;
+            soil::Crit3DSoil SoilSaved;
             soil::Crit3DTextureClass textureClassList[13];
             int dbSoilType;
 
