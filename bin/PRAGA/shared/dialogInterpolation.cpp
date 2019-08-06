@@ -192,18 +192,21 @@ void ProxyDialog::changedTable()
     QSqlDatabase db = _project->meteoPointsDbHandler->getDb();
     _field.clear();
     _field.addItems(getFields(&db, _table.currentText()));
-    saveProxy();
-}
-
-void ProxyDialog::changedField()
-{
-    saveProxy();
 }
 
 void ProxyDialog::changedProxy()
 {
     if (_proxyCombo.count() == 0) return;
-    Crit3DProxy *myProxy = &(_proxy.at(_proxyCombo.currentIndex()));
+
+    if (proxyIndex != _proxyCombo.currentIndex())
+    {
+        Crit3DProxy *myProxy = &(_proxy.at(proxyIndex));
+        saveProxy(myProxy);
+    }
+
+    proxyIndex = _proxyCombo.currentIndex();
+    Crit3DProxy *myProxy = &(_proxy.at(proxyIndex));
+
     int index = _table.findText(QString::fromStdString(myProxy->getProxyTable()));
     _table.setCurrentIndex(index);
     index = _field.findText(QString::fromStdString(myProxy->getProxyField()));
@@ -212,7 +215,7 @@ void ProxyDialog::changedProxy()
     _forQuality.setChecked(myProxy->getForQualityControl());
 }
 
-void ProxyDialog::getGridFile()
+void ProxyDialog::selectGridFile()
 {
     QString qFileName = QFileDialog::getOpenFileName();
     if (qFileName == "") return;
@@ -222,22 +225,21 @@ void ProxyDialog::getGridFile()
     std::string error_;
     gis::Crit3DRasterGrid* grid_ = new gis::Crit3DRasterGrid();
     if (gis::readEsriGrid(fileName, grid_, &error_))
-    {
         _proxyGridName.setText(qFileName);
-        saveProxy();
-    }
     else
         QMessageBox::information(nullptr, "Error", "Error opening " + qFileName);
 
     grid_ = nullptr;
 }
 
-void ProxyDialog::redrawProxies()
+void ProxyDialog::listProxies()
 {
     _proxyCombo.blockSignals(true);
+
     _proxyCombo.clear();
     for (int i = 0; i < _proxy.size(); i++)
          _proxyCombo.addItem(QString::fromStdString(_proxy.at(i).getName()));
+
     _proxyCombo.blockSignals(false);
 }
 
@@ -252,7 +254,7 @@ void ProxyDialog::addProxy()
         Crit3DProxy myProxy;
         myProxy.setName(proxyName.toStdString());
         _proxy.push_back(myProxy);
-        redrawProxies();
+        listProxies();
         _proxyCombo.setCurrentIndex(_proxyCombo.count()-1);
     }
 
@@ -262,17 +264,11 @@ void ProxyDialog::addProxy()
 void ProxyDialog::deleteProxy()
 {
     _proxy.erase(_proxy.begin() + _proxyCombo.currentIndex());
-    redrawProxies();
+    listProxies();
 }
 
-void ProxyDialog::saveProxy()
+void ProxyDialog::saveProxy(Crit3DProxy* myProxy)
 {
-    if (_proxyCombo.currentIndex() == -1)
-        return;
-
-    Crit3DProxy* myProxy;
-    myProxy = &_proxy.at(_proxyCombo.currentIndex());
-
     if (_table.currentIndex() != -1)
         myProxy->setProxyTable(_table.currentText().toStdString());
 
@@ -304,7 +300,7 @@ ProxyDialog::ProxyDialog(Project *myProject)
     QLabel *labelProxyList = new QLabel(tr("proxy list"));
     layoutProxy->addWidget(labelProxyList);
     _proxyCombo.clear();
-    redrawProxies();
+    listProxies();
 
     connect(&_proxyCombo, &QComboBox::currentTextChanged, [=](){ this->changedProxy(); });
     layoutProxyCombo->addWidget(&_proxyCombo);
@@ -332,7 +328,6 @@ ProxyDialog::ProxyDialog(Project *myProject)
     QLabel *labelFieldList = new QLabel(tr("field for point values"));
     layoutPointValues->addWidget(labelFieldList);
     layoutPointValues->addWidget(&_field);
-    connect(&_field, &QComboBox::currentTextChanged, [=](){ this->changedField(); });
 
     layoutMain->addLayout(layoutPointValues);
 
@@ -343,7 +338,7 @@ ProxyDialog::ProxyDialog(Project *myProject)
     layoutGrid->addWidget(_selectGrid);
     _proxyGridName.setEnabled(false);
     layoutGrid->addWidget(&_proxyGridName);
-    connect(_selectGrid, &QPushButton::clicked, [=](){ this->getGridFile(); });
+    connect(_selectGrid, &QPushButton::clicked, [=](){ this->selectGridFile(); });
     layoutMain->addLayout(layoutGrid);
 
     // quality control
@@ -359,16 +354,15 @@ ProxyDialog::ProxyDialog(Project *myProject)
     layoutMain->addStretch(1);
     setLayout(layoutMain);
 
+    proxyIndex = 0;
+
     if (_proxyCombo.count() > 0)
-        _proxyCombo.setCurrentIndex(0);
+    {
+        _proxyCombo.setCurrentIndex(proxyIndex);
+        changedProxy();
+    }
 
     exec();
-}
-
-bool ProxyDialog::edited(Project* myProject)
-{
-    _project = myProject;
-    return true;
 }
 
 bool ProxyDialog::checkProxies(QString *error)
@@ -413,6 +407,12 @@ void ProxyDialog::saveProxies()
 
 void ProxyDialog::accept()
 {
+    if (proxyIndex != _proxyCombo.currentIndex())
+    {
+        Crit3DProxy *myProxy = &(_proxy.at(proxyIndex));
+        saveProxy(myProxy);
+    }
+
     // check proxies
     QString error;
     if (checkProxies(&error))

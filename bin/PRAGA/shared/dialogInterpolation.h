@@ -50,22 +50,22 @@ class ProxyDialog : public QDialog
     public:
         explicit ProxyDialog(Project *myProject);
 
+        unsigned proxyIndex;
+
         QComboBox _proxyCombo;
         QComboBox _field;
         QComboBox _table;
         QLineEdit _proxyGridName;
         QCheckBox _forQuality;
 
-        bool edited(Project* myProject);
         void changedProxy();
         void changedTable();
-        void changedField();
-        void getGridFile();
-        void redrawProxies();
+        void selectGridFile();
+        void listProxies();
         void addProxy();
         void deleteProxy();
         void saveProxies();
-        void saveProxy();
+        void saveProxy(Crit3DProxy *myProxy);
         bool checkProxies(QString *error);
         void accept();
 
