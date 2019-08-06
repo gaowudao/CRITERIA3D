@@ -1180,7 +1180,11 @@ bool Project::loadProxyGrids()
             if (! myGrid->isLoaded && gridName != "")
             {
                 myGrid = new gis::Crit3DRasterGrid();
-                if (!gis::readEsriGrid(gridName, myGrid, myError))
+                if (gis::readEsriGrid(gridName, myGrid, myError))
+                {
+                    myProxy->setGrid(myGrid);
+                }
+                else
                 {
                     logError("Error loading proxy grid " + QString::fromStdString(gridName));
                     interpolationSettings.getSelectedCombination().setValue(i, false);
