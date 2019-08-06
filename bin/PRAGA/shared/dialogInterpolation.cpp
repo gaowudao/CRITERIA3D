@@ -265,6 +265,7 @@ void ProxyDialog::deleteProxy()
 {
     _proxy.erase(_proxy.begin() + _proxyCombo.currentIndex());
     listProxies();
+    changedProxy();
 }
 
 void ProxyDialog::saveProxy(Crit3DProxy* myProxy)
