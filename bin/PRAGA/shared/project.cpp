@@ -731,6 +731,7 @@ void Project::closeMeteoPointsDB()
 
     meteoPointsSelected.clear();
 
+    dbPointsFileName = "";
     meteoPointsLoaded = false;
 }
 
@@ -744,8 +745,8 @@ void Project::closeMeteoGridDB()
         delete meteoGridDbHandler;
     }
 
+    dbGridXMLFileName = "";
     meteoGridDbHandler = nullptr;
-
     meteoGridLoaded = false;
 }
 
