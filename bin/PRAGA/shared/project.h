@@ -106,11 +106,11 @@
         void createProject(QString path_, QString name_, QString filename_);
         void saveProject();
         void saveSettings();
-        void saveParameters();
+        void saveAllParameters();
         void saveDefaultParameters();
         void saveInterpolationParameters();
-        void saveProxies();
         void saveRadiationParameters();
+        void saveProxies();
 
         bool start(QString appPath);
         bool loadProject();

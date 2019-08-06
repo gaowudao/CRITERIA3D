@@ -1719,7 +1719,7 @@ void Project::saveDefaultParameters()
 }
 
 
-void Project::saveParameters()
+void Project::saveAllParameters()
 {
     saveDefaultParameters();
     saveInterpolationParameters();
@@ -1730,7 +1730,7 @@ void Project::saveParameters()
 void Project::saveProject()
 {
     saveSettings();
-    saveParameters();
+    saveAllParameters();
 }
 
 
