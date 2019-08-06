@@ -73,6 +73,7 @@ void DialogProject::accept()
         return;
     }
 
-    if (project_->createProject(lineEditProjectPath->text(), lineEditProjectName->text(), lineEditProjectDescription->text()))
-        QDialog::done(QDialog::Accepted);
+    project_->createProject(lineEditProjectPath->text(), lineEditProjectName->text(),
+                            lineEditProjectDescription->text());
+    QDialog::done(QDialog::Accepted);
 }

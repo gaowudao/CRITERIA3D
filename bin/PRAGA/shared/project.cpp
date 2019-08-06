@@ -1646,11 +1646,11 @@ void Project::saveRadiationParameters()
         parameters->setValue("tilt_mode", QString::fromStdString(getKeyStringTiltMode(radSettings.getTiltMode())));
         parameters->setValue("real_sky", radSettings.getRealSky());
         parameters->setValue("shadowing", radSettings.getShadowing());
-        parameters->setValue("linke", QString::number(radSettings.getLinke()));
-        parameters->setValue("albedo", QString::number(radSettings.getAlbedo()));
-        parameters->setValue("tilt", QString::number(radSettings.getTilt()));
-        parameters->setValue("aspect", QString::number(radSettings.getAspect()));
-        parameters->setValue("clear_sky", QString::number(radSettings.getClearSky()));
+        parameters->setValue("linke", QString::number(double(radSettings.getLinke())));
+        parameters->setValue("albedo", QString::number(double(radSettings.getAlbedo())));
+        parameters->setValue("tilt", QString::number(double(radSettings.getTilt())));
+        parameters->setValue("aspect", QString::number(double(radSettings.getAspect())));
+        parameters->setValue("clear_sky", QString::number(double(radSettings.getClearSky())));
         parameters->setValue("linke_map", getRelativePath(QString::fromStdString(radSettings.getLinkeMapName())));
         parameters->setValue("albedo_map", getRelativePath(QString::fromStdString(radSettings.getAlbedoMapName())));
     parameters->endGroup();
@@ -1697,7 +1697,7 @@ void Project::saveProxies()
     }
 }
 
-void Project::saveParameters()
+void Project::saveDefaultParameters()
 {
     parameters->beginGroup("meteo");
         parameters->setValue("min_percentage", QString::number(meteoSettings->getMinimumPercentage()));
@@ -1718,21 +1718,32 @@ void Project::saveParameters()
     parameters->sync();
 }
 
+
+void Project::saveParameters()
+{
+    saveDefaultParameters();
+    saveInterpolationParameters();
+    saveRadiationParameters();
+}
+
+
 void Project::saveProject()
 {
     saveSettings();
     saveParameters();
-    saveInterpolationParameters();
 }
 
 
-bool Project::createProject(QString path, QString name, QString description)
+void Project::createProject(QString path_, QString name_, QString description)
 {
     // name
-    projectName = description;
+    if (description != "")
+        projectName = description;
+    else
+        projectName = name_;
 
     // folder
-    QString myPath = path + "/" + name + "/";
+    QString myPath = path_ + "/" + name_ + "/";
     if (! QDir(myPath).exists())
         QDir().mkdir(myPath);
 
@@ -1740,20 +1751,14 @@ bool Project::createProject(QString path, QString name, QString description)
 
     // settings
     delete projectSettings;
-    projectSettings = new QSettings(projectPath + name + ".ini", QSettings::IniFormat);
+    projectSettings = new QSettings(projectPath + name_ + ".ini", QSettings::IniFormat);
 
     // parameters
-    QString oldParameters = parametersFileName;
-    QString newParameters = projectPath + PATH_SETTINGS + "parameters.ini";
-    QFile::copy(oldParameters, newParameters);
-
     delete parameters;
-    parametersFileName = newParameters;
+    parametersFileName = projectPath + PATH_SETTINGS + "parameters.ini";
     parameters = new QSettings(parametersFileName, QSettings::IniFormat);
 
     saveProject();
-
-    return true;
 }
 
 

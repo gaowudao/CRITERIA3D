@@ -31,14 +31,10 @@ void PragaProject::clearPragaProject()
     if (isProjectLoaded) clearProject();
 }
 
-bool PragaProject::createPragaProject(QString path_, QString name_, QString description_)
+void PragaProject::createPragaProject(QString path_, QString name_, QString description_)
 {
-    if (! createProject(path_, name_, description_))
-        return false;
-
+    createProject(path_, name_, description_);
     savePragaParameters();
-
-    return true;
 }
 
 void PragaProject::savePragaProject()
@@ -1332,7 +1328,6 @@ void PragaProject::savePragaParameters()
         parameters->setValue("merge_joint_stations", clima->getElabSettings()->getMergeJointStations());
     parameters->endGroup();
 }
-
 
 
 bool PragaProject::interpolationMeteoGridPeriod(QDate dateIni, QDate dateFin, std::vector <meteoVariable> variables)

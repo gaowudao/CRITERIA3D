@@ -102,18 +102,20 @@
 
         void initializeProject();
         void clearProject();
-        bool start(QString appPath);
-        bool loadProject();
-        bool loadProjectSettings(QString settingsFileName);
-        bool createProject(QString path_, QString name_, QString filename_);
+
+        void createProject(QString path_, QString name_, QString filename_);
         void saveProject();
         void saveSettings();
-        bool loadParameters(QString parametersFileName);
         void saveParameters();
+        void saveDefaultParameters();
         void saveInterpolationParameters();
         void saveProxies();
         void saveRadiationParameters();
 
+        bool start(QString appPath);
+        bool loadProject();
+        bool loadProjectSettings(QString settingsFileName);
+        bool loadParameters(QString parametersFileName);
         bool loadRadiationGrids();
 
         void setProxyDEM();
