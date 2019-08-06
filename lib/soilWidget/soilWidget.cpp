@@ -300,7 +300,7 @@ void Crit3DSoilWidget::on_actionChooseSoil(QString soilCode)
     awValue->clear();
     potFCValue->clear();
 
-    SoilFromDb = mySoil;
+    SoilSaved = mySoil;
     horizonsTab->insertSoilHorizons(&mySoil, textureClassList);
     addHorizon->setEnabled(true);
     deleteHorizon->setEnabled(true);
@@ -409,17 +409,23 @@ void Crit3DSoilWidget::on_actionSave()
 {
     QString error;
     std::string soilCodeChanged = horizonsTab->getSoilCodeChanged();
+    if (soilCodeChanged.empty())
+    {
+        QMessageBox::critical(nullptr, "Warning", "The soil has already been updated");
+        return;
+    }
     if (!updateSoilData(&dbSoil, QString::fromStdString(soilCodeChanged), &mySoil, &error))
     {
         QMessageBox::critical(nullptr, "Error!", error);
         return;
     }
     horizonsTab->resetSoilCodeChanged();
+    SoilSaved = mySoil;
 }
 
 void Crit3DSoilWidget::on_actionRestoreData()
 {
-    mySoil = SoilFromDb;
+    mySoil = SoilSaved;
     horizonsTab->insertSoilHorizons(&mySoil, textureClassList);
 }
 
