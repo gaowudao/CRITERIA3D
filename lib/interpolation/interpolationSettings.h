@@ -121,8 +121,6 @@
         Crit3DProxyCombination *currentCombination;
         int indexHeight;
 
-        Crit3DClimateParameters currentClimateParameters;
-
     public:
         Crit3DInterpolationSettings();
 
@@ -138,8 +136,6 @@
         float getProxyValue(unsigned int pos, std::vector <float> proxyValues);
         bool getCombination(int combinationInteger, Crit3DProxyCombination* outCombination);
 
-        void setClimateParameters(Crit3DClimateParameters* myParameters);
-
         void setInterpolationMethod(TInterpolationMethod myValue);
         TInterpolationMethod getInterpolationMethod();
 
@@ -153,8 +149,6 @@
         bool getUseDewPoint();
 
         float getMaxHeightInversion();
-
-        float getCurrentClimateLapseRate(meteoVariable myVar, Crit3DTime myTime);
 
         bool getPrecipitationAllZero() const;
         void setPrecipitationAllZero(bool value);

@@ -18,10 +18,10 @@
     #endif
 
     bool checkData(Crit3DQuality* myQuality, meteoVariable myVar, Crit3DMeteoPoint* meteoPoints, int nrMeteoPoints, Crit3DTime myTime,
-                   Crit3DInterpolationSettings* spatialQualityInterpolationSettings, bool checkSpatial);
+                   Crit3DInterpolationSettings* spatialQualityInterpolationSettings, Crit3DClimateParameters *myClimate, bool checkSpatial);
     bool checkAndPassDataToInterpolation(Crit3DQuality* myQuality, meteoVariable myVar, Crit3DMeteoPoint* meteoPoints,
                                          int nrMeteoPoints, Crit3DTime myTime, Crit3DInterpolationSettings *SQinterpolationSettings,
-                                         Crit3DInterpolationSettings* interpolationSettings,
+                                         Crit3DInterpolationSettings* interpolationSettings, Crit3DClimateParameters *myClimate,
                                          std::vector<Crit3DInterpolationDataPoint> &myInterpolationPoints,
                                          bool checkSpatial);
     bool passDataToInterpolation(Crit3DMeteoPoint* meteoPoints, int nrMeteoPoints,

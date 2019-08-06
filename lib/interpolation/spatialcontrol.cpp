@@ -142,7 +142,7 @@ float computeErrorCrossValidation(meteoVariable myVar, Crit3DMeteoPoint* myPoint
 }
 
 void spatialQualityControl(meteoVariable myVar, Crit3DMeteoPoint* meteoPoints, int nrMeteoPoints,
-                           Crit3DInterpolationSettings *settings, Crit3DTime myTime)
+                           Crit3DInterpolationSettings *settings, Crit3DClimateParameters* myClimate, Crit3DTime myTime)
 {
     int i;
     float stdDev, stdDevZ, minDist, myValue, myResidual;
@@ -154,7 +154,7 @@ void spatialQualityControl(meteoVariable myVar, Crit3DMeteoPoint* meteoPoints, i
     if (passDataToInterpolation(meteoPoints, nrMeteoPoints, myInterpolationPoints, settings))
     {
         // detrend
-        if (! preInterpolation(myInterpolationPoints, settings, meteoPoints, nrMeteoPoints, myVar, myTime))
+        if (! preInterpolation(myInterpolationPoints, settings, myClimate, meteoPoints, nrMeteoPoints, myVar, myTime))
             return;
 
         // compute residuals
@@ -183,7 +183,7 @@ void spatialQualityControl(meteoVariable myVar, Crit3DMeteoPoint* meteoPoints, i
         {
             if (passDataToInterpolation(meteoPoints, nrMeteoPoints, myInterpolationPoints, settings))
             {
-                preInterpolation(myInterpolationPoints, settings, meteoPoints, nrMeteoPoints, myVar, myTime);
+                preInterpolation(myInterpolationPoints, settings, myClimate, meteoPoints, nrMeteoPoints, myVar, myTime);
 
                 float interpolatedValue;
                 for (i=0; i < int(listIndex.size()); i++)
@@ -224,7 +224,7 @@ void spatialQualityControl(meteoVariable myVar, Crit3DMeteoPoint* meteoPoints, i
 }
 
 bool checkData(Crit3DQuality* myQuality, meteoVariable myVar, Crit3DMeteoPoint* meteoPoints, int nrMeteoPoints,
-                              Crit3DTime myTime, Crit3DInterpolationSettings* spatialQualityInterpolationSettings, bool checkSpatial)
+                              Crit3DTime myTime, Crit3DInterpolationSettings* spatialQualityInterpolationSettings, Crit3DClimateParameters* myClimate, bool checkSpatial)
 {
     if (nrMeteoPoints == 0)
         return false;
@@ -240,7 +240,7 @@ bool checkData(Crit3DQuality* myQuality, meteoVariable myVar, Crit3DMeteoPoint* 
     if (checkSpatial && myVar != precipitation && myVar != dailyPrecipitation
                      && myVar != globalIrradiance && myVar != dailyGlobalRadiation)
     {
-        spatialQualityControl(myVar, meteoPoints, nrMeteoPoints, spatialQualityInterpolationSettings, myTime);
+        spatialQualityControl(myVar, meteoPoints, nrMeteoPoints, spatialQualityInterpolationSettings, myClimate, myTime);
     }
 
     return true;
@@ -251,10 +251,11 @@ bool checkAndPassDataToInterpolation(Crit3DQuality* myQuality, meteoVariable myV
                                       Crit3DMeteoPoint* meteoPoints, int nrMeteoPoints,
                                       Crit3DTime myTime, Crit3DInterpolationSettings* SQinterpolationSettings,
                                       Crit3DInterpolationSettings* interpolationSettings,
+                                      Crit3DClimateParameters* myClimate,
                                       std::vector <Crit3DInterpolationDataPoint> &myInterpolationPoints,
                                       bool checkSpatial)
 {
-    if (! checkData(myQuality, myVar, meteoPoints, nrMeteoPoints, myTime, SQinterpolationSettings, checkSpatial)) return false;
+    if (! checkData(myQuality, myVar, meteoPoints, nrMeteoPoints, myTime, SQinterpolationSettings, myClimate, checkSpatial)) return false;
 
     // return true if at least one valid data
     return passDataToInterpolation(meteoPoints, nrMeteoPoints, myInterpolationPoints, interpolationSettings);

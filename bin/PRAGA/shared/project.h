@@ -92,6 +92,8 @@
         Crit3DInterpolationSettings interpolationSettings;
         Crit3DInterpolationSettings qualityInterpolationSettings;
 
+        Crit3DClimateParameters climateParameters;
+
         #ifdef NETCDF
             NetCDFHandler netCDF;
         #endif

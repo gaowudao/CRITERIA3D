@@ -729,21 +729,17 @@ bool Vine3DProject::loadClimateParameters()
     }
 
     //read values
-    Crit3DClimateParameters myParameters;
     int i;
     while (myQuery.next())
     {
         i = myQuery.value(0).toInt();
-        myParameters.tminLapseRate[i-1] = myQuery.value(1).toFloat();
-        myParameters.tmaxLapseRate[i-1] = myQuery.value(2).toFloat();
-        myParameters.tDewMinLapseRate[i-1] = myQuery.value(3).toFloat();
-        myParameters.tDewMaxLapseRate[i-1] = myQuery.value(4).toFloat();
+        climateParameters.tminLapseRate[i-1] = myQuery.value(1).toFloat();
+        climateParameters.tmaxLapseRate[i-1] = myQuery.value(2).toFloat();
+        climateParameters.tDewMinLapseRate[i-1] = myQuery.value(3).toFloat();
+        climateParameters.tDewMaxLapseRate[i-1] = myQuery.value(4).toFloat();
     }
 
-    interpolationSettings.setClimateParameters(&myParameters);
-
     return(true);
-
 }
 
 bool Vine3DProject::loadVine3DProjectParameters()

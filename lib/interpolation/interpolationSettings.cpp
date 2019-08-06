@@ -251,22 +251,6 @@ std::string getKeyStringInterpolationMethod(TInterpolationMethod value)
     return key;
 }
 
-float Crit3DInterpolationSettings::getCurrentClimateLapseRate(meteoVariable myVar, Crit3DTime myTime)
-{
-    Crit3DDate myDate = myTime.date;
-    int myHour = myTime.getHour();
-    if (myDate != getNullDate() && (myHour != NODATA))
-        return (currentClimateParameters.getClimateLapseRate(myVar, myDate, myHour));
-    else
-        // TODO migliorare
-        return -0.006f;
-}
-
-void Crit3DInterpolationSettings::setClimateParameters(Crit3DClimateParameters* myParameters)
-{
-    currentClimateParameters = *(myParameters);
-}
-
 TInterpolationMethod Crit3DInterpolationSettings::getInterpolationMethod()
 { return interpolationMethod;}
 

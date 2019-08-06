@@ -1245,7 +1245,7 @@ bool Project::interpolationDem(meteoVariable myVar, const Crit3DTime& myTime, gi
 
     // check quality and pass data to interpolation
     if (!checkAndPassDataToInterpolation(quality, myVar, meteoPoints, nrMeteoPoints, myTime,
-                                         &qualityInterpolationSettings, &interpolationSettings, interpolationPoints,
+                                         &qualityInterpolationSettings, &interpolationSettings, &climateParameters, interpolationPoints,
                                          checkSpatialQuality))
     {
         errorString = "No data available";
@@ -1260,7 +1260,7 @@ bool Project::interpolationDem(meteoVariable myVar, const Crit3DTime& myTime, gi
     }
 
     //detrending and checking precipitation
-    if (! preInterpolation(interpolationPoints, &interpolationSettings, meteoPoints, nrMeteoPoints, myVar, myTime))
+    if (! preInterpolation(interpolationPoints, &interpolationSettings, &climateParameters, meteoPoints, nrMeteoPoints, myVar, myTime))
     {
         errorString = "Interpolation: error in function preInterpolation";
         return false;
@@ -1299,13 +1299,13 @@ bool Project::interpolateDemRadiation(const Crit3DTime& myTime, gis::Crit3DRaste
 
     if (! checkAndPassDataToInterpolation(quality, atmTransmissivity, meteoPoints, nrMeteoPoints,
                                         myTime, &qualityInterpolationSettings,
-                                        &interpolationSettings, interpolationPoints, checkSpatialQuality))
+                                        &interpolationSettings, &climateParameters, interpolationPoints, checkSpatialQuality))
     {
         errorString = "Function interpolateRasterRadiation: not enough transmissivity data.";
         return false;
     }
 
-    preInterpolation(interpolationPoints, &interpolationSettings, meteoPoints, nrMeteoPoints, atmTransmissivity, myTime);
+    preInterpolation(interpolationPoints, &interpolationSettings, &climateParameters, meteoPoints, nrMeteoPoints, atmTransmissivity, myTime);
 
     if (! interpolationRaster(interpolationPoints, &interpolationSettings, this->radiationMaps->transmissivityMap, DEM, atmTransmissivity, showInfo))
     {
