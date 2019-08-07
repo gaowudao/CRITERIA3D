@@ -62,10 +62,6 @@ TabWaterRetentionCurve::TabWaterRetentionCurve()
     grid->setMajorPen( Qt::darkGray, 0, Qt::SolidLine );
     grid->setMinorPen( Qt::gray, 0 , Qt::DotLine );
     grid->attach(myPlot);
-
-    MyPicker *pick = new MyPicker(myPlot);
-    pick->setStateMachine(new QwtPickerClickPointMachine());
-
     mainLayout->addLayout(linesLayout);
     plotLayout->addWidget(myPlot);
     mainLayout->addLayout(plotLayout);
@@ -131,10 +127,10 @@ void TabWaterRetentionCurve::insertElements(soil::Crit3DSoil *soil)
             curve->attach(myPlot);
             curveList.push_back(curve);
         }
+        MyPicker *pick = new MyPicker(myPlot, curveList);
+        pick->setStateMachine(new QwtPickerClickPointMachine());
         linesLayout->update();
         myPlot->replot();
     }
 
 }
-
-

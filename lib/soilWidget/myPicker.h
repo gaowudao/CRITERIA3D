@@ -11,7 +11,7 @@ class MyPicker : public QwtPlotPicker
 {
     Q_OBJECT
 public:
-    MyPicker( QwtPlot *plot );
+    MyPicker(QwtPlot *plot, QList<QwtPlotCurve*> allCurveList);
 
     MyPicker( int xAxis = QwtPlot::xBottom,
               int yAxis = QwtPlot::yLeft,
@@ -19,8 +19,8 @@ public:
               DisplayMode trackerMode = QwtPicker::AlwaysOn,
               QwtPlot *plot = nullptr );
 
-    void selectPoint( const QPointF & point );
     void highlightCurve( bool isHightlight );
+    int closestPoint( QwtPlotCurve& curve, const QPoint &pos, double *dist );
 
 public slots:
     void slotSelected( const QPointF &pos);
@@ -29,6 +29,7 @@ private:
     QwtPlot *qwtPlot;
     QwtPlotCurve *selectedCurve;
     int selectedPointIndex;
+    QList<QwtPlotCurve*> allCurveList;
 };
 
 #endif // MYPICKER_H

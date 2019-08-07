@@ -1,11 +1,12 @@
 #include "myPicker.h"
 #include "qwt_symbol.h"
 
-MyPicker::MyPicker(QwtPlot *plot) :
+MyPicker::MyPicker(QwtPlot *plot, QList<QwtPlotCurve *> allCurveList) :
     QwtPlotPicker(QwtPlot::xBottom, QwtPlot::yLeft, CrossRubberBand, QwtPicker::AlwaysOn, plot->canvas()),
+    qwtPlot(plot),
     selectedCurve( nullptr ),
-    qwtPlot( plot ),
-    selectedPointIndex( -1 )
+    selectedPointIndex( -1 ),
+    allCurveList(allCurveList)
 {
     connect( this, SIGNAL( selected( const QPointF ) ), this, SLOT( slotSelected( const QPointF ) ) );
 }
@@ -13,38 +14,64 @@ MyPicker::MyPicker(QwtPlot *plot) :
 void MyPicker::slotSelected( const QPointF &pos)
 {
     qDebug() << "slotSelected " << pos;
-    QwtPlotCurve *curve = nullptr;
+    QwtPlotCurve *curveFound = nullptr;
     double minDist = std::numeric_limits<double>::max();
-    int index = -1;
+    int closestIndex = -1;
 
-    const QwtPlotItemList& itmList = qwtPlot->itemList();
-    for ( QwtPlotItemIterator it = itmList.begin();
-        it != itmList.end(); ++it )
+//    const QwtPlotItemList& itmList = qwtPlot->itemList();
+//    for ( QwtPlotItemIterator it = itmList.begin(); it != itmList.end(); ++it )
+//    {
+//        qDebug() << "1" ;
+//        if ( ( *it )->rtti() == QwtPlotItem::Rtti_PlotCurve )
+//        {
+//            qDebug() << "a" ;
+//            QwtPlotCurve *c = ( QwtPlotCurve* )( *it );
+//            double d;
+//            //int idx = c->closestPoint( pos.toPoint(), &d );
+//            qDebug() << "minDist " << minDist;
+//            int idx = closestPoint( *c, pos.toPoint(), &d );
+//            if ( d < minDist )
+//            {
+//                qDebug() << "d < minDist " << d;
+//                qDebug() << "minDist " << minDist;
+//                qDebug() << "c " << c;
+//                curve = c;
+//                index = idx;
+//                minDist = d;
+//            }
+//        }
+//    }
+
+    for ( int i = 0; i < allCurveList.size(); i++ )
     {
-        if ( ( *it )->rtti() == QwtPlotItem::Rtti_PlotCurve )
+        qDebug() << "curve number" << i;
+        QwtPlotCurve *c = allCurveList[i];
+        double d = 0;
+        //int idx = c->closestPoint( pos.toPoint(), &d );
+        qDebug() << "minDist " << minDist;
+        int index = closestPoint( *c, pos.toPoint(), &d );
+        if ( d < minDist )
         {
-            QwtPlotCurve *c = ( QwtPlotCurve* )( *it );
-
-            double d;
-            int idx = c->closestPoint( pos.toPoint(), &d );
-            if ( d < minDist )
-            {
-                curve = c;
-                index = idx;
-                minDist = d;
-            }
+            qDebug() << "d < minDist " << d;
+            qDebug() << "minDist " << minDist;
+            qDebug() << "c " << c;
+            curveFound = c;
+            closestIndex = index;
+            minDist = d;
         }
     }
-
-    highlightCurve( false );
-    selectedCurve = nullptr;
-    selectedPointIndex = -1;
-
-    if ( curve && minDist < 5 ) // 5 pixels tolerance
+qDebug() << "minDist " << minDist;
+    if ( curveFound && minDist < 10 ) // 10 pixels tolerance
     {
-        selectedCurve = curve;
-        selectedPointIndex = index;
+        selectedCurve = curveFound;
+        selectedPointIndex = closestIndex;
         highlightCurve( true );
+    }
+    else
+    {
+        highlightCurve(false);  // clear previous selection
+        selectedCurve = nullptr;
+        selectedPointIndex = -1;
     }
 }
 
@@ -64,4 +91,42 @@ void MyPicker::highlightCurve( bool isHightlight )
         selectedCurve->setPen(Qt::black, 1);
     }
     qwtPlot->replot();
+}
+
+int MyPicker::closestPoint( QwtPlotCurve& curve, const QPoint &pos, double *dist )
+{
+    const size_t numSamples = curve.dataSize();
+
+    if ( curve.plot() == nullptr || numSamples <= 0 )
+        return -1;
+
+    const QwtSeriesData<QPointF> *series = curve.data();
+
+    const QwtScaleMap xMap = curve.plot()->canvasMap( curve.xAxis() );
+    const QwtScaleMap yMap = curve.plot()->canvasMap( curve.yAxis() );
+
+    const double xPos = xMap.transform( pos.x() );
+    const double yPos = yMap.transform( pos.y() );
+
+    int index = -1;
+    double dmin = std::numeric_limits<double>::max();
+
+    for ( uint i = 0; i < numSamples; i++ )
+    {
+        const QPointF sample = series->sample( i );
+
+        const double cx = xMap.transform( sample.x() ) - xPos;
+        const double cy = yMap.transform( sample.y() ) - yPos;
+
+        const double dist = sqrt( pow(cx,2) + pow(cy,2) );
+        if ( dist < dmin )
+        {
+            index = i;
+            dmin = dist;
+        }
+    }
+    if ( dist )
+        *dist = dmin;
+
+    return index;
 }
