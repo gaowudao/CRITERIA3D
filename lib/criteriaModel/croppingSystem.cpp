@@ -275,12 +275,13 @@ float cropIrrigationDemand(CriteriaModel* myCase, int doy, float currentPrec, fl
             myCase->myCrop.degreeDays > myCase->myCrop.degreeDaysEndIrrigation) return 0;
     }
 
-    // check rainfall and surface water content
-    if (currentPrec + float(myCase->layer[0].waterContent) >= 5.f) return 0;
+    // check forecast
+    double waterNeeds = myCase->myCrop.irrigationVolume / myCase->myCrop.irrigationShift;
+    double todayWater = double(currentPrec) + myCase->layer[0].waterContent;
+    double twoDaysWater = todayWater + double(nextPrec);
 
-    // check rainfall forecast (at least half of irrigation volume)
-    if (myCase->myCrop.irrigationShift > 1)
-        if ((currentPrec + nextPrec) > float(myCase->myCrop.irrigationVolume * 0.5)) return 0;
+    if (todayWater > waterNeeds) return 0;
+    if (twoDaysWater > 2*waterNeeds) return 0;
 
     // check water stress (before infiltration)
     double threshold = 1. - myCase->myCrop.stressTolerance;
@@ -290,12 +291,8 @@ float cropIrrigationDemand(CriteriaModel* myCase, int doy, float currentPrec, fl
     // check irrigation shift
     if (myCase->myCrop.daysSinceIrrigation != NODATA)
     {
-        // too much water stress -> supplementary irrigation
-        if (waterStress < (threshold + 0.1))
-        {
-            if (myCase->myCrop.daysSinceIrrigation < myCase->myCrop.irrigationShift)
-                return 0;
-        }
+        if (myCase->myCrop.daysSinceIrrigation < myCase->myCrop.irrigationShift)
+            return 0;
     }
 
     // all check passed --> IRRIGATION
@@ -312,7 +309,6 @@ float cropIrrigationDemand(CriteriaModel* myCase, int doy, float currentPrec, fl
         //return float(myCase->myCrop.irrigationVolume);
         return float(maxValue(int(myCase->output.dailyMaxTranspiration), myCase->myCrop.irrigationVolume));
     }
-
 }
 
 
@@ -435,10 +431,11 @@ double cropTranspiration(CriteriaModel* myCase, bool getWaterStress)
     for (i=0; i < myCase->nrLayers; i++)
         isLayerStressed[i] = false;
 
+    // deactivated water surplus
     if (myCase->myCrop.isWaterSurplusResistant())
         WSS = 0.0;
     else
-        WSS = 0.5;
+        WSS = 0.0;
 
     for (i = myCase->myCrop.roots.firstRootLayer; i <= myCase->myCrop.roots.lastRootLayer; i++)
     {
