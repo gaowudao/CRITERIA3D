@@ -1,4 +1,5 @@
 #include "tabWaterRetentionCurve.h"
+#include "myPicker.h"
 
 #include "commonConstants.h"
 #include <qwt_point_data.h>
@@ -8,6 +9,7 @@
 #include <qwt_plot_panner.h>
 #include <qwt_plot_zoomer.h>
 #include <qwt_event_pattern.h>
+#include <qwt_picker_machine.h>
 #include <QWidget>
 
 #define XMIN 0.01
@@ -60,6 +62,9 @@ TabWaterRetentionCurve::TabWaterRetentionCurve()
     grid->setMajorPen( Qt::darkGray, 0, Qt::SolidLine );
     grid->setMinorPen( Qt::gray, 0 , Qt::DotLine );
     grid->attach(myPlot);
+
+    MyPicker *pick = new MyPicker(myPlot);
+    pick->setStateMachine(new QwtPickerClickPointMachine());
 
     mainLayout->addLayout(linesLayout);
     plotLayout->addWidget(myPlot);

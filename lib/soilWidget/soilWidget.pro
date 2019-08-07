@@ -37,7 +37,8 @@ SOURCES += \
     tabHydraulicConductivityCurve.cpp \
     tableDelegate.cpp \
     tableDbOrModel.cpp \
-    lineHorizont.cpp
+    lineHorizont.cpp \
+    myPicker.cpp
 
 HEADERS += \
         soilWidget.h \
@@ -48,7 +49,8 @@ HEADERS += \
     tabHydraulicConductivityCurve.h \
     tableDelegate.h \
     tableDbOrModel.h \
-    lineHorizont.h
+    lineHorizont.h \
+    myPicker.h
 
 unix {
     target.path = /usr/lib
