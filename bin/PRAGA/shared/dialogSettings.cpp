@@ -307,7 +307,7 @@ bool DialogSettings::acceptValues()
     project_->meteoSettings->setTransSamaniCoefficient(metTab->transSamaniCoefficientEdit.text().toFloat());
 
     project_->saveSettings();
-    project_->saveDefaultParameters();
+    project_->saveGenericParameters();
 
     return true;
 }

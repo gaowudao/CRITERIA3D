@@ -1697,7 +1697,7 @@ void Project::saveProxies()
     }
 }
 
-void Project::saveDefaultParameters()
+void Project::saveGenericParameters()
 {
     parameters->beginGroup("meteo");
         parameters->setValue("min_percentage", QString::number(meteoSettings->getMinimumPercentage()));
@@ -1721,7 +1721,7 @@ void Project::saveDefaultParameters()
 
 void Project::saveAllParameters()
 {
-    saveDefaultParameters();
+    saveGenericParameters();
     saveInterpolationParameters();
     saveRadiationParameters();
 }

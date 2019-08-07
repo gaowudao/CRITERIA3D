@@ -107,7 +107,7 @@
         void saveProject();
         void saveSettings();
         void saveAllParameters();
-        void saveDefaultParameters();
+        void saveGenericParameters();
         void saveInterpolationParameters();
         void saveRadiationParameters();
         void saveProxies();

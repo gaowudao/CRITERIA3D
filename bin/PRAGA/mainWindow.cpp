@@ -1955,6 +1955,15 @@ void MainWindow::on_actionNew_aggregation_DB_triggered()
     myProject.loadAggregationdDB(dbName);
 }
 
+void MainWindow::redrawTitle()
+{
+    QString title = "PRAGA";
+    if (myProject.projectName != "")
+        title += " - " + myProject.projectName;
+
+    this->setWindowTitle(title);
+}
+
 void MainWindow::drawProject()
 {
     mapView->centerOn(startCenter->lonLat());
@@ -1965,11 +1974,7 @@ void MainWindow::drawProject()
     drawMeteoPoints();
     drawMeteoGrid();
 
-    QString title = "PRAGA";
-    if (myProject.projectName != "")
-        title += " - " + myProject.projectName;
-
-    this->setWindowTitle(title);
+    redrawTitle();
 }
 
 void MainWindow::on_actionOpen_project_triggered()
@@ -2021,6 +2026,8 @@ void MainWindow::on_actionSave_project_as_triggered()
 
     DialogPragaProject* myProjectDialog = new DialogPragaProject(&myProject);
     myProjectDialog->close();
+
+    redrawTitle();
 
     checkSaveProject();
 }

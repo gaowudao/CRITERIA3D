@@ -181,6 +181,7 @@
         void drawMeteoGrid();
         void redrawMeteoGrid(visualizationType showType);
         void drawProject();
+        void redrawTitle();
 
         void checkSaveProject();
 
