@@ -568,7 +568,7 @@ void DialogAnomaly::AnomalyFillClimateDbList(QComboBox* dbList)
     {
         for (int i=0; i < climateTables.size(); i++)
         {
-            selectVarElab(myProject.clima->db(), &myError, climateTables.at(i), variableElab.text(), &climateDbElab);
+            selectVarElab(myProject.clima->db(), &myError, climateTables[i], variableElab.text(), &climateDbElab);
         }
         if (climateDbElab.isEmpty())
         {
@@ -578,7 +578,7 @@ void DialogAnomaly::AnomalyFillClimateDbList(QComboBox* dbList)
         {
             for (int i=0; i < climateDbElab.size(); i++)
             {
-                dbList->addItem(climateDbElab.at(i));
+                dbList->addItem(climateDbElab[i]);
             }
         }
     }

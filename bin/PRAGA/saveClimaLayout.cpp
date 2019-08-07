@@ -98,7 +98,7 @@ void SaveClimaLayout::saveElabList()
     {
         QTextStream s(&elabList);
         for (int i = 0; i < list.size(); ++i)
-          s << list.at(i) << '\n';
+          s << list[i] << '\n';
     }
     else
     {

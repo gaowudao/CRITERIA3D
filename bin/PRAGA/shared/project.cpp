@@ -1124,7 +1124,7 @@ bool Project::readPointProxyValues(Crit3DMeteoPoint* myPoint, QSqlDatabase* myDb
 
     for (unsigned int i=0; i < unsigned(nrProxy); i++)
     {
-        myPoint->proxyValues.at(i) = NODATA;
+        myPoint->proxyValues[i] = NODATA;
 
         // read only for active proxies
         if (interpolationSettings.getSelectedCombination().getValue(signed(i)))
@@ -1139,11 +1139,11 @@ bool Project::readPointProxyValues(Crit3DMeteoPoint* myPoint, QSqlDatabase* myDb
                 {
                     qry.last();
                     if (qry.value(proxyField) != "")
-                        myPoint->proxyValues.at(i) = qry.value(proxyField).toFloat();
+                        myPoint->proxyValues[i] = qry.value(proxyField).toFloat();
                 }
             }
 
-            if (int(myPoint->proxyValues.at(i)) == int(NODATA))
+            if (int(myPoint->proxyValues[i]) == int(NODATA))
             {
                 gis::Crit3DRasterGrid* proxyGrid = myProxy->getGrid();
                 if (proxyGrid == nullptr || ! proxyGrid->isLoaded)

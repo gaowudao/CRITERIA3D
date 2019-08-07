@@ -190,7 +190,7 @@ void Crit3DClimateList::parserElaboration()
     {
         int pos = 0;
 
-        QString climateElab = _listClimateElab.at(i);
+        QString climateElab = _listClimateElab[i];
 
         QStringList words = climateElab.split('_');
 
@@ -254,7 +254,7 @@ void Crit3DClimateList::parserElaboration()
         }
 
 
-        if ( (_listPeriodType.at(i) == genericPeriod) && ( (words[pos].at(0)).isDigit() ) )
+        if ( (_listPeriodType[i] == genericPeriod) && ( (words[pos].at(0)).isDigit() ) )
         {
             _listPeriodStr.push_back(words[pos]);
             parserGenericPeriodString(i);

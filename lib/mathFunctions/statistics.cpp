@@ -142,9 +142,9 @@ namespace statistics
 
         for (unsigned int i=0; i < measured.size(); i++)
         {
-            if ((measured.at(i) != NODATA) && (simulated.at(i) != NODATA))
+            if ((measured[i] != NODATA) && (simulated[i] != NODATA))
             {
-                sum += measured.at(i)-simulated.at(i);
+                sum += measured[i]-simulated[i];
                 nrValidValues++;
             }
         }
@@ -163,9 +163,9 @@ namespace statistics
 
         for (unsigned int i=0; i < measured.size(); i++)
         {
-            if ((measured.at(i) != NODATA) && (simulated.at(i) != NODATA))
+            if ((measured[i] != NODATA) && (simulated[i] != NODATA))
             {
-                sum += fabs(measured.at(i)-simulated.at(i));
+                sum += fabs(measured[i]-simulated[i]);
                 nrValidValues++;
             }
         }

@@ -39,7 +39,7 @@ bool saveDailyElab(QSqlDatabase db, QString *myError, QString id, std::vector<fl
         qry.addBindValue(i+1);
         qry.addBindValue(id);
         qry.addBindValue(elab);
-        qry.addBindValue(allResults.at(i));
+        qry.addBindValue(allResults[i]);
 
         if( !qry.exec() )
         {
@@ -188,7 +188,7 @@ bool saveDecadalElab(QSqlDatabase db, QString *myError, QString id, std::vector<
         qry.addBindValue(i+1);
         qry.addBindValue(id);
         qry.addBindValue(elab);
-        qry.addBindValue(allResults.at(i));
+        qry.addBindValue(allResults[i]);
 
         if( !qry.exec() )
         {
@@ -230,7 +230,7 @@ bool saveMonthlyElab(QSqlDatabase db, QString *myError, QString id, std::vector<
         qry.addBindValue(i+1);
         qry.addBindValue(id);
         qry.addBindValue(elab);
-        qry.addBindValue(allResults.at(i));
+        qry.addBindValue(allResults[i]);
 
         if( !qry.exec() )
         {
@@ -272,7 +272,7 @@ bool saveSeasonalElab(QSqlDatabase db, QString *myError, QString id, std::vector
         qry.addBindValue(i+1);
         qry.addBindValue(id);
         qry.addBindValue(elab);
-        qry.addBindValue(allResults.at(i));
+        qry.addBindValue(allResults[i]);
 
         if( !qry.exec() )
         {

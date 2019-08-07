@@ -182,7 +182,7 @@ bool passingClimateToAnomaly(QString *myError, Crit3DMeteoPoint* meteoPointTemp,
         {
             for (int j = 0; j < nrMeteoPoints; j++)
             {
-                if ( QString::fromStdString(meteoPoints[j].id) == idList.at(i))
+                if ( QString::fromStdString(meteoPoints[j].id) == idList[i])
                 {
 
                     currentDist = gis::computeDistance(meteoPointTemp->point.utm.x, meteoPointTemp->point.utm.y, meteoPoints[j].point.utm.x, meteoPoints[j].point.utm.y);
@@ -1789,7 +1789,7 @@ void extractValidValuesCC(std::vector<float> &outputValues)
 
     for (unsigned int i = 0;  i < outputValues.size(); i++)
     {
-        if (outputValues.at(i) == NODATA)
+        if (outputValues[i] == NODATA)
         {
             outputValues.erase(outputValues.begin()+i);
         }
@@ -1803,7 +1803,7 @@ void extractValidValuesWithThreshold(std::vector<float> &outputValues, float myT
 
     for (unsigned int i = 0;  i < outputValues.size(); i++)
     {
-        if (outputValues.at(i) == NODATA || outputValues.at(i) < myThreshold)
+        if (outputValues[i] == NODATA || outputValues[i] < myThreshold)
         {
             outputValues.erase(outputValues.begin()+i);
         }

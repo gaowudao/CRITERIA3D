@@ -276,7 +276,7 @@ bool PragaProject::showClimateFields(bool isMeteoGrid, QStringList* climateDbEla
     {
         for (int i=0; i < climateTables.size(); i++)
         {
-            selectAllElab(db, &errorString, climateTables.at(i), climateDbElab);
+            selectAllElab(db, &errorString, climateTables[i], climateDbElab);
         }
         if (climateDbElab->isEmpty())
         {

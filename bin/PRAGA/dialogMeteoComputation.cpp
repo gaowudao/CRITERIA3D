@@ -937,7 +937,7 @@ void DialogMeteoComputation::readParameter(int state)
         {
             for (int i=0; i < climateTables.size(); i++)
             {
-                selectVarElab(myProject.clima->db(), &myError, climateTables.at(i), variableList.currentText(), &climateDbElab);
+                selectVarElab(myProject.clima->db(), &myError, climateTables[i], variableList.currentText(), &climateDbElab);
             }
             if (climateDbElab.isEmpty())
             {
@@ -947,7 +947,7 @@ void DialogMeteoComputation::readParameter(int state)
             {
                 for (int i=0; i < climateDbElab.size(); i++)
                 {
-                    climateDbElabList.addItem(climateDbElab.at(i));
+                    climateDbElabList.addItem(climateDbElab[i]);
                 }
             }
 

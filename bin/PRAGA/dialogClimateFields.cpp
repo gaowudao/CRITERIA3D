@@ -78,7 +78,7 @@ void DialogClimateFields::variableClicked(QListWidgetItem* item)
 
     for (int i=0; i < climateDbElab.size(); i++)
     {
-        QString elab = climateDbElab.at(i);
+        QString elab = climateDbElab[i];
         QStringList words = elab.split('_');
         QString var = words[1];
         if (var == item->text())

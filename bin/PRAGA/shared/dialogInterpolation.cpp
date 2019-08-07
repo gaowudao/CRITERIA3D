@@ -238,7 +238,7 @@ void ProxyDialog::listProxies()
 
     _proxyCombo.clear();
     for (int i = 0; i < _proxy.size(); i++)
-         _proxyCombo.addItem(QString::fromStdString(_proxy.at(i).getName()));
+         _proxyCombo.addItem(QString::fromStdString(_proxy[i].getName()));
 
     _proxyCombo.blockSignals(false);
 }
@@ -331,7 +331,7 @@ ProxyDialog::ProxyDialog(Project *myProject)
     layoutPointValues->addWidget(labelTableList);
     QStringList tables_ = _project->meteoPointsDbHandler->getDb().tables();
     for (int i=0; i < tables_.size(); i++)
-        _table.addItem(tables_.at(i));
+        _table.addItem(tables_[i]);
 
     layoutPointValues->addWidget(&_table);
     connect(&_table, &QComboBox::currentTextChanged, [=](){ this->changedTable(); });
@@ -384,17 +384,17 @@ bool ProxyDialog::checkProxies(QString *error)
 
     for (unsigned i=0; i < _proxy.size(); i++)
     {
-        if (!_project->checkProxy(_proxy.at(i).getName(), _proxy.at(i).getGridName(), _proxy.at(i).getProxyTable(), _proxy.at(i).getProxyField(), error))
+        if (!_project->checkProxy(_proxy[i].getName(), _proxy[i].getGridName(), _proxy[i].getProxyTable(), _proxy[i].getProxyField(), error))
             return false;
 
-        table_ = _proxy.at(i).getProxyTable();
+        table_ = _proxy[i].getProxyTable();
         if (table_ != "")
         {
             QSqlDatabase db = _project->meteoPointsDbHandler->getDb();
             fields = getFields(&db, QString::fromStdString(table_));
             if (fields.filter("id_point").isEmpty())
             {
-                *error = "no id_point field found in table " + QString::fromStdString(table_) + " for proxy " + QString::fromStdString(_proxy.at(i).getName());
+                *error = "no id_point field found in table " + QString::fromStdString(table_) + " for proxy " + QString::fromStdString(_proxy[i].getName());
                 return false;
             }
         }
@@ -410,9 +410,9 @@ void ProxyDialog::saveProxies()
 
     for (unsigned i=0; i < _proxy.size(); i++)
     {   
-        _project->addProxy(_proxy.at(i).getName(), _proxy.at(i).getGridName(),
-                           _proxy.at(i).getProxyTable(), _proxy.at(i).getProxyField(),
-                            _proxy.at(i).getForQualityControl(), true);
+        _project->addProxy(_proxy[i].getName(), _proxy[i].getGridName(),
+                           _proxy[i].getProxyTable(), _proxy[i].getProxyField(),
+                            _proxy[i].getForQualityControl(), true);
     }
 }
 

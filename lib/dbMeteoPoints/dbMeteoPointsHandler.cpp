@@ -537,7 +537,7 @@ bool Crit3DMeteoPointsDbHandler::readPointProxyValues(Crit3DMeteoPoint* myPoint,
 
     for (int i=0; i < nrProxy; i++)
     {
-        myPoint->proxyValues.at(i) = NODATA;
+        myPoint->proxyValues[i] = NODATA;
 
         // read only for active proxies
         if (interpolationSettings->getSelectedCombination().getValue(i))
@@ -552,11 +552,11 @@ bool Crit3DMeteoPointsDbHandler::readPointProxyValues(Crit3DMeteoPoint* myPoint,
                 {
                     qry.last();
                     if (qry.value(proxyField) != "")
-                        myPoint->proxyValues.at(i) = qry.value(proxyField).toFloat();
+                        myPoint->proxyValues[i] = qry.value(proxyField).toFloat();
                 }
             }
 
-            if (myPoint->proxyValues.at(i) == NODATA)
+            if (myPoint->proxyValues[i] == NODATA)
             {
                 gis::Crit3DRasterGrid* proxyGrid = myProxy->getGrid();
                 if (proxyGrid == nullptr || ! proxyGrid->isLoaded)
@@ -565,7 +565,7 @@ bool Crit3DMeteoPointsDbHandler::readPointProxyValues(Crit3DMeteoPoint* myPoint,
                 {
                     float myValue = gis::getValueFromXY(*proxyGrid, myPoint->point.utm.x, myPoint->point.utm.y);
                     if (myValue != proxyGrid->header->flag)
-                        myPoint->proxyValues.at(i) = myValue;
+                        myPoint->proxyValues[i] = myValue;
                 }
             }
         }
