@@ -32,7 +32,7 @@ int main(int argc, char *argv[])
         settingsFileName = argv[1];
     else
     {
-        settingsFileName = "../../../DATA/PROJECT/swamp/swamp.ini";
+        settingsFileName = "../../../DATA/PROJECT/kiwifruit/kiwifruit.ini";
 
         //myProject.logError("USAGE: CRITERIA1D filename.ini");
         //return ERROR_SETTINGS_MISSING;

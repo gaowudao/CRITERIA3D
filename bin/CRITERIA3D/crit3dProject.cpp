@@ -189,7 +189,7 @@ bool Crit3DProject::loadSoilData(QString fileName)
     }
     if(str != "") logInfo(str);
 
-    nrSoils = soilList.size();
+    nrSoils = unsigned(soilList.size());
 
     logInfo("Soil data = " + fileName);
     return true;

@@ -21,7 +21,7 @@
     {
 
     public:
-        long nrNodes;
+        unsigned long nrNodes;
         unsigned int nrLayers;
         int nrLateralLink;
 

@@ -12,9 +12,9 @@
 #include <qwt_picker_machine.h>
 #include <QWidget>
 
-#define XMIN 0.01
-#define XMAX 1000000
-#define YMIN 0.01
+#define XMIN 0.1
+#define XMAX 100000
+#define YMIN 0.0
 #define YMAX 0.6
 
 TabWaterRetentionCurve::TabWaterRetentionCurve()
@@ -27,8 +27,8 @@ TabWaterRetentionCurve::TabWaterRetentionCurve()
 
     myPlot = new QwtPlot;
     myPlot->setAxisScaleEngine(QwtPlot::xBottom, new QwtLogScaleEngine(10));
-    myPlot->setAxisTitle(QwtPlot::yLeft,QString("Water content [%1]").arg(QString("m^3/m^3")));
-    myPlot->setAxisTitle(QwtPlot::xBottom,QString("Water potential [%1]").arg(QString("J/Kg")));
+    myPlot->setAxisTitle(QwtPlot::yLeft,QString("Water content [%1]").arg(QString("m3 m-3")));
+    myPlot->setAxisTitle(QwtPlot::xBottom,QString("Water potential [%1]").arg(QString("kPa")));
     myPlot->setAxisScale(QwtPlot::xBottom,XMIN, XMAX);
     myPlot->setAxisScale(QwtPlot::yLeft,YMIN, YMAX);
 

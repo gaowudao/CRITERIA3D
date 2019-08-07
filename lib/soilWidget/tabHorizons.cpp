@@ -249,37 +249,39 @@ void TabHorizons::checkMissingItem(int horizonNum)
             tableModel->item(horizonNum,j)->setText("");
         }
     }
-
 }
+
 
 void TabHorizons::checkComputedValues(int horizonNum)
 {
-    if (mySoil->horizon[horizonNum].dbData.coarseFragments != mySoil->horizon[horizonNum].coarseFragments*100)
+    soil::Crit3DHorizon * horizon = &(mySoil->horizon[unsigned(horizonNum)]);
+
+    if (abs(horizon->dbData.coarseFragments - horizon->coarseFragments*100) > EPSILON)
     {
         tableModel->item(horizonNum,1)->setBackgroundColor(Qt::yellow);
     }
 
-    if (mySoil->horizon[horizonNum].dbData.organicMatter != mySoil->horizon[horizonNum].organicMatter*100)
+    if (abs(horizon->dbData.organicMatter - horizon->organicMatter*100) > EPSILON)
     {
         tableModel->item(horizonNum,2)->setBackgroundColor(Qt::yellow);
     }
 
-    if (mySoil->horizon[horizonNum].dbData.bulkDensity != mySoil->horizon[horizonNum].bulkDensity)
+    if (abs(horizon->dbData.bulkDensity - horizon->bulkDensity) > EPSILON)
     {
         tableModel->item(horizonNum,3)->setBackgroundColor(Qt::yellow);
     }
 
-    if (mySoil->horizon[horizonNum].dbData.kSat != mySoil->horizon[horizonNum].waterConductivity.kSat)
+    if (abs(horizon->dbData.kSat - horizon->waterConductivity.kSat) > EPSILON)
     {
         tableModel->item(horizonNum,4)->setBackgroundColor(Qt::yellow);
     }
 
-    if (mySoil->horizon[horizonNum].dbData.thetaSat != mySoil->horizon[horizonNum].vanGenuchten.thetaS)
+    if (abs(horizon->dbData.thetaSat - horizon->vanGenuchten.thetaS) > EPSILON)
     {
         tableModel->item(horizonNum,5)->setBackgroundColor(Qt::yellow);
     }
-
 }
+
 
 void TabHorizons::clearSelections()
 {

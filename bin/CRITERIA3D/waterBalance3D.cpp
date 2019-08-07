@@ -106,14 +106,15 @@ double evaporation(Crit3DProject* myProject, int row, int col, long surfaceIndex
 bool setWaterSinkSource(Crit3DProject* myProject, double* totalPrecipitation,
                         double* totalEvaporation, double *totalTranspiration)
 {
-    long surfaceIndex, layerIndex;
+    long surfaceIndex;
+    unsigned int layerIndex;
     double prec, totalWater;
     double transp, flow, realEvap;
     int myResult;
     QString myError;
 
     // initialize
-    for (long i = 0; i < myProject->nrNodes; i++)
+    for (unsigned long i = 0; i < myProject->nrNodes; i++)
         myProject->waterSinkSource[i] = 0.0;
 
     double area = myProject->DEM.header->cellSize * myProject->DEM.header->cellSize;
