@@ -43,7 +43,7 @@ Crit3DInterpolationDataPoint::Crit3DInterpolationDataPoint()
 float Crit3DInterpolationDataPoint::getProxyValue(unsigned int pos)
 {
     if (pos < proxyValues.size())
-        return proxyValues.at(pos);
+        return proxyValues[pos];
     else
         return NODATA;
 }

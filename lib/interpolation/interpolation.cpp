@@ -65,19 +65,19 @@ float getMaxHeight(std::vector <Crit3DInterpolationDataPoint> &myPoints, bool us
     return zMax;
 }
 
-int sortPointsByDistance(int maxIndex, vector <Crit3DInterpolationDataPoint> &myPoints, vector <Crit3DInterpolationDataPoint> &myValidPoints)
+int sortPointsByDistance(unsigned maxIndex, vector <Crit3DInterpolationDataPoint> &myPoints, vector <Crit3DInterpolationDataPoint> &myValidPoints)
 {   
     unsigned i;
     int first, index;
     float min_value;
-    int* indici_ordinati;
-    int* indice_minimo;
+    unsigned* indici_ordinati;
+    unsigned* indice_minimo;
     int outIndex;
 
     if (myPoints.size() == 0) return 0;
 
-    indici_ordinati = (int *) calloc(maxIndex, sizeof(int));
-    indice_minimo = (int *) calloc(myPoints.size(), sizeof(int));
+    indici_ordinati = (unsigned *) calloc(maxIndex, sizeof(unsigned));
+    indice_minimo = (unsigned *) calloc(myPoints.size(), sizeof(unsigned));
 
     first = 0;
     index = 0;
@@ -102,7 +102,7 @@ int sortPointsByDistance(int maxIndex, vector <Crit3DInterpolationDataPoint> &my
             }
         }
         else
-            min_value = myPoints.at(unsigned(indice_minimo[first-1])).distance;
+            min_value = myPoints[unsigned(indice_minimo[first-1])].distance;
 
         if (!exit)
         {
@@ -117,7 +117,7 @@ int sortPointsByDistance(int maxIndex, vector <Crit3DInterpolationDataPoint> &my
                         }
 
             indici_ordinati[index] = indice_minimo[first-1];
-            myPoints.at(indice_minimo[first-1]).isActive = false;
+            myPoints[indice_minimo[first-1]].isActive = false;
             index++;
             first--;
         }
@@ -128,8 +128,8 @@ int sortPointsByDistance(int maxIndex, vector <Crit3DInterpolationDataPoint> &my
 
     for (i=0; i<outIndex; i++)
     {
-        myPoints.at(indici_ordinati[i]).isActive = true;
-        myValidPoints[i] = myPoints.at(indici_ordinati[i]);
+        myPoints[indici_ordinati[i]].isActive = true;
+        myValidPoints[i] = myPoints[indici_ordinati[i]];
     }
 
     return outIndex;
@@ -154,16 +154,16 @@ float shepardFindRadius(Crit3DInterpolationSettings* mySettings,
         if (myOutPoints.size() > SHEPARD_MIN_NRPOINTS)
         {
             myOutPoints.pop_back();
-            return myOutPoints.at(SHEPARD_MIN_NRPOINTS).distance;
+            return myOutPoints[SHEPARD_MIN_NRPOINTS].distance;
         }
         else
-            return myOutPoints.at(myOutPoints.size()-1).distance + 1;
+            return myOutPoints[myOutPoints.size()-1].distance + 1;
     }
     else if (neighbourPoints.size() > SHEPARD_MAX_NRPOINTS)
     {
         sortPointsByDistance(SHEPARD_MAX_NRPOINTS + 1, neighbourPoints, myOutPoints);
         myOutPoints.pop_back();
-        return myOutPoints.at(SHEPARD_MAX_NRPOINTS).distance;
+        return myOutPoints[SHEPARD_MAX_NRPOINTS].distance;
     }
     else
     {
@@ -245,7 +245,7 @@ bool neighbourhoodVariability(std::vector <Crit3DInterpolationDataPoint> &myInte
 
         *devSt = statistics::standardDeviation(dataNeighborhood, max_points);
 
-        *minDistance = validPoints.at(0).distance;
+        *minDistance = validPoints[0].distance;
 
         deltaZ.clear();
         if (z != NODATA)
@@ -444,10 +444,10 @@ bool regressionOrographyT(std::vector <Crit3DInterpolationDataPoint> &myPoints, 
     }
 
     /*! find inversion height */
-    lapseRateT1 = myIntervalsValues.at(0);
-    myProxyOrog->setLapseRateH1(myIntervalsHeight.at(0));
+    lapseRateT1 = myIntervalsValues[0];
+    myProxyOrog->setLapseRateH1(myIntervalsHeight[0]);
     for (i = 1; i < long(myIntervalsValues.size()); i++)
-        if (myIntervalsHeight[i] <= maxHeightInv && (myIntervalsValues[i] >= lapseRateT1) && (myIntervalsValues[i] > (myIntervalsValues.at(0) + 0.001 * (myIntervalsHeight[i] - myIntervalsHeight.at(0)))))
+        if (myIntervalsHeight[i] <= maxHeightInv && (myIntervalsValues[i] >= lapseRateT1) && (myIntervalsValues[i] > (myIntervalsValues[0] + 0.001 * (myIntervalsHeight[i] - myIntervalsHeight[0]))))
         {
             myProxyOrog->setLapseRateH1(myIntervalsHeight[i]);
             lapseRateT1 = myIntervalsValues[i];
@@ -516,7 +516,7 @@ bool regressionOrographyT(std::vector <Crit3DInterpolationDataPoint> &myPoints, 
             else
             {
                 myProxyOrog->setInversionLapseRate(0.);
-                lapseRateT0 = myIntervalsValues.at(0);
+                lapseRateT0 = myIntervalsValues[0];
                 lapseRateT1 = lapseRateT0;
             }
         }
@@ -595,7 +595,7 @@ bool regressionOrographyT(std::vector <Crit3DInterpolationDataPoint> &myPoints, 
         }
         else
         {
-            lapseRateT0 = myIntervalsValues.at(0);
+            lapseRateT0 = myIntervalsValues[0];
             if (m > 0.)
                 myProxyOrog->setRegressionSlope(0.);
             else
@@ -708,7 +708,7 @@ bool regressionOrographyT(std::vector <Crit3DInterpolationDataPoint> &myPoints, 
         else
         {
             myProxyOrog->setInversionLapseRate(0.);
-            lapseRateT0 = myIntervalsValues.at(0);
+            lapseRateT0 = myIntervalsValues[0];
             lapseRateT1 = lapseRateT0;
         }
 
@@ -760,16 +760,16 @@ float computeShepard(vector <Crit3DInterpolationDataPoint> &myPoints, Crit3DInte
         sortPointsByDistance(SHEPARD_MIN_NRPOINTS + 1, myPoints, validPoints);
         if (validPoints.size() > SHEPARD_MIN_NRPOINTS)
         {
-            radius = validPoints.at(SHEPARD_MIN_NRPOINTS).distance;
+            radius = validPoints[SHEPARD_MIN_NRPOINTS].distance;
             validPoints.pop_back();
         }
         else
-            radius = validPoints.at(validPoints.size()-1).distance + 1;
+            radius = validPoints[validPoints.size()-1].distance + 1;
     }
     else if (neighbourPoints.size() > SHEPARD_MAX_NRPOINTS)
     {
         sortPointsByDistance(SHEPARD_MAX_NRPOINTS + 1, neighbourPoints, validPoints);
-        radius = validPoints.at(SHEPARD_MAX_NRPOINTS).distance;
+        radius = validPoints[SHEPARD_MAX_NRPOINTS].distance;
         validPoints.pop_back();
     }
     else
@@ -815,8 +815,8 @@ float computeShepard(vector <Crit3DInterpolationDataPoint> &myPoints, Crit3DInte
         for (j=0; j < validPoints.size(); j++)
             if (i != j)
             {
-                cosine = ((X - (float)validPoints[i].point->utm.x) * (X - (float)validPoints.at(j).point->utm.x) + (Y - (float)validPoints[i].point->utm.y) * (Y - (float)validPoints.at(j).point->utm.y)) / (validPoints[i].distance * validPoints.at(j).distance);
-                t[i] = t[i] + S.at(j) * (1 - cosine);
+                cosine = ((X - (float)validPoints[i].point->utm.x) * (X - (float)validPoints[j].point->utm.x) + (Y - (float)validPoints[i].point->utm.y) * (Y - (float)validPoints[j].point->utm.y)) / (validPoints[i].distance * validPoints[j].distance);
+                t[i] = t[i] + S[j] * (1 - cosine);
             }
 
         if (weightSum != 0)
@@ -933,10 +933,10 @@ bool getUseDetrendingVar(meteoVariable myVar)
 
 
 void detrendPoints(std::vector <Crit3DInterpolationDataPoint> &myPoints, Crit3DInterpolationSettings* mySettings,
-                   meteoVariable myVar, int pos)
+                   meteoVariable myVar, unsigned pos)
 {
     float detrendValue, proxyValue;
-    long myIndex;
+    unsigned myIndex;
     Crit3DInterpolationDataPoint* myPoint;
     Crit3DProxy* myProxy;
 
@@ -944,10 +944,10 @@ void detrendPoints(std::vector <Crit3DInterpolationDataPoint> &myPoints, Crit3DI
 
     myProxy = mySettings->getProxy(pos);
 
-    for (myIndex = 0; myIndex < long(myPoints.size()); myIndex++)
+    for (myIndex = 0; myIndex < myPoints.size(); myIndex++)
     {
         detrendValue = 0;
-        myPoint = &(myPoints.at(myIndex));
+        myPoint = &(myPoints[myIndex]);
 
         proxyValue = myPoint->getProxyValue(pos);
 

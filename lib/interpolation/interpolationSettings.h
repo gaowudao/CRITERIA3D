@@ -86,8 +86,8 @@
         bool getUseThermalInversion() const;
         void setUseThermalInversion(bool value);
         void addValue(bool isActive_);
-        void setValue(int index, bool isActive_);
-        bool getValue(int index);
+        void setValue(unsigned index, bool isActive_);
+        bool getValue(unsigned index);
         std::deque<bool> getIsActive() const;
         void setIsActive(const std::deque<bool> &value);
     };
@@ -129,11 +129,11 @@
 
         void computeShepardInitialRadius(float area, int nrPoints);
 
-        Crit3DProxy* getProxy(int pos);
-        std::string getProxyName(int pos);
+        Crit3DProxy* getProxy(unsigned pos);
+        std::string getProxyName(unsigned pos);
         int getProxyNr();
         void addProxy(Crit3DProxy myProxy, bool isActive_);
-        float getProxyValue(unsigned int pos, std::vector <float> proxyValues);
+        float getProxyValue(unsigned pos, std::vector <float> proxyValues);
         bool getCombination(int combinationInteger, Crit3DProxyCombination* outCombination);
 
         void setInterpolationMethod(TInterpolationMethod myValue);

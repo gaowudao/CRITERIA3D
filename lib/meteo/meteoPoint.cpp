@@ -644,10 +644,10 @@ float Crit3DMeteoPoint::getMeteoPointValue(const Crit3DTime& myTime, meteoVariab
         return NODATA;
 }
 
-float Crit3DMeteoPoint::getProxyValue(unsigned int pos)
+float Crit3DMeteoPoint::getProxyValue(unsigned pos)
 {
     if (pos < proxyValues.size())
-        return proxyValues.at(pos);
+        return proxyValues[pos];
     else
         return NODATA;
 }

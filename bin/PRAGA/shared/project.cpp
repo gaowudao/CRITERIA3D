@@ -1152,7 +1152,7 @@ bool Project::readPointProxyValues(Crit3DMeteoPoint* myPoint, QSqlDatabase* myDb
                 {
                     float myValue = gis::getValueFromXY(*proxyGrid, myPoint->point.utm.x, myPoint->point.utm.y);
                     if (int(myValue) != int(proxyGrid->header->flag))
-                        myPoint->proxyValues.at(unsigned(i)) = myValue;
+                        myPoint->proxyValues[unsigned(i)] = myValue;
                 }
             }
         }

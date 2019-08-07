@@ -284,8 +284,8 @@ bool Crit3DInterpolationSettings::getUseDewPoint()
 int Crit3DInterpolationSettings::getProxyNr()
 { return (int)currentProxy.size();}
 
-Crit3DProxy* Crit3DInterpolationSettings::getProxy(int pos)
-{ return &(currentProxy.at(pos));}
+Crit3DProxy* Crit3DInterpolationSettings::getProxy(unsigned pos)
+{ return &(currentProxy[pos]);}
 
 std::string Crit3DProxy::getName() const
 {
@@ -439,7 +439,7 @@ float Crit3DProxy::getRegressionSlope()
 float Crit3DProxy::getValue(unsigned int pos, std::vector <float> proxyValues)
 {
     if (pos < proxyValues.size())
-        return proxyValues.at(pos);
+        return proxyValues[pos];
     else
         return NODATA;
 }
@@ -467,13 +467,13 @@ void Crit3DInterpolationSettings::addProxy(Crit3DProxy myProxy, bool isActive_)
     optimalCombination.addValue(isActive_);
 }
 
-std::string Crit3DInterpolationSettings::getProxyName(int pos)
-{ return currentProxy.at(pos).getName();}
+std::string Crit3DInterpolationSettings::getProxyName(unsigned pos)
+{ return currentProxy[pos].getName();}
 
-float Crit3DInterpolationSettings::getProxyValue(unsigned int pos, std::vector <float> proxyValues)
+float Crit3DInterpolationSettings::getProxyValue(unsigned pos, std::vector <float> proxyValues)
 {
     if (pos < currentProxy.size())
-        return currentProxy.at(pos).getValue(pos, proxyValues);
+        return currentProxy[pos].getValue(pos, proxyValues);
     else
         return NODATA;
 }
@@ -508,14 +508,14 @@ void Crit3DProxyCombination::addValue(bool isActive_)
     isActive.push_back(isActive_);
 }
 
-void Crit3DProxyCombination::setValue(int index, bool isActive_)
+void Crit3DProxyCombination::setValue(unsigned index, bool isActive_)
 {
-    isActive.at(index) = isActive_;
+    isActive[index] = isActive_;
 }
 
-bool Crit3DProxyCombination::getValue(int index)
+bool Crit3DProxyCombination::getValue(unsigned index)
 {
-    return isActive.at(index);
+    return isActive[index];
 }
 
 bool Crit3DProxyCombination::getUseThermalInversion() const
@@ -543,7 +543,7 @@ bool Crit3DInterpolationSettings::getCombination(int combinationInteger, Crit3DP
     for (int i=0; i < binaryString.length()-1; i++)
         outCombination->setValue(i, binaryString[i] == '1' && selectedCombination.getValue(i));
 
-    outCombination->setUseThermalInversion(binaryString.at(binaryString.length()-1) == '1' && selectedCombination.getUseThermalInversion());
+    outCombination->setUseThermalInversion(binaryString[binaryString.length()-1] == '1' && selectedCombination.getUseThermalInversion());
 
     return true;
 }
