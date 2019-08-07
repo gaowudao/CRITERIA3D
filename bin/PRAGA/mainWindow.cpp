@@ -585,15 +585,13 @@ void MainWindow::interpolateDemGUI()
 {
     meteoVariable myVar = myProject.getCurrentVariable();
 
-    if (myProject.interpolationDemMain(myVar,myProject.getCurrentTime(), &(myProject.dataRaster), true))
+    if (myProject.interpolationDemMain(myVar, myProject.getCurrentTime(), &(myProject.dataRaster), true))
     {
         setColorScale(myVar, myProject.dataRaster.colorScale);
         setCurrentRaster(&(myProject.dataRaster));
 
         ui->labelRasterScale->setText(QString::fromStdString(getVariableString(myVar)));
     }
-    else
-        myProject.logError();
 }
 
 void MainWindow::interpolateGridGUI()

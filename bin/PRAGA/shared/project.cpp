@@ -1362,7 +1362,7 @@ bool Project::interpolationDem(meteoVariable myVar, const Crit3DTime& myTime, gi
                                          &qualityInterpolationSettings, &interpolationSettings, &climateParameters, interpolationPoints,
                                          checkSpatialQuality))
     {
-        errorString = "No data available";
+        logError("No data available");
         return false;
     }
 
@@ -1376,14 +1376,14 @@ bool Project::interpolationDem(meteoVariable myVar, const Crit3DTime& myTime, gi
     //detrending and checking precipitation
     if (! preInterpolation(interpolationPoints, &interpolationSettings, &climateParameters, meteoPoints, nrMeteoPoints, myVar, myTime))
     {
-        errorString = "Interpolation: error in function preInterpolation";
+        logError("Interpolation: error in function preInterpolation");
         return false;
     }
 
     // Interpolate
     if (! interpolationRaster(interpolationPoints, &interpolationSettings, myRaster, DEM, myVar, showInfo))
     {
-        errorString = "Interpolation: error in function interpolationRaster";
+        logError("Interpolation: error in function interpolationRaster");
         return false;
     }
 
@@ -1407,7 +1407,7 @@ bool Project::interpolateDemRadiation(const Crit3DTime& myTime, gis::Crit3DRaste
     if (! computeTransmissivity(&radSettings, meteoPoints, nrMeteoPoints, intervalWidth, myTime, DEM))
         if (! computeTransmissivityFromTRange(meteoPoints, nrMeteoPoints, myTime))
         {
-            errorString = "Function interpolateRasterRadiation: it is not possible to compute transmissivity.";
+            logError("Function interpolateRasterRadiation: it is not possible to compute transmissivity.");
             return false;
         }
 
@@ -1415,7 +1415,7 @@ bool Project::interpolateDemRadiation(const Crit3DTime& myTime, gis::Crit3DRaste
                                         myTime, &qualityInterpolationSettings,
                                         &interpolationSettings, &climateParameters, interpolationPoints, checkSpatialQuality))
     {
-        errorString = "Function interpolateRasterRadiation: not enough transmissivity data.";
+        logError("Function interpolateRasterRadiation: not enough transmissivity data.");
         return false;
     }
 
@@ -1423,13 +1423,13 @@ bool Project::interpolateDemRadiation(const Crit3DTime& myTime, gis::Crit3DRaste
 
     if (! interpolationRaster(interpolationPoints, &interpolationSettings, this->radiationMaps->transmissivityMap, DEM, atmTransmissivity, showInfo))
     {
-        errorString = "Function interpolateRasterRadiation: error interpolating transmissivity.";
+        logError("Function interpolateRasterRadiation: error interpolating transmissivity.");
         return false;
     }
 
     if (! radiation::computeRadiationGridPresentTime(&radSettings, this->DEM, this->radiationMaps, myTime))
     {
-        errorString = "Function interpolateRasterRadiation: error computing solar radiation";
+        logError("Function interpolateRasterRadiation: error computing solar radiation");
         return false;
     }
 
@@ -1446,19 +1446,19 @@ bool Project::interpolationDemMain(meteoVariable myVar, const Crit3DTime& myTime
 {
     if (! DEM.isLoaded)
     {
-        errorString = "Load a Digital Elevation Model before.";
+        logError("Load a Digital Elevation Model before.");
         return false;
     }
 
     if (nrMeteoPoints == 0)
     {
-        errorString = "Open a meteo points DB before.";
+        logError("Open a meteo points DB before.");
         return false;
     }
 
     if (myVar == noMeteoVar)
     {
-        errorString = "Select a variable before.";
+        logError("Select a variable before.");
         return false;
     }
 
