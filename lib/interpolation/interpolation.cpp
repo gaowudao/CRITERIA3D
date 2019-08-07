@@ -126,7 +126,7 @@ int sortPointsByDistance(unsigned maxIndex, vector <Crit3DInterpolationDataPoint
     outIndex = minValue(index, maxIndex);
     myValidPoints.resize(outIndex);
 
-    for (i=0; i<outIndex; i++)
+    for (i=0; i < outIndex; i++)
     {
         myPoints[indici_ordinati[i]].isActive = true;
         myValidPoints[i] = myPoints[indici_ordinati[i]];
@@ -134,44 +134,6 @@ int sortPointsByDistance(unsigned maxIndex, vector <Crit3DInterpolationDataPoint
 
     return outIndex;
 }
-
-float shepardFindRadius(Crit3DInterpolationSettings* mySettings,
-                        std::vector <Crit3DInterpolationDataPoint> myPoints,
-                        std::vector <Crit3DInterpolationDataPoint> myOutPoints)
-{
-    unsigned int i;
-    std::vector <Crit3DInterpolationDataPoint> neighbourPoints;
-    neighbourPoints.clear();
-
-    // define a first neighborhood inside initial radius
-    for (i=1; i < myPoints.size(); i++)
-        if (myPoints[i].distance <= mySettings->getShepardInitialRadius() && myPoints[i].distance > 0 && myPoints[i].index != mySettings->getIndexPointCV())
-            neighbourPoints.push_back(myPoints[i]);
-
-    if (neighbourPoints.size() <= SHEPARD_MIN_NRPOINTS)
-    {
-        sortPointsByDistance(SHEPARD_MIN_NRPOINTS + 1, myPoints, myOutPoints);
-        if (myOutPoints.size() > SHEPARD_MIN_NRPOINTS)
-        {
-            myOutPoints.pop_back();
-            return myOutPoints[SHEPARD_MIN_NRPOINTS].distance;
-        }
-        else
-            return myOutPoints[myOutPoints.size()-1].distance + 1;
-    }
-    else if (neighbourPoints.size() > SHEPARD_MAX_NRPOINTS)
-    {
-        sortPointsByDistance(SHEPARD_MAX_NRPOINTS + 1, neighbourPoints, myOutPoints);
-        myOutPoints.pop_back();
-        return myOutPoints[SHEPARD_MAX_NRPOINTS].distance;
-    }
-    else
-    {
-        myOutPoints = neighbourPoints;
-        return mySettings->getShepardInitialRadius();
-    }
-}
-
 
 
 void computeDistances(vector <Crit3DInterpolationDataPoint> &myPoints,  Crit3DInterpolationSettings* mySettings,
@@ -224,7 +186,7 @@ bool neighbourhoodVariability(std::vector <Crit3DInterpolationDataPoint> &myInte
                               float x, float y, float z, int nMax,
                               float* devSt, float* devStDeltaZ, float* minDistance)
 {
-    int i, max_points;
+    int i, max_points, nrValid;
     float* dataNeighborhood;
     float myValue;
     vector <float> deltaZ;
@@ -743,38 +705,46 @@ bool regressionOrographyT(std::vector <Crit3DInterpolationDataPoint> &myPoints, 
 
 float computeShepard(vector <Crit3DInterpolationDataPoint> &myPoints, Crit3DInterpolationSettings* settings, float X, float Y)
 {
-    std::vector <Crit3DInterpolationDataPoint> validPoints;
-    std::vector <Crit3DInterpolationDataPoint> neighbourPoints;
+    std::vector <Crit3DInterpolationDataPoint> shepardValidPoints;
+    std::vector <Crit3DInterpolationDataPoint> shepardNeighbourPoints;
+
     unsigned int i;
     float radius;
+    int nrValid = 0;
 
-    neighbourPoints.clear();
+    shepardValidPoints.clear();
+    shepardNeighbourPoints.clear();
 
     // define a first neighborhood inside initial radius
     for (i=1; i < myPoints.size(); i++)
         if (myPoints[i].distance <= settings->getShepardInitialRadius() && myPoints[i].distance > 0 && myPoints[i].index != settings->getIndexPointCV())
-            neighbourPoints.push_back(myPoints[i]);
-
-    if (neighbourPoints.size() <= SHEPARD_MIN_NRPOINTS)
-    {
-        sortPointsByDistance(SHEPARD_MIN_NRPOINTS + 1, myPoints, validPoints);
-        if (validPoints.size() > SHEPARD_MIN_NRPOINTS)
         {
-            radius = validPoints[SHEPARD_MIN_NRPOINTS].distance;
-            validPoints.pop_back();
+            shepardNeighbourPoints.push_back(myPoints[i]);
+            nrValid++;
+        }
+
+    if (shepardNeighbourPoints.size() <= SHEPARD_MIN_NRPOINTS)
+    {
+        nrValid = sortPointsByDistance(SHEPARD_MIN_NRPOINTS + 1, myPoints, shepardValidPoints);
+        if (nrValid > SHEPARD_MIN_NRPOINTS)
+        {
+            radius = shepardValidPoints[SHEPARD_MIN_NRPOINTS].distance;
+            shepardValidPoints.pop_back();
+            nrValid--;
         }
         else
-            radius = validPoints[validPoints.size()-1].distance + 1;
+            radius = shepardValidPoints[nrValid-1].distance + 1;
     }
-    else if (neighbourPoints.size() > SHEPARD_MAX_NRPOINTS)
+    else if (shepardNeighbourPoints.size() > SHEPARD_MAX_NRPOINTS)
     {
-        sortPointsByDistance(SHEPARD_MAX_NRPOINTS + 1, neighbourPoints, validPoints);
-        radius = validPoints[SHEPARD_MAX_NRPOINTS].distance;
-        validPoints.pop_back();
+        nrValid = sortPointsByDistance(SHEPARD_MAX_NRPOINTS + 1, shepardNeighbourPoints, shepardValidPoints);
+        radius = shepardValidPoints[SHEPARD_MAX_NRPOINTS].distance;
+        shepardValidPoints.pop_back();
+        nrValid--;
     }
     else
     {
-        validPoints = neighbourPoints;
+        shepardValidPoints = shepardNeighbourPoints;
         radius = settings->getShepardInitialRadius();
     }
 
@@ -782,21 +752,21 @@ float computeShepard(vector <Crit3DInterpolationDataPoint> &myPoints, Crit3DInte
     float weightSum, radius_27_4, radius_3, tmp, cosine, result;
     vector <float> weight, t, S;
 
-    weight.resize(validPoints.size());
-    t.resize(validPoints.size());
-    S.resize(validPoints.size());
+    weight.resize(nrValid);
+    t.resize(nrValid);
+    S.resize(nrValid);
 
     weightSum = 0;
     radius_3 = radius / 3;
     radius_27_4 = (27 / 4) / radius;
-    for (i=0; i < validPoints.size(); i++)
-        if (validPoints[i].distance > 0)
+    for (i=0; i < nrValid; i++)
+        if (shepardValidPoints[i].distance > 0)
         {
-            if (validPoints[i].distance <= radius_3)
-                S[i] = 1 / (validPoints[i].distance);
-            else if (validPoints[i].distance <= radius)
+            if (shepardValidPoints[i].distance <= radius_3)
+                S[i] = 1 / (shepardValidPoints[i].distance);
+            else if (shepardValidPoints[i].distance <= radius)
             {
-                tmp = (validPoints[i].distance / radius) - 1;
+                tmp = (shepardValidPoints[i].distance / radius) - 1;
                 S[i] = radius_27_4 * tmp * tmp;
             }
             else
@@ -809,13 +779,13 @@ float computeShepard(vector <Crit3DInterpolationDataPoint> &myPoints, Crit3DInte
         return NODATA;
 
     // including direction
-    for (i=0; i<validPoints.size(); i++)
+    for (i=0; i < nrValid; i++)
     {
         t[i] = 0;
-        for (j=0; j < validPoints.size(); j++)
+        for (j=0; j < nrValid; j++)
             if (i != j)
             {
-                cosine = ((X - (float)validPoints[i].point->utm.x) * (X - (float)validPoints[j].point->utm.x) + (Y - (float)validPoints[i].point->utm.y) * (Y - (float)validPoints[j].point->utm.y)) / (validPoints[i].distance * validPoints[j].distance);
+                cosine = ((X - (float)shepardValidPoints[i].point->utm.x) * (X - (float)shepardValidPoints[j].point->utm.x) + (Y - (float)shepardValidPoints[i].point->utm.y) * (Y - (float)shepardValidPoints[j].point->utm.y)) / (shepardValidPoints[i].distance * shepardValidPoints[j].distance);
                 t[i] = t[i] + S[j] * (1 - cosine);
             }
 
@@ -825,17 +795,17 @@ float computeShepard(vector <Crit3DInterpolationDataPoint> &myPoints, Crit3DInte
 
     // weights
     weightSum = 0;
-    for (i=0; i<validPoints.size(); i++)
+    for (i=0; i < nrValid; i++)
     {
        weight[i] = S[i] * S[i] * (1 + t[i]);
        weightSum += weight[i];
     }
-    for (i=0; i<validPoints.size(); i++)
+    for (i=0; i < nrValid; i++)
         weight[i] /= weightSum;
 
     result = 0;
-    for (i=0; i<validPoints.size(); i++)
-        result += weight[i] * validPoints[i].value;
+    for (i=0; i < nrValid; i++)
+        result += weight[i] * shepardValidPoints[i].value;
 
     return result;
 }
