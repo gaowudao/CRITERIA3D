@@ -1699,14 +1699,12 @@ void MainWindow::on_actionParameters_triggered()
 
 void MainWindow::on_actionWriteTAD_triggered()
 {
-    if (! myProject.writeTopographicDistanceMaps())
-        myProject.logError();
+    myProject.writeTopographicDistanceMaps();
 }
 
 void MainWindow::on_actionLoadTAD_triggered()
 {
-    if (! myProject.loadTopographicDistanceMaps())
-        myProject.logError();
+    myProject.loadTopographicDistanceMaps();
 }
 
 void MainWindow::on_meteoPoints_clicked()

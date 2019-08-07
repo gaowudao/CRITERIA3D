@@ -1261,13 +1261,13 @@ bool Project::writeTopographicDistanceMaps()
 {
     if (nrMeteoPoints == 0)
     {
-        errorString = "Open a meteo points DB before.";
+        logError("Open a meteo points DB before.");
         return false;
     }
 
     if (! DEM.isLoaded)
     {
-        errorString = "Load a Digital Elevation Map before.";
+        logError("Load a Digital Elevation Map before.");
         return false;
     }
 
@@ -1294,7 +1294,7 @@ bool Project::writeTopographicDistanceMaps()
                 fileName = mapsFolder.toStdString() + "TAD_" + meteoPoints[i].id;
                 if (! gis::writeEsriGrid(fileName, &myMap, &myError))
                 {
-                    errorString = QString::fromStdString(myError);
+                    logError(QString::fromStdString(myError));
                     return false;
                 }
             }
@@ -1311,12 +1311,16 @@ bool Project::loadTopographicDistanceMaps()
 {
     if (nrMeteoPoints == 0)
     {
-        errorString = "Open a meteo points DB before.";
+        logError("Open a meteo points DB before.");
         return false;
     }
 
-    QString mapsFolder = getDefaultPath() + PATH_TAD;
-    if (! QDir(mapsFolder).exists()) return false;
+    QString mapsFolder = projectPath + PATH_TAD;
+    if (! QDir(mapsFolder).exists())
+    {
+        logError("TAD folder not found. Please create TAD Maps.");
+        return false;
+    }
 
     FormInfo myInfo;
     int infoStep;
@@ -1337,7 +1341,7 @@ bool Project::loadTopographicDistanceMaps()
             meteoPoints[i].topographicDistance = new gis::Crit3DRasterGrid();
             if (! gis::readEsriGrid(fileName, meteoPoints[i].topographicDistance, &myError))
             {
-                errorString = QString::fromStdString(myError);
+                logError(QString::fromStdString(myError));
                 return false;
             }
         }
