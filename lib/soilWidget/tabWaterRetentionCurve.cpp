@@ -129,8 +129,19 @@ void TabWaterRetentionCurve::insertElements(soil::Crit3DSoil *soil)
         }
         MyPicker *pick = new MyPicker(myPlot, curveList);
         pick->setStateMachine(new QwtPickerClickPointMachine());
+
+        for (int i=0; i<lineList.size(); i++)
+        {
+            connect(lineList[i], SIGNAL(clicked()), this, SLOT(lineSelection()));
+            //connect(lineList[i], &LineHorizont::clicked, [=](){ lineList[i]; });
+        }
         linesLayout->update();
         myPlot->replot();
     }
 
+}
+
+void TabWaterRetentionCurve::lineSelection()
+{
+    // TO DO
 }
