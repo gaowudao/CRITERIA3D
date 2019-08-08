@@ -3,7 +3,7 @@
 
 LineHorizont::LineHorizont()
 {
-
+    state = false;
 }
 
 void LineHorizont::setClass(int classUSDA)
@@ -92,6 +92,39 @@ void LineHorizont::setClass(int classUSDA)
     this->setPalette(pal);
 
 
+}
+
+void LineHorizont::mousePressEvent(QMouseEvent* event)
+{
+         state = true;
+         repaint();
+         emit pressed();
+}
+
+void LineHorizont::mouseReleaseEvent(QMouseEvent* event)
+{
+         state = false;
+         repaint();
+         emit released();
+         emit clicked();
+}
+
+void LineHorizont::paintEvent(QMouseEvent* event)
+{
+         if(state)
+         {
+             QString BorderThickness("2");
+             QString hexColorCode("#FF00FF");
+             QString color = this->palette().background().color().name();
+             this->setStyleSheet("ChildWidget { border: " + BorderThickness + " solid " +
+                                               hexColorCode + ";"
+                                                              "background-color: "+ color + ";"
+                                                              "color: white; }");
+         }
+         else
+         {
+
+         }
 }
 
 

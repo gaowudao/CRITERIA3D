@@ -21,6 +21,8 @@ private:
     QwtPlot *myPlot;
     QList<LineHorizont*> lineList;
     QList<QwtPlotCurve*> curveList;
+private slots:
+    void lineSelection();
 
 };
 
