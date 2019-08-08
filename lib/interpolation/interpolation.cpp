@@ -166,7 +166,7 @@ void computeDistances(vector <Crit3DInterpolationDataPoint> &myPoints,  Crit3DIn
                         }
                     }
 
-                    if (topoDistance = NODATA)
+                    if (topoDistance == NODATA)
                         topoDistance = topographicDistance(x, y, z, (float)myPoints[i].point->utm.x,
                                                            (float)myPoints[i].point->utm.y,
                                                            (float)myPoints[i].point->z, myPoints[i].distance,

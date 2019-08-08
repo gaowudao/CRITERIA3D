@@ -47,7 +47,7 @@
     #define PATH_PROJECT "PROJECT/"
     #define PATH_TEMPLATE "TEMPLATE/"
     #define PATH_SETTINGS "SETTINGS/"
-    #define PATH_TAD "GEO/TAD/"
+    #define PATH_TAD "TAD/"
 
     // --------------- soilFluxes3D ----------------
     #define NOLINK -1
