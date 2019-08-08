@@ -68,8 +68,8 @@ MainWindow::MainWindow(QWidget *parent) :
     // initialize
     this->ui->opacitySliderRasterInput->setVisible(false);
     this->ui->opacitySliderRasterOutput->setVisible(false);
-    ui->labelInputRaster->setText("No spatial data");
-    ui->labelOutputRaster->setText("No output");
+    ui->labelInputRaster->setText("");
+    ui->labelOutputRaster->setText("");
     this->currentPointsVisualization = notShown;
 
     // show menu
@@ -340,33 +340,44 @@ void MainWindow::drawProject()
 
 void MainWindow::clearDEM()
 {
-    this->rasterObj->clear();
-    this->rasterObj->redrawRequested();
+    rasterObj->clear();
+    rasterObj->redrawRequested();
+    rasterLegend->setVisible(false);
     ui->labelInputRaster->setText("");
-    this->ui->opacitySliderRasterInput->setVisible(false);
+    ui->opacitySliderRasterInput->setVisible(false);
+}
+
+
+void MainWindow::clearMeteoPoints()
+{
+    resetMeteoPoints();
+    myProject.closeMeteoPointsDB();
+    meteoPointsLegend->setVisible(false);
+    showPointsGroup->setEnabled(false);
 }
 
 
 void MainWindow::renderDEM()
 {
-    this->setCurrentRaster(&(myProject.DEM));
+    setCurrentRaster(&(myProject.DEM));
     ui->labelInputRaster->setText(QString::fromStdString(getVariableString(noMeteoTerrain)));
-    this->ui->opacitySliderRasterInput->setVisible(true);
+    ui->opacitySliderRasterInput->setVisible(true);
+    rasterLegend->setVisible(true);
 
     // center map
     gis::Crit3DGeoPoint* center = this->rasterObj->getRasterCenter();
-    this->mapView->centerOn(qreal(center->longitude), qreal(center->latitude));
+    mapView->centerOn(qreal(center->longitude), qreal(center->latitude));
 
     // resize map
     float size = this->rasterObj->getRasterMaxSize();
     size = log2(1000.f/size);
-    this->mapView->setZoomLevel(quint8(size));
-    this->mapView->centerOn(qreal(center->longitude), qreal(center->latitude));
+    mapView->setZoomLevel(quint8(size));
+    mapView->centerOn(qreal(center->longitude), qreal(center->latitude));
 
     // active raster object
-    this->rasterObj->updateCenter();
+    rasterObj->updateCenter();
 
-    if (this->viewer3D != nullptr)
+    if (viewer3D != nullptr)
     {
         initializeViewer3D();
         //this->viewer3D->close();
@@ -396,12 +407,7 @@ void MainWindow::on_actionOpen_Project_triggered()
 
     if (myProject.isProjectLoaded)
     {
-        //todo make a function
-        this->resetMeteoPoints();
-        this->meteoPointsLegend->setVisible(false);
-        myProject.closeMeteoPointsDB();
-        this->showPointsGroup->setEnabled(false);
-
+        clearMeteoPoints();
         clearDEM();
     }
 
@@ -410,6 +416,18 @@ void MainWindow::on_actionOpen_Project_triggered()
         myProject.loadCriteria3DProject(myProject.getApplicationPath() + "default.ini");
     }
 
+    drawProject();
+}
+
+
+void MainWindow::on_actionClose_Project_triggered()
+{
+    if (! myProject.isProjectLoaded) return;
+
+    clearMeteoPoints();
+    clearDEM();
+
+    myProject.loadCriteria3DProject(myProject.getApplicationPath() + "default.ini");
     drawProject();
 }
 
@@ -429,11 +447,11 @@ QPoint MainWindow::getMapPoint(QPoint* point) const
 void MainWindow::resetMeteoPoints()
 {
     for (int i = 0; i < this->pointList.size(); i++)
-        this->mapView->scene()->removeObject(this->pointList[i]);
+    {
+        mapView->scene()->removeObject(this->pointList[i]);
+    }
 
-    this->pointList.clear();
-
-    this->myRubberBand = nullptr;
+    pointList.clear();
 }
 
 
@@ -1172,3 +1190,4 @@ void MainWindow::on_opacitySliderRasterInput_sliderMoved(int position)
 {
     this->rasterObj->setOpacity(position / 100.0);
 }
+

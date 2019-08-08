@@ -97,6 +97,8 @@
 
         void on_opacitySliderRasterInput_sliderMoved(int position);
 
+        void on_actionClose_Project_triggered();
+
     protected:
         /*!
          * \brief mouseReleaseEvent call moveCenter
@@ -160,6 +162,7 @@
         void renderDEM();
         void clearDEM();
         void drawMeteoPoints();
+        void clearMeteoPoints();
     };
 
 
