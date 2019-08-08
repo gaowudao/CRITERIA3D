@@ -20,15 +20,17 @@ public:
               QwtPlot *plot = nullptr );
 
     void highlightCurve( bool isHightlight );
-    int closestPoint( QwtPlotCurve& curve, const QPoint &pos, double *dist );
+    int closestPoint(QwtPlotCurve& curve, const QPointF &pos, double *dist );
+
+    int getSelectedCurveIndex() const;
+    void setSelectedCurveIndex(int value);
 
 public slots:
     void slotSelected( const QPointF &pos);
 
 private:
     QwtPlot *qwtPlot;
-    QwtPlotCurve *selectedCurve;
-    int selectedPointIndex;
+    int selectedCurveIndex;
     QList<QwtPlotCurve*> allCurveList;
 };
 
