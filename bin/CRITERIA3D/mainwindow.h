@@ -32,8 +32,6 @@
     public:
 
         explicit MainWindow(QWidget *parent = nullptr);
-        ~MainWindow();
-
 
     private slots:
 
@@ -48,12 +46,11 @@
         void on_actionMapESRISatellite_triggered();
         void on_actionMapTerrain_triggered();
 
-        void on_actionRectangle_Selection_triggered();
-        void on_rasterScaleButton_clicked();
         void on_variableButton_clicked();
         void on_frequencyButton_clicked();
+
+        void on_actionRectangle_Selection_triggered();
         void on_actionVariableQualitySpatial_triggered();
-        void on_rasterRestoreButton_clicked();
         void on_timeEdit_timeChanged(const QTime &time);
         void on_dateEdit_dateChanged(const QDate &date);
         void on_actionInterpolation_to_DEM_triggered();
@@ -99,6 +96,8 @@
 
         void on_actionClose_Project_triggered();
 
+        void on_opacitySliderRasterOutput_sliderMoved(int position);
+
     protected:
         /*!
          * \brief mouseReleaseEvent call moveCenter
@@ -129,7 +128,8 @@
         QList<StationMarker*> pointList;
         RubberBand *myRubberBand;
 
-        ColorLegend *rasterLegend;
+        ColorLegend *inputRasterColorLegend;
+        ColorLegend *outputRasterColorLegend;
         ColorLegend *meteoPointsLegend;
 
         QActionGroup *showPointsGroup;
@@ -149,7 +149,8 @@
 
         bool loadMeteoPointsDB(QString dbName);
         bool loadMeteoGridDB(QString xmlName);
-        void setCurrentRaster(gis::Crit3DRasterGrid *myRaster);
+        void setCurrentRasterInput(gis::Crit3DRasterGrid *myRaster);
+        void setCurrentRasterOutput(gis::Crit3DRasterGrid *myRaster);
         void interpolateDemGUI();
         void showElabResult(bool updateColorSCale, bool isMeteoGrid, bool isAnomaly);
         bool initializeViewer3D();
