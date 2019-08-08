@@ -58,17 +58,21 @@ MainWindow::MainWindow(QWidget *parent) :
     this->mapScene = new MapGraphicsScene(this);
     this->mapView = new MapGraphicsView(mapScene, this->ui->widgetMap);
 
-    this->rasterLegend = new ColorLegend(this->ui->widgetColorLegendRaster);
-    this->rasterLegend->resize(this->ui->widgetColorLegendRaster->size());
+    this->rasterLegend = new ColorLegend(this->ui->colorScaleInputRaster);
+    this->rasterLegend->resize(this->ui->colorScaleInputRaster->size());
 
     this->meteoGridLegend = new ColorLegend(this->ui->widgetColorLegendGrid);
     this->meteoGridLegend->resize(this->ui->widgetColorLegendGrid->size());
 
-    this->meteoPointsLegend = new ColorLegend(this->ui->widgetColorLegendPoints);
-    this->meteoPointsLegend->resize(this->ui->widgetColorLegendPoints->size());
+    this->meteoPointsLegend = new ColorLegend(this->ui->colorScaleMeteoPoints);
+    this->meteoPointsLegend->resize(this->ui->colorScaleMeteoPoints->size());
     this->meteoPointsLegend->colorScale = myProject.meteoPointsColorScale;
 
+    // initialize
+    ui->labelInputRaster->setText("No spatial data loaded");
+    ui->labelOutputRaster->setText("No output");
     this->currentPointsVisualization = notShown;
+
     // show menu
     showPointsGroup = new QActionGroup(this);
     showPointsGroup->setExclusive(true);
@@ -91,8 +95,8 @@ MainWindow::MainWindow(QWidget *parent) :
     this->rasterObj = new RasterObject(this->mapView);
     this->meteoGridObj = new RasterObject(this->mapView);
 
-    this->rasterObj->setOpacity(this->ui->rasterOpacitySlider->value() / 100.0);
-    this->meteoGridObj->setOpacity(this->ui->meteoGridOpacitySlider->value() / 100.0);
+    this->rasterObj->setOpacity(this->ui->opacitySliderRasterInput->value() / 100.0);
+    this->meteoGridObj->setOpacity(this->ui->opacitySliderRasterInput->value() / 100.0);
 
     this->rasterObj->setColorLegend(this->rasterLegend);
     this->meteoGridObj->setColorLegend(this->meteoGridLegend);
@@ -130,22 +134,18 @@ void MainWindow::resizeEvent(QResizeEvent * event)
     ui->widgetMap->setGeometry(TOOLSWIDTH, 0, this->width()-TOOLSWIDTH, this->height() - INFOHEIGHT);
     mapView->resize(ui->widgetMap->size());
 
-    ui->groupBoxVariable->move(MAPBORDER/2, this->height()/2
-                          - ui->groupBoxVariable->height() - ui->groupBoxMeteoPoints->height());
-    ui->groupBoxVariable->resize(TOOLSWIDTH, ui->groupBoxVariable->height());
+    ui->groupBoxInput->move(MAPBORDER/2, MAPBORDER*2);
+    ui->groupBoxInput->resize(TOOLSWIDTH, ui->groupBoxInput->height());
 
-    ui->groupBoxMeteoPoints->move(MAPBORDER/2, ui->groupBoxVariable->y() + ui->groupBoxVariable->height() + MAPBORDER);
-    ui->groupBoxMeteoPoints->resize(TOOLSWIDTH, ui->groupBoxMeteoPoints->height());
+    ui->groupBoxOutput->move(MAPBORDER/2, ui->groupBoxInput->y() + ui->groupBoxInput->height() + MAPBORDER);
+    ui->groupBoxOutput->resize(TOOLSWIDTH, ui->groupBoxOutput->height());
 
-    ui->groupBoxRaster->move(MAPBORDER/2, ui->groupBoxMeteoPoints->y() + ui->groupBoxMeteoPoints->height() + MAPBORDER);
-    ui->groupBoxRaster->resize(TOOLSWIDTH, ui->groupBoxRaster->height());
-
-    ui->groupBoxMeteoGrid->move(MAPBORDER/2, ui->groupBoxRaster->y() + ui->groupBoxRaster->height() + MAPBORDER);
+    ui->groupBoxMeteoGrid->move(MAPBORDER/2, ui->groupBoxOutput->y() + ui->groupBoxOutput->height() + MAPBORDER);
     ui->groupBoxMeteoGrid->resize(TOOLSWIDTH, ui->groupBoxMeteoGrid->height());
 
     // TODO sembrano non funzionare
-    ui->widgetColorLegendRaster->resize(TOOLSWIDTH, ui->widgetColorLegendPoints->height());
-    ui->widgetColorLegendPoints->resize(TOOLSWIDTH, ui->widgetColorLegendPoints->height());
+    ui->colorScaleInputRaster->resize(TOOLSWIDTH, ui->colorScaleMeteoPoints->height());
+    ui->colorScaleMeteoPoints->resize(TOOLSWIDTH, ui->colorScaleMeteoPoints->height());
 }
 
 
@@ -373,16 +373,16 @@ void MainWindow::clearDEM()
 {
     this->rasterObj->clear();
     this->rasterObj->redrawRequested();
-    ui->labelRasterScale->setText("");
-    this->ui->rasterOpacitySlider->setEnabled(false);
+    ui->labelInputRaster->setText("");
+    this->ui->opacitySliderRasterInput->setEnabled(false);
 }
 
 
 void MainWindow::renderDEM()
 {
     this->setCurrentRaster(&(myProject.DEM));
-    ui->labelRasterScale->setText(QString::fromStdString(getVariableString(noMeteoTerrain)));
-    this->ui->rasterOpacitySlider->setEnabled(true);
+    ui->labelInputRaster->setText(QString::fromStdString(getVariableString(noMeteoTerrain)));
+    this->ui->opacitySliderRasterInput->setEnabled(true);
 
     // center map
     gis::Crit3DGeoPoint* center = this->rasterObj->getRasterCenter();
@@ -434,18 +434,6 @@ void MainWindow::on_actionOpen_meteo_points_DB_triggered()
 }
 
 
-void MainWindow::on_actionOpen_meteo_grid_triggered()
-{
-    QString xmlName = QFileDialog::getOpenFileName(this, tr("Open XML meteo grid"), "", tr("xml files (*.xml)"));
-
-    if (xmlName != "")
-    {
-        if (this->loadMeteoGridDB(xmlName))
-            ui->groupBoxMeteoGrid->setVisible(true);
-    }
-}
-
-
 void MainWindow::on_actionOpen_Project_triggered()
 {
     QString fileName = QFileDialog::getOpenFileName(this, tr("Open project file"), "", tr("ini files (*.ini)"));
@@ -453,8 +441,12 @@ void MainWindow::on_actionOpen_Project_triggered()
 
     if (myProject.isProjectLoaded)
     {
-        on_actionClose_meteo_grid_triggered();
-        on_actionClose_meteo_points_triggered();
+        //todo make a function
+        this->resetMeteoPoints();
+        this->meteoPointsLegend->setVisible(false);
+        myProject.closeMeteoPointsDB();
+        this->showPointsGroup->setEnabled(false);
+
         clearDEM();
     }
 
@@ -506,7 +498,7 @@ void MainWindow::interpolateDemGUI()
         setColorScale(myVar, myProject.dataRaster.colorScale);
         setCurrentRaster(&(myProject.dataRaster));
 
-        ui->labelRasterScale->setText(QString::fromStdString(getVariableString(myVar)));
+        ui->labelInputRaster->setText(QString::fromStdString(getVariableString(myVar)));
     }
     else
         myProject.logError();
@@ -582,7 +574,6 @@ void MainWindow::updateVariable()
 
     std::string myString = getVariableString(myProject.getCurrentVariable());
     ui->labelVariable->setText(QString::fromStdString(myString));
-    ui->labelVariablePoints->setText(QString::fromStdString(myString));
 
     redrawMeteoPoints(currentPointsVisualization, true);
     redrawMeteoGrid();
@@ -835,7 +826,7 @@ void MainWindow::on_rasterScaleButton_clicked()
     if (myVar != noMeteoVar)
     {
         setColorScale(myVar, this->rasterObj->getRaster()->colorScale);
-        ui->labelRasterScale->setText(QString::fromStdString(getVariableString(myVar)));
+        ui->labelInputRaster->setText(QString::fromStdString(getVariableString(myVar)));
     }
 }
 
@@ -871,7 +862,7 @@ void MainWindow::on_rasterRestoreButton_clicked()
 
     setDefaultDEMScale(myProject.DEM.colorScale);
     this->setCurrentRaster(&(myProject.DEM));
-    ui->labelRasterScale->setText(QString::fromStdString(getVariableString(noMeteoTerrain)));
+    ui->labelInputRaster->setText(QString::fromStdString(getVariableString(noMeteoTerrain)));
 }
 
 void MainWindow::setCurrentRaster(gis::Crit3DRasterGrid *myRaster)
@@ -885,27 +876,6 @@ void MainWindow::on_dateEdit_dateChanged(const QDate &date)
 {
     Q_UNUSED(date);
     this->on_dateChanged();
-}
-
-void MainWindow::on_actionClose_meteo_points_triggered()
-{
-    this->resetMeteoPoints();
-    this->meteoPointsLegend->setVisible(false);
-    myProject.closeMeteoPointsDB();
-    this->showPointsGroup->setEnabled(false);
-}
-
-void MainWindow::on_actionClose_meteo_grid_triggered()
-{
-    if (myProject.meteoGridDbHandler != nullptr)
-    {
-        myProject.meteoGridDbHandler->meteoGrid()->dataMeteoGrid.isLoaded = false;
-        meteoGridObj->clear();
-        meteoGridObj->redrawRequested();
-        meteoGridLegend->setVisible(false);
-        myProject.closeMeteoGridDB();
-        ui->meteoGridOpacitySlider->setEnabled(false);
-    }
 }
 
 
@@ -967,7 +937,7 @@ void MainWindow::on_actionOpen_soil_map_triggered()
     if (fileName == "") return;
 
     if (myProject.loadSoilMap(fileName))
-        ui->rasterOpacitySlider->setEnabled(true);
+        ui->opacitySliderRasterInput->setEnabled(true);
 }
 
 
@@ -1047,7 +1017,7 @@ void MainWindow::on_actionView_DEM_triggered()
     {
         setColorScale(noMeteoTerrain, myProject.DEM.colorScale);
         this->setCurrentRaster(&(myProject.DEM));
-        ui->labelRasterScale->setText(QString::fromStdString(getVariableString(noMeteoTerrain)));
+        ui->labelInputRaster->setText(QString::fromStdString(getVariableString(noMeteoTerrain)));
     }
     else
     {
@@ -1061,9 +1031,9 @@ void MainWindow::on_actionView_Soil_triggered()
 {
     if (myProject.soilMap.isLoaded)
     {
-        setColorScale(noMeteoTerrain, myProject.soilMap.colorScale);
+        setColorScale(airTemperature, myProject.soilMap.colorScale);
         this->setCurrentRaster(&(myProject.soilMap));
-        ui->labelRasterScale->setText("Soil map");
+        ui->labelInputRaster->setText("Soil map");
     }
     else
     {
@@ -1079,7 +1049,7 @@ void MainWindow::on_actionView_Boundary_triggered()
     {
         setColorScale(noMeteoTerrain, myProject.boundaryMap.colorScale);
         this->setCurrentRaster(&(myProject.boundaryMap));
-        ui->labelRasterScale->setText("Boundary map");
+        ui->labelInputRaster->setText("Boundary map");
     }
     else
     {
@@ -1095,7 +1065,7 @@ void MainWindow::on_actionView_Slope_triggered()
     {
         setColorScale(noMeteoTerrain, myProject.radiationMaps->slopeMap->colorScale);
         this->setCurrentRaster(myProject.radiationMaps->slopeMap);
-        ui->labelRasterScale->setText("Slope °");
+        ui->labelInputRaster->setText("Slope °");
     }
     else
     {
@@ -1111,7 +1081,7 @@ void MainWindow::on_actionView_Aspect_triggered()
     {
         setColorScale(airTemperature, myProject.radiationMaps->aspectMap->colorScale);
         this->setCurrentRaster(myProject.radiationMaps->aspectMap);
-        ui->labelRasterScale->setText("Aspect °");
+        ui->labelInputRaster->setText("Aspect °");
     }
     else
     {
@@ -1143,7 +1113,7 @@ void MainWindow::setMapVariable(meteoVariable myVar, gis::Crit3DRasterGrid *myGr
 {
     setColorScale(myVar, myGrid->colorScale);
     setCurrentRaster(myGrid);
-    ui->labelRasterScale->setText(QString::fromStdString(getVariableString(myVar)));
+    ui->labelInputRaster->setText(QString::fromStdString(getVariableString(myVar)));
 
     myProject.setCurrentVariable(myVar);
     myProject.setFrequency(getFrequency(myVar));

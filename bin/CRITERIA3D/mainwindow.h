@@ -26,7 +26,6 @@
         void on_meteoGridOpacitySlider_sliderMoved(int position);
         void on_actionLoadDEM_triggered();
         void on_actionOpen_meteo_points_DB_triggered();
-        void on_actionOpen_meteo_grid_triggered();
         void on_actionMapOpenStreetMap_triggered();
         void on_actionMapESRISatellite_triggered();
         void on_actionMapTerrain_triggered();
@@ -38,8 +37,6 @@
         void on_rasterRestoreButton_clicked();
         void on_timeEdit_timeChanged(const QTime &time);
         void on_dateEdit_dateChanged(const QDate &date);
-        void on_actionClose_meteo_points_triggered();
-        void on_actionClose_meteo_grid_triggered();
         void on_actionInterpolation_to_DEM_triggered();
         void on_actionOpen_model_parameters_triggered();
         void on_actionOpen_soil_map_triggered();
