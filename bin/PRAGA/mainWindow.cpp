@@ -1697,7 +1697,13 @@ void MainWindow::on_actionParameters_triggered()
 
 void MainWindow::on_actionWriteTAD_triggered()
 {
-    myProject.writeTopographicDistanceMaps();
+    QMessageBox::StandardButton reply;
+    reply = QMessageBox::question(this, "Create topographic distance maps", "Only for stations with data?",
+            QMessageBox::Yes|QMessageBox::No);
+
+    bool onlyWithData = (reply == QMessageBox::Yes);
+
+    myProject.writeTopographicDistanceMaps(onlyWithData);
 }
 
 void MainWindow::on_actionLoadTAD_triggered()
