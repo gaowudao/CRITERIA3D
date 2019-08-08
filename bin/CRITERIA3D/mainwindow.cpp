@@ -66,7 +66,9 @@ MainWindow::MainWindow(QWidget *parent) :
     this->meteoPointsLegend->colorScale = myProject.meteoPointsColorScale;
 
     // initialize
-    ui->labelInputRaster->setText("No spatial data loaded");
+    this->ui->opacitySliderRasterInput->setVisible(false);
+    this->ui->opacitySliderRasterOutput->setVisible(false);
+    ui->labelInputRaster->setText("No spatial data");
     ui->labelOutputRaster->setText("No output");
     this->currentPointsVisualization = notShown;
 
@@ -283,13 +285,6 @@ void MainWindow::on_actionRectangle_Selection_triggered()
 }
 
 
-
-void MainWindow::on_opacitySliderInputRaster_sliderMoved(int position)
-{
-    this->rasterObj->setOpacity(position / 100.0);
-}
-
-
 void MainWindow::addMeteoPoints()
 {
     myProject.meteoPointsSelected.clear();
@@ -348,7 +343,7 @@ void MainWindow::clearDEM()
     this->rasterObj->clear();
     this->rasterObj->redrawRequested();
     ui->labelInputRaster->setText("");
-    this->ui->opacitySliderRasterInput->setEnabled(false);
+    this->ui->opacitySliderRasterInput->setVisible(false);
 }
 
 
@@ -356,7 +351,7 @@ void MainWindow::renderDEM()
 {
     this->setCurrentRaster(&(myProject.DEM));
     ui->labelInputRaster->setText(QString::fromStdString(getVariableString(noMeteoTerrain)));
-    this->ui->opacitySliderRasterInput->setEnabled(true);
+    this->ui->opacitySliderRasterInput->setVisible(true);
 
     // center map
     gis::Crit3DGeoPoint* center = this->rasterObj->getRasterCenter();
@@ -858,7 +853,7 @@ void MainWindow::on_actionView_DEM_triggered()
     if (myProject.DEM.isLoaded)
     {
         setColorScale(noMeteoTerrain, myProject.DEM.colorScale);
-        this->setCurrentRaster(&(myProject.DEM));
+        setCurrentRaster(&(myProject.DEM));
         ui->labelInputRaster->setText(QString::fromStdString(getVariableString(noMeteoTerrain)));
     }
     else
@@ -874,8 +869,9 @@ void MainWindow::on_actionView_SoilMap_triggered()
     if (myProject.soilMap.isLoaded)
     {
         setColorScale(airTemperature, myProject.soilMap.colorScale);
-        this->setCurrentRaster(&(myProject.soilMap));
-        ui->labelInputRaster->setText("Soil map");
+        setCurrentRaster(&(myProject.soilMap));
+        ui->labelInputRaster->setText("Soil index map");
+        rasterObj->updateCenter();
     }
     else
     {
@@ -890,7 +886,7 @@ void MainWindow::on_actionView_Boundary_triggered()
     if (myProject.boundaryMap.isLoaded)
     {
         setColorScale(noMeteoTerrain, myProject.boundaryMap.colorScale);
-        this->setCurrentRaster(&(myProject.boundaryMap));
+        setCurrentRaster(&(myProject.boundaryMap));
         ui->labelInputRaster->setText("Boundary map");
     }
     else
@@ -906,7 +902,7 @@ void MainWindow::on_actionView_Slope_triggered()
     if (myProject.DEM.isLoaded)
     {
         setColorScale(noMeteoTerrain, myProject.radiationMaps->slopeMap->colorScale);
-        this->setCurrentRaster(myProject.radiationMaps->slopeMap);
+        setCurrentRaster(myProject.radiationMaps->slopeMap);
         ui->labelInputRaster->setText("Slope °");
     }
     else
@@ -922,7 +918,7 @@ void MainWindow::on_actionView_Aspect_triggered()
     if (myProject.DEM.isLoaded)
     {
         setColorScale(airTemperature, myProject.radiationMaps->aspectMap->colorScale);
-        this->setCurrentRaster(myProject.radiationMaps->aspectMap);
+        setCurrentRaster(myProject.radiationMaps->aspectMap);
         ui->labelInputRaster->setText("Aspect °");
     }
     else
@@ -1148,7 +1144,19 @@ void MainWindow::on_actionLoad_soil_map_triggered()
     if (fileName == "") return;
 
     if (myProject.loadSoilMap(fileName))
-        ui->opacitySliderRasterInput->setEnabled(true);
+    {
+        ui->opacitySliderRasterInput->setVisible(true);
+        on_actionView_SoilMap_triggered();
+    }
+}
+
+
+void MainWindow::on_actionLoad_soil_data_triggered()
+{
+    QString fileName = QFileDialog::getOpenFileName(this, tr("Load DB soil"), "", tr("SQLite files (*.db)"));
+    if (fileName == "") return;
+
+    myProject.loadSoilData(fileName);
 }
 
 
@@ -1162,11 +1170,7 @@ void MainWindow::on_actionLoad_model_parameters_triggered()
 }
 
 
-void MainWindow::on_actionLoad_soil_data_triggered()
+void MainWindow::on_opacitySliderRasterInput_sliderMoved(int position)
 {
-    QString fileName = QFileDialog::getOpenFileName(this, tr("Load DB soil"), "", tr("SQLite files (*.db)"));
-    if (fileName == "") return;
-
-    myProject.loadSoilData(fileName);
+    this->rasterObj->setOpacity(position / 100.0);
 }
-

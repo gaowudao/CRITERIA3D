@@ -969,7 +969,7 @@
     </property>
     <widget class="QSlider" name="opacitySliderRasterInput">
      <property name="enabled">
-      <bool>false</bool>
+      <bool>true</bool>
      </property>
      <property name="geometry">
       <rect>
@@ -1132,9 +1132,9 @@
      </property>
      <property name="font">
       <font>
-       <pointsize>9</pointsize>
-       <weight>75</weight>
-       <bold>true</bold>
+       <pointsize>10</pointsize>
+       <weight>50</weight>
+       <bold>false</bold>
       </font>
      </property>
      <property name="text">
@@ -1992,7 +1992,7 @@
     </property>
     <widget class="QSlider" name="opacitySliderRasterOutput">
      <property name="enabled">
-      <bool>false</bool>
+      <bool>true</bool>
      </property>
      <property name="geometry">
       <rect>

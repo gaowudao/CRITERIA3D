@@ -37,8 +37,6 @@
 
     private slots:
 
-        void on_opacitySliderInputRaster_sliderMoved(int position);
-
         void on_actionOpen_Project_triggered();
         void on_actionLoad_DEM_triggered();
         void on_actionLoad_meteo_points_DB_triggered();
@@ -96,6 +94,8 @@
         void on_actionCompute_AllMeteoMaps_triggered();
 
         void on_actionRadiationSettings_triggered();
+
+        void on_opacitySliderRasterInput_sliderMoved(int position);
 
     protected:
         /*!
