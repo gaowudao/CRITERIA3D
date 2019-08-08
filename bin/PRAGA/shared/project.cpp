@@ -1271,7 +1271,7 @@ bool Project::writeTopographicDistanceMaps()
         return false;
     }
 
-    QString mapsFolder = getDefaultPath() + PATH_TAD;
+    QString mapsFolder = projectPath + PATH_TAD;
     if (! QDir(mapsFolder).exists())
         QDir().mkdir(mapsFolder);
 
