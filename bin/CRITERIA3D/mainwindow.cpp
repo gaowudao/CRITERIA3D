@@ -60,6 +60,7 @@ MainWindow::MainWindow(QWidget *parent) :
 
     this->inputRasterColorLegend = new ColorLegend(this->ui->colorScaleInputRaster);
     this->inputRasterColorLegend->resize(this->ui->colorScaleInputRaster->size());
+
     this->outputRasterColorLegend = new ColorLegend(this->ui->colorScaleOutputRaster);
     this->outputRasterColorLegend->resize(this->ui->colorScaleOutputRaster->size());
 
@@ -712,14 +713,20 @@ void MainWindow::on_frequencyButton_clicked()
 void MainWindow::setCurrentRasterInput(gis::Crit3DRasterGrid *myRaster)
 {
     rasterObj->initializeUTM(myRaster, myProject.gisSettings, false);
+    rasterObj->setColorLegend(inputRasterColorLegend);
     inputRasterColorLegend->colorScale = myRaster->colorScale;
+    ui->opacitySliderRasterInput->setVisible(true);
+    ui->opacitySliderRasterOutput->setVisible(false);
     rasterObj->redrawRequested();
 }
 
 void MainWindow::setCurrentRasterOutput(gis::Crit3DRasterGrid *myRaster)
 {
     rasterObj->initializeUTM(myRaster, myProject.gisSettings, false);
+    rasterObj->setColorLegend(outputRasterColorLegend);
     outputRasterColorLegend->colorScale = myRaster->colorScale;
+    ui->opacitySliderRasterInput->setVisible(false);
+    ui->opacitySliderRasterOutput->setVisible(true);
     rasterObj->redrawRequested();
 }
 
