@@ -101,7 +101,6 @@ HEADERS += mainwindow.h \
     ../PRAGA/shared/formInfo.h \
     shared/meteoMaps.h \
     shared/project3D.h \
-    shared/sharedMainWindow.h \
     waterBalance3D.h \
     viewer3d.h \
     crit3dProject.h

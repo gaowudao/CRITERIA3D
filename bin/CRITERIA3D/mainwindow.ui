@@ -1523,135 +1523,6 @@
      </property>
     </widget>
    </widget>
-   <widget class="QGroupBox" name="groupBoxMeteoGrid">
-    <property name="geometry">
-     <rect>
-      <x>0</x>
-      <y>530</y>
-      <width>261</width>
-      <height>121</height>
-     </rect>
-    </property>
-    <property name="autoFillBackground">
-     <bool>true</bool>
-    </property>
-    <property name="title">
-     <string>Meteo Grid</string>
-    </property>
-    <widget class="QWidget" name="widgetColorLegendGrid" native="true">
-     <property name="geometry">
-      <rect>
-       <x>1</x>
-       <y>70</y>
-       <width>258</width>
-       <height>42</height>
-      </rect>
-     </property>
-     <property name="font">
-      <font>
-       <pointsize>8</pointsize>
-      </font>
-     </property>
-     <property name="toolTip">
-      <string>Variable colors</string>
-     </property>
-    </widget>
-    <widget class="QSlider" name="meteoGridOpacitySlider">
-     <property name="enabled">
-      <bool>false</bool>
-     </property>
-     <property name="geometry">
-      <rect>
-       <x>20</x>
-       <y>20</y>
-       <width>221</width>
-       <height>22</height>
-      </rect>
-     </property>
-     <property name="toolTip">
-      <string>Meteo Grid opacity</string>
-     </property>
-     <property name="toolTipDuration">
-      <number>-1</number>
-     </property>
-     <property name="statusTip">
-      <string notr="true"/>
-     </property>
-     <property name="whatsThis">
-      <string notr="true"/>
-     </property>
-     <property name="accessibleName">
-      <string/>
-     </property>
-     <property name="accessibleDescription">
-      <string/>
-     </property>
-     <property name="maximum">
-      <number>100</number>
-     </property>
-     <property name="value">
-      <number>66</number>
-     </property>
-     <property name="orientation">
-      <enum>Qt::Horizontal</enum>
-     </property>
-    </widget>
-    <widget class="QLabel" name="labelMeteoGridScale">
-     <property name="geometry">
-      <rect>
-       <x>20</x>
-       <y>50</y>
-       <width>221</width>
-       <height>21</height>
-      </rect>
-     </property>
-     <property name="palette">
-      <palette>
-       <active>
-        <colorrole role="WindowText">
-         <brush brushstyle="SolidPattern">
-          <color alpha="255">
-           <red>0</red>
-           <green>0</green>
-           <blue>0</blue>
-          </color>
-         </brush>
-        </colorrole>
-       </active>
-       <inactive>
-        <colorrole role="WindowText">
-         <brush brushstyle="SolidPattern">
-          <color alpha="255">
-           <red>0</red>
-           <green>0</green>
-           <blue>0</blue>
-          </color>
-         </brush>
-        </colorrole>
-       </inactive>
-       <disabled>
-        <colorrole role="WindowText">
-         <brush brushstyle="SolidPattern">
-          <color alpha="255">
-           <red>127</red>
-           <green>127</green>
-           <blue>127</blue>
-          </color>
-         </brush>
-        </colorrole>
-       </disabled>
-      </palette>
-     </property>
-     <property name="font">
-      <font>
-       <pointsize>9</pointsize>
-      </font>
-     </property>
-     <property name="text">
-      <string>variable</string>
-     </property>
-    </widget>
-   </widget>
    <widget class="QGroupBox" name="groupBoxOutput">
     <property name="geometry">
      <rect>
@@ -2700,17 +2571,17 @@
      <property name="title">
       <string>Input</string>
      </property>
-     <addaction name="actionLoadDEM"/>
-     <addaction name="actionOpen_meteo_points_DB"/>
-     <addaction name="actionOpen_soil_map"/>
-     <addaction name="actionOpen_soil_data"/>
-     <addaction name="actionOpen_model_parameters"/>
+     <addaction name="actionLoad_DEM"/>
+     <addaction name="actionLoad_meteo_points_DB"/>
+     <addaction name="actionLoad_soil_map"/>
+     <addaction name="actionLoad_soil_data"/>
+     <addaction name="actionLoad_model_parameters"/>
     </widget>
     <addaction name="actionNew_Project"/>
     <addaction name="actionOpen_Project"/>
+    <addaction name="actionClose_Project"/>
     <addaction name="separator"/>
     <addaction name="menuInput"/>
-    <addaction name="actionOpen_crop_map"/>
     <addaction name="separator"/>
    </widget>
    <widget class="QMenu" name="menuVariable">
@@ -2741,7 +2612,7 @@
      <addaction name="actionMapESRISatellite"/>
     </widget>
     <addaction name="menuMap"/>
-    <addaction name="actionParameters"/>
+    <addaction name="actionProjectSettings"/>
     <addaction name="separator"/>
    </widget>
    <widget class="QMenu" name="menuCriteria3D">
@@ -2766,7 +2637,7 @@
     </widget>
     <widget class="QMenu" name="menuDEM">
      <property name="title">
-      <string>Digital Elevation Model</string>
+      <string>Spatial data</string>
      </property>
      <addaction name="actionView_DEM"/>
      <addaction name="separator"/>
@@ -2791,9 +2662,15 @@
      <addaction name="actionView_ET0"/>
      <addaction name="separator"/>
     </widget>
+    <widget class="QMenu" name="menuSoil">
+     <property name="title">
+      <string>Soil</string>
+     </property>
+     <addaction name="actionView_SoilMap"/>
+    </widget>
     <addaction name="menuDEM"/>
     <addaction name="menuPoints"/>
-    <addaction name="actionView_Soil"/>
+    <addaction name="menuSoil"/>
     <addaction name="separator"/>
     <addaction name="menuMeteo_variables"/>
     <addaction name="actionView_3D"/>
@@ -2808,9 +2685,9 @@
    <addaction name="menuGIS_settings"/>
   </widget>
   <widget class="QStatusBar" name="statusBar"/>
-  <action name="actionLoadDEM">
+  <action name="actionLoad_DEM">
    <property name="text">
-    <string>&amp;Load Digital Elevation Model...</string>
+    <string>Digital Elevation Model...</string>
    </property>
   </action>
   <action name="actionMapOpenStreetMap">
@@ -2840,9 +2717,9 @@
     <string>&amp;Stamen - Terrain</string>
    </property>
   </action>
-  <action name="actionOpen_meteo_points_DB">
+  <action name="actionLoad_meteo_points_DB">
    <property name="text">
-    <string>&amp;Load meteo points...</string>
+    <string>Meteo points DB...</string>
    </property>
   </action>
   <action name="actionRectangle_Selection">
@@ -2869,36 +2746,28 @@
     <string>Interpolate current variable</string>
    </property>
   </action>
-  <action name="actionOpen_model_parameters">
+  <action name="actionLoad_model_parameters">
    <property name="text">
-    <string>Load model parameters...</string>
+    <string>Model parameters...</string>
    </property>
    <property name="visible">
     <bool>true</bool>
    </property>
   </action>
-  <action name="actionOpen_soil_map">
+  <action name="actionLoad_soil_map">
    <property name="text">
-    <string>Load soil map...</string>
+    <string>Soil map...</string>
    </property>
    <property name="visible">
     <bool>true</bool>
    </property>
   </action>
-  <action name="actionOpen_soil_data">
+  <action name="actionLoad_soil_data">
    <property name="text">
-    <string>Load soil data...</string>
+    <string>Soil data...</string>
    </property>
    <property name="visible">
     <bool>true</bool>
-   </property>
-  </action>
-  <action name="actionOpen_crop_map">
-   <property name="text">
-    <string>Open crop map...</string>
-   </property>
-   <property name="visible">
-    <bool>false</bool>
    </property>
   </action>
   <action name="actionCriteria3D_settings">
@@ -2914,11 +2783,6 @@
   <action name="actionView_Boundary">
    <property name="text">
     <string>Boundary</string>
-   </property>
-  </action>
-  <action name="actionView_Soil">
-   <property name="text">
-    <string>Soil</string>
    </property>
   </action>
   <action name="actionView_DEM">
@@ -2937,7 +2801,7 @@
     <string>Interpolation settings</string>
    </property>
   </action>
-  <action name="actionParameters">
+  <action name="actionProjectSettings">
    <property name="text">
     <string>Parameters...</string>
    </property>
@@ -3028,7 +2892,7 @@
   </action>
   <action name="actionOpen_Project">
    <property name="text">
-    <string>Open Project</string>
+    <string>Open Project...</string>
    </property>
   </action>
   <action name="actionRadiationSettings">
@@ -3038,7 +2902,22 @@
   </action>
   <action name="actionNew_Project">
    <property name="text">
-    <string>New Project</string>
+    <string>New Project...</string>
+   </property>
+  </action>
+  <action name="actionClose_Project">
+   <property name="text">
+    <string>Close Project</string>
+   </property>
+  </action>
+  <action name="actionNew_meteo_points_db">
+   <property name="text">
+    <string>Meteo points DB...</string>
+   </property>
+  </action>
+  <action name="actionView_SoilMap">
+   <property name="text">
+    <string>Soil map</string>
    </property>
   </action>
  </widget>

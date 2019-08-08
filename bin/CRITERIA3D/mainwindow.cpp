@@ -46,7 +46,7 @@ extern Crit3DProject myProject;
 #define TOOLSWIDTH 260
 
 MainWindow::MainWindow(QWidget *parent) :
-    SharedMainWindow (),
+    QMainWindow(parent),
     ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
@@ -60,9 +60,6 @@ MainWindow::MainWindow(QWidget *parent) :
 
     this->rasterLegend = new ColorLegend(this->ui->colorScaleInputRaster);
     this->rasterLegend->resize(this->ui->colorScaleInputRaster->size());
-
-    this->meteoGridLegend = new ColorLegend(this->ui->widgetColorLegendGrid);
-    this->meteoGridLegend->resize(this->ui->widgetColorLegendGrid->size());
 
     this->meteoPointsLegend = new ColorLegend(this->ui->colorScaleMeteoPoints);
     this->meteoPointsLegend->resize(this->ui->colorScaleMeteoPoints->size());
@@ -81,8 +78,6 @@ MainWindow::MainWindow(QWidget *parent) :
     showPointsGroup->addAction(this->ui->actionView_PointsCurrentVariable);
     showPointsGroup->setEnabled(false);
 
-    this->ui->groupBoxMeteoGrid->setVisible(false);
-
     // Set tiles source
     this->setMapSource(OSMTileSource::OSMTiles);
 
@@ -91,18 +86,11 @@ MainWindow::MainWindow(QWidget *parent) :
     this->mapView->setZoomLevel(8);
     this->mapView->centerOn(startCenter->lonLat());
 
-    // Set raster objects
+    // Set raster object
     this->rasterObj = new RasterObject(this->mapView);
-    this->meteoGridObj = new RasterObject(this->mapView);
-
     this->rasterObj->setOpacity(this->ui->opacitySliderRasterInput->value() / 100.0);
-    this->meteoGridObj->setOpacity(this->ui->opacitySliderRasterInput->value() / 100.0);
-
     this->rasterObj->setColorLegend(this->rasterLegend);
-    this->meteoGridObj->setColorLegend(this->meteoGridLegend);
-
     this->mapView->scene()->addObject(this->rasterObj);
-    this->mapView->scene()->addObject(this->meteoGridObj);
 
     this->updateVariable();
     this->updateDateTime();
@@ -116,9 +104,7 @@ MainWindow::MainWindow(QWidget *parent) :
 MainWindow::~MainWindow()
 {
     delete rasterObj;
-    delete meteoGridObj;
     delete rasterLegend;
-    delete meteoGridLegend;
     delete meteoPointsLegend;
     delete mapView;
     delete mapScene;
@@ -140,9 +126,6 @@ void MainWindow::resizeEvent(QResizeEvent * event)
     ui->groupBoxOutput->move(MAPBORDER/2, ui->groupBoxInput->y() + ui->groupBoxInput->height() + MAPBORDER);
     ui->groupBoxOutput->resize(TOOLSWIDTH, ui->groupBoxOutput->height());
 
-    ui->groupBoxMeteoGrid->move(MAPBORDER/2, ui->groupBoxOutput->y() + ui->groupBoxOutput->height() + MAPBORDER);
-    ui->groupBoxMeteoGrid->resize(TOOLSWIDTH, ui->groupBoxMeteoGrid->height());
-
     // TODO sembrano non funzionare
     ui->colorScaleInputRaster->resize(TOOLSWIDTH, ui->colorScaleMeteoPoints->height());
     ui->colorScaleMeteoPoints->resize(TOOLSWIDTH, ui->colorScaleMeteoPoints->height());
@@ -152,7 +135,6 @@ void MainWindow::resizeEvent(QResizeEvent * event)
 void MainWindow::mouseReleaseEvent(QMouseEvent *event)
 {
     this->rasterObj->updateCenter();
-    this->meteoGridObj->updateCenter();
 
     if (myRubberBand != nullptr && myRubberBand->isVisible())
     {
@@ -234,9 +216,7 @@ void MainWindow::mouseDoubleClickEvent(QMouseEvent * event)
     }
 
     this->mapView->centerOn(newCenter.lonLat());
-
     this->rasterObj->updateCenter();
-    this->meteoGridObj->updateCenter();
 }
 
 
@@ -304,15 +284,9 @@ void MainWindow::on_actionRectangle_Selection_triggered()
 
 
 
-void MainWindow::on_rasterOpacitySlider_sliderMoved(int position)
+void MainWindow::on_opacitySliderInputRaster_sliderMoved(int position)
 {
     this->rasterObj->setOpacity(position / 100.0);
-}
-
-
-void MainWindow::on_meteoGridOpacitySlider_sliderMoved(int position)
-{
-    this->meteoGridObj->setOpacity(position / 100.0);
 }
 
 
@@ -406,7 +380,7 @@ void MainWindow::renderDEM()
 }
 
 
-void MainWindow::on_actionLoadDEM_triggered()
+void MainWindow::on_actionLoad_DEM_triggered()
 {
     QString fileName = QFileDialog::getOpenFileName(this, tr("Open Digital Elevation Model"), "", tr("ESRI grid files (*.flt)"));
 
@@ -417,20 +391,6 @@ void MainWindow::on_actionLoadDEM_triggered()
     myProject.meteoMaps = new Crit3DMeteoMaps(myProject.DEM);
 
     this->renderDEM();
-}
-
-
-void MainWindow::on_actionOpen_meteo_points_DB_triggered()
-{
-    QString dbName = QFileDialog::getOpenFileName(this, tr("Open meteo points DB"), "", tr("DB files (*.db)"));
-
-    if (dbName != "")
-    {
-        this->loadMeteoPointsDB(dbName);
-    }
-
-    currentPointsVisualization = showLocation;
-    redrawMeteoPoints(currentPointsVisualization, true);
 }
 
 
@@ -514,11 +474,6 @@ void MainWindow::updateVariable()
     }
     else
     {
-        if (myProject.getCurrentVariable() != noMeteoVar)
-        {
-            if (this->meteoGridObj != nullptr) this->meteoGridObj->setDrawBorders(false);
-        }
-
         if (myProject.getFrequency() == daily)
         {
             this->ui->labelFrequency->setText("Daily");
@@ -576,7 +531,6 @@ void MainWindow::updateVariable()
     ui->labelVariable->setText(QString::fromStdString(myString));
 
     redrawMeteoPoints(currentPointsVisualization, true);
-    redrawMeteoGrid();
 }
 
 
@@ -604,7 +558,6 @@ void MainWindow::on_dateChanged()
     }
 
     redrawMeteoPoints(currentPointsVisualization, true);
-    redrawMeteoGrid();
 }
 
 
@@ -617,7 +570,6 @@ void MainWindow::on_timeEdit_timeChanged(const QTime &time)
     }
 
     redrawMeteoPoints(currentPointsVisualization, true);
-    redrawMeteoGrid();
 }
 
 
@@ -709,47 +661,6 @@ void MainWindow::redrawMeteoPoints(visualizationType myType, bool updateColorSCa
 }
 
 
-void MainWindow::redrawMeteoGrid()
-{
-
-    if (myProject.meteoGridDbHandler == nullptr)
-        return;
-
-    frequencyType frequency = myProject.getFrequency();
-    meteoVariable variable = myProject.getCurrentVariable();
-
-    if (myProject.getCurrentVariable() == noMeteoVar)
-    {
-        meteoGridLegend->setVisible(false);
-        ui->labelMeteoGridScale->setText("");
-        meteoGridObj->redrawRequested();
-        return;
-    }
-
-    Crit3DTime time = myProject.getCurrentTime();
-
-    if (frequency == daily)
-    {
-        myProject.meteoGridDbHandler->meteoGrid()->fillMeteoPointCurrentDailyValue(time.date, variable);
-    }
-    else if (frequency == hourly)
-    {
-        myProject.meteoGridDbHandler->meteoGrid()->fillMeteoPointCurrentHourlyValue(time.date, time.getHour(), time.getMinutes(), variable);
-    }
-    else
-        return;
-
-    myProject.meteoGridDbHandler->meteoGrid()->fillMeteoRaster();
-    meteoGridLegend->setVisible(true);
-
-    setColorScale(variable, myProject.meteoGridDbHandler->meteoGrid()->dataMeteoGrid.colorScale);
-    ui->labelMeteoGridScale->setText(QString::fromStdString(getVariableString(myProject.getCurrentVariable())));
-
-    meteoGridObj->redrawRequested();
-    meteoGridLegend->update();
-}
-
-
 bool MainWindow::loadMeteoPointsDB(QString dbName)
 {
     this->resetMeteoPoints();
@@ -770,45 +681,6 @@ bool MainWindow::loadMeteoPointsDB(QString dbName)
     myProject.loadMeteoPointsData(myProject.getCurrentDate(), myProject.getCurrentDate(), true);
 
     this->showPointsGroup->setEnabled(true);
-
-    return true;
-}
-
-
-bool MainWindow::loadMeteoGridDB(QString xmlName)
-{
-    if (!myProject.loadMeteoGridDB(xmlName))
-    {
-        myProject.logError();
-        return false;
-    }
-
-    myProject.meteoGridDbHandler->meteoGrid()->createRasterGrid();
-
-    if (myProject.meteoGridDbHandler->gridStructure().isUTM() == false)
-    {
-        meteoGridObj->initializeLatLon(&(myProject.meteoGridDbHandler->meteoGrid()->dataMeteoGrid), myProject.gisSettings, myProject.meteoGridDbHandler->gridStructure().header(), true);
-    }
-    else
-    {
-        meteoGridObj->initializeUTM(&(myProject.meteoGridDbHandler->meteoGrid()->dataMeteoGrid), myProject.gisSettings, true);
-    }
-
-    meteoGridLegend->colorScale = myProject.meteoGridDbHandler->meteoGrid()->dataMeteoGrid.colorScale;
-    ui->meteoGridOpacitySlider->setEnabled(true);
-
-    // update dateTime Edit if there are not MeteoPoints
-    if (this->pointList.isEmpty())
-    {
-        myProject.setCurrentDate(myProject.meteoGridDbHandler->lastDate());
-        this->updateDateTime();
-    }
-
-    myProject.loadMeteoGridData(myProject.getCurrentDate(), myProject.getCurrentDate(), true);
-
-    meteoGridObj->redrawRequested();
-
-    redrawMeteoGrid();
 
     return true;
 }
@@ -836,7 +708,6 @@ void MainWindow::on_variableButton_clicked()
     {
        this->currentPointsVisualization = showCurrentVariable;
        this->updateVariable();
-       if (this->meteoGridObj != nullptr) this->meteoGridObj->setDrawBorders(false);
     }
 }
 
@@ -905,7 +776,7 @@ void MainWindow::on_actionRadiationSettings_triggered()
 }
 
 
-void MainWindow::on_actionParameters_triggered()
+void MainWindow::on_actionProjectSettings_triggered()
 {
     DialogSettings* mySettingsDialog = new DialogSettings(&myProject);
     mySettingsDialog->exec();
@@ -918,35 +789,6 @@ void MainWindow::on_actionParameters_triggered()
     }
 
     mySettingsDialog->close();
-}
-
-
-void MainWindow::on_actionOpen_model_parameters_triggered()
-{
-    QString fileName = QFileDialog::getOpenFileName(this, tr("Open DB parameters"), "", tr("SQLite files (*.db)"));
-    if (fileName == "") return;
-
-    if (myProject.loadModelParameters(fileName))
-        QMessageBox::information(nullptr, "", "Model parameters loaded");
-}
-
-
-void MainWindow::on_actionOpen_soil_map_triggered()
-{
-    QString fileName = QFileDialog::getOpenFileName(this, tr("Open soil map"), "", tr("ESRI grid files (*.flt)"));
-    if (fileName == "") return;
-
-    if (myProject.loadSoilMap(fileName))
-        ui->opacitySliderRasterInput->setEnabled(true);
-}
-
-
-void MainWindow::on_actionOpen_soil_data_triggered()
-{
-    QString fileName = QFileDialog::getOpenFileName(this, tr("Load DB soil"), "", tr("SQLite files (*.db)"));
-    if (fileName == "") return;
-
-    myProject.loadSoilData(fileName);
 }
 
 
@@ -1027,7 +869,7 @@ void MainWindow::on_actionView_DEM_triggered()
 }
 
 
-void MainWindow::on_actionView_Soil_triggered()
+void MainWindow::on_actionView_SoilMap_triggered()
 {
     if (myProject.soilMap.isLoaded)
     {
@@ -1284,3 +1126,47 @@ void MainWindow::contextMenuRequested(const QPoint globalPos)
         }
     }
 }
+
+
+void MainWindow::on_actionLoad_meteo_points_DB_triggered()
+{
+    QString dbName = QFileDialog::getOpenFileName(this, tr("Open meteo points DB"), "", tr("DB files (*.db)"));
+
+    if (dbName != "")
+    {
+        this->loadMeteoPointsDB(dbName);
+    }
+
+    currentPointsVisualization = showLocation;
+    redrawMeteoPoints(currentPointsVisualization, true);
+}
+
+
+void MainWindow::on_actionLoad_soil_map_triggered()
+{
+    QString fileName = QFileDialog::getOpenFileName(this, tr("Open soil map"), "", tr("ESRI grid files (*.flt)"));
+    if (fileName == "") return;
+
+    if (myProject.loadSoilMap(fileName))
+        ui->opacitySliderRasterInput->setEnabled(true);
+}
+
+
+void MainWindow::on_actionLoad_model_parameters_triggered()
+{
+    QString fileName = QFileDialog::getOpenFileName(this, tr("Open DB parameters"), "", tr("SQLite files (*.db)"));
+    if (fileName == "") return;
+
+    if (myProject.loadModelParameters(fileName))
+        QMessageBox::information(nullptr, "", "Model parameters loaded");
+}
+
+
+void MainWindow::on_actionLoad_soil_data_triggered()
+{
+    QString fileName = QFileDialog::getOpenFileName(this, tr("Load DB soil"), "", tr("SQLite files (*.db)"));
+    if (fileName == "") return;
+
+    myProject.loadSoilData(fileName);
+}
+
