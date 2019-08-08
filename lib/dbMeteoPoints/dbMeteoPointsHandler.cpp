@@ -2,7 +2,6 @@
 #include "commonConstants.h"
 #include "meteo.h"
 #include "utilities.h"
-#include <iostream>
 
 #include <QtSql>
 
@@ -173,7 +172,7 @@ QDateTime Crit3DMeteoPointsDbHandler::getLastDate(frequencyType frequency)
 
     if( !qry.exec() )
     {
-        qDebug() << qry.lastError();
+        error = qry.lastError().text();
     }
     else
     {
@@ -291,6 +290,18 @@ QDateTime Crit3DMeteoPointsDbHandler::getFirstDay(frequencyType frequency)
 
 }
 
+bool Crit3DMeteoPointsDbHandler::existData(Crit3DMeteoPoint *meteoPoint, frequencyType myFreq)
+{
+    QSqlQuery myQuery(_db);
+    QString tableName = QString::fromStdString(meteoPoint->id) + ((myFreq == daily) ?  "_D" : "_H");
+    QString statement = QString( "SELECT * FROM `%1`").arg(tableName);
+
+    if (myQuery.exec(statement))
+        if (myQuery.next())
+            return true;
+
+    return false;
+}
 
 bool Crit3DMeteoPointsDbHandler::loadDailyData(Crit3DDate dateStart, Crit3DDate dateEnd, Crit3DMeteoPoint *meteoPoint)
 {
@@ -315,7 +326,6 @@ bool Crit3DMeteoPointsDbHandler::loadDailyData(Crit3DDate dateStart, Crit3DDate 
 
     if( !myQuery.exec(statement) )
     {
-        //qDebug() << myQuery.lastError();
         return false;
     }
     else

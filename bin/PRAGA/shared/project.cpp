@@ -1257,7 +1257,7 @@ bool Project::updateProxy()
     return true;
 }
 
-bool Project::writeTopographicDistanceMaps()
+bool Project::writeTopographicDistanceMaps(bool onlyWithData)
 {
     if (nrMeteoPoints == 0)
     {
@@ -1289,13 +1289,16 @@ bool Project::writeTopographicDistanceMaps()
 
         if (meteoPoints[i].active)
         {
-            if (gis::topographicDistanceMap(meteoPoints[i].point, DEM, &myMap))
+            if (meteoPointsDbHandler->existData(&meteoPoints[i], daily) || meteoPointsDbHandler->existData(&meteoPoints[i], hourly))
             {
-                fileName = mapsFolder.toStdString() + "TAD_" + meteoPoints[i].id;
-                if (! gis::writeEsriGrid(fileName, &myMap, &myError))
+                if (gis::topographicDistanceMap(meteoPoints[i].point, DEM, &myMap))
                 {
-                    logError(QString::fromStdString(myError));
-                    return false;
+                    fileName = mapsFolder.toStdString() + "TAD_" + meteoPoints[i].id;
+                    if (! gis::writeEsriGrid(fileName, &myMap, &myError))
+                    {
+                        logError(QString::fromStdString(myError));
+                        return false;
+                    }
                 }
             }
         }

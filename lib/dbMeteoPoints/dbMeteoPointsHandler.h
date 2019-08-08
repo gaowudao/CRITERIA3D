@@ -38,6 +38,7 @@
             void setDatasetsActive(QString active);
             QDateTime getLastDate(frequencyType frequency);
             QDateTime getFirstDay(frequencyType frequency);
+            bool existData(Crit3DMeteoPoint *meteoPoint, frequencyType myFreq);
 
             bool readPointProxyValues(Crit3DMeteoPoint* myPoint, Crit3DInterpolationSettings* interpolationSettings);
 
