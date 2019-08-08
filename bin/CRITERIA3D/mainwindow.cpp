@@ -117,7 +117,7 @@ void MainWindow::resizeEvent(QResizeEvent * event)
     ui->groupBoxInput->move(MAPBORDER/2, MAPBORDER*2);
     ui->groupBoxInput->resize(TOOLSWIDTH, ui->groupBoxInput->height());
 
-    ui->groupBoxOutput->move(MAPBORDER/2, ui->groupBoxInput->y() + ui->groupBoxInput->height() + MAPBORDER);
+    ui->groupBoxOutput->move(MAPBORDER/2, ui->groupBoxInput->y() + ui->groupBoxInput->height() + MAPBORDER*2);
     ui->groupBoxOutput->resize(TOOLSWIDTH, ui->groupBoxOutput->height());
 }
 
