@@ -459,7 +459,7 @@ void MainWindow::interpolateDemGUI()
         setColorScale(myVar, myProject.dataRaster.colorScale);
         setCurrentRasterOutput(&(myProject.dataRaster));
 
-        ui->labelInputRaster->setText(QString::fromStdString(getVariableString(myVar)));
+        ui->labelOutputRaster->setText(QString::fromStdString(getVariableString(myVar)));
     }
 }
 
@@ -719,25 +719,34 @@ void MainWindow::setOutputRasterVisible(bool value)
     ui->opacitySliderRasterOutput->setVisible(value);
 }
 
+
 void MainWindow::setCurrentRasterInput(gis::Crit3DRasterGrid *myRaster)
 {
-    rasterObj->initializeUTM(myRaster, myProject.gisSettings, false);
-    rasterObj->setColorLegend(inputRasterColorLegend);
-    inputRasterColorLegend->colorScale = myRaster->colorScale;
     setInputRasterVisible(true);
     setOutputRasterVisible(false);
+
+    rasterObj->initializeUTM(myRaster, myProject.gisSettings, false);
+    rasterObj->setColorLegend(inputRasterColorLegend);
+    rasterObj->setOpacity(ui->opacitySliderRasterInput->value() / 100.0);
+    inputRasterColorLegend->colorScale = myRaster->colorScale;
+
     rasterObj->redrawRequested();
 }
 
+
 void MainWindow::setCurrentRasterOutput(gis::Crit3DRasterGrid *myRaster)
 {
-    rasterObj->initializeUTM(myRaster, myProject.gisSettings, false);
-    rasterObj->setColorLegend(outputRasterColorLegend);
-    outputRasterColorLegend->colorScale = myRaster->colorScale;
     setInputRasterVisible(false);
     setOutputRasterVisible(true);
+
+    rasterObj->initializeUTM(myRaster, myProject.gisSettings, false);
+    rasterObj->setColorLegend(outputRasterColorLegend);
+    rasterObj->setOpacity(ui->opacitySliderRasterOutput->value() / 100.0);
+    outputRasterColorLegend->colorScale = myRaster->colorScale;
+
     rasterObj->redrawRequested();
 }
+
 
 void MainWindow::on_dateEdit_dateChanged(const QDate &date)
 {
@@ -1088,6 +1097,7 @@ void MainWindow::on_actionCompute_solar_radiation_triggered()
     myProject.setCurrentVariable(globalIrradiance);
     this->currentPointsVisualization = showCurrentVariable;
     this->updateVariable();
+
     this->interpolateDemGUI();
 }
 
