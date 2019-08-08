@@ -330,12 +330,10 @@ void MainWindow::clearDEM()
 {
     rasterObj->clear();
     rasterObj->redrawRequested();
-    inputRasterColorLegend->setVisible(false);
-    outputRasterColorLegend->setVisible(false);
     ui->labelInputRaster->setText("");
     ui->labelOutputRaster->setText("");
-    ui->opacitySliderRasterInput->setVisible(false);
-    ui->opacitySliderRasterOutput->setVisible(false);
+    setInputRasterVisible(false);
+    setOutputRasterVisible(false);
 }
 
 
@@ -351,10 +349,8 @@ void MainWindow::clearMeteoPoints()
 void MainWindow::renderDEM()
 {
     setCurrentRasterInput(&(myProject.DEM));
+    setInputRasterVisible(true);
     ui->labelInputRaster->setText(QString::fromStdString(getVariableString(noMeteoTerrain)));
-    ui->opacitySliderRasterInput->setVisible(true);
-    inputRasterColorLegend->setVisible(true);
-    outputRasterColorLegend->setVisible(true);
 
     // center map
     gis::Crit3DGeoPoint* center = this->rasterObj->getRasterCenter();
@@ -709,14 +705,27 @@ void MainWindow::on_frequencyButton_clicked()
    }
 }
 
+void MainWindow::setInputRasterVisible(bool value)
+{
+    inputRasterColorLegend->setVisible(value);
+    ui->labelInputRaster->setVisible(value);
+    ui->opacitySliderRasterInput->setVisible(value);
+}
+
+void MainWindow::setOutputRasterVisible(bool value)
+{
+    outputRasterColorLegend->setVisible(value);
+    ui->labelOutputRaster->setVisible(value);
+    ui->opacitySliderRasterOutput->setVisible(value);
+}
 
 void MainWindow::setCurrentRasterInput(gis::Crit3DRasterGrid *myRaster)
 {
     rasterObj->initializeUTM(myRaster, myProject.gisSettings, false);
     rasterObj->setColorLegend(inputRasterColorLegend);
     inputRasterColorLegend->colorScale = myRaster->colorScale;
-    ui->opacitySliderRasterInput->setVisible(true);
-    ui->opacitySliderRasterOutput->setVisible(false);
+    setInputRasterVisible(true);
+    setOutputRasterVisible(false);
     rasterObj->redrawRequested();
 }
 
@@ -725,8 +734,8 @@ void MainWindow::setCurrentRasterOutput(gis::Crit3DRasterGrid *myRaster)
     rasterObj->initializeUTM(myRaster, myProject.gisSettings, false);
     rasterObj->setColorLegend(outputRasterColorLegend);
     outputRasterColorLegend->colorScale = myRaster->colorScale;
-    ui->opacitySliderRasterInput->setVisible(false);
-    ui->opacitySliderRasterOutput->setVisible(true);
+    setInputRasterVisible(false);
+    setOutputRasterVisible(true);
     rasterObj->redrawRequested();
 }
 

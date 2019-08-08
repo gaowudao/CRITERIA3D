@@ -158,6 +158,9 @@
         void setMapVariable(meteoVariable myVar, gis::Crit3DRasterGrid *myGrid);
         void contextMenuRequested(const QPoint globalPos);
 
+        void setInputRasterVisible(bool value);
+        void setOutputRasterVisible(bool value);
+
         void addMeteoPoints();
         void drawProject();
         void renderDEM();
