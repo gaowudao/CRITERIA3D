@@ -344,7 +344,9 @@ void MainWindow::clearDEM()
     rasterObj->redrawRequested();
     rasterLegend->setVisible(false);
     ui->labelInputRaster->setText("");
+    ui->labelOutputRaster->setText("");
     ui->opacitySliderRasterInput->setVisible(false);
+    ui->opacitySliderRasterOutput->setVisible(false);
 }
 
 
@@ -967,7 +969,8 @@ void MainWindow::setMapVariable(meteoVariable myVar, gis::Crit3DRasterGrid *myGr
 {
     setColorScale(myVar, myGrid->colorScale);
     setCurrentRaster(myGrid);
-    ui->labelInputRaster->setText(QString::fromStdString(getVariableString(myVar)));
+    ui->labelOutputRaster->setText(QString::fromStdString(getVariableString(myVar)));
+    ui->opacitySliderRasterOutput->setVisible(true);
 
     myProject.setCurrentVariable(myVar);
     myProject.setFrequency(getFrequency(myVar));

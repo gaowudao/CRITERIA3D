@@ -1138,7 +1138,7 @@
       </font>
      </property>
      <property name="text">
-      <string>Meteo  data</string>
+      <string>Meteo points</string>
      </property>
     </widget>
     <widget class="QDateEdit" name="dateEdit">
@@ -1504,11 +1504,14 @@
      </property>
     </widget>
     <widget class="Line" name="line">
+     <property name="enabled">
+      <bool>true</bool>
+     </property>
      <property name="geometry">
       <rect>
-       <x>10</x>
+       <x>0</x>
        <y>120</y>
-       <width>241</width>
+       <width>261</width>
        <height>20</height>
       </rect>
      </property>
