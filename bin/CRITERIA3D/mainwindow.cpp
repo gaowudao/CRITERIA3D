@@ -455,8 +455,6 @@ void MainWindow::interpolateDemGUI()
 
         ui->labelInputRaster->setText(QString::fromStdString(getVariableString(myVar)));
     }
-    else
-        myProject.logError();
 }
 
 
