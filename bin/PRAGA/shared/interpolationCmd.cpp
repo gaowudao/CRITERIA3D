@@ -20,6 +20,8 @@ bool interpolationRaster(std::vector <Crit3DInterpolationDataPoint> &myPoints, C
     }
 
     float myX, myY;
+    std::vector <float> proxyValues;
+    proxyValues.resize(unsigned(mySettings->getProxyNr()));
 
     for (long myRow = 0; myRow < myGrid->header->nrRows ; myRow++)
     {
@@ -31,7 +33,10 @@ bool interpolationRaster(std::vector <Crit3DInterpolationDataPoint> &myPoints, C
             gis::getUtmXYFromRowColSinglePrecision(*myGrid, myRow, myCol, &myX, &myY);
             float myZ = raster.value[myRow][myCol];
             if (int(myZ) != int(myGrid->header->flag))
-                myGrid->value[myRow][myCol] = interpolate(myPoints, mySettings, myVar, myX, myY, myZ, getProxyValuesXY(myX, myY, mySettings), true);
+            {
+                if (getUseDetrendingVar(myVar)) getProxyValuesXY(myX, myY, mySettings, proxyValues);
+                myGrid->value[myRow][myCol] = interpolate(myPoints, mySettings, myVar, myX, myY, myZ, proxyValues, true);
+            }
         }
     }
 

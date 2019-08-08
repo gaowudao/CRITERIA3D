@@ -198,6 +198,26 @@ void Crit3DInterpolationSettings::setCurrentProxy(const std::vector<Crit3DProxy>
     currentProxy = value;
 }
 
+float Crit3DInterpolationSettings::getRefHeightWind() const
+{
+    return refHeightWind;
+}
+
+void Crit3DInterpolationSettings::setRefHeightWind(float value)
+{
+    refHeightWind = value;
+}
+
+float Crit3DInterpolationSettings::getSurfaceRoughness() const
+{
+    return surfaceRoughness;
+}
+
+void Crit3DInterpolationSettings::setSurfaceRoughness(float value)
+{
+    surfaceRoughness = value;
+}
+
 Crit3DInterpolationSettings::Crit3DInterpolationSettings()
 {
     initialize();
@@ -229,8 +249,12 @@ void Crit3DInterpolationSettings::initialize()
     shepardInitialRadius = NODATA;
     indexPointCV = NODATA;
 
+    refHeightWind = 2;
+    surfaceRoughness = 0.1f;
+
     if (currentCombination == nullptr)
         currentCombination = new Crit3DProxyCombination();
+
 
     initializeProxy();
 }

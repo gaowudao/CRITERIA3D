@@ -1157,7 +1157,6 @@ void optimalDetrending(meteoVariable myVar,
     return;
 }
 
-
 bool preInterpolation(std::vector <Crit3DInterpolationDataPoint> &myPoints, Crit3DInterpolationSettings* mySettings, Crit3DClimateParameters* myClimate,
                       Crit3DMeteoPoint* myMeteoPoints, int nrMeteoPoints,
                       meteoVariable myVar, Crit3DTime myTime)
@@ -1175,18 +1174,22 @@ bool preInterpolation(std::vector <Crit3DInterpolationDataPoint> &myPoints, Crit
             mySettings->setPrecipitationAllZero(false);
     }
 
-    if (mySettings->getUseBestDetrending())
+    if (getUseDetrendingVar(myVar))
     {
-        optimalDetrending(myVar, myMeteoPoints, nrMeteoPoints, myPoints, mySettings, myClimate, myTime);
-        mySettings->setCurrentCombination(mySettings->getOptimalCombinationRef());
+        if (mySettings->getUseBestDetrending())
+        {
+            optimalDetrending(myVar, myMeteoPoints, nrMeteoPoints, myPoints, mySettings, myClimate, myTime);
+            mySettings->setCurrentCombination(mySettings->getOptimalCombinationRef());
+        }
+        else
+        {
+            detrending(myPoints, mySettings->getSelectedCombination(), mySettings, myClimate, myVar, myTime);
+            mySettings->setCurrentCombination(mySettings->getSelectedCombinationRef());
+        }
     }
-    else
-    {
-        detrending(myPoints, mySettings->getSelectedCombination(), mySettings, myClimate, myVar, myTime);
-        mySettings->setCurrentCombination(mySettings->getSelectedCombinationRef());
-        if (mySettings->getUseTAD())
-            topographicDistanceOptimize(myVar, myMeteoPoints, nrMeteoPoints, myPoints, mySettings, myTime);
-    }
+
+    if (mySettings->getUseTAD())
+        topographicDistanceOptimize(myVar, myMeteoPoints, nrMeteoPoints, myPoints, mySettings, myTime);
 
     return (true);
 }
@@ -1242,16 +1245,14 @@ float interpolate(vector <Crit3DInterpolationDataPoint> &myPoints, Crit3DInterpo
 
 }
 
-std::vector <float> getProxyValuesXY(float x, float y, Crit3DInterpolationSettings* mySettings)
+void getProxyValuesXY(float x, float y, Crit3DInterpolationSettings* mySettings, std::vector<float> &myValues)
 {
-    std::vector <float> myValues;
     float myValue;
     gis::Crit3DRasterGrid* proxyGrid;
 
-    myValues.resize(mySettings->getProxyNr());
     Crit3DProxyCombination* myCombination = mySettings->getCurrentCombination();
 
-    for (unsigned int i=0; i < myValues.size(); i++)
+    for (unsigned int i=0; i < mySettings->getProxyNr(); i++)
     {
         myValues[i] = NODATA;
 
@@ -1266,7 +1267,5 @@ std::vector <float> getProxyValuesXY(float x, float y, Crit3DInterpolationSettin
             }
         }
     }
-
-    return myValues;
 }
 

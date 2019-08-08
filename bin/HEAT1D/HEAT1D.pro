@@ -51,3 +51,4 @@ win32:{
 unix:{
     include(/usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/qwt.prf)
 }
+

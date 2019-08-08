@@ -48,7 +48,7 @@
                                   float* devSt, float* devStDeltaZ, float* minDistance);
 
     float interpolate(std::vector<Crit3DInterpolationDataPoint> &myPoints, Crit3DInterpolationSettings *mySettings, meteoVariable myVar, float myX, float myY, float myZ, std::vector<float> myProxyValues, bool excludeSupplemental);
-    std::vector <float> getProxyValuesXY(float x, float y, Crit3DInterpolationSettings* mySettings);
-
+    void getProxyValuesXY(float x, float y, Crit3DInterpolationSettings* mySettings, std::vector<float> &myValues);
+    bool getUseDetrendingVar(meteoVariable myVar);
 
 #endif // INTERPOLATION_H
