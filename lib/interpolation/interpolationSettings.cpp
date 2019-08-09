@@ -389,6 +389,16 @@ void Crit3DProxy::setProxyField(const std::string &value)
     proxyField = value;
 }
 
+std::vector<gis::Crit3DRasterGrid *> Crit3DProxy::getGridSeries() const
+{
+    return gridSeries;
+}
+
+void Crit3DProxy::setGridSeries(const std::vector<gis::Crit3DRasterGrid *> &value)
+{
+    gridSeries = value;
+}
+
 Crit3DProxy::Crit3DProxy()
 {
     name = "";

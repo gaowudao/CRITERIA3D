@@ -24,6 +24,7 @@
         std::string name;
         std::string gridName;
         gis::Crit3DRasterGrid* grid;
+        std::vector<gis::Crit3DRasterGrid *> gridSeries;
         std::string proxyTable;
         std::string proxyField;
         bool isSignificant;
@@ -70,6 +71,8 @@
         void setProxyTable(const std::string &value);
         std::string getProxyField() const;
         void setProxyField(const std::string &value);
+        std::vector<gis::Crit3DRasterGrid *> getGridSeries() const;
+        void setGridSeries(const std::vector<gis::Crit3DRasterGrid *> &value);
     };
 
     class Crit3DProxyCombination
