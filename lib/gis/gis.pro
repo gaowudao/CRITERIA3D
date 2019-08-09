@@ -25,7 +25,7 @@ win32:{
     TARGET = gis
 }
 
-INCLUDEPATH += ../mathFunctions ../utilities
+INCLUDEPATH += ../mathFunctions ../utilities ../crit3dDate
 
 SOURCES += gis.cpp \
     gisIO.cpp \

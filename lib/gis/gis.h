@@ -10,6 +10,9 @@
     #ifndef COLOR_H
         #include "color.h"
     #endif
+    #ifndef CRIT3DDATE_H
+        #include "crit3dDate.h"
+    #endif
 
     enum operationType {operationMin, operationMax, operationSum, operationSubtract, operationProduct, operationDivide};
 
@@ -114,7 +117,7 @@
             float** value;
             float minimum, maximum;
             bool isLoaded;
-            std::string timeString;
+            Crit3DTime mapTime;
 
             Crit3DUtmPoint* utmPoint(int myRow, int myCol);
             void getXY(int myRow, int myCol, double* x, double* y);
@@ -141,6 +144,8 @@
             bool isFlag(int myRow, int myCol);
 
             Crit3DPoint mapCenter();
+            Crit3DTime getMapTime() const;
+            void setMapTime(const Crit3DTime &value);
         };
 
         class Crit3DGisSettings

@@ -190,7 +190,6 @@ namespace gis
     Crit3DRasterGrid::Crit3DRasterGrid()
     {
         isLoaded = false;
-        timeString = "";
         header = new Crit3DRasterHeader();
         colorScale = new Crit3DColorScale();
         minimum = NODATA;
@@ -332,8 +331,7 @@ namespace gis
             free(value);
         }
 
-        timeString = "";
-
+        mapTime = getNullTime();
         minimum = NODATA;
         maximum = NODATA;
         header->nrRows = 0;
@@ -361,6 +359,16 @@ namespace gis
      * \param myCol
      * \return Crit3DUtmPoint pointer
      */
+    Crit3DTime Crit3DRasterGrid::getMapTime() const
+    {
+        return mapTime;
+    }
+
+    void Crit3DRasterGrid::setMapTime(const Crit3DTime &value)
+    {
+        mapTime = value;
+    }
+
     Crit3DUtmPoint* Crit3DRasterGrid::utmPoint(int myRow, int myCol)
     {
         double x, y;
