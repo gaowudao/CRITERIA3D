@@ -210,6 +210,7 @@ bool Project::loadParameters(QString parametersFileName)
     QStringList myList;
     std::vector <QString> myGridSeries;
     std::vector <int> myGridSeriesYears;
+    bool proxyGridSeriesFound;
 
     Q_FOREACH (QString group, parameters->childGroups())
     {
@@ -557,6 +558,8 @@ bool Project::loadParameters(QString parametersFileName)
 
             parameters->beginGroup(group);
 
+            proxyGridSeriesFound = false;
+
             //proxy grid temporal series
             foreach (const QString &key, parameters->childKeys())
                 if (key == "raster_series")
@@ -567,18 +570,24 @@ bool Project::loadParameters(QString parametersFileName)
                         errorString = "Incomplete raster series for proxy";
                         return  false;
                     }
+                    else
+                        proxyGridSeriesFound = true;
 
                     myGridSeries.push_back(myList[0]);
                     myGridSeriesYears.push_back(myList[1].toInt());
                 }
 
-            proxyGridName = parameters->value("raster").toString();
             proxyTable = parameters->value("table").toString();
             proxyField = parameters->value("field").toString();
             isActive = parameters->value("active").toBool();
             forQuality = parameters->value("use_for_spatial_quality_control").toBool();
 
             parameters->endGroup();
+
+            if (! proxyGridSeriesFound)
+                proxyGridName = parameters->value("raster").toString();
+            else
+                proxyGridName = myGridSeries[0];
 
             if (checkProxy(proxyName, proxyGridName, proxyTable, proxyField, &errorString))
                 addProxyToProject(proxyName, proxyGridName, proxyTable, proxyField, forQuality, isActive);
