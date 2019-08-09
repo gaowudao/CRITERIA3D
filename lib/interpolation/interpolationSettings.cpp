@@ -389,21 +389,12 @@ void Crit3DProxy::setProxyField(const std::string &value)
     proxyField = value;
 }
 
-std::vector<gis::Crit3DRasterGrid *> Crit3DProxy::getGridSeries() const
-{
-    return gridSeries;
-}
-
-void Crit3DProxy::setGridSeries(const std::vector<gis::Crit3DRasterGrid *> &value)
-{
-    gridSeries = value;
-}
-
 Crit3DProxy::Crit3DProxy()
 {
     name = "";
     gridName = "";
     grid = new gis::Crit3DRasterGrid();
+    gridSeries.initialize();
     isSignificant = false;
     forQualityControl = false;
 
@@ -580,4 +571,32 @@ bool Crit3DInterpolationSettings::getCombination(int combinationInteger, Crit3DP
     outCombination->setUseThermalInversion(binaryString[binaryString.length()-1] == '1' && selectedCombination.getUseThermalInversion());
 
     return true;
+}
+
+void Crit3DProxyGridSeries::initialize()
+{
+    gridName.clear();
+    grid.clear();
+    gridYear.clear();
+}
+
+std::vector<gis::Crit3DRasterGrid *> Crit3DProxyGridSeries::getGrid() const
+{
+    return grid;
+}
+
+void Crit3DProxyGridSeries::setGrid(const std::vector<gis::Crit3DRasterGrid *> &value)
+{
+    grid = value;
+}
+
+Crit3DProxyGridSeries::Crit3DProxyGridSeries()
+{
+    initialize();
+}
+
+void Crit3DProxyGridSeries::addGridToSeries(std::string name_, int year_)
+{
+    gridName.push_back(name_);
+    gridYear.push_back(year_);
 }

@@ -847,6 +847,12 @@ bool computeRadiationPointRsun(Crit3DRadiationSettings* mySettings, float myTemp
         gis::updateMinMaxRasterGrid(radiationMaps->diffuseRadiationMap);
         gis::updateMinMaxRasterGrid(radiationMaps->sunElevationMap);
 
+        radiationMaps->transmissivityMap->setMapTime(UTCTime);
+        radiationMaps->globalRadiationMap->setMapTime(UTCTime);
+        radiationMaps->beamRadiationMap->setMapTime(UTCTime);
+        radiationMaps->diffuseRadiationMap->setMapTime(UTCTime);
+        radiationMaps->sunElevationMap->setMapTime(UTCTime);
+
         radiationMaps->isComputed = true;
         return true;
     }
