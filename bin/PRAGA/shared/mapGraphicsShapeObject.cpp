@@ -1,4 +1,5 @@
 #include "mapGraphicsShapeObject.h"
+#include "commonConstants.h"
 
 
 MapGraphicsShapeObject::MapGraphicsShapeObject(MapGraphicsView* _view, MapGraphicsObject *parent) :
@@ -61,66 +62,74 @@ QPointF MapGraphicsShapeObject::getPoint(latLonPoint geoPoint)
 }
 
 
+QPolygonF MapGraphicsShapeObject::getPolygon(unsigned int i, unsigned int j)
+{
+    QPolygonF polygon;
+    QPointF point;
+
+    polygon.clear();
+    unsigned long offset = shapeParts[i][j].offset;
+    unsigned long lenght = shapeParts[i][j].length;
+
+    for (unsigned long v = 0; v < lenght; v++)
+    {
+        j = offset + v;
+        point = getPoint(geoPoints[i][j]);
+        polygon.append(point);
+    }
+
+    return polygon;
+}
+
+
 void MapGraphicsShapeObject::drawShape(QPainter* myPainter)
 {
-    QPointF point;
     QPolygonF polygon;
     QPainterPath path;
     QPainterPath inner;
-    unsigned long j;
 
     myPainter->setPen(Qt::black);
     myPainter->setBrush(Qt::red);
 
     unsigned int nrShapes = unsigned(shapePointer->getShapeCount());
+
     for (unsigned long i = 0; i < nrShapes; i++)
     {
-        if (geoBounds[i].bottomLeft.longitude < geoMap->topRight.longitude
-            && geoBounds[i].topRight.longitude > geoMap->bottomLeft.longitude
-            && geoBounds[i].bottomLeft.latitude < geoMap->topRight.latitude
-            && geoBounds[i].topRight.latitude > geoMap->bottomLeft.latitude)
+        if (geoBounds[i].bottomLeft.longitude > geoMap->topRight.longitude
+            || geoBounds[i].topRight.longitude < geoMap->bottomLeft.longitude
+            || geoBounds[i].bottomLeft.latitude > geoMap->topRight.latitude
+            || geoBounds[i].topRight.latitude < geoMap->bottomLeft.latitude)
         {
-            for (unsigned int part = 0; part < shapeParts[i].size(); part++)
+            continue;
+        }
+
+        for (unsigned int j = 0; j < shapeParts[i].size(); j++)
+        {
+            if (shapeParts[i][j].hole)
+                continue;
+
+            // check on part bounds
+
+            polygon = getPolygon(i, j);
+
+            if (holes[i][j].size() == 0)
             {
-//                if (! hole[i][part])
-//                {
-//                    unsigned long offset = shapeParts[i][part].offset;
-//                    unsigned long lenght = shapeParts[i][part].length;
-
-//                    polygon.clear();
-//                    for (unsigned long v = 0; v < lenght; v++)
-//                    {
-//                        j = offset + v;
-//                        point = getPoint(geoPoints[i][j]);
-//                        polygon.append(point);
-//                    }
-//                    myPainter->drawPolygon(polygon);
-//                }
-
-                polygon.clear();
-                unsigned long offset = shapeParts[i][part].offset;
-                unsigned long lenght = shapeParts[i][part].length;
-
-                for (unsigned long v = 0; v < lenght; v++)
-                {
-                    j = offset + v;
-                    point = getPoint(geoPoints[i][j]);
-                    polygon.append(point);
-                }
-
-                if (! shapeParts[i][part].hole)
-                {
-                    path.addPolygon(polygon);
-                }else
-                {
-                    inner.addPolygon(polygon);
-                    path = path.subtracted(inner);
-                }
+                myPainter->drawPolygon(polygon);
             }
-            myPainter->drawPath(path);
-            path = QPainterPath();
-            inner = QPainterPath();
+            else
+            {
+                path.addPolygon(polygon);
 
+                for (unsigned int k = 0; k < holes[i][j].size(); k++)
+                {
+                    polygon = getPolygon(i, holes[i][j][k]);
+                    inner.addPolygon(polygon);
+                }
+
+                myPainter->drawPath(path.subtracted(inner));
+                inner.clear();
+                path.clear();
+            }
         }
     }
 }
@@ -149,6 +158,9 @@ bool MapGraphicsShapeObject::initializeUTM(Crit3DShapeHandler* shapePtr)
         this->shapePointer->getShape(int(i), myShape);
         this->shapeParts[i] = myShape.getParts();
 
+        unsigned int nrParts = myShape.getPartCount();
+        this->holes[i].resize(nrParts);
+
         // shape bounds
         bounds = myShape.getBounds();
         gis::utmToLatLon(zoneNumber, refLatitude, bounds.xmin, bounds.ymin, &lat, &lon);
@@ -172,14 +184,18 @@ bool MapGraphicsShapeObject::initializeUTM(Crit3DShapeHandler* shapePtr)
         }
 
         // holes
-        for (unsigned long j = 0; j < myShape.getPartCount(); j++)
+        for (unsigned int indexHole = 0; indexHole < nrParts; indexHole++)
         {
-            if (this->shapeParts[i][j].hole)
+            if (this->shapeParts[i][indexHole].hole)
             {
                 // check first point
-                unsigned long offset = shapeParts[i][j].offset;
-                Point<double> myPoint = myShape.getVertex(offset);
-
+                unsigned long offset = shapeParts[i][indexHole].offset;
+                Point<double> point = myShape.getVertex(offset);
+                int indexPart = myShape.getIndexPart(point.x, point.y);
+                if (indexPart != NODATA)
+                {
+                    this->holes[i][unsigned(indexPart)].push_back(indexHole);
+                }
             }
         }
     }

@@ -163,6 +163,7 @@
         bool                    isClockWise(Part *part);
         bool                    pointInPart(double x, double y, unsigned int indexPart);
         bool                    pointInPolygon(double x, double y);
+        int                     getIndexPart(double x, double y);
     };
 
     std::string getShapeTypeAsString(int shapeType);

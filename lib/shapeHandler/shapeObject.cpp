@@ -315,6 +315,28 @@ bool ShapeObject::pointInPolygon(double x, double y)
 }
 
 
+int ShapeObject::getIndexPart(double x, double y)
+{
+    if (x < bounds.xmin || x > bounds.xmax || y < bounds.ymin || y > bounds.ymax)
+    {
+        return NODATA;
+    }
+
+    unsigned int nrParts = getPartCount();
+    for (unsigned int indexPart = 0; indexPart < nrParts; indexPart++)
+    {
+        Part part = getPart(indexPart);
+        if (! part.hole)
+        {
+            if (pointInPart(x, y, indexPart))
+                return int(indexPart);
+        }
+    }
+
+    return NODATA;
+}
+
+
 std::string getShapeTypeAsString(int shapeType)
 {
     std::string shape;
