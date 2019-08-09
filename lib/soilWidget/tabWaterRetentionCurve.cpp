@@ -9,6 +9,8 @@
 #include <qwt_plot_zoomer.h>
 #include <qwt_event_pattern.h>
 #include <qwt_picker_machine.h>
+#include <qwt_plot_marker.h>
+#include <qwt_symbol.h>
 #include <QWidget>
 
 #define XMIN 0.1
@@ -126,6 +128,25 @@ void TabWaterRetentionCurve::insertElements(soil::Crit3DSoil *soil)
             curve->setSamples(data);
             curve->attach(myPlot);
             curveList.push_back(curve);
+
+            // insert marker
+            for (int j = 0; j < mySoil->horizon[i].dbData.waterRetention.size(); j++)
+            {
+                QwtPlotMarker* m = new QwtPlotMarker();
+                double x = mySoil->horizon[i].dbData.waterRetention[j].water_potential;
+                double y = mySoil->horizon[i].dbData.waterRetention[j].water_content;
+                if (x != NODATA && y != NODATA)
+                {
+                    QwtSymbol *xsymbol = new QwtSymbol( QwtSymbol::Ellipse,
+                                                           QBrush( Qt::black ), QPen( Qt::black, 0 ), QSize( 5, 5 ) );
+                    m->setSymbol(xsymbol);
+                    m->setValue( QPointF( x, y ) );
+                    m->attach( myPlot );
+                }
+
+            }
+
+
         }
         pick = new MyPicker(myPlot, curveList);
         pick->setStateMachine(new QwtPickerClickPointMachine());
