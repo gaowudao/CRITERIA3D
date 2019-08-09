@@ -1,5 +1,4 @@
 #include "tabWaterRetentionCurve.h"
-#include "myPicker.h"
 
 #include "commonConstants.h"
 #include <qwt_point_data.h>
@@ -101,6 +100,7 @@ void TabWaterRetentionCurve::insertElements(soil::Crit3DSoil *soil)
             // insertVerticalLines
             int length = (mySoil->horizon[i].lowerDepth*100 - mySoil->horizon[i].upperDepth*100) * totHeight / (mySoil->totalDepth*100);
             LineHorizont* line = new LineHorizont();
+            line->setIndex(i);
             line->setFixedWidth(20);
             line->setFixedHeight(length);
             line->setClass(mySoil->horizon[i].texture.classUSDA);
@@ -127,13 +127,12 @@ void TabWaterRetentionCurve::insertElements(soil::Crit3DSoil *soil)
             curve->attach(myPlot);
             curveList.push_back(curve);
         }
-        MyPicker *pick = new MyPicker(myPlot, curveList);
+        pick = new MyPicker(myPlot, curveList);
         pick->setStateMachine(new QwtPickerClickPointMachine());
 
         for (int i=0; i<lineList.size(); i++)
         {
-            connect(lineList[i], SIGNAL(clicked()), this, SLOT(lineSelection()));
-            //connect(lineList[i], &LineHorizont::clicked, [=](){ lineList[i]; });
+            connect(lineList[i], SIGNAL(clicked(int)), this, SLOT(selectionElement(int)));
         }
         linesLayout->update();
         myPlot->replot();
@@ -141,7 +140,29 @@ void TabWaterRetentionCurve::insertElements(soil::Crit3DSoil *soil)
 
 }
 
-void TabWaterRetentionCurve::lineSelection()
+void TabWaterRetentionCurve::selectionElement(int index)
 {
-    // TO DO
+
+    // check selection state
+    if (lineList[index]->getSelected())
+    {
+        // clear previous selection
+        for(int i = 0; i < lineList.size(); i++)
+        {
+            if (i != index)
+            {
+                lineList[i]->restorePalette();
+                lineList[i]->setSelected(false);
+            }
+        }
+        // select the right curve
+        pick->setSelectedCurveIndex(index);
+        pick->highlightCurve(true);
+    }
+    else
+    {
+        pick->highlightCurve(false);
+        pick->setSelectedCurveIndex(-1);
+    }
+
 }

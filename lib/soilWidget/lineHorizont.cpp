@@ -3,128 +3,141 @@
 
 LineHorizont::LineHorizont()
 {
-    state = false;
+    selected = false;
 }
 
 void LineHorizont::setClass(int classUSDA)
 {
 
     this->classUSDA = classUSDA;
-    QPalette pal = palette();
+    linePalette = palette();
 
     switch (classUSDA) {
     // sand
     case 1:
     {
-        pal.setColor(QPalette::Background, QColor(255,206,156));
+        linePalette.setColor(QPalette::Background, QColor(255,206,156));
         break;
     }
     // loamy sand
     case 2:
     {
-        pal.setColor(QPalette::Background, QColor(255,206,206));
+        linePalette.setColor(QPalette::Background, QColor(255,206,206));
         break;
     }
     // sandy loam
     case 3:
     {
-        pal.setColor(QPalette::Background, QColor(255,206,255));
+        linePalette.setColor(QPalette::Background, QColor(255,206,255));
         break;
     }
     // silt loam
     case 4:
     {
-        pal.setColor(QPalette::Background, QColor(156,206,000));
+        linePalette.setColor(QPalette::Background, QColor(156,206,000));
         break;
     }
     // loam
     case 5:
     {
-        pal.setColor(QPalette::Background, QColor(206,156,000));
+        linePalette.setColor(QPalette::Background, QColor(206,156,000));
         break;
     }
     // silt
     case 6:
     {
-        pal.setColor(QPalette::Background, QColor(000,255,49));
+        linePalette.setColor(QPalette::Background, QColor(000,255,49));
         break;
     }
     // sandy clayloam
     case 7:
     {
-        pal.setColor(QPalette::Background, QColor(255,156,156));
+        linePalette.setColor(QPalette::Background, QColor(255,156,156));
         break;
     }
     // silty clayloam
     case 8:
     {
-        pal.setColor(QPalette::Background, QColor(99,206,156));
+        linePalette.setColor(QPalette::Background, QColor(99,206,156));
         break;
     }
     // clayloam
     case 9:
     {
-        pal.setColor(QPalette::Background, QColor(206,255,99));
+        linePalette.setColor(QPalette::Background, QColor(206,255,99));
         break;
     }
     // sandy clay
     case 10:
     {
-        pal.setColor(QPalette::Background, QColor(255,000,000));
+        linePalette.setColor(QPalette::Background, QColor(255,000,000));
         break;
     }
     // silty clay
     case 11:
     {
-        pal.setColor(QPalette::Background, QColor(156,255,206));
+        linePalette.setColor(QPalette::Background, QColor(156,255,206));
         break;
     }
     // clay
     case 12:
     {
-        pal.setColor(QPalette::Background, QColor(255,255,156));
+        linePalette.setColor(QPalette::Background, QColor(255,255,156));
         break;
     }
 
 
     }
     this->setAutoFillBackground(true);
-    this->setPalette(pal);
-
+    this->setPalette(linePalette);
 
 }
 
 void LineHorizont::mousePressEvent(QMouseEvent* event)
 {
-         state = true;
-         repaint();
-         emit pressed();
+
+    QPalette pal(this->palette());
+    // select the element
+    if (selected == false)
+    {
+        selected = true;
+        pal.setColor( QPalette::Background, pal.background().color().lighter(130));
+        this->setPalette(pal);
+        repaint();
+    }
+    // de-select the element
+    else
+    {
+        selected = false;
+        restorePalette();
+    }
+    emit clicked(index);
+
 }
 
-void LineHorizont::mouseReleaseEvent(QMouseEvent* event)
+void LineHorizont::setSelected(bool value)
 {
-         state = false;
-         repaint();
-         emit released();
-         emit clicked();
+    selected = value;
 }
 
-void LineHorizont::paintEvent(QMouseEvent* event)
+void LineHorizont::restorePalette()
 {
-         if(state)
-         {
-             QString BorderThickness("2");
-             QString hexColorCode("#FF00FF");
-             QString color = this->palette().background().color().name();
-             this->setStyleSheet("ChildWidget { border: " + BorderThickness + " solid " +
-                                               hexColorCode + ";"
-                                                              "background-color: "+ color + ";"
-                                                              "color: white; }");
-         }
-         else
-         {
-
-         }
+    this->setPalette(linePalette);
+    repaint();
 }
 
+bool LineHorizont::getSelected() const
+{
+    return selected;
+}
+
+int LineHorizont::getIndex() const
+{
+    return index;
+}
+
+void LineHorizont::setIndex(int value)
+{
+    index = value;
+}
 

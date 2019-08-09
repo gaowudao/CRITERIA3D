@@ -6,6 +6,7 @@
 #include <qwt_plot.h>
 #include "soil.h"
 #include "lineHorizont.h"
+#include "myPicker.h"
 
 
 class TabWaterRetentionCurve: public QWidget
@@ -21,8 +22,9 @@ private:
     QwtPlot *myPlot;
     QList<LineHorizont*> lineList;
     QList<QwtPlotCurve*> curveList;
+    MyPicker *pick;
 private slots:
-    void lineSelection();
+    void selectionElement(int index);
 
 };
 
