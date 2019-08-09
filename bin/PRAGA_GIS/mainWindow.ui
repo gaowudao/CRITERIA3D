@@ -996,8 +996,8 @@
     <addaction name="actionCompute_Unit_Crop_Map"/>
    </widget>
    <addaction name="menuFile"/>
-   <addaction name="menuGIS_settings"/>
    <addaction name="menuTools"/>
+   <addaction name="menuGIS_settings"/>
   </widget>
   <widget class="QStatusBar" name="statusBar"/>
   <action name="actionLoadRaster">
