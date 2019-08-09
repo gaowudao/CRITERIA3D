@@ -50,9 +50,6 @@ void fillRasterWithShapeNumber(gis::Crit3DRasterGrid* raster, Crit3DShapeHandler
     Box<double> bounds;
     int r0, r1, c0, c1;
     int nShape = shapeHandler->getShapeCount();
-    bool hole;
-    std::vector <std::vector<int>> indexRowColHole(raster->header->nrRows, std::vector<int>(raster->header->nrCols, NODATA));
-
 
     if (showInfo)
     {
@@ -79,17 +76,12 @@ void fillRasterWithShapeNumber(gis::Crit3DRasterGrid* raster, Crit3DShapeHandler
         {
             for (int col = c0; col <= c1; col++)
             {
-                if (raster->value[row][col] == raster->header->flag || indexRowColHole[row][col] == 1)
+                if (raster->value[row][col] == raster->header->flag)
                 {
                     raster->getXY(row, col, &x, &y);
-                    hole = false;
-                    if (object.pointInPolygon(x, y, &hole))
+                    if (object.pointInPolygon(x, y))
                     {
                         raster->value[row][col] = shapeIndex;
-                        if (hole == true)
-                        {
-                            indexRowColHole[row][col] = 1;
-                        }
                     }
                 }
             }
@@ -110,8 +102,6 @@ void fillRasterWithField(gis::Crit3DRasterGrid* raster, Crit3DShapeHandler* shap
     DBFFieldType fieldType = shapeHandler->getFieldType(fieldIndex);
     Box<double> bounds;
     int r0, r1, c0, c1;
-    bool hole;
-    std::vector <std::vector<int>> indexRowColHole(raster->header->nrRows, std::vector<int>(raster->header->nrCols, NODATA));
 
     if (showInfo)
     {
@@ -150,17 +140,12 @@ void fillRasterWithField(gis::Crit3DRasterGrid* raster, Crit3DShapeHandler* shap
             {
                 for (int col = c0; col <= c1; col++)
                 {
-                    if (raster->value[row][col] == raster->header->flag || indexRowColHole[row][col] == 1)
+                    if (raster->value[row][col] == raster->header->flag)
                     {
                         raster->getXY(row, col, &x, &y);
-                        hole = false;
-                        if (object.pointInPolygon(x, y, &hole))
+                        if (object.pointInPolygon(x, y))
                         {
                             raster->value[row][col] = float(fieldValue);
-                            if (hole == true)
-                            {
-                                indexRowColHole[row][col] = 1;
-                            }
                         }
                     }
                 }

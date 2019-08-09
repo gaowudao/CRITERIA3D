@@ -171,11 +171,6 @@ void ShapeObject::assign(const ShapeObject& other)
 }
 
 
-bool ShapeObject::isValid() const
-{
-    return index >= 0;
-}
-
 int ShapeObject::getIndex() const
 {
     return index;
@@ -199,6 +194,11 @@ unsigned long ShapeObject::getVertexCount() const
 const Point<double>* ShapeObject::getVertices() const
 {
     return const_cast<const Point<double>*>(vertices);
+}
+
+Point<double> ShapeObject::getVertex(unsigned int index)
+{
+    return vertices[index];
 }
 
 Box<double> ShapeObject::getBounds() const
@@ -252,49 +252,62 @@ bool ShapeObject::isHole(unsigned int n)
 }
 
 
-// LC If the test point is on the border of the polygon, this algorithm will deliver unpredictable results
-bool ShapeObject::pointInPolygon(double x, double y, bool* hole)
+bool ShapeObject::pointInPart(double x, double y, unsigned int indexPart)
 {
+    Part part = getPart(indexPart);
 
+    if (x < part.boundsPart.xmin || x > part.boundsPart.xmax
+            || y < part.boundsPart.ymin || y > part.boundsPart.ymax)
+    {
+        return false;
+    }
+
+    unsigned long offSet = part.offset;
+    unsigned long length = part.length;
+    unsigned long last = offSet + length - 1;
+
+    bool  oddNodes = false;
+    unsigned long j = last;
+    for (unsigned long i = offSet; i <= last; i++)
+    {
+        if (((vertices[i].y < y && vertices[j].y >= y) || (vertices[j].y < y && vertices[i].y >= y))
+            &&  (vertices[i].x <= x || vertices[j].x <= x))
+        {
+            oddNodes^=(vertices[i].x+(y-vertices[i].y)/(vertices[j].y-vertices[i].y)*(vertices[j].x-vertices[i].x) < x);
+        }
+        j=i;
+    }
+
+    return oddNodes;
+}
+
+
+// LC If the test point is on the border of the polygon, this algorithm will deliver unpredictable results
+bool ShapeObject::pointInPolygon(double x, double y)
+{
     if (x < bounds.xmin || x > bounds.xmax || y < bounds.ymin || y > bounds.ymax)
     {
         return false;
     }
 
-    bool  oddNodes = false;
     unsigned int nParts = getPartCount();
+
+    // check first the holes
+    for (unsigned int indexPart = 0; indexPart < nParts; indexPart++)
+    {
+        Part part = getPart(indexPart);
+        if (part.hole)
+        {
+            if (pointInPart(x, y, indexPart)) return false;
+        }
+    }
 
     for (unsigned int indexPart = 0; indexPart < nParts; indexPart++)
     {
-
         Part part = getPart(indexPart);
-
-        if (part.hole == true)
+        if (! part.hole)
         {
-            *hole = true;
-            continue;
-        }
-        if (x < part.boundsPart.xmin || x > part.boundsPart.xmax
-                || y < part.boundsPart.ymin || y > part.boundsPart.ymax)
-        {
-            continue;
-        }
-        unsigned long offSet = part.offset;
-        unsigned long length = part.length;
-
-        unsigned int j = offSet+length - 1;
-        for (unsigned int i = offSet; i < (offSet+length); i++)
-        {
-            if (((vertices[i].y < y && vertices[j].y >= y) || (vertices[j].y < y && vertices[i].y >= y))
-                &&  (vertices[i].x <= x || vertices[j].x <= x))
-            {
-                oddNodes^=(vertices[i].x+(y-vertices[i].y)/(vertices[j].y-vertices[i].y)*(vertices[j].x-vertices[i].x) < x);
-            }
-            j=i;
-        }
-        if (oddNodes == true)
-        {
-            return true;
+            if (pointInPart(x, y, indexPart)) return true;
         }
     }
 

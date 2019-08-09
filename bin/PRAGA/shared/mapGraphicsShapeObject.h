@@ -26,7 +26,7 @@
         Crit3DShapeHandler* shapePointer;
         gis::Crit3DGeoMap* geoMap;
         std::vector< std::vector<ShapeObject::Part> > shapeParts;
-        std::vector< std::vector<bool> > hole;
+        std::vector< std::vector<int> > holes;
         std::vector< gis::Crit3DGeoBox > geoBounds;
         std::vector< std::vector<latLonPoint> > geoPoints;
         bool isDrawing;

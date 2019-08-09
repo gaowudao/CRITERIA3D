@@ -108,7 +108,7 @@ void MapGraphicsShapeObject::drawShape(QPainter* myPainter)
                     polygon.append(point);
                 }
 
-                if (!hole[i][part])
+                if (! shapeParts[i][part].hole)
                 {
                     path.addPolygon(polygon);
                 }else
@@ -138,7 +138,7 @@ bool MapGraphicsShapeObject::initializeUTM(Crit3DShapeHandler* shapePtr)
 
     unsigned int nrShapes = unsigned(this->shapePointer->getShapeCount());
     this->shapeParts.resize(nrShapes);
-    this->hole.resize(nrShapes);
+    this->holes.resize(nrShapes);
     this->geoBounds.resize(nrShapes);
     this->geoPoints.resize(nrShapes);
     double refLatitude = this->geoMap->referencePoint.latitude;
@@ -149,18 +149,12 @@ bool MapGraphicsShapeObject::initializeUTM(Crit3DShapeHandler* shapePtr)
         this->shapePointer->getShape(int(i), myShape);
         this->shapeParts[i] = myShape.getParts();
 
-        // holes
-        this->hole[i].resize(myShape.getPartCount());
-        for (unsigned long j = 0; j < myShape.getPartCount(); j++)
-        {
-            hole[i][j] = myShape.isHole(j);
-        }
-
         // shape bounds
         bounds = myShape.getBounds();
         gis::utmToLatLon(zoneNumber, refLatitude, bounds.xmin, bounds.ymin, &lat, &lon);
         this->geoBounds[i].bottomLeft.latitude = lat;
         this->geoBounds[i].bottomLeft.longitude = lon;
+
         gis::utmToLatLon(zoneNumber, refLatitude, bounds.xmax, bounds.ymax, &lat, &lon);
         this->geoBounds[i].topRight.latitude = lat;
         this->geoBounds[i].topRight.longitude = lon;
@@ -175,6 +169,18 @@ bool MapGraphicsShapeObject::initializeUTM(Crit3DShapeHandler* shapePtr)
             this->geoPoints[i][j].lat = lat;
             this->geoPoints[i][j].lon = lon;
             p_ptr++;
+        }
+
+        // holes
+        for (unsigned long j = 0; j < myShape.getPartCount(); j++)
+        {
+            if (this->shapeParts[i][j].hole)
+            {
+                // check first point
+                unsigned long offset = shapeParts[i][j].offset;
+                Point<double> myPoint = myShape.getVertex(offset);
+
+            }
         }
     }
 
@@ -226,7 +232,7 @@ void MapGraphicsShapeObject::clear()
     setDrawing(false);
 
     shapeParts.clear();
+    holes.clear();
     geoPoints.clear();
-    hole.clear();
     geoBounds.clear();
 }

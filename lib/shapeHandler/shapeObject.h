@@ -134,7 +134,10 @@
         Box<double>			bounds;
         std::vector<Part>	parts;
 
-    public:
+        void        destroy();
+        void        assign(const ShapeObject& obj);
+
+    public:      
         ShapeObject();
         ShapeObject(const SHPObject* obj);
         ShapeObject(const ShapeObject& other);
@@ -142,21 +145,14 @@
 
         ShapeObject& operator = (const ShapeObject& other);
 
-        void assign(const SHPObject* obj);
-
-        bool isValid() const;
-
-    protected:
-        void destroy();
-        void assign(const ShapeObject& obj);
-
-    public:
+        void                    assign(const SHPObject* obj);
         int                     getIndex() const;
         int                     getType() const;
         std::string             getTypeString() const;
 
         unsigned long           getVertexCount() const;
         const Point<double>*	getVertices() const;
+        Point<double>           getVertex(unsigned int index);
         Box<double>             getBounds() const;
 
         std::vector<Part>		getParts() const;
@@ -165,9 +161,11 @@
         bool                    isHole(unsigned int n);
         double                  polygonArea(Part* part);
         bool                    isClockWise(Part *part);
-        bool                    pointInPolygon(double x, double y, bool *hole);
+        bool                    pointInPart(double x, double y, unsigned int indexPart);
+        bool                    pointInPolygon(double x, double y);
     };
 
     std::string getShapeTypeAsString(int shapeType);
+
 
 #endif // SHAPEOBJECT_H
