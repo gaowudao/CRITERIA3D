@@ -294,7 +294,7 @@ bool Crit3DMeteoPointsDbHandler::existData(Crit3DMeteoPoint *meteoPoint, frequen
 {
     QSqlQuery myQuery(_db);
     QString tableName = QString::fromStdString(meteoPoint->id) + ((myFreq == daily) ?  "_D" : "_H");
-    QString statement = QString( "SELECT * FROM `%1`").arg(tableName);
+    QString statement = QString( "SELECT 1 FROM `%1`").arg(tableName);
 
     if (myQuery.exec(statement))
         if (myQuery.next())

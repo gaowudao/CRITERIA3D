@@ -1,5 +1,4 @@
 #include "tabWaterRetentionCurve.h"
-#include "myPicker.h"
 
 #include "commonConstants.h"
 #include <qwt_point_data.h>
@@ -10,6 +9,8 @@
 #include <qwt_plot_zoomer.h>
 #include <qwt_event_pattern.h>
 #include <qwt_picker_machine.h>
+#include <qwt_plot_marker.h>
+#include <qwt_symbol.h>
 #include <QWidget>
 
 #define XMIN 0.1
@@ -101,6 +102,7 @@ void TabWaterRetentionCurve::insertElements(soil::Crit3DSoil *soil)
             // insertVerticalLines
             int length = (mySoil->horizon[i].lowerDepth*100 - mySoil->horizon[i].upperDepth*100) * totHeight / (mySoil->totalDepth*100);
             LineHorizont* line = new LineHorizont();
+            line->setIndex(i);
             line->setFixedWidth(20);
             line->setFixedHeight(length);
             line->setClass(mySoil->horizon[i].texture.classUSDA);
@@ -126,14 +128,32 @@ void TabWaterRetentionCurve::insertElements(soil::Crit3DSoil *soil)
             curve->setSamples(data);
             curve->attach(myPlot);
             curveList.push_back(curve);
+
+            // insert marker
+            for (int j = 0; j < mySoil->horizon[i].dbData.waterRetention.size(); j++)
+            {
+                QwtPlotMarker* m = new QwtPlotMarker();
+                double x = mySoil->horizon[i].dbData.waterRetention[j].water_potential;
+                double y = mySoil->horizon[i].dbData.waterRetention[j].water_content;
+                if (x != NODATA && y != NODATA)
+                {
+                    QwtSymbol *xsymbol = new QwtSymbol( QwtSymbol::Ellipse,
+                                                           QBrush( Qt::black ), QPen( Qt::black, 0 ), QSize( 5, 5 ) );
+                    m->setSymbol(xsymbol);
+                    m->setValue( QPointF( x, y ) );
+                    m->attach( myPlot );
+                }
+
+            }
+
+
         }
-        MyPicker *pick = new MyPicker(myPlot, curveList);
+        pick = new MyPicker(myPlot, curveList);
         pick->setStateMachine(new QwtPickerClickPointMachine());
 
         for (int i=0; i<lineList.size(); i++)
         {
-            connect(lineList[i], SIGNAL(clicked()), this, SLOT(lineSelection()));
-            //connect(lineList[i], &LineHorizont::clicked, [=](){ lineList[i]; });
+            connect(lineList[i], SIGNAL(clicked(int)), this, SLOT(widgetClicked(int)));
         }
         linesLayout->update();
         myPlot->replot();
@@ -141,7 +161,29 @@ void TabWaterRetentionCurve::insertElements(soil::Crit3DSoil *soil)
 
 }
 
-void TabWaterRetentionCurve::lineSelection()
+void TabWaterRetentionCurve::widgetClicked(int index)
 {
-    // TO DO
+
+    // check selection state
+    if (lineList[index]->getSelected())
+    {
+        // clear previous selection
+        for(int i = 0; i < lineList.size(); i++)
+        {
+            if (i != index)
+            {
+                lineList[i]->restorePalette();
+                lineList[i]->setSelected(false);
+            }
+        }
+        // select the right curve
+        pick->setSelectedCurveIndex(index);
+        pick->highlightCurve(true);
+    }
+    else
+    {
+        pick->highlightCurve(false);
+        pick->setSelectedCurveIndex(-1);
+    }
+
 }

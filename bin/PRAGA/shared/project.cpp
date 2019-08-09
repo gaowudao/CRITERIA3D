@@ -149,7 +149,7 @@ void Project::setProxyDEM()
     }
 }
 
-bool Project::checkProxy(std::string name_, std::string gridName_, std::string table_, std::string field_, QString *error)
+bool Project::checkProxy(QString name_, QString gridName_, QString table_, QString field_, QString *error)
 {
     if (name_ == "")
     {
@@ -157,33 +157,33 @@ bool Project::checkProxy(std::string name_, std::string gridName_, std::string t
         return false;
     }
 
-    bool isHeight = (getProxyPragaName(name_) == height);
+    bool isHeight = (getProxyPragaName(name_.toStdString()) == height);
 
     if (gridName_ == "" && !isHeight && (table_ == "" && field_ == ""))
     {
-        *error = "error reading grid, table or field for proxy " + QString::fromStdString(name_);
+        *error = "error reading grid, table or field for proxy " + name_;
         return false;
     }
 
     return true;
 
 }
-void Project::addProxy(std::string name_, std::string gridName_, std::string table_, std::string field_,
+void Project::addProxyToProject(QString name_, QString gridName_, QString table_, QString field_,
                                 bool isForQuality_, bool isActive_)
 {
     Crit3DProxy myProxy;
 
-    myProxy.setName(name_);
-    myProxy.setGridName(gridName_);
-    myProxy.setProxyTable(table_);
-    myProxy.setProxyField(field_);
+    myProxy.setName(name_.toStdString());
+    myProxy.setGridName(gridName_.toStdString());
+    myProxy.setProxyTable(table_.toStdString());
+    myProxy.setProxyField(field_.toStdString());
     myProxy.setForQualityControl(isForQuality_);
 
     interpolationSettings.addProxy(myProxy, isActive_);
     if (isForQuality_)
         qualityInterpolationSettings.addProxy(myProxy, isActive_);
 
-    if (getProxyPragaName(name_) == height) setProxyDEM();
+    if (getProxyPragaName(name_.toStdString()) == height) setProxyDEM();
 }
 
 
@@ -204,9 +204,13 @@ bool Project::loadParameters(QString parametersFileName)
     interpolationSettings.initialize();
     qualityInterpolationSettings.initialize();
 
-    QString gridName;
-    std::string proxyName, proxyGridName, proxyTable, proxyField;
-    bool isActive, forQuality;
+    QString gridName = "";
+    QString proxyName = "", proxyGridName = "", proxyTable = "", proxyField = "";
+    bool isActive = false, forQuality = false;
+    QStringList myList;
+    std::vector <QString> myGridSeries;
+    std::vector <int> myGridSeriesYears;
+    bool proxyGridSeriesFound;
 
     Q_FOREACH (QString group, parameters->childGroups())
     {
@@ -245,8 +249,6 @@ bool Project::loadParameters(QString parametersFileName)
 
         if (group == "climate")
         {
-            QStringList myList;
-
             parameters->beginGroup(group);
 
             if (parameters->contains("tmin"))
@@ -552,24 +554,45 @@ bool Project::loadParameters(QString parametersFileName)
         //proxy variables (for interpolation)
         if (group.startsWith("proxy"))
         {
-            proxyName = group.right(group.size()-6).toStdString();
+            proxyName = group.right(group.size()-6);
 
             parameters->beginGroup(group);
 
-            gridName = parameters->value("raster").toString();
-            proxyGridName = gridName.toStdString();
+            proxyGridSeriesFound = false;
 
-            proxyTable = parameters->value("table").toString().toStdString();
-            proxyField = parameters->value("field").toString().toStdString();
+            //proxy grid temporal series
+            foreach (const QString &key, parameters->childKeys())
+                if (key == "raster_series")
+                {
+                    myList = parameters->value("raster_series").toStringList();
+                    if (myList.size() < 2)
+                    {
+                        errorString = "Incomplete raster series for proxy";
+                        return  false;
+                    }
+                    else
+                        proxyGridSeriesFound = true;
+
+                    myGridSeries.push_back(myList[0]);
+                    myGridSeriesYears.push_back(myList[1].toInt());
+                }
+
+            proxyTable = parameters->value("table").toString();
+            proxyField = parameters->value("field").toString();
             isActive = parameters->value("active").toBool();
             forQuality = parameters->value("use_for_spatial_quality_control").toBool();
+
             parameters->endGroup();
 
+            if (! proxyGridSeriesFound)
+                proxyGridName = parameters->value("raster").toString();
+            else
+                proxyGridName = myGridSeries[0];
+
             if (checkProxy(proxyName, proxyGridName, proxyTable, proxyField, &errorString))
-                addProxy(proxyName, proxyGridName, proxyTable, proxyField, forQuality, isActive);
+                addProxyToProject(proxyName, proxyGridName, proxyTable, proxyField, forQuality, isActive);
             else
                 return false;
-
         }
     }
 
@@ -1283,13 +1306,21 @@ bool Project::writeTopographicDistanceMaps(bool onlyWithData)
     std::string myError;
     std::string fileName;
     gis::Crit3DRasterGrid myMap;
+    bool isSelected;
+
     for (int i=0; i < nrMeteoPoints; i++)
     {
         myInfo.setValue(i);
 
         if (meteoPoints[i].active)
         {
-            if (meteoPointsDbHandler->existData(&meteoPoints[i], daily) || meteoPointsDbHandler->existData(&meteoPoints[i], hourly))
+            if (! onlyWithData)
+                isSelected = true;
+            else {
+                isSelected = meteoPointsDbHandler->existData(&meteoPoints[i], daily) || meteoPointsDbHandler->existData(&meteoPoints[i], hourly);
+            }
+
+            if (isSelected)
             {
                 if (gis::topographicDistanceMap(meteoPoints[i].point, DEM, &myMap))
                 {
@@ -1390,8 +1421,8 @@ bool Project::interpolationDem(meteoVariable myVar, const Crit3DTime& myTime, gi
         return false;
     }
 
-    Crit3DTime t = myTime;
-    myRaster->timeString = t.toStdString();
+    myRaster->setMapTime(myTime);
+
     return true;
 }
 
@@ -1406,7 +1437,7 @@ bool Project::interpolateDemRadiation(const Crit3DTime& myTime, gis::Crit3DRaste
 
     int intervalWidth = radiation::estimateTransmissivityWindow(&radSettings, DEM, mapCenter, myTime, int(HOUR_SECONDS));
 
-    // almost a meteoPoint with transmissivity data
+    // at least a meteoPoint with transmissivity data
     if (! computeTransmissivity(&radSettings, meteoPoints, nrMeteoPoints, intervalWidth, myTime, DEM))
         if (! computeTransmissivityFromTRange(meteoPoints, nrMeteoPoints, myTime))
         {

@@ -10,20 +10,23 @@ class LineHorizont : public QWidget
 public:
     LineHorizont();
     void setClass(int classUSDA);
+    int getIndex() const;
+    void setIndex(int value);
+    bool getSelected() const;
+    void restorePalette();
+    void setSelected(bool value);
 
 protected:
-     void mousePressEvent(QMouseEvent* event);
-     void mouseReleaseEvent(QMouseEvent* event);
-     void paintEvent(QMouseEvent* event);
+    void mousePressEvent(QMouseEvent* event);
 
 private:
+    int index;
     int classUSDA;
-    bool state;
+    bool selected;
+    QPalette linePalette;
 
 signals:
-       void clicked();
-       void released();
-       void pressed();
+       void clicked(int index);
 
 };
 

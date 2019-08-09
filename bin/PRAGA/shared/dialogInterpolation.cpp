@@ -384,7 +384,11 @@ bool ProxyDialog::checkProxies(QString *error)
 
     for (unsigned i=0; i < _proxy.size(); i++)
     {
-        if (!_project->checkProxy(_proxy[i].getName(), _proxy[i].getGridName(), _proxy[i].getProxyTable(), _proxy[i].getProxyField(), error))
+        if (!_project->checkProxy(QString::fromStdString(_proxy[i].getName()),
+                                  QString::fromStdString(_proxy[i].getGridName()),
+                                  QString::fromStdString(_proxy[i].getProxyTable()),
+                                  QString::fromStdString(_proxy[i].getProxyField()),
+                                  error))
             return false;
 
         table_ = _proxy[i].getProxyTable();
@@ -410,8 +414,10 @@ void ProxyDialog::saveProxies()
 
     for (unsigned i=0; i < _proxy.size(); i++)
     {   
-        _project->addProxy(_proxy[i].getName(), _proxy[i].getGridName(),
-                           _proxy[i].getProxyTable(), _proxy[i].getProxyField(),
+        _project->addProxyToProject(QString::fromStdString(_proxy[i].getName()),
+                           QString::fromStdString(_proxy[i].getGridName()),
+                           QString::fromStdString(_proxy[i].getProxyTable()),
+                           QString::fromStdString(_proxy[i].getProxyField()),
                             _proxy[i].getForQualityControl(), true);
     }
 }
