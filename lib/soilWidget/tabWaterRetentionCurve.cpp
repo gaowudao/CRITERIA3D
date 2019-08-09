@@ -153,7 +153,7 @@ void TabWaterRetentionCurve::insertElements(soil::Crit3DSoil *soil)
 
         for (int i=0; i<lineList.size(); i++)
         {
-            connect(lineList[i], SIGNAL(clicked(int)), this, SLOT(selectionElement(int)));
+            connect(lineList[i], SIGNAL(clicked(int)), this, SLOT(widgetClicked(int)));
         }
         linesLayout->update();
         myPlot->replot();
@@ -161,7 +161,7 @@ void TabWaterRetentionCurve::insertElements(soil::Crit3DSoil *soil)
 
 }
 
-void TabWaterRetentionCurve::selectionElement(int index)
+void TabWaterRetentionCurve::widgetClicked(int index)
 {
 
     // check selection state

@@ -24,7 +24,7 @@ private:
     QList<QwtPlotCurve*> curveList;
     MyPicker *pick;
 private slots:
-    void selectionElement(int index);
+    void widgetClicked(int index);
 
 };
 

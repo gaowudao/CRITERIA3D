@@ -6,7 +6,7 @@ MyPicker::MyPicker(QwtPlot *plot, QList<QwtPlotCurve *> allCurveList) :
     qwtPlot(plot),
     allCurveList(allCurveList)
 {
-    connect( this, SIGNAL( selected( const QPointF ) ), this, SLOT( slotSelected( const QPointF ) ) );
+    connect( this, SIGNAL( selected( const QPointF ) ), this, SLOT( widgetClicked( const QPointF ) ) );
 }
 
 void MyPicker::slotSelected( const QPointF &pos)
