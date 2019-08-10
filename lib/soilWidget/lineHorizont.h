@@ -15,6 +15,7 @@ public:
     bool getSelected() const;
     void restorePalette();
     void setSelected(bool value);
+    void setSelectedPalette();
 
 protected:
     void mousePressEvent(QMouseEvent* event);

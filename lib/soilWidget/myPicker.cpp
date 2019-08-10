@@ -32,7 +32,16 @@ void MyPicker::slotSelected( const QPointF &pos)
 
     }
 
-    if ( curveFound && minDist < pos.x()/10) // tolerance (f(x) x is logarithmic)
+    double tolerance;
+    if (pos.x() < 10000)
+    {
+        tolerance = pos.x()/10;
+    }
+    else
+    {
+        tolerance = pos.x()/100;
+    }
+    if ( curveFound && minDist < tolerance) // empiric tolerance
     {
         selectedCurveIndex = curveIndex;
         highlightCurve( true );
@@ -42,6 +51,7 @@ void MyPicker::slotSelected( const QPointF &pos)
         highlightCurve(false);  // clear previous selection
         selectedCurveIndex = -1;
     }
+    emit clicked(selectedCurveIndex);
 }
 
 int MyPicker::getSelectedCurveIndex() const

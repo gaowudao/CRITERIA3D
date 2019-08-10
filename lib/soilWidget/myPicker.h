@@ -32,6 +32,9 @@ private:
     QwtPlot *qwtPlot;
     int selectedCurveIndex;
     QList<QwtPlotCurve*> allCurveList;
+
+signals:
+       void clicked(int curveIndex);
 };
 
 #endif // MYPICKER_H

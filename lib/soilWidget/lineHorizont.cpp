@@ -96,14 +96,11 @@ void LineHorizont::setClass(int classUSDA)
 void LineHorizont::mousePressEvent(QMouseEvent* event)
 {
 
-    QPalette pal(this->palette());
     // select the element
     if (selected == false)
     {
         selected = true;
-        pal.setColor( QPalette::Background, pal.background().color().lighter(130));
-        this->setPalette(pal);
-        repaint();
+        setSelectedPalette();
     }
     // de-select the element
     else
@@ -118,6 +115,14 @@ void LineHorizont::mousePressEvent(QMouseEvent* event)
 void LineHorizont::setSelected(bool value)
 {
     selected = value;
+}
+
+void LineHorizont::setSelectedPalette()
+{
+    QPalette pal(this->palette());
+    pal.setColor( QPalette::Background, pal.background().color().lighter(130));
+    this->setPalette(pal);
+    repaint();
 }
 
 void LineHorizont::restorePalette()

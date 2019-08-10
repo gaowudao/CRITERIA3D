@@ -150,6 +150,7 @@ void TabWaterRetentionCurve::insertElements(soil::Crit3DSoil *soil)
         }
         pick = new MyPicker(myPlot, curveList);
         pick->setStateMachine(new QwtPickerClickPointMachine());
+        connect(pick, SIGNAL(clicked(int)), this, SLOT(curveClicked(int)));
 
         for (int i=0; i<lineList.size(); i++)
         {
@@ -184,6 +185,25 @@ void TabWaterRetentionCurve::widgetClicked(int index)
     {
         pick->highlightCurve(false);
         pick->setSelectedCurveIndex(-1);
+    }
+
+}
+
+void TabWaterRetentionCurve::curveClicked(int index)
+{
+
+    for(int i = 0; i < lineList.size(); i++)
+    {
+        if (i == index)
+        {
+            lineList[i]->setSelectedPalette();
+            lineList[i]->setSelected(true);
+        }
+        else
+        {
+            lineList[i]->restorePalette();
+            lineList[i]->setSelected(false);
+        }
     }
 
 }

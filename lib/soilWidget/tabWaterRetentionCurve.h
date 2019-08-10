@@ -25,6 +25,7 @@ private:
     MyPicker *pick;
 private slots:
     void widgetClicked(int index);
+    void curveClicked(int index);
 
 };
 
