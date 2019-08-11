@@ -15,6 +15,7 @@ class TabWaterRetentionCurve: public QWidget
 public:
     TabWaterRetentionCurve();
     void insertElements(soil::Crit3DSoil* soil);
+    void resetAll();
 
 private:
     soil::Crit3DSoil* mySoil;

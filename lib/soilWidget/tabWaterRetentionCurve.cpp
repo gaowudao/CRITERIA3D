@@ -71,6 +71,28 @@ TabWaterRetentionCurve::TabWaterRetentionCurve()
 
 }
 
+void TabWaterRetentionCurve::resetAll()
+{
+
+    // delete all Widgets
+    if (!lineList.isEmpty())
+    {
+        qDeleteAll(lineList);
+        lineList.clear();
+
+        qDeleteAll(curveList);
+        curveList.clear();
+    }
+
+    myPlot->detachItems( QwtPlotItem::Rtti_PlotCurve );
+    myPlot->detachItems( QwtPlotItem::Rtti_PlotMarker );
+    if (pick != nullptr)
+    {
+        delete pick;
+    }
+
+}
+
 void TabWaterRetentionCurve::insertElements(soil::Crit3DSoil *soil)
 {
 
@@ -82,23 +104,13 @@ void TabWaterRetentionCurve::insertElements(soil::Crit3DSoil *soil)
     if (soil!=nullptr)
     {
         mySoil = soil;
-        // delete all Widgets
-        if (!lineList.isEmpty())
-        {
-            qDebug() << "delete all Widgets";
-            qDeleteAll(lineList);
-            lineList.clear();
-
-            qDeleteAll(curveList);
-            curveList.clear();
-        }
+        resetAll();
         QVector<double> xVector;
         QVector<double> yVector;
         double x;
 
         for (int i = 0; i<mySoil->nrHorizons; i++)
         {
-
             // insertVerticalLines
             int length = (mySoil->horizon[i].lowerDepth*100 - mySoil->horizon[i].upperDepth*100) * totHeight / (mySoil->totalDepth*100);
             LineHorizont* line = new LineHorizont();
@@ -143,7 +155,6 @@ void TabWaterRetentionCurve::insertElements(soil::Crit3DSoil *soil)
                     m->setValue( QPointF( x, y ) );
                     m->attach( myPlot );
                 }
-
             }
 
 
