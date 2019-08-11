@@ -186,6 +186,7 @@ void TabWaterRetentionCurve::widgetClicked(int index)
         pick->highlightCurve(false);
         pick->setSelectedCurveIndex(-1);
     }
+    emit horizonSelected(index);
 
 }
 
@@ -205,5 +206,6 @@ void TabWaterRetentionCurve::curveClicked(int index)
             lineList[i]->setSelected(false);
         }
     }
+    emit horizonSelected(index);
 
 }

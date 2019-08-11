@@ -26,6 +26,8 @@ private:
 private slots:
     void widgetClicked(int index);
     void curveClicked(int index);
+signals:
+    void horizonSelected(int nHorizon);
 
 };
 
