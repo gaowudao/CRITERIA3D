@@ -770,13 +770,13 @@ namespace gis
     /*!
      * \brief Converts UTM coords to Lat/Lng.  Equations from USGS Bulletin 1532.
      * \param zoneNumber
-     * \param startLat
+     * \param referenceLat
      * \param utmEasting: East Longitudes are positive, West longitudes are negative.
      * \param utmNorthing: North latitudes are positive, South latitudes are negative.
      * \param lat in decimal degrees.
      * \param lon in decimal degrees.
      */
-    void utmToLatLon(int zoneNumber, double startLat, double utmEasting, double utmNorthing, double *lat, double *lon)
+    void utmToLatLon(int zoneNumber, double referenceLat, double utmEasting, double utmNorthing, double *lat, double *lon)
     {
 
 
@@ -795,7 +795,7 @@ namespace gis
         y = utmNorthing;
 
         /*! offset used for southern hemisphere */
-        if (startLat < 0)
+        if (referenceLat < 0)
             y -= 10000000.;
 
         eccPrimeSquared = (eccSquared) / (1. - eccSquared);

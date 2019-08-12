@@ -12,10 +12,16 @@
         #include "geoMap.h"
     #endif
 
-    struct latLonPoint
+    struct LatLonPoint
     {
         double lat;
         double lon;
+    };
+
+    struct GeoBounds
+    {
+        LatLonPoint v0;
+        LatLonPoint v1;
     };
 
     class MapGraphicsShapeObject : public MapGraphicsObject
@@ -28,13 +34,13 @@
         unsigned int nrShapes;
         std::vector< std::vector<ShapeObject::Part>> shapeParts;
         std::vector< std::vector<std::vector<unsigned int>>> holes;
-        std::vector< std::vector<gis::Crit3DGeoBox>> geoBounds;
-        std::vector< std::vector<latLonPoint>> geoPoints;
+        std::vector< std::vector<GeoBounds>> geoBounds;
+        std::vector< std::vector<LatLonPoint>> geoPoints;
         bool isDrawing;
 
         void setMapResolution();
         void drawShape(QPainter* myPainter);
-        QPointF getPoint(latLonPoint geoPoint);
+        QPointF getPoint(LatLonPoint geoPoint);
         void setPolygon(unsigned int i, unsigned int j, QPolygonF* polygon);
 
     public:

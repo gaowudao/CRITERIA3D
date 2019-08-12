@@ -54,7 +54,7 @@ void MapGraphicsShapeObject::paint(QPainter *painter, const QStyleOptionGraphics
 }
 
 
-QPointF MapGraphicsShapeObject::getPoint(latLonPoint geoPoint)
+QPointF MapGraphicsShapeObject::getPoint(LatLonPoint geoPoint)
 {
     QPointF pixel;
     pixel.setX((geoPoint.lon - this->geoMap->referencePoint.longitude) * this->geoMap->degreeToPixelX);
@@ -96,10 +96,10 @@ void MapGraphicsShapeObject::drawShape(QPainter* myPainter)
             if (shapeParts[i][j].hole)
                 continue;
 
-            if (geoBounds[i][j].bottomLeft.longitude > geoMap->topRight.longitude
-                || geoBounds[i][j].topRight.longitude < geoMap->bottomLeft.longitude
-                || geoBounds[i][j].bottomLeft.latitude > geoMap->topRight.latitude
-                || geoBounds[i][j].topRight.latitude < geoMap->bottomLeft.latitude)
+            if (geoBounds[i][j].v0.lon > geoMap->topRight.longitude
+                    || geoBounds[i][j].v0.lat > geoMap->topRight.latitude
+                    || geoBounds[i][j].v1.lon < geoMap->bottomLeft.longitude
+                    || geoBounds[i][j].v1.lat < geoMap->bottomLeft.latitude)
             {
                 continue;
             }
@@ -161,12 +161,12 @@ bool MapGraphicsShapeObject::initializeUTM(Crit3DShapeHandler* shapePtr)
             // bounds
             bounds = &(shapeParts[i][j].boundsPart);
             gis::utmToLatLon(zoneNumber, refLatitude, bounds->xmin, bounds->ymin, &lat, &lon);
-            geoBounds[i][j].bottomLeft.latitude = lat;
-            geoBounds[i][j].bottomLeft.longitude = lon;
+            geoBounds[i][j].v0.lat = lat;
+            geoBounds[i][j].v0.lon = lon;
 
             gis::utmToLatLon(zoneNumber, refLatitude, bounds->xmax, bounds->ymax, &lat, &lon);
-            geoBounds[i][j].topRight.latitude = lat;
-            geoBounds[i][j].topRight.longitude = lon;
+            geoBounds[i][j].v1.lat = lat;
+            geoBounds[i][j].v1.lon = lon;
 
             // holes
             if (shapeParts[i][j].hole)
