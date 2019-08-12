@@ -138,6 +138,7 @@ bool MapGraphicsShapeObject::initializeUTM(Crit3DShapeHandler* shapePtr)
     ShapeObject myShape;
     Box<double>* bounds;
     const Point<double> *p_ptr;
+    Point<double> point;
 
     nrShapes = unsigned(shapePointer->getShapeCount());
     shapeParts.resize(nrShapes);
@@ -173,7 +174,7 @@ bool MapGraphicsShapeObject::initializeUTM(Crit3DShapeHandler* shapePtr)
             {
                 // check first point
                 unsigned long offset = shapeParts[i][j].offset;
-                Point<double> point = myShape.getVertex(offset);
+                point = myShape.getVertex(offset);
                 int index = myShape.getIndexPart(point.x, point.y);
                 if (index != NODATA)
                 {
