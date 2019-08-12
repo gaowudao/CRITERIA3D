@@ -25,16 +25,16 @@
         MapGraphicsView* view;
         Crit3DShapeHandler* shapePointer;
         gis::Crit3DGeoMap* geoMap;
-        std::vector< std::vector<ShapeObject::Part> > shapeParts;
-        std::vector< std::vector< std::vector<unsigned int> > > holes;
-        std::vector< gis::Crit3DGeoBox > geoBounds;
-        std::vector< std::vector<latLonPoint> > geoPoints;
+        std::vector< std::vector<ShapeObject::Part>> shapeParts;
+        std::vector< std::vector<std::vector<unsigned int>>> holes;
+        std::vector< std::vector<gis::Crit3DGeoBox>> geoBounds;
+        std::vector< std::vector<latLonPoint>> geoPoints;
         bool isDrawing;
 
         void setMapResolution();
         void drawShape(QPainter* myPainter);
         QPointF getPoint(latLonPoint geoPoint);
-        QPolygonF getPolygon(unsigned int i, unsigned int j);
+        void setPolygon(unsigned int i, unsigned int j, QPolygonF* polygon);
 
     public:
         /*!

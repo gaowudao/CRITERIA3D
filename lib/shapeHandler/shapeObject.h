@@ -119,7 +119,7 @@
             int type;
             unsigned long offset;
             unsigned long length;
-            Box<double>   boundsPart;
+            Box<double> boundsPart;
             bool hole;
 
             Part() : type(0), offset(0), length(0), hole(false) {}
