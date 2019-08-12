@@ -16,11 +16,13 @@ public:
     void addRowClicked();
     void removeRowClicked();
     void resetAll();
+    void cellClicked(int row, int column);
 private:
     QTableWidget* tableWaterRetention;
     QPushButton* addRow;
     QPushButton* deleteRow;
     soil::Crit3DSoil* mySoil;
+    std::string soilCodeChanged;
 };
 
 #endif // WATERRETENTIONDATA_H

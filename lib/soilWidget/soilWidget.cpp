@@ -533,14 +533,23 @@ void Crit3DSoilWidget::setInfoTextural(int nHorizon)
 
 void Crit3DSoilWidget::tabChanged(int index)
 {
-    // tab water retention curve
-    if (index == 1)
+
+    if (index == 0)
+    {
+        addHorizon->setEnabled(true);
+        deleteHorizon->setEnabled(true);
+    }
+    if (index == 1) // tab water retention data
     {
         wrDataTab->insertData(&mySoil);
+        addHorizon->setEnabled(false);
+        deleteHorizon->setEnabled(false);
     }
-    else if (index == 2)
+    else if (index == 2) // tab water retention curve
     {
         wrCurveTab->insertElements(&mySoil);
+        addHorizon->setEnabled(false);
+        deleteHorizon->setEnabled(false);
     }
 
 }

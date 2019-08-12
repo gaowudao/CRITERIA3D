@@ -1,4 +1,5 @@
 #include "tabWaterRetentionData.h"
+#include "tableDelegate.h"
 
 
 TabWaterRetentionData::TabWaterRetentionData()
@@ -17,6 +18,8 @@ TabWaterRetentionData::TabWaterRetentionData()
     tableWaterRetention->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
     int margin = 25; // now table is empty
     tableWaterRetention->setFixedWidth(tableWaterRetention->horizontalHeader()->length() + tableWaterRetention->verticalHeader()->width() + margin);
+    tableWaterRetention->setItemDelegate(new TableDelegate(tableWaterRetention));
+
     QHBoxLayout *addDeleteRowLayout = new QHBoxLayout;
     QLabel* addDeleteLabel = new QLabel("Modify data:");
     addRow = new QPushButton("+");
@@ -41,7 +44,6 @@ TabWaterRetentionData::TabWaterRetentionData()
 
 void TabWaterRetentionData::insertData(soil::Crit3DSoil *soil)
 {
-
     if (soil == nullptr)
     {
         return;
@@ -67,6 +69,8 @@ void TabWaterRetentionData::insertData(soil::Crit3DSoil *soil)
             pos = pos + 1;
         }
     }
+    connect(tableWaterRetention, &QTableWidget::cellClicked, [=](int row, int column){ this->cellClicked(row, column); });
+    addRow->setEnabled(true);
 }
 
 void TabWaterRetentionData::tableVerticalHeaderClick(int index)
@@ -76,20 +80,72 @@ void TabWaterRetentionData::tableVerticalHeaderClick(int index)
     tableWaterRetention->selectRow(index);
     tableWaterRetention->horizontalHeader()->setHighlightSections(false);
     deleteRow->setEnabled(true);
-
 }
 
 void TabWaterRetentionData::addRowClicked()
 {
+    int numRow;
+    if (!tableWaterRetention->selectedItems().isEmpty())
+    {
+        if (tableWaterRetention->selectedItems().size() != tableWaterRetention->columnCount())
+        {
+            QMessageBox::critical(nullptr, "Warning", "Select the row of the horizon before the one you want to add");
+            return;
+        }
+        numRow = tableWaterRetention->selectedItems().at(0)->row()+1;
+    }
+    else
+    {
+        numRow = tableWaterRetention->rowCount();
+    }
 
+    tableWaterRetention->insertRow(numRow);
+
+    for (int j=0; j<tableWaterRetention->columnCount(); j++)
+    {
+        tableWaterRetention->setItem(numRow, j, new QTableWidgetItem());
+    }
+
+    tableWaterRetention->scrollToBottom();
+    deleteRow->setEnabled(true);
+    soilCodeChanged = mySoil->code;
+    // TO DO add mySoil function
 }
 
 void TabWaterRetentionData::removeRowClicked()
 {
-
+    int row;
+    // check if a row is selected
+    if (tableWaterRetention->selectedItems().isEmpty())
+    {
+        QMessageBox::critical(nullptr, "Error!", "Select a horizon");
+        return;
+    }
+    if (tableWaterRetention->selectedItems().size() == tableWaterRetention->columnCount())
+    {
+        row = tableWaterRetention->selectedItems().at(0)->row();
+    }
+    else
+    {
+        QMessageBox::critical(nullptr, "Error!", "Select a horizon");
+        return;
+    }
+    tableWaterRetention->removeRow(row);
+    mySoil->deleteHorizon(row);
+    soilCodeChanged = mySoil->code;
+    // TO DO remove mySoil function
 }
 
 void TabWaterRetentionData::resetAll()
 {
     tableWaterRetention->setRowCount(0);
+}
+
+void TabWaterRetentionData::cellClicked(int row, int column)
+{
+
+    tableWaterRetention->clearSelection();
+    tableWaterRetention->setSelectionBehavior(QAbstractItemView::SelectItems);
+    tableWaterRetention->setItemSelected(tableWaterRetention->item(row,column), true);
+    deleteRow->setEnabled(false);
 }
