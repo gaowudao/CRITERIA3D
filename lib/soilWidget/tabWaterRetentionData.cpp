@@ -1,5 +1,6 @@
 #include "tabWaterRetentionData.h"
 #include "tableDelegate.h"
+#include "commonConstants.h"
 
 
 TabWaterRetentionData::TabWaterRetentionData()
@@ -70,6 +71,7 @@ void TabWaterRetentionData::insertData(soil::Crit3DSoil *soil)
         }
     }
     connect(tableWaterRetention, &QTableWidget::cellClicked, [=](int row, int column){ this->cellClicked(row, column); });
+    connect(tableWaterRetention, &QTableWidget::cellChanged, [=](int row, int column){ this->cellChanged(row, column); });
     addRow->setEnabled(true);
 }
 
@@ -108,8 +110,10 @@ void TabWaterRetentionData::addRowClicked()
 
     tableWaterRetention->scrollToBottom();
     deleteRow->setEnabled(true);
+    // TO DO
     soilCodeChanged = mySoil->code;
-    // TO DO add mySoil function
+
+
 }
 
 void TabWaterRetentionData::removeRowClicked()
@@ -131,9 +135,10 @@ void TabWaterRetentionData::removeRowClicked()
         return;
     }
     tableWaterRetention->removeRow(row);
-    mySoil->deleteHorizon(row);
+    int horizon = tableWaterRetention->item(row,0)->text().toInt();
+    //mySoil->horizon[horizon].dbData.waterRetention.erase(mySoil->horizon[horizon].dbData.waterRetention.begin()+pos);
+    // TO DO
     soilCodeChanged = mySoil->code;
-    // TO DO remove mySoil function
 }
 
 void TabWaterRetentionData::resetAll()
@@ -148,4 +153,65 @@ void TabWaterRetentionData::cellClicked(int row, int column)
     tableWaterRetention->setSelectionBehavior(QAbstractItemView::SelectItems);
     tableWaterRetention->setItemSelected(tableWaterRetention->item(row,column), true);
     deleteRow->setEnabled(false);
+}
+
+void TabWaterRetentionData::cellChanged(int row, int column)
+{
+
+    if (tableWaterRetention->itemAt(row,column) == nullptr || mySoil->nrHorizons < tableWaterRetention->item(row,column)->text().toInt())
+    {
+        QMessageBox::critical(nullptr, "Error!", "Add the horizont");
+        return;
+    }
+
+    QString data = tableWaterRetention->item(row, column)->text();
+    data.replace(",", ".");
+    int horizon = tableWaterRetention->item(row,0)->text().toInt();
+
+    // set new value
+    switch (column) {
+        case 0:
+        {
+            if (data == NODATA || data.isEmpty())
+            {
+                // TO DO
+            }
+            else
+            {
+                tableWaterRetention->item(row, column)->setText(QString::number(data.toDouble(), 'f', 0));
+            }
+            break;
+        }
+        case 1:
+        {
+            if (data == NODATA || data.isEmpty())
+            {
+                // TO DO
+            }
+            else
+            {
+                tableWaterRetention->item(row, column)->setText(QString::number(data.toDouble(), 'f', 3));
+            }
+            break;
+        }
+        case 2:
+        {
+            if (data == NODATA || data.isEmpty())
+            {
+                // TO DO
+            }
+            else
+            {
+                tableWaterRetention->item(row, column)->setText(QString::number(data.toFloat(), 'f', 3));
+            }
+            break;
+        }
+
+    }
+
+    std::string errorString;
+    // TO DO soil set new value
+
+    tableWaterRetention->clearSelection();
+    soilCodeChanged = mySoil->code;
 }

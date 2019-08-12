@@ -17,6 +17,7 @@ public:
     void removeRowClicked();
     void resetAll();
     void cellClicked(int row, int column);
+    void cellChanged(int row, int column);
 private:
     QTableWidget* tableWaterRetention;
     QPushButton* addRow;
