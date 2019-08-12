@@ -311,10 +311,15 @@ void Crit3DSoilWidget::on_actionChooseSoil(QString soilCode)
     soilCodeValue->setText(QString::fromStdString(mySoil.code));
 
     // tab water retention curve is opened
-    if (tabWidget->currentIndex() == 2)
+    if (tabWidget->currentIndex() == 1)
+    {
+        wrDataTab->insertData(&mySoil);
+    }
+    else if (tabWidget->currentIndex() == 2)
     {
         wrCurveTab->insertElements(&mySoil);
     }
+
     // circle inside triangle
     for (int i = 0; i < mySoil.nrHorizons; i++)
         {
@@ -529,9 +534,14 @@ void Crit3DSoilWidget::setInfoTextural(int nHorizon)
 void Crit3DSoilWidget::tabChanged(int index)
 {
     // tab water retention curve
-    if (index == 2)
+    if (index == 1)
+    {
+        wrDataTab->insertData(&mySoil);
+    }
+    else if (index == 2)
     {
         wrCurveTab->insertElements(&mySoil);
     }
+
 }
 

@@ -25,6 +25,12 @@ TabHorizons::TabHorizons()
     addDeleteRowLayout->addWidget(addRow);
     addDeleteRowLayout->addWidget(deleteRow);
 
+    // tableModel with a Width perfectly wrapping all columns, tableDb copy the same size, add margin because now the table is empty
+    tableDb->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+    tableModel->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+    int margin = 25;
+    tableModel->setFixedWidth(tableModel->horizontalHeader()->length() + tableModel->verticalHeader()->width() + margin);
+    tableDb->setFixedWidth(tableModel->width());
 
     connect(tableDb->verticalHeader(), &QHeaderView::sectionClicked, [=](int index){ this->tableDbVerticalHeaderClick(index); });
     connect(tableModel->verticalHeader(), &QHeaderView::sectionClicked, [=](int index){ this->tableDbVerticalHeaderClick(index); });
