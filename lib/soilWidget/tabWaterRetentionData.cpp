@@ -158,7 +158,7 @@ void TabWaterRetentionData::cellClicked(int row, int column)
 void TabWaterRetentionData::cellChanged(int row, int column)
 {
 
-    if (tableWaterRetention->itemAt(row,column) == nullptr || mySoil->nrHorizons < tableWaterRetention->item(row,column)->text().toInt())
+    if (tableWaterRetention->itemAt(row,column) == nullptr || mySoil->nrHorizons < tableWaterRetention->item(row,0)->text().toInt())
     {
         QMessageBox::critical(nullptr, "Error!", "Add the horizont");
         return;
