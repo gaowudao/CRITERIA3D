@@ -25,6 +25,7 @@
         MapGraphicsView* view;
         Crit3DShapeHandler* shapePointer;
         gis::Crit3DGeoMap* geoMap;
+        unsigned int nrShapes;
         std::vector< std::vector<ShapeObject::Part>> shapeParts;
         std::vector< std::vector<std::vector<unsigned int>>> holes;
         std::vector< std::vector<gis::Crit3DGeoBox>> geoBounds;
