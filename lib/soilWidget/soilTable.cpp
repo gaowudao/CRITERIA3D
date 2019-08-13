@@ -1,12 +1,13 @@
-#include "tableDbOrModel.h"
 #include <QWidget>
 #include <qevent.h>
 #include <qtooltip.h>
 #include <qdebug.h>
 
+#include "soilTable.h"
 #include "tableDelegate.h"
 
-TableDbOrModel::TableDbOrModel(tableType type) : type(type)
+
+Crit3DSoilTable::Crit3DSoilTable(tableType type) : type(type)
 {
     this->setMouseTracking(true);
     this->viewport()->setMouseTracking(true);
@@ -31,7 +32,6 @@ TableDbOrModel::TableDbOrModel(tableType type) : type(type)
     this->setSelectionMode(QAbstractItemView::SingleSelection);
     this->setShowGrid(true);
     //this->setStyleSheet("QTableView {selection-background-color: green;}");
-    //this->setStyleSheet("QTableView::item:selected { color:black;  border: 3px solid black}");
     this->setStyleSheet("QTableView::item:selected { color:black;  border: 3px solid black}");
 
     if (type == dbTable)
@@ -42,16 +42,16 @@ TableDbOrModel::TableDbOrModel(tableType type) : type(type)
     {
         this->setEditTriggers(QAbstractItemView::NoEditTriggers);
     }
-
 }
 
-void TableDbOrModel::mouseMoveEvent(QMouseEvent *event)
+
+void Crit3DSoilTable::mouseMoveEvent(QMouseEvent *event)
 {
     QPoint pos = event->pos();
     QTableWidgetItem *item = this->itemAt(pos);
-    if(!item)
-        return;
-    if (item->backgroundColor() == "red")
+    if(!item) return;
+
+    if (item->background().color() == Qt::red)
     {
         if (type == dbTable)
         {
@@ -61,9 +61,8 @@ void TableDbOrModel::mouseMoveEvent(QMouseEvent *event)
         {
             QToolTip::showText(this->viewport()->mapToGlobal(pos), "wrong horizon", this, QRect(pos,QSize(100,100)), 800);
         }
-
     }
-    else if(item->backgroundColor() == "yellow")
+    else if(item->background().color() == Qt::yellow)
     {
         if (type == dbTable)
         {
@@ -77,7 +76,9 @@ void TableDbOrModel::mouseMoveEvent(QMouseEvent *event)
     }
 }
 
-void TableDbOrModel::keyPressEvent(QKeyEvent *event)
+
+void Crit3DSoilTable::keyPressEvent(QKeyEvent *event)
 {
+    Q_UNUSED(event)
     return;
 }

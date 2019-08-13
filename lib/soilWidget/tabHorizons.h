@@ -7,7 +7,7 @@
 #endif
 
 #ifndef TABLEDB_H
-#include "tableDbOrModel.h"
+#include "soilTable.h"
 #endif
 
 class TabHorizons : public QWidget
@@ -35,8 +35,8 @@ public:
     void resetAll();
 
 private:
-    TableDbOrModel* tableDb;
-    TableDbOrModel* tableModel;
+    Crit3DSoilTable* tableDb;
+    Crit3DSoilTable* tableModel;
     QPushButton* addRow;
     QPushButton* deleteRow;
     soil::Crit3DSoil* mySoil;

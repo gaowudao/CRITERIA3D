@@ -29,26 +29,26 @@ unix:{
 }
 
 SOURCES += \
-        soilWidget.cpp \
+    soilTable.cpp \
+    soilWidget.cpp \
     soilDbTools.cpp \
     tabHorizons.cpp \
     tabWaterRetentionCurve.cpp \
     tabWaterRetentionData.cpp \
     tabHydraulicConductivityCurve.cpp \
     tableDelegate.cpp \
-    tableDbOrModel.cpp \
     lineHorizont.cpp \
     myPicker.cpp
 
 HEADERS += \
-        soilWidget.h \
+    soilTable.h \
+    soilWidget.h \
     soilDbTools.h \
     tabHorizons.h \
     tabWaterRetentionCurve.h \
     tabWaterRetentionData.h \
     tabHydraulicConductivityCurve.h \
     tableDelegate.h \
-    tableDbOrModel.h \
     lineHorizont.h \
     myPicker.h
 

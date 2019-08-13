@@ -10,8 +10,8 @@ TabHorizons::TabHorizons()
     dbTableLabel->setStyleSheet("font: 11pt;");
     QLabel* modelTableLabel = new QLabel("Soil parameters estimated by model:");
     modelTableLabel->setStyleSheet("font: 11pt;");
-    tableDb = new TableDbOrModel(dbTable);
-    tableModel = new TableDbOrModel(modelTable);
+    tableDb = new Crit3DSoilTable(dbTable);
+    tableModel = new Crit3DSoilTable(modelTable);
     QHBoxLayout *addDeleteRowLayout = new QHBoxLayout;
     QLabel* addDeleteLabel = new QLabel("Modify horizons:");
     addRow = new QPushButton("+");
