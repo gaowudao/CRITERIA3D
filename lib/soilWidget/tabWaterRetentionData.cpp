@@ -209,14 +209,14 @@ void TabWaterRetentionData::cellChanged(int row, int column)
     switch (column) {
         case 0:
         {
-            if (data == NODATA || data.isEmpty() || data.toInt() > mySoil->nrHorizons)
+            if (data == NODATA || data.isEmpty() || round(data.toDouble()) > mySoil->nrHorizons)
             {
                 QMessageBox::critical(nullptr, "Error!", "Invalid horizont");
                 return;
             }
             else
             {
-                tableWaterRetention->item(row, column)->setText(QString::number(data.toInt()));
+                tableWaterRetention->item(row, column)->setText(QString::number(round(data.toDouble())));
             }
             break;
         }
