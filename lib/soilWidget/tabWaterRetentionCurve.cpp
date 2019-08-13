@@ -158,9 +158,8 @@ void TabWaterRetentionCurve::insertElements(soil::Crit3DSoil *soil)
                     m->attach( myPlot );
                 }
             }
-
-
         }
+
         pick = new Crit3CurvePicker(myPlot, curveList);
         pick->setStateMachine(new QwtPickerClickPointMachine());
         connect(pick, SIGNAL(clicked(int)), this, SLOT(curveClicked(int)));

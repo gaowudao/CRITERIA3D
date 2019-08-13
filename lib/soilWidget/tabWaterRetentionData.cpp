@@ -56,7 +56,13 @@ void TabWaterRetentionData::insertData(soil::Crit3DSoil *soil)
     int row = 0;
     for (int i = 0; i < mySoil->nrHorizons; i++)
     {
-        row = row + mySoil->horizon[i].dbData.waterRetention.size();
+        if (mySoil->horizon[i].dbData.waterRetention.size() != 0)
+        {
+            row = row + mySoil->horizon[i].dbData.waterRetention.size();
+            lastPositionHorizon << row-1;
+            qDebug() << "lastPositionHorizon " << lastPositionHorizon[i];
+        }
+
     }
     tableWaterRetention->setRowCount(row);
     int pos = 0;
@@ -134,16 +140,26 @@ void TabWaterRetentionData::removeRowClicked()
         QMessageBox::critical(nullptr, "Error!", "Select a horizon");
         return;
     }
+    int horizonSelected = tableWaterRetention->item(row,0)->text().toInt() - 1;
+    int pos = row;
+    if (horizonSelected != 0)
+    {
+        pos = pos - (lastPositionHorizon[horizonSelected-1]) -1;
+    }
+//    debug
+//    qDebug() << "row " << row;
+//    qDebug() << "pos " << pos;
+//    qDebug() << "mySoil->horizon[horizon].dbData.waterRetention[pos].water_potential" << QString::number(mySoil->horizon[horizonSelected].dbData.waterRetention[pos].water_potential, 'f', 3);
+//    qDebug() << "mySoil->horizon[horizon].dbData.waterRetention[pos].water_content" << QString::number(mySoil->horizon[horizonSelected].dbData.waterRetention[pos].water_content, 'f', 3);
+    mySoil->horizon[horizonSelected].dbData.waterRetention.erase(mySoil->horizon[horizonSelected].dbData.waterRetention.begin()+pos);
     tableWaterRetention->removeRow(row);
-    int horizon = tableWaterRetention->item(row,0)->text().toInt();
-    //mySoil->horizon[horizon].dbData.waterRetention.erase(mySoil->horizon[horizon].dbData.waterRetention.begin()+pos);
-    // TO DO
     soilCodeChanged = mySoil->code;
 }
 
 void TabWaterRetentionData::resetAll()
 {
     tableWaterRetention->setRowCount(0);
+    lastPositionHorizon.clear();
 }
 
 void TabWaterRetentionData::cellClicked(int row, int column)
