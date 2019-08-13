@@ -286,7 +286,8 @@ void Crit3DSoilWidget::on_actionChooseSoil(QString soilCode)
         QMessageBox::critical(nullptr, "Error!", error);
         return;
     }
-    mySoil.code = soilCode.toStdString();
+    SoilSaved = mySoil;
+
     soilName = QString::fromStdString(mySoil.name);
     satValue->clear();
     fcValue->clear();
@@ -294,7 +295,6 @@ void Crit3DSoilWidget::on_actionChooseSoil(QString soilCode)
     awValue->clear();
     potFCValue->clear();
 
-    SoilSaved = mySoil;
     horizonsTab->insertSoilHorizons(&mySoil, textureClassList);
     addHorizon->setEnabled(true);
     deleteHorizon->setEnabled(true);

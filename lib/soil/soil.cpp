@@ -51,6 +51,13 @@ namespace soil
         this->kSat = NODATA;
     }
 
+    Crit3DFittingOptions::Crit3DFittingOptions()
+    {
+        this->waterRetentionCurve = MODIFIEDVANGENUCHTEN;
+        this->useWaterRetentionData = false;
+        this->airEntryFixed = false;
+        this->mRestriction = false;
+    }
 
     Crit3DLayer::Crit3DLayer()
     {
@@ -134,15 +141,14 @@ namespace soil
 
     Crit3DSoil::Crit3DSoil()
     {
-        this->id = NODATA;
         this->totalDepth = 0;
         this->nrHorizons = 0;
     }
 
-    void Crit3DSoil::initialize(int idSoil, int nrHorizons)
+    void Crit3DSoil::initialize(std::string soilCode, int nrHorizons)
     {
         this->cleanSoil();
-        this->id = idSoil;
+        this->code = soilCode;
         this->nrHorizons = unsigned(nrHorizons);
         this->horizon.resize(this->nrHorizons);
         this->totalDepth = 0;
@@ -163,7 +169,7 @@ namespace soil
     void Crit3DSoil::cleanSoil()
     {
         this->horizon.clear();
-        this->id = NODATA;
+        this->code = "";
         this->nrHorizons = 0;
         this->totalDepth = 0;
     }

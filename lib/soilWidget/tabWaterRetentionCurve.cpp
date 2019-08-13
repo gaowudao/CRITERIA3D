@@ -20,8 +20,6 @@
 
 TabWaterRetentionCurve::TabWaterRetentionCurve()
 {
-    qDebug() << "TabWaterRetentionCurve constructor";
-    // test
     pick = nullptr;
     QHBoxLayout *mainLayout = new QHBoxLayout;
     QVBoxLayout *plotLayout = new QVBoxLayout;

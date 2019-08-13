@@ -189,7 +189,7 @@ bool loadSoilData(QSqlDatabase* dbSoil, QString soilCode, soil::Crit3DSoil* mySo
     }
 
     int nrHorizons = query.at() + 1;     //SQLITE doesn't support SIZE
-    mySoil->initialize(1, nrHorizons);
+    mySoil->initialize(soilCode.toStdString(), nrHorizons);
 
     unsigned int i = 0;
     float sand, silt, clay;
@@ -530,7 +530,6 @@ bool loadAllSoils(QSqlDatabase* dbSoil, std::vector <soil::Crit3DSoil> *soilList
             soil::Crit3DSoil *mySoil = new soil::Crit3DSoil;
             if (loadSoil(dbSoil, soilCode, mySoil, textureClassList, error))
             {
-                mySoil->id = idSoil;
                 mySoil->code = soilCode.toStdString();
                 mySoil->name = soilName.toStdString();
                 soilList->push_back(*mySoil);

@@ -43,9 +43,6 @@
         };
 
 
-        /*!
-         * \brief The Crit3DTexture class
-         */
         class Crit3DTexture
         {
         public:
@@ -144,7 +141,6 @@
         class Crit3DSoil
         {
         public:
-            int id;
             std::string code;
             std::string name;
             unsigned int nrHorizons;
@@ -152,7 +148,7 @@
             std::vector <Crit3DHorizon> horizon;
 
             Crit3DSoil();
-            void initialize(int idSoil, int nrHorizons);
+            void initialize(std::string soilCode, int nrHorizons);
             void cleanSoil();
             void addHorizon(int nHorizon, Crit3DHorizon *newHorizon);
             void deleteHorizon(int nHorizon);
@@ -179,39 +175,51 @@
             Crit3DLayer();
         };
 
-         int getUSDATextureClass(Crit3DTexture texture);
-         int getNLTextureClass(Crit3DTexture texture);
-         int getUSDATextureClass(float sand, float silt, float clay);
-         int getNLTextureClass(float sand, float silt, float clay);
+        class Crit3DFittingOptions
+        {
+        public:
+            int waterRetentionCurve;
+            bool useWaterRetentionData;
+            bool airEntryFixed;
+            bool mRestriction;
 
-         int getHorizonIndex(Crit3DSoil* soil, double depth);
-         double getFieldCapacity(Crit3DHorizon* horizon, soil::units unit);
-         double getWiltingPoint(soil::units unit);
+            Crit3DFittingOptions();
+        };
 
-         double kPaToMeters(double value);
-         double metersTokPa(double value);
 
-         double kPaToCm(double value);
-         double cmTokPa(double value);
+        int getUSDATextureClass(Crit3DTexture texture);
+        int getNLTextureClass(Crit3DTexture texture);
+        int getUSDATextureClass(float sand, float silt, float clay);
+        int getNLTextureClass(float sand, float silt, float clay);
 
-         double SeFromTheta(double theta, Crit3DHorizon* horizon);
-         double psiFromTheta(double theta, Crit3DHorizon* horizon);
-         double thetaFromSignPsi(double signPsi, Crit3DHorizon* horizon);
+        int getHorizonIndex(Crit3DSoil* soil, double depth);
+        double getFieldCapacity(Crit3DHorizon* horizon, soil::units unit);
+        double getWiltingPoint(soil::units unit);
 
-         double waterConductivity(double Se, Crit3DHorizon* horizon);
+        double kPaToMeters(double value);
+        double metersTokPa(double value);
 
-         double estimateBulkDensity(Crit3DHorizon* horizon, double totalPorosity, bool increaseWithDepth);
-         double estimateSaturatedConductivity(Crit3DHorizon* horizon, double bulkDensity);
-         double estimateTotalPorosity(Crit3DHorizon* horizon, double bulkDensity);
+        double kPaToCm(double value);
+        double cmTokPa(double value);
 
-         double getVolumetricWaterContent(Crit3DLayer* layer);
-         double getWaterContentFromPsi(double signPsi, Crit3DLayer* layer);
-         double getWaterContentFromAW(double availableWater, Crit3DLayer* layer);
+        double SeFromTheta(double theta, Crit3DHorizon* horizon);
+        double psiFromTheta(double theta, Crit3DHorizon* horizon);
+        double thetaFromSignPsi(double signPsi, Crit3DHorizon* horizon);
 
-         double getWaterPotential(Crit3DLayer* layer);
-         double getWaterConductivity(Crit3DLayer* layer);
+        double waterConductivity(double Se, Crit3DHorizon* horizon);
 
-         bool setHorizon(Crit3DHorizon* horizon, Crit3DTextureClass* textureClassList, std::string* error);
+        double estimateBulkDensity(Crit3DHorizon* horizon, double totalPorosity, bool increaseWithDepth);
+        double estimateSaturatedConductivity(Crit3DHorizon* horizon, double bulkDensity);
+        double estimateTotalPorosity(Crit3DHorizon* horizon, double bulkDensity);
+
+        double getVolumetricWaterContent(Crit3DLayer* layer);
+        double getWaterContentFromPsi(double signPsi, Crit3DLayer* layer);
+        double getWaterContentFromAW(double availableWater, Crit3DLayer* layer);
+
+        double getWaterPotential(Crit3DLayer* layer);
+        double getWaterConductivity(Crit3DLayer* layer);
+
+        bool setHorizon(Crit3DHorizon* horizon, Crit3DTextureClass* textureClassList, std::string* error);
     }
 
 #endif // SOIL_H

@@ -45,6 +45,7 @@
             soil::Crit3DSoil mySoil;
             soil::Crit3DSoil SoilSaved;
             soil::Crit3DTextureClass textureClassList[13];
+            soil::Crit3DFittingOptions fittingOptions;
             int dbSoilType;
 
             QGroupBox *infoGroup;
