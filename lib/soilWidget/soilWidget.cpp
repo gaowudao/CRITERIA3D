@@ -167,17 +167,18 @@ Crit3DSoilWidget::Crit3DSoilWidget()
     deleteHorizon->setEnabled(false);
     restoreData->setEnabled(false);
 
-    useData = new QAction(tr("&Use Water Retention Data"), this);
+    useWaterRetentionData = new QAction(tr("&Use Water Retention Data"), this);
     airEntry = new QAction(tr("&Air Entry fixed"), this);
     parameterRestriction = new QAction(tr("&Parameters Restriction (m=1-1/n)"), this);
 
-    useData->setCheckable(true);
+    useWaterRetentionData->setCheckable(true);
     airEntry->setCheckable(true);
-    airEntry->setChecked(false);
     airEntry->setEnabled(false);
     parameterRestriction->setCheckable(true);
-    parameterRestriction->setChecked(true);
     parameterRestriction->setEnabled(false);
+    useWaterRetentionData->setChecked(fittingOptions.useWaterRetentionData);
+    airEntry->setChecked(fittingOptions.airEntryFixed);
+    parameterRestriction->setChecked(fittingOptions.mRestriction);
 
     connect(openSoilDB, &QAction::triggered, this, &Crit3DSoilWidget::on_actionOpenSoilDB);
     connect(saveChanges, &QAction::triggered, this, &Crit3DSoilWidget::on_actionSave);
@@ -187,7 +188,7 @@ Crit3DSoilWidget::Crit3DSoilWidget()
     connect(addHorizon, &QAction::triggered, this, &Crit3DSoilWidget::on_actionAddHorizon);
     connect(deleteHorizon, &QAction::triggered, this, &Crit3DSoilWidget::on_actionDeleteHorizon);
 
-    connect(useData, &QAction::triggered, this, &Crit3DSoilWidget::on_actionUseData);
+    connect(useWaterRetentionData, &QAction::triggered, this, &Crit3DSoilWidget::on_actionUseWaterRetentionData);
     connect(airEntry, &QAction::triggered, this, &Crit3DSoilWidget::on_actionAirEntry);
     connect(parameterRestriction, &QAction::triggered, this, &Crit3DSoilWidget::on_actionAirEntry);
 
@@ -203,7 +204,7 @@ Crit3DSoilWidget::Crit3DSoilWidget()
     editMenu->addAction(restoreData);
     editMenu->addAction(addHorizon);
     editMenu->addAction(deleteHorizon);
-    fittingMenu->addAction(useData);
+    fittingMenu->addAction(useWaterRetentionData);
     fittingMenu->addAction(airEntry);
     fittingMenu->addAction(parameterRestriction);
 
@@ -386,9 +387,9 @@ void Crit3DSoilWidget::on_actionDeleteSoil()
 }
 
 
-void Crit3DSoilWidget::on_actionUseData()
+void Crit3DSoilWidget::on_actionUseWaterRetentionData()
 {
-    if (useData->isChecked())
+    if (useWaterRetentionData->isChecked())
     {
         airEntry->setEnabled(true);
         parameterRestriction->setEnabled(true);

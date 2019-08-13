@@ -59,7 +59,7 @@
             QAction* restoreData;
             QAction* addHorizon;
             QAction* deleteHorizon;
-            QAction* useData;
+            QAction* useWaterRetentionData;
             QAction* airEntry;
             QAction* parameterRestriction;
 
@@ -76,7 +76,7 @@
             void on_actionSave();
             void on_actionNewSoil();
             void on_actionDeleteSoil();
-            void on_actionUseData();
+            void on_actionUseWaterRetentionData();
             void on_actionAirEntry();
             void on_actionParameterRestriction();
             void on_actionChooseSoil(QString);
