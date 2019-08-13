@@ -46,7 +46,8 @@ TabHorizons::TabHorizons()
     setLayout(mainLayout);
 }
 
-void TabHorizons::insertSoilHorizons(soil::Crit3DSoil *soil, soil::Crit3DTextureClass* textureClassList)
+void TabHorizons::insertSoilHorizons(soil::Crit3DSoil *soil, soil::Crit3DTextureClass* textureClassList,
+                                     soil::Crit3DFittingOptions* fittingOptions)
 {
     clearSelections();
     resetSoilCodeChanged();
@@ -54,6 +55,7 @@ void TabHorizons::insertSoilHorizons(soil::Crit3DSoil *soil, soil::Crit3DTexture
     tableDb->blockSignals(true);
     mySoil = soil;
     myTextureClassList = textureClassList;
+    myFittingOptions = fittingOptions;
 
     int row = mySoil->nrHorizons;
     tableDb->setRowCount(row);
@@ -554,7 +556,7 @@ void TabHorizons::cellChanged(int row, int column)
     }
 
     std::string errorString;
-    soil::setHorizon(&(mySoil->horizon[row]), myTextureClassList, &errorString);
+    soil::setHorizon(&(mySoil->horizon[row]), myTextureClassList, myFittingOptions, &errorString);
 
     // update tableModel values
     tableModel->item(row,0)->setText(QString::fromStdString(mySoil->horizon[row].texture.classNameUSDA));

@@ -30,7 +30,7 @@
         public:
             int horizonNr;
             double upperDepth, lowerDepth;      /*!<   [cm]         */
-            float sand, silt, clay;             /*!<   [%]          */
+            double sand, silt, clay;            /*!<   [%]          */
             double coarseFragments;             /*!<   [%]          */
             double organicMatter;               /*!<   [%]          */
             double bulkDensity;                 /*!<   [g cm^-3]    */
@@ -219,7 +219,8 @@
         double getWaterPotential(Crit3DLayer* layer);
         double getWaterConductivity(Crit3DLayer* layer);
 
-        bool setHorizon(Crit3DHorizon* horizon, Crit3DTextureClass* textureClassList, std::string* error);
+        bool setHorizon(Crit3DHorizon* horizon, Crit3DTextureClass* textureClassList,
+                        Crit3DFittingOptions *fittingOptions, std::string* error);
     }
 
 #endif // SOIL_H

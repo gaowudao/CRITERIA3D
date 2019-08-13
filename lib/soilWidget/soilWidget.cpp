@@ -281,7 +281,7 @@ void Crit3DSoilWidget::on_actionChooseSoil(QString soilCode)
         horizonsTab->resetSoilCodeChanged();
     }
 
-    if (! loadSoil(&dbSoil, soilCode, &mySoil, textureClassList, &error))
+    if (! loadSoil(&dbSoil, soilCode, &mySoil, textureClassList, &fittingOptions, &error))
     {
         QMessageBox::critical(nullptr, "Error!", error);
         return;
@@ -295,7 +295,7 @@ void Crit3DSoilWidget::on_actionChooseSoil(QString soilCode)
     awValue->clear();
     potFCValue->clear();
 
-    horizonsTab->insertSoilHorizons(&mySoil, textureClassList);
+    horizonsTab->insertSoilHorizons(&mySoil, textureClassList, &fittingOptions);
     addHorizon->setEnabled(true);
     deleteHorizon->setEnabled(true);
     restoreData->setEnabled(true);
@@ -432,7 +432,7 @@ void Crit3DSoilWidget::on_actionSave()
 void Crit3DSoilWidget::on_actionRestoreData()
 {
     mySoil = savedSoil;
-    horizonsTab->insertSoilHorizons(&mySoil, textureClassList);
+    horizonsTab->insertSoilHorizons(&mySoil, textureClassList, &fittingOptions);
 }
 
 void Crit3DSoilWidget::on_actionAddHorizon()

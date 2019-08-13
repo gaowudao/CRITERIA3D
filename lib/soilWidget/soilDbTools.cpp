@@ -280,7 +280,8 @@ bool loadSoilData(QSqlDatabase* dbSoil, QString soilCode, soil::Crit3DSoil* mySo
 
 
 bool loadSoil(QSqlDatabase* dbSoil, QString soilCode, soil::Crit3DSoil* mySoil,
-              soil::Crit3DTextureClass* textureClassList, QString* error)
+              soil::Crit3DTextureClass* textureClassList,
+              soil::Crit3DFittingOptions* fittingOptions, QString* error)
 {
     if (!loadSoilData(dbSoil, soilCode, mySoil, error))
     {
@@ -297,7 +298,7 @@ bool loadSoil(QSqlDatabase* dbSoil, QString soilCode, soil::Crit3DSoil* mySoil,
     *error = "";
     for (unsigned int i = 0; i < mySoil->nrHorizons; i++)
     {
-        if (! soil::setHorizon(&(mySoil->horizon[i]), textureClassList, &errorString))
+        if (! soil::setHorizon(&(mySoil->horizon[i]), textureClassList, fittingOptions, &errorString))
         {
             *error += "horizon nr." + QString::number(mySoil->horizon[i].dbData.horizonNr) + ": "
                     + QString::fromStdString(errorString) + "\n";
@@ -476,19 +477,23 @@ bool getSoilList(QSqlDatabase* dbSoil, QStringList* soilList, QString* error)
 }
 
 
-bool loadAllSoils(QString dbSoilName, std::vector <soil::Crit3DSoil> *soilList, soil::Crit3DTextureClass *textureClassList, QString* error)
+bool loadAllSoils(QString dbSoilName, std::vector <soil::Crit3DSoil> *soilList,
+                  soil::Crit3DTextureClass *textureClassList,
+                  soil::Crit3DFittingOptions *fittingOptions, QString* error)
 {
     QSqlDatabase* dbSoil = new QSqlDatabase();
     if (! openDbSoil(dbSoilName, dbSoil, error)) return false;
 
-    bool result = loadAllSoils(dbSoil, soilList, textureClassList, error);
+    bool result = loadAllSoils(dbSoil, soilList, textureClassList, fittingOptions, error);
     dbSoil->close();
 
     return result;
 }
 
 
-bool loadAllSoils(QSqlDatabase* dbSoil, std::vector <soil::Crit3DSoil> *soilList, soil::Crit3DTextureClass *textureClassList, QString* error)
+bool loadAllSoils(QSqlDatabase* dbSoil, std::vector <soil::Crit3DSoil> *soilList,
+                  soil::Crit3DTextureClass *textureClassList,
+                  soil::Crit3DFittingOptions* fittingOptions, QString* error)
 {
     soilList->clear();
 
@@ -528,7 +533,7 @@ bool loadAllSoils(QSqlDatabase* dbSoil, std::vector <soil::Crit3DSoil> *soilList
         if (idSoil != NODATA && soilCode != "")
         {
             soil::Crit3DSoil *mySoil = new soil::Crit3DSoil;
-            if (loadSoil(dbSoil, soilCode, mySoil, textureClassList, error))
+            if (loadSoil(dbSoil, soilCode, mySoil, textureClassList, fittingOptions, error))
             {
                 mySoil->code = soilCode.toStdString();
                 mySoil->name = soilName.toStdString();

@@ -15,7 +15,8 @@
     bool loadSoilData(QSqlDatabase* dbSoil, QString soilCode, soil::Crit3DSoil *mySoil, QString *myError);
 
     bool loadSoil(QSqlDatabase* dbSoil, QString soilCode, soil::Crit3DSoil* mySoil,
-                  soil::Crit3DTextureClass* textureClassList, QString* error);
+                  soil::Crit3DTextureClass* textureClassList,
+                  soil::Crit3DFittingOptions *fittingOptions, QString* error);
 
     bool updateSoilData(QSqlDatabase* dbSoil, QString soilCode, soil::Crit3DSoil* mySoil, QString *error);
 
@@ -29,8 +30,13 @@
 
     bool openDbSoil(QString dbName, QSqlDatabase* dbSoil, QString* error);
 
-    bool loadAllSoils(QString dbSoilName, std::vector <soil::Crit3DSoil> *soilList, soil::Crit3DTextureClass *textureClassList, QString* error);
-    bool loadAllSoils(QSqlDatabase* dbSoil, std::vector <soil::Crit3DSoil> *soilList, soil::Crit3DTextureClass *textureClassList, QString* error);
+    bool loadAllSoils(QString dbSoilName, std::vector <soil::Crit3DSoil> *soilList,
+                      soil::Crit3DTextureClass *textureClassList,
+                      soil::Crit3DFittingOptions *fittingOptions, QString* error);
+
+    bool loadAllSoils(QSqlDatabase* dbSoil, std::vector <soil::Crit3DSoil> *soilList,
+                      soil::Crit3DTextureClass *textureClassList,
+                      soil::Crit3DFittingOptions *fittingOptions, QString* error);
 
     bool loadSoilInfo(QSqlDatabase* dbSoil, QString soilCode, soil::Crit3DSoil* mySoil, QString *error);
     bool getSoilList(QSqlDatabase* dbSoil, QStringList* soilList, QString* error);

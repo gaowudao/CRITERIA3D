@@ -16,7 +16,8 @@
 
     public:
         TabHorizons();
-        void insertSoilHorizons(soil::Crit3DSoil* mySoil, soil::Crit3DTextureClass *textureClassList);
+        void insertSoilHorizons(soil::Crit3DSoil* mySoil, soil::Crit3DTextureClass *textureClassList,
+                                soil::Crit3DFittingOptions *fittingOptions);
         void checkDepths();
         bool checkHorizonData(int horizonNum);
         void checkMissingItem(int horizonNum);
@@ -41,6 +42,7 @@
         QPushButton* deleteRow;
         soil::Crit3DSoil* mySoil;
         soil::Crit3DTextureClass* myTextureClassList;
+        soil::Crit3DFittingOptions* myFittingOptions;
         std::string soilCodeChanged;
 
     signals:

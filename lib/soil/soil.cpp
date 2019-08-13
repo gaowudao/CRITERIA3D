@@ -315,11 +315,13 @@ namespace soil
 
     int getHorizonIndex(Crit3DSoil* soil, double depth)
     {
-       for (int index = 0; index < soil->nrHorizons; index++)
+       for (unsigned int index = 0; index < soil->nrHorizons; index++)
+       {
            if (depth >= soil->horizon[index].upperDepth && depth <= (soil->horizon[index].lowerDepth + EPSILON))
-               return(index);
+               return(int(index));
+       }
 
-       return(NODATA);
+       return NODATA;
     }
 
 
@@ -547,7 +549,8 @@ namespace soil
 
 
     // It assumes that dbData are loaded
-    bool setHorizon(Crit3DHorizon* horizon, soil::Crit3DTextureClass *textureClassList, std::string* error)
+    bool setHorizon(Crit3DHorizon* horizon, Crit3DTextureClass* textureClassList,
+                    Crit3DFittingOptions* fittingOptions, std::string* error)
     {
         *error = "";
 
