@@ -22,6 +22,7 @@ TabWaterRetentionCurve::TabWaterRetentionCurve()
 {
     qDebug() << "TabWaterRetentionCurve constructor";
     // test
+    pick = nullptr;
     QHBoxLayout *mainLayout = new QHBoxLayout;
     QVBoxLayout *plotLayout = new QVBoxLayout;
     linesLayout = new QVBoxLayout;
@@ -89,6 +90,7 @@ void TabWaterRetentionCurve::resetAll()
     if (pick != nullptr)
     {
         delete pick;
+        pick = nullptr;
     }
 
 }
