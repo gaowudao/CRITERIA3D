@@ -10,7 +10,7 @@ QWidget* TableDelegate::createEditor(QWidget* parent,const QStyleOptionViewItem 
 {
     QLineEdit* editor = new QLineEdit(parent);
     double bottom = 0;
-    double top = 90000;
+    double top = 1000000;
     int d = 5;
     myValidator* val = new myValidator(bottom, top, d, editor);
     editor->setValidator(val);

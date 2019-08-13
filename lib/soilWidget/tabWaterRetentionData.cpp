@@ -65,6 +65,7 @@ void TabWaterRetentionData::insertData(soil::Crit3DSoil *soil)
     }
     tableWaterRetention->setRowCount(row);
     int pos = 0;
+    this->blockSignals(true);
     for (int i = 0; i < mySoil->nrHorizons; i++)
     {
         for (int j = 0; j < mySoil->horizon[i].dbData.waterRetention.size(); j++)
@@ -75,6 +76,7 @@ void TabWaterRetentionData::insertData(soil::Crit3DSoil *soil)
             pos = pos + 1;
         }
     }
+    this->blockSignals(false);
     connect(tableWaterRetention, &QTableWidget::cellClicked, [=](int row, int column){ this->cellClicked(row, column); });
     connect(tableWaterRetention, &QTableWidget::cellChanged, [=](int row, int column){ this->cellChanged(row, column); });
     if (!mySoil->code.empty())
@@ -99,6 +101,7 @@ void TabWaterRetentionData::tableVerticalHeaderClick(int index)
 
 void TabWaterRetentionData::addRowClicked()
 {
+    this->blockSignals(true);
     int numRow;
     if (!tableWaterRetention->selectedItems().isEmpty())
     {
@@ -123,9 +126,7 @@ void TabWaterRetentionData::addRowClicked()
 
     tableWaterRetention->scrollToBottom();
     deleteRow->setEnabled(true);
-    // TO DO
-    soilCodeChanged = mySoil->code;
-
+    this->blockSignals(false);
 
 }
 
@@ -195,9 +196,8 @@ void TabWaterRetentionData::cellClicked(int row, int column)
 void TabWaterRetentionData::cellChanged(int row, int column)
 {
 
-    if (tableWaterRetention->itemAt(row,column) == nullptr || mySoil->nrHorizons < tableWaterRetention->item(row,0)->text().toInt())
+    if (tableWaterRetention->itemAt(row,column) == nullptr)
     {
-        QMessageBox::critical(nullptr, "Error!", "Add the horizont");
         return;
     }
 
@@ -209,21 +209,24 @@ void TabWaterRetentionData::cellChanged(int row, int column)
     switch (column) {
         case 0:
         {
-            if (data == NODATA || data.isEmpty())
+            if (data == NODATA || data.isEmpty() || data.toInt() > mySoil->nrHorizons)
             {
-                // TO DO
+                QMessageBox::critical(nullptr, "Error!", "Invalid horizont");
+                return;
             }
             else
             {
-                tableWaterRetention->item(row, column)->setText(QString::number(data.toDouble(), 'f', 0));
+                tableWaterRetention->item(row, column)->setText(QString::number(data.toInt()));
             }
             break;
         }
         case 1:
         {
+        // water potential
             if (data == NODATA || data.isEmpty())
             {
-                // TO DO
+                QMessageBox::critical(nullptr, "Error!", "Insert water potential");
+                return;
             }
             else
             {
@@ -231,11 +234,13 @@ void TabWaterRetentionData::cellChanged(int row, int column)
             }
             break;
         }
+        // water content
         case 2:
         {
-            if (data == NODATA || data.isEmpty())
+            if (data == NODATA || data.isEmpty() || data.toInt() < 0 || data.toInt() > 1)
             {
-                // TO DO
+                QMessageBox::critical(nullptr, "Error!", "Insert water content");
+                return;
             }
             else
             {
