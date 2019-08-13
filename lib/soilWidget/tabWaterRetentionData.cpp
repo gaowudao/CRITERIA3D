@@ -77,7 +77,15 @@ void TabWaterRetentionData::insertData(soil::Crit3DSoil *soil)
     }
     connect(tableWaterRetention, &QTableWidget::cellClicked, [=](int row, int column){ this->cellClicked(row, column); });
     connect(tableWaterRetention, &QTableWidget::cellChanged, [=](int row, int column){ this->cellChanged(row, column); });
-    addRow->setEnabled(true);
+    if (!mySoil->code.empty())
+    {
+        addRow->setEnabled(true);
+    }
+    else
+    {
+        addRow->setEnabled(false);
+    }
+
 }
 
 void TabWaterRetentionData::tableVerticalHeaderClick(int index)
@@ -162,6 +170,8 @@ void TabWaterRetentionData::removeRowClicked()
 
 void TabWaterRetentionData::resetAll()
 {
+    deleteRow->setEnabled(false);
+    addRow->setEnabled(false);
     tableWaterRetention->setRowCount(0);
     lastPositionHorizon.clear();
 }

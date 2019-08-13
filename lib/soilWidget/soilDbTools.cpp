@@ -241,7 +241,7 @@ bool loadSoilData(QSqlDatabase* dbSoil, QString soilCode, soil::Crit3DSoil* mySo
 
     // Read water retention data
     queryString = "SELECT * FROM water_retention ";
-    queryString += "WHERE soil_code='" + soilCode + "' ORDER BY horizon_nr";
+    queryString += "WHERE soil_code='" + soilCode + "' ORDER BY horizon_nr, water_potential";
     query = dbSoil->exec(queryString);
     query.last();
 
