@@ -24,6 +24,7 @@ private:
     QPushButton* deleteRow;
     soil::Crit3DSoil* mySoil;
     std::string soilCodeChanged;
+    QVector<int> lastPositionHorizon;
 };
 
 #endif // WATERRETENTIONDATA_H
