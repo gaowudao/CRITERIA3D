@@ -1,13 +1,13 @@
 #ifndef TABHYDRAULICCONDUCTIVITYCURVE_H
 #define TABHYDRAULICCONDUCTIVITYCURVE_H
 
-#include <QtWidgets>
+    #include <QtWidgets>
 
-class TabHydraulicConductivityCurve: public QWidget
-{
-    Q_OBJECT
-public:
-    TabHydraulicConductivityCurve();
-};
+    class TabHydraulicConductivityCurve: public QWidget
+    {
+        Q_OBJECT
+    public:
+        TabHydraulicConductivityCurve();
+    };
 
 #endif // HYDRAULICCONDUCTIVITYCURVE_H

@@ -17,7 +17,6 @@
         #include "tabWaterRetentionData.h"
     #endif
 
-
     #include <QWidget>
     #include <QComboBox>
     #include <QTextEdit>

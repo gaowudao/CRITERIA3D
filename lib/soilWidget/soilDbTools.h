@@ -35,4 +35,5 @@
     bool loadSoilInfo(QSqlDatabase* dbSoil, QString soilCode, soil::Crit3DSoil* mySoil, QString *error);
     bool getSoilList(QSqlDatabase* dbSoil, QStringList* soilList, QString* error);
 
+
 #endif // SOILDBTOOLS_H

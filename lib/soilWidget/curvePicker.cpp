@@ -1,7 +1,8 @@
-#include "myPicker.h"
+#include "curvePicker.h"
 #include "qwt_symbol.h"
 
-MyPicker::MyPicker(QwtPlot *plot, QList<QwtPlotCurve *> allCurveList) :
+
+Crit3CurvePicker::Crit3CurvePicker(QwtPlot *plot, QList<QwtPlotCurve *> allCurveList) :
     QwtPlotPicker(QwtPlot::xBottom, QwtPlot::yLeft, CrossRubberBand, QwtPicker::AlwaysOn, plot->canvas()),
     qwtPlot(plot),
     allCurveList(allCurveList)
@@ -9,7 +10,8 @@ MyPicker::MyPicker(QwtPlot *plot, QList<QwtPlotCurve *> allCurveList) :
     connect( this, SIGNAL( selected( const QPointF ) ), this, SLOT( slotSelected( const QPointF ) ) );
 }
 
-void MyPicker::slotSelected( const QPointF &pos)
+
+void Crit3CurvePicker::slotSelected( const QPointF &pos)
 {
 
     QwtPlotCurve *curveFound = nullptr;
@@ -54,19 +56,19 @@ void MyPicker::slotSelected( const QPointF &pos)
     emit clicked(selectedCurveIndex);
 }
 
-int MyPicker::getSelectedCurveIndex() const
+int Crit3CurvePicker::getSelectedCurveIndex() const
 {
     return selectedCurveIndex;
 }
 
-void MyPicker::setSelectedCurveIndex(int value)
+void Crit3CurvePicker::setSelectedCurveIndex(int value)
 {
     selectedCurveIndex = value;
 }
 
-void MyPicker::highlightCurve( bool isHightlight )
-{
 
+void Crit3CurvePicker::highlightCurve( bool isHightlight )
+{
     for ( int i = 0; i < allCurveList.size(); i++ )
     {
         if ( isHightlight && i == selectedCurveIndex)
@@ -81,9 +83,9 @@ void MyPicker::highlightCurve( bool isHightlight )
     qwtPlot->replot();
 }
 
-int MyPicker::closestPoint( QwtPlotCurve& curve, const QPointF &pos, double *dist )
-{
 
+int Crit3CurvePicker::closestPoint( QwtPlotCurve& curve, const QPointF &pos, double *dist )
+{
     const size_t numSamples = curve.dataSize();
 
     if ( curve.plot() == nullptr || numSamples <= 0 )
