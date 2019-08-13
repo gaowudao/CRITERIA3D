@@ -148,20 +148,11 @@ Crit3DSoilWidget::Crit3DSoilWidget()
     QMenuBar* menuBar = new QMenuBar();
     QMenu *fileMenu = new QMenu("File");
     QMenu *editMenu = new QMenu("Edit");
-    QMenu *optionsMenu = new QMenu("Options");
-//    QString  menuStyle(
-//               "QMenu::item:checked{"
-//               "background-image: url(:/images/checked_hover.png);"
-//               "}"
-//               "QMenu::item:unchecked {"
-//               "background-image: url(:/images/unchecked_hover.png);"
-//               "}"
-//            );
-//    optionsMenu->setStyleSheet(menuStyle);
+    QMenu *fittingMenu = new QMenu("Fitting");
 
     menuBar->addMenu(fileMenu);
     menuBar->addMenu(editMenu);
-    menuBar->addMenu(optionsMenu);
+    menuBar->addMenu(fittingMenu);
     this->layout()->setMenuBar(menuBar);
 
     // actions
@@ -175,11 +166,18 @@ Crit3DSoilWidget::Crit3DSoilWidget()
     addHorizon->setEnabled(false);
     deleteHorizon->setEnabled(false);
     restoreData->setEnabled(false);
+
     useData = new QAction(tr("&Use Water Retention Data"), this);
     airEntry = new QAction(tr("&Air Entry fixed"), this);
+    parameterRestriction = new QAction(tr("&Parameters Restriction (m=1-1/n)"), this);
+
     useData->setCheckable(true);
     airEntry->setCheckable(true);
+    airEntry->setChecked(false);
     airEntry->setEnabled(false);
+    parameterRestriction->setCheckable(true);
+    parameterRestriction->setChecked(true);
+    parameterRestriction->setEnabled(false);
 
     connect(openSoilDB, &QAction::triggered, this, &Crit3DSoilWidget::on_actionOpenSoilDB);
     connect(saveChanges, &QAction::triggered, this, &Crit3DSoilWidget::on_actionSave);
@@ -191,6 +189,7 @@ Crit3DSoilWidget::Crit3DSoilWidget()
 
     connect(useData, &QAction::triggered, this, &Crit3DSoilWidget::on_actionUseData);
     connect(airEntry, &QAction::triggered, this, &Crit3DSoilWidget::on_actionAirEntry);
+    connect(parameterRestriction, &QAction::triggered, this, &Crit3DSoilWidget::on_actionAirEntry);
 
     connect(&soilListComboBox, &QComboBox::currentTextChanged, this, &Crit3DSoilWidget::on_actionChooseSoil);
     connect(horizonsTab, SIGNAL(horizonSelected(int)), this, SLOT(setInfoTextural(int)));
@@ -204,8 +203,9 @@ Crit3DSoilWidget::Crit3DSoilWidget()
     editMenu->addAction(restoreData);
     editMenu->addAction(addHorizon);
     editMenu->addAction(deleteHorizon);
-    optionsMenu->addAction(useData);
-    optionsMenu->addAction(airEntry);
+    fittingMenu->addAction(useData);
+    fittingMenu->addAction(airEntry);
+    fittingMenu->addAction(parameterRestriction);
 
 }
 
@@ -385,24 +385,35 @@ void Crit3DSoilWidget::on_actionDeleteSoil()
     }
 }
 
+
 void Crit3DSoilWidget::on_actionUseData()
 {
     if (useData->isChecked())
     {
         airEntry->setEnabled(true);
+        parameterRestriction->setEnabled(true);
         // TO DO
     }
     else
     {
         airEntry->setEnabled(false);
+        parameterRestriction->setEnabled(false);
         // TO DO
     }
 }
+
 
 void Crit3DSoilWidget::on_actionAirEntry()
 {
     // TO DO
 }
+
+
+void Crit3DSoilWidget::on_actionParameterRestriction()
+{
+    // TO DO
+}
+
 
 void Crit3DSoilWidget::on_actionSave()
 {

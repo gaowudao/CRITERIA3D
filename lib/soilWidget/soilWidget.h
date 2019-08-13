@@ -60,6 +60,7 @@
             QAction* deleteHorizon;
             QAction* useData;
             QAction* airEntry;
+            QAction* parameterRestriction;
 
             QPixmap pic;
             QString picPath;
@@ -76,6 +77,7 @@
             void on_actionDeleteSoil();
             void on_actionUseData();
             void on_actionAirEntry();
+            void on_actionParameterRestriction();
             void on_actionChooseSoil(QString);
             void on_actionAddHorizon();
             void on_actionDeleteHorizon();
