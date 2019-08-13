@@ -168,16 +168,16 @@ Crit3DSoilWidget::Crit3DSoilWidget()
     restoreData->setEnabled(false);
 
     useWaterRetentionData = new QAction(tr("&Use Water Retention Data"), this);
-    airEntry = new QAction(tr("&Air Entry fixed"), this);
+    airEntryFixed = new QAction(tr("&Air Entry fixed"), this);
     parameterRestriction = new QAction(tr("&Parameters Restriction (m=1-1/n)"), this);
 
     useWaterRetentionData->setCheckable(true);
-    airEntry->setCheckable(true);
-    airEntry->setEnabled(false);
+    airEntryFixed->setCheckable(true);
+    airEntryFixed->setEnabled(false);
     parameterRestriction->setCheckable(true);
     parameterRestriction->setEnabled(false);
     useWaterRetentionData->setChecked(fittingOptions.useWaterRetentionData);
-    airEntry->setChecked(fittingOptions.airEntryFixed);
+    airEntryFixed->setChecked(fittingOptions.airEntryFixed);
     parameterRestriction->setChecked(fittingOptions.mRestriction);
 
     connect(openSoilDB, &QAction::triggered, this, &Crit3DSoilWidget::on_actionOpenSoilDB);
@@ -189,7 +189,7 @@ Crit3DSoilWidget::Crit3DSoilWidget()
     connect(deleteHorizon, &QAction::triggered, this, &Crit3DSoilWidget::on_actionDeleteHorizon);
 
     connect(useWaterRetentionData, &QAction::triggered, this, &Crit3DSoilWidget::on_actionUseWaterRetentionData);
-    connect(airEntry, &QAction::triggered, this, &Crit3DSoilWidget::on_actionAirEntry);
+    connect(airEntryFixed, &QAction::triggered, this, &Crit3DSoilWidget::on_actionAirEntry);
     connect(parameterRestriction, &QAction::triggered, this, &Crit3DSoilWidget::on_actionAirEntry);
 
     connect(&soilListComboBox, &QComboBox::currentTextChanged, this, &Crit3DSoilWidget::on_actionChooseSoil);
@@ -205,7 +205,7 @@ Crit3DSoilWidget::Crit3DSoilWidget()
     editMenu->addAction(addHorizon);
     editMenu->addAction(deleteHorizon);
     fittingMenu->addAction(useWaterRetentionData);
-    fittingMenu->addAction(airEntry);
+    fittingMenu->addAction(airEntryFixed);
     fittingMenu->addAction(parameterRestriction);
 
 }
@@ -251,7 +251,6 @@ void Crit3DSoilWidget::on_actionOpenSoilDB()
 
 void Crit3DSoilWidget::on_actionChooseSoil(QString soilCode)
 {
-
     // re load textural triangle to clean previous circle
     pic.load(picPath);
     labelPic->setPixmap(pic);
@@ -315,7 +314,8 @@ void Crit3DSoilWidget::on_actionChooseSoil(QString soilCode)
     }
 
     // circle inside triangle
-    for (int i = 0; i < mySoil.nrHorizons; i++)
+    for (unsigned int i = 0; i < mySoil.nrHorizons; i++)
+    {
         {
             if (soil::getUSDATextureClass(mySoil.horizon[i].dbData.sand, mySoil.horizon[i].dbData.silt, mySoil.horizon[i].dbData.clay) != NODATA)
             {
@@ -338,17 +338,9 @@ void Crit3DSoilWidget::on_actionChooseSoil(QString soilCode)
                 labelPic->setPixmap(pic);
             }
         }
-
-
+    }
 }
 
-
-void Crit3DSoilWidget::mouseReleaseEvent(QMouseEvent* ev)
-{
-    Q_UNUSED(ev);
-
-    //TO DO
-}
 
 void Crit3DSoilWidget::on_actionNewSoil()
 {
@@ -391,28 +383,31 @@ void Crit3DSoilWidget::on_actionUseWaterRetentionData()
 {
     if (useWaterRetentionData->isChecked())
     {
-        airEntry->setEnabled(true);
+        airEntryFixed->setEnabled(true);
         parameterRestriction->setEnabled(true);
-        // TO DO
     }
     else
     {
-        airEntry->setEnabled(false);
+        airEntryFixed->setEnabled(false);
         parameterRestriction->setEnabled(false);
-        // TO DO
     }
+
+    fittingOptions.useWaterRetentionData = this->useWaterRetentionData->isChecked();
+    // TO DO: update
 }
 
 
 void Crit3DSoilWidget::on_actionAirEntry()
 {
-    // TO DO
+    fittingOptions.airEntryFixed = this->airEntryFixed->isChecked();
+    // TO DO: update
 }
 
 
 void Crit3DSoilWidget::on_actionParameterRestriction()
 {
-    // TO DO
+    fittingOptions.mRestriction = this->parameterRestriction->isChecked();
+    // TO DO: update
 }
 
 
@@ -452,11 +447,10 @@ void Crit3DSoilWidget::on_actionDeleteHorizon()
 
 void Crit3DSoilWidget::setInfoTextural(int nHorizon)
 {
-
     // re load textural triangle to clean previous circle
     pic.load(picPath);
     labelPic->setPixmap(pic);
-    for (int i = 0; i < mySoil.nrHorizons; i++)
+    for (unsigned int i = 0; i < mySoil.nrHorizons; i++)
     {
         if (soil::getUSDATextureClass(mySoil.horizon[i].dbData.sand, mySoil.horizon[i].dbData.silt, mySoil.horizon[i].dbData.clay) != NODATA)
         {
@@ -488,7 +482,7 @@ void Crit3DSoilWidget::setInfoTextural(int nHorizon)
         }
     }
 
-    // nHorizon = -1 nothing is selected, clear all
+    // nHorizon = -1 : nothing is selected, clear all
     if (nHorizon == -1)
     {
         satValue->setText("");
@@ -544,8 +538,8 @@ void Crit3DSoilWidget::setInfoTextural(int nHorizon)
             potFCValue->setText(QString::number(mySoil.horizon[nHorizon].fieldCapacity, 'f', 3));
         }
     }
-
 }
+
 
 void Crit3DSoilWidget::tabChanged(int index)
 {

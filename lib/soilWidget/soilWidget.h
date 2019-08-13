@@ -30,9 +30,6 @@
         public:
             Crit3DSoilWidget();
 
-        protected:
-            void mouseReleaseEvent(QMouseEvent *ev);
-
         private:
             QComboBox soilListComboBox;
             QTabWidget* tabWidget;
@@ -60,7 +57,7 @@
             QAction* addHorizon;
             QAction* deleteHorizon;
             QAction* useWaterRetentionData;
-            QAction* airEntry;
+            QAction* airEntryFixed;
             QAction* parameterRestriction;
 
             QPixmap pic;
