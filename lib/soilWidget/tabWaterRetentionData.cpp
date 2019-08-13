@@ -211,7 +211,7 @@ void TabWaterRetentionData::cellChanged(int row, int column)
         {
             if (data == NODATA || data.isEmpty() || round(data.toDouble()) > mySoil->nrHorizons)
             {
-                QMessageBox::critical(nullptr, "Error!", "Invalid horizont");
+                QMessageBox::critical(nullptr, "Error!", "Invalid horizon");
                 return;
             }
             else
