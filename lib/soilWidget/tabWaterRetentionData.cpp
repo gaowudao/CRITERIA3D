@@ -71,7 +71,7 @@ void TabWaterRetentionData::insertData(soil::Crit3DSoil *soil)
         for (int j = 0; j < mySoil->horizon[i].dbData.waterRetention.size(); j++)
         {
             tableWaterRetention->setItem(pos, 0, new QTableWidgetItem( QString::number(i+1, 'f', 0)));
-            tableWaterRetention->setItem(pos, 1, new QTableWidgetItem( QString::number(mySoil->horizon[i].dbData.waterRetention[j].water_potential, 'f', 3)));
+            tableWaterRetention->setItem(pos, 1, new QTableWidgetItem( QString::number(mySoil->horizon[i].dbData.waterRetention[j].water_potential, 'f', 1)));
             tableWaterRetention->setItem(pos, 2, new QTableWidgetItem( QString::number(mySoil->horizon[i].dbData.waterRetention[j].water_content, 'f', 3 )));
             pos = pos + 1;
         }
@@ -230,7 +230,7 @@ void TabWaterRetentionData::cellChanged(int row, int column)
             }
             else
             {
-                tableWaterRetention->item(row, column)->setText(QString::number(data.toDouble(), 'f', 3));
+                tableWaterRetention->item(row, column)->setText(QString::number(data.toDouble(), 'f', 1));
             }
             break;
         }
