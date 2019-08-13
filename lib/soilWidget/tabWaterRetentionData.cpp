@@ -147,6 +147,13 @@ void TabWaterRetentionData::removeRowClicked()
         QMessageBox::critical(nullptr, "Error!", "Select a horizon");
         return;
     }
+
+    // check if the row is completed
+    if (tableWaterRetention->item(row,0)->text().isEmpty() || tableWaterRetention->item(row,1)->text().isEmpty() || tableWaterRetention->item(row,2)->text().isEmpty())
+    {
+        tableWaterRetention->removeRow(row);
+        return;
+    }
     int horizonSelected = tableWaterRetention->item(row,0)->text().toInt() - 1;
     int pos = row;
     if (horizonSelected != 0)
