@@ -19,7 +19,9 @@
         void resetAll();
         void cellClicked(int row, int column);
         void cellChanged(int row, int column);
-        int moveRow(int row, int horizon, double waterPotential, double waterContent);
+        void updateSoil(soil::Crit3DSoil *soil);
+        std::string getSoilCodeChanged() const;
+        void resetSoilCodeChanged();
 
     private:
         QTableWidget* tableWaterRetention;
@@ -27,6 +29,7 @@
         QPushButton* deleteRow;
         soil::Crit3DSoil* mySoil;
         std::string soilCodeChanged;
+        QVector<int> horizonChanged;
         //QVector<int> lastPositionHorizon;
 
     };

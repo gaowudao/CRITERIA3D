@@ -414,18 +414,45 @@ void Crit3DSoilWidget::on_actionParameterRestriction()
 void Crit3DSoilWidget::on_actionSave()
 {
     QString error;
-    std::string soilCodeChanged = horizonsTab->getSoilCodeChanged();
-    if (soilCodeChanged.empty())
+    std::string soilCodeChangedHorizonTab = horizonsTab->getSoilCodeChanged();
+    std::string soilCodeChangedWaterRetentionTab = wrDataTab->getSoilCodeChanged();
+    if (soilCodeChangedHorizonTab.empty() && soilCodeChangedWaterRetentionTab.empty())
     {
         QMessageBox::critical(nullptr, "Warning", "The soil has already been updated");
         return;
     }
-    if (!updateSoilData(&dbSoil, QString::fromStdString(soilCodeChanged), &mySoil, &error))
+    if (!soilCodeChangedHorizonTab.empty())
     {
-        QMessageBox::critical(nullptr, "Error!", error);
-        return;
+        if (!updateSoilData(&dbSoil, QString::fromStdString(soilCodeChangedHorizonTab), &mySoil, &error))
+        {
+            QMessageBox::critical(nullptr, "Error!", error);
+            return;
+        }
+        horizonsTab->resetSoilCodeChanged();
     }
-    horizonsTab->resetSoilCodeChanged();
+    if (!soilCodeChangedWaterRetentionTab.empty())
+    {
+        wrDataTab->updateSoil(&mySoil);
+        for (int i = 0; i < mySoil.nrHorizons; i++)
+        {
+            qDebug() << "i = " << i;
+            qDebug() << "mySoil.horizon[i].dbData.waterRetention.size() = " << mySoil.horizon[i].dbData.waterRetention.size();
+            for (int j = 0; j < mySoil.horizon[i].dbData.waterRetention.size(); j++)
+            {
+                qDebug() << mySoil.horizon[i].dbData.waterRetention[j].water_potential;
+                qDebug() << mySoil.horizon[i].dbData.waterRetention[j].water_content;
+            }
+
+        }
+
+//        if ()
+//        {
+//            QMessageBox::critical(nullptr, "Error!", error);
+//            return;
+//        }
+        wrDataTab->resetSoilCodeChanged();
+    }
+
     savedSoil = mySoil;
 }
 
