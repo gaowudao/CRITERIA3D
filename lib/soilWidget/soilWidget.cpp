@@ -51,7 +51,7 @@ Crit3DSoilWidget::Crit3DSoilWidget()
     dbSoilType = DB_SQLITE;
 
     this->setWindowTitle(QStringLiteral("Soil"));
-    this->resize(1440, 810);
+    this->resize(1240, 700);
 
     // layout
     QVBoxLayout *mainLayout = new QVBoxLayout();
