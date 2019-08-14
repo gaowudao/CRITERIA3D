@@ -166,8 +166,8 @@ bool Project::checkProxy(QString name_, QString gridName_, QString table_, QStri
     }
 
     return true;
-
 }
+
 void Project::addProxyToProject(QString name_, QString gridName_, QString table_, QString field_,
                                 bool isForQuality_, bool isActive_)
 {
@@ -582,17 +582,17 @@ bool Project::loadParameters(QString parametersFileName)
             isActive = parameters->value("active").toBool();
             forQuality = parameters->value("use_for_spatial_quality_control").toBool();
 
-            parameters->endGroup();
-
             if (! proxyGridSeriesFound)
                 proxyGridName = parameters->value("raster").toString();
             else
                 proxyGridName = myGridSeries[0];
 
+            parameters->endGroup();
+
             if (checkProxy(proxyName, proxyGridName, proxyTable, proxyField, &errorString))
                 addProxyToProject(proxyName, proxyGridName, proxyTable, proxyField, forQuality, isActive);
             else
-                return false;
+                logError();
         }
     }
 
