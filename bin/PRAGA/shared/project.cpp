@@ -781,8 +781,6 @@ void Project::closeMeteoGridDB()
  */
 bool Project::loadDEM(QString myFileName)
 {
-    logInfo("Read Digital Elevation Model...");
-
     if (myFileName == "")
     {
         logError("Missing DEM filename");
@@ -839,7 +837,6 @@ bool Project::loadDEM(QString myFileName)
 bool Project::loadMeteoPointsDB(QString dbName)
 {
     if (dbName == "") return false;
-    logInfo("Read meteo points database...");
 
     closeMeteoPointsDB();
 
@@ -897,6 +894,7 @@ bool Project::loadMeteoPointsDB(QString dbName)
     return true;
 }
 
+
 bool Project::loadMeteoGridDB(QString xmlName)
 {
     if (xmlName == "") return false;
@@ -932,9 +930,11 @@ bool Project::loadMeteoGridDB(QString xmlName)
     }
 
     meteoGridLoaded = true;
+    logInfo("Meteo Grid = " + xmlName);
 
     return true;
 }
+
 
 bool Project::loadAggregationdDB(QString dbName)
 {
