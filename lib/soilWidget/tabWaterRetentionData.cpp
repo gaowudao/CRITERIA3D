@@ -101,7 +101,6 @@ void TabWaterRetentionData::tableVerticalHeaderClick(int index)
 
 void TabWaterRetentionData::addRowClicked()
 {
-    this->blockSignals(true);
     int numRow;
     if (!tableWaterRetention->selectedItems().isEmpty())
     {
@@ -119,14 +118,21 @@ void TabWaterRetentionData::addRowClicked()
 
     tableWaterRetention->insertRow(numRow);
 
-    for (int j=0; j<tableWaterRetention->columnCount(); j++)
+    // fill default row (copy the previous row
+    if (numRow == 0)
     {
-        tableWaterRetention->setItem(numRow, j, new QTableWidgetItem());
+        tableWaterRetention->setItem(numRow, 0, new QTableWidgetItem(QString::number(1)));
+        tableWaterRetention->setItem(numRow, 0, new QTableWidgetItem(QString::number(0)));
+        tableWaterRetention->setItem(numRow, 0, new QTableWidgetItem(QString::number(0)));
     }
-
-    tableWaterRetention->scrollToBottom();
+    else
+    {
+        tableWaterRetention->setItem(numRow, 0, new QTableWidgetItem(tableWaterRetention->item(numRow-1,0)->text()));
+        tableWaterRetention->setItem(numRow, 1, new QTableWidgetItem(tableWaterRetention->item(numRow-1,1)->text()));
+        tableWaterRetention->setItem(numRow, 2, new QTableWidgetItem(tableWaterRetention->item(numRow-1,2)->text()));
+    }
+    tableWaterRetention->selectRow(numRow);
     deleteRow->setEnabled(true);
-    this->blockSignals(false);
 
 }
 
@@ -151,6 +157,12 @@ void TabWaterRetentionData::removeRowClicked()
 
     // check if the row is completed
     if (tableWaterRetention->item(row,0)->text().isEmpty() || tableWaterRetention->item(row,1)->text().isEmpty() || tableWaterRetention->item(row,2)->text().isEmpty())
+    {
+        tableWaterRetention->removeRow(row);
+        return;
+    }
+    // check if the row has NODATA
+    if (tableWaterRetention->item(row,0)->text() == QString::number(NODATA) || tableWaterRetention->item(row,1)->text() == QString::number(NODATA) || tableWaterRetention->item(row,2)->text() == QString::number(NODATA))
     {
         tableWaterRetention->removeRow(row);
         return;
@@ -209,9 +221,10 @@ void TabWaterRetentionData::cellChanged(int row, int column)
     switch (column) {
         case 0:
         {
-            if (data == NODATA || data.isEmpty() || round(data.toDouble()) > mySoil->nrHorizons)
+            if (data.toInt() < 0 || round(data.toDouble()) > mySoil->nrHorizons)
             {
                 QMessageBox::critical(nullptr, "Error!", "Invalid horizon");
+                tableWaterRetention->item(row, column)->setText(QString::number(NODATA));
                 return;
             }
             else
@@ -223,9 +236,10 @@ void TabWaterRetentionData::cellChanged(int row, int column)
         case 1:
         {
         // water potential
-            if (data == NODATA || data.isEmpty())
+            if (data.toInt() < 0)
             {
-                QMessageBox::critical(nullptr, "Error!", "Insert water potential");
+                QMessageBox::critical(nullptr, "Error!", "Insert valid water potential");
+                tableWaterRetention->item(row, column)->setText(QString::number(NODATA));
                 return;
             }
             else
@@ -237,9 +251,10 @@ void TabWaterRetentionData::cellChanged(int row, int column)
         // water content
         case 2:
         {
-            if (data == NODATA || data.isEmpty() || data.toInt() < 0 || data.toInt() > 1)
+            if (data.toInt() < 0 || data.toInt() > 1)
             {
-                QMessageBox::critical(nullptr, "Error!", "Insert water content");
+                QMessageBox::critical(nullptr, "Error!", "Insert valid water content");
+                tableWaterRetention->item(row, column)->setText(QString::number(NODATA));
                 return;
             }
             else
@@ -254,6 +269,5 @@ void TabWaterRetentionData::cellChanged(int row, int column)
     std::string errorString;
     // TO DO soil set new value
 
-    tableWaterRetention->clearSelection();
     soilCodeChanged = mySoil->code;
 }
