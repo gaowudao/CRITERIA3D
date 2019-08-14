@@ -1,5 +1,5 @@
 #include "tabWaterRetentionData.h"
-#include "tableDelegate.h"
+#include "tableDelegateWaterRetention.h"
 #include "commonConstants.h"
 
 
@@ -19,7 +19,7 @@ TabWaterRetentionData::TabWaterRetentionData()
     tableWaterRetention->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
     int margin = 25; // now table is empty
     tableWaterRetention->setFixedWidth(tableWaterRetention->horizontalHeader()->length() + tableWaterRetention->verticalHeader()->width() + margin);
-    tableWaterRetention->setItemDelegate(new TableDelegate(tableWaterRetention));
+    tableWaterRetention->setItemDelegate(new TableDelegateWaterRetention(tableWaterRetention));
 
     QHBoxLayout *addDeleteRowLayout = new QHBoxLayout;
     QLabel* addDeleteLabel = new QLabel("Modify data:");
@@ -122,8 +122,8 @@ void TabWaterRetentionData::addRowClicked()
     if (numRow == 0)
     {
         tableWaterRetention->setItem(numRow, 0, new QTableWidgetItem(QString::number(1)));
-        tableWaterRetention->setItem(numRow, 0, new QTableWidgetItem(QString::number(0)));
-        tableWaterRetention->setItem(numRow, 0, new QTableWidgetItem(QString::number(0)));
+        tableWaterRetention->setItem(numRow, 1, new QTableWidgetItem(QString::number(0)));
+        tableWaterRetention->setItem(numRow, 2, new QTableWidgetItem(QString::number(0)));
     }
     else
     {
@@ -155,12 +155,6 @@ void TabWaterRetentionData::removeRowClicked()
         return;
     }
 
-    // check if the row is completed
-    if (tableWaterRetention->item(row,0)->text().isEmpty() || tableWaterRetention->item(row,1)->text().isEmpty() || tableWaterRetention->item(row,2)->text().isEmpty())
-    {
-        tableWaterRetention->removeRow(row);
-        return;
-    }
     // check if the row has NODATA
     if (tableWaterRetention->item(row,0)->text() == QString::number(NODATA) || tableWaterRetention->item(row,1)->text() == QString::number(NODATA) || tableWaterRetention->item(row,2)->text() == QString::number(NODATA))
     {
@@ -215,16 +209,22 @@ void TabWaterRetentionData::cellChanged(int row, int column)
 
     QString data = tableWaterRetention->item(row, column)->text();
     data.replace(",", ".");
-    int horizon = tableWaterRetention->item(row,0)->text().toInt();
-
+    int horizon = tableWaterRetention->item(row,0)->text().toInt(); 
     // set new value
     switch (column) {
         case 0:
         {
             if (data.toInt() < 0 || round(data.toDouble()) > mySoil->nrHorizons)
-            {
+            { 
                 QMessageBox::critical(nullptr, "Error!", "Invalid horizon");
-                tableWaterRetention->item(row, column)->setText(QString::number(NODATA));
+                if (row == 0)
+                {
+                    tableWaterRetention->item(row, column)->setText(QString::number(1));
+                }
+                else
+                {
+                    tableWaterRetention->item(row, column)->setText(tableWaterRetention->item(row-1,column)->text());
+                }
                 return;
             }
             else
@@ -239,7 +239,14 @@ void TabWaterRetentionData::cellChanged(int row, int column)
             if (data.toInt() < 0)
             {
                 QMessageBox::critical(nullptr, "Error!", "Insert valid water potential");
-                tableWaterRetention->item(row, column)->setText(QString::number(NODATA));
+                if (row == 0)
+                {
+                    tableWaterRetention->item(row, column)->setText(QString::number(0));
+                }
+                else
+                {
+                    tableWaterRetention->item(row, column)->setText(tableWaterRetention->item(row-1,column)->text());
+                }
                 return;
             }
             else
@@ -254,7 +261,14 @@ void TabWaterRetentionData::cellChanged(int row, int column)
             if (data.toInt() < 0 || data.toInt() > 1)
             {
                 QMessageBox::critical(nullptr, "Error!", "Insert valid water content");
-                tableWaterRetention->item(row, column)->setText(QString::number(NODATA));
+                if (row == 0)
+                {
+                    tableWaterRetention->item(row, column)->setText(QString::number(0));
+                }
+                else
+                {
+                    tableWaterRetention->item(row, column)->setText(tableWaterRetention->item(row-1,column)->text());
+                }
                 return;
             }
             else
@@ -265,9 +279,12 @@ void TabWaterRetentionData::cellChanged(int row, int column)
         }
 
     }
+    if (tableWaterRetention->itemAt(row,0) != nullptr && tableWaterRetention->itemAt(row,1) != nullptr && tableWaterRetention->itemAt(row,2) != nullptr)
+    {
+        // move row TO DO
+        std::string errorString;
+        // TO DO soil set new value
+        soilCodeChanged = mySoil->code;
+    }
 
-    std::string errorString;
-    // TO DO soil set new value
-
-    soilCodeChanged = mySoil->code;
 }

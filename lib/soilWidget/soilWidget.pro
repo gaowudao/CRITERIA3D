@@ -38,7 +38,8 @@ SOURCES += \
     tabWaterRetentionData.cpp \
     tabHydraulicConductivityCurve.cpp \
     tableDelegate.cpp \
-    lineHorizont.cpp
+    lineHorizont.cpp \
+    tableDelegateWaterRetention.cpp
 
 HEADERS += \
     curvePicker.h \
@@ -50,7 +51,8 @@ HEADERS += \
     tabWaterRetentionData.h \
     tabHydraulicConductivityCurve.h \
     tableDelegate.h \
-    lineHorizont.h
+    lineHorizont.h \
+    tableDelegateWaterRetention.h
 
 unix {
     target.path = /usr/lib
