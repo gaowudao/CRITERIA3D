@@ -27,7 +27,7 @@
         QPushButton* deleteRow;
         soil::Crit3DSoil* mySoil;
         std::string soilCodeChanged;
-        QVector<int> lastPositionHorizon;
+        //QVector<int> lastPositionHorizon;
 
     };
 
