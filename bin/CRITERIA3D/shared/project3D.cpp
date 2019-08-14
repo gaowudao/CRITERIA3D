@@ -25,6 +25,7 @@
 
 #include "project3D.h"
 #include "soilFluxes3D.h"
+#include "soilDbTools.h"
 
 
 Project3D::Project3D() : Project()
@@ -47,6 +48,7 @@ void Project3D::initializeProject3D()
 
     meteoMaps = nullptr;
 }
+
 
 void Project3D::clearProject3D()
 {
@@ -79,6 +81,20 @@ void Project3D::clearWaterBalance3D()
 
     boundaryMap.clear();
     soilIndexMap.clear();
+}
+
+
+bool Project3D::loadSoilData(QString fileName)
+{
+    if (! loadAllSoils(fileName, &(soilList), texturalClassList, &fittingOptions, &errorString))
+    {
+        logError();
+        return false;
+    }
+    nrSoils = unsigned(soilList.size());
+
+    logInfo("Soil data = " + fileName);
+    return true;
 }
 
 
@@ -252,7 +268,7 @@ bool Project3D::setCrit3DSoils()
                  if (isCrit3dError(result, &myError))
                  {
                      errorString = "setCrit3DSoils: " + myError
-                                + "\n soil nr: " + QString::number(soilList[unsigned(soilIndex)].id)
+                                + "\n soil code: " + QString::fromStdString(soilList[unsigned(soilIndex)].code)
                                 + " horizon nr: " + QString::number(horizIndex);
                      return false;
                  }
@@ -419,7 +435,7 @@ bool Project3D::setCrit3DNodeSoil()
                         if (horizonIndex == NODATA)
                         {
                             logError("function setCrit3DNodeSoil: \nno horizon definition in soil "
-                                    + QString::number(soilList[unsigned(soilIndex)].id) + " depth: " + QString::number(layerDepth[layer])
+                                    + QString::fromStdString(soilList[unsigned(soilIndex)].code) + " depth: " + QString::number(layerDepth[layer])
                                     +"\nCheck soil totalDepth");
                             return false;
                         }

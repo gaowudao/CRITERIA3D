@@ -141,8 +141,7 @@ namespace soil
 
     Crit3DSoil::Crit3DSoil()
     {
-        this->totalDepth = 0;
-        this->nrHorizons = 0;
+        this->cleanSoil();
     }
 
     void Crit3DSoil::initialize(std::string soilCode, int nrHorizons)
@@ -169,9 +168,11 @@ namespace soil
     void Crit3DSoil::cleanSoil()
     {
         this->horizon.clear();
-        this->code = "";
         this->nrHorizons = 0;
         this->totalDepth = 0;
+        this->id = NODATA;
+        this->code = "";
+        this->name = "";
     }
 
 

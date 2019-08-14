@@ -27,7 +27,6 @@
 
 #include "commonConstants.h"
 #include "formInfo.h"
-#include "soilDbTools.h"
 #include "utilities.h"
 #include "crit3dProject.h"
 #include "waterBalance3D.h"
@@ -175,24 +174,6 @@ int Crit3DProject::getCrit3DSoilIndex(int demRow, int demCol)
 
     // no soil data
     return INDEX_ERROR;
-}
-
-
-bool Crit3DProject::loadSoilData(QString fileName)
-{
-    QString str;
-
-    if (! loadAllSoils(fileName, &(soilList), texturalClassList, &str))
-    {
-        logError(str);
-        return false;
-    }
-    if(str != "") logInfo(str);
-
-    nrSoils = unsigned(soilList.size());
-
-    logInfo("Soil data = " + fileName);
-    return true;
 }
 
 

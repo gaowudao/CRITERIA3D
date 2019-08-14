@@ -36,6 +36,7 @@
 
         std::vector <soil::Crit3DSoil> soilList;
         soil::Crit3DTextureClass texturalClassList[13];
+        soil::Crit3DFittingOptions fittingOptions;
 
         // layers
         double minThickness;                    // [m]
@@ -58,6 +59,8 @@
         void clearProject3D();
 
         void clearWaterBalance3D();
+
+        bool loadSoilData(QString fileName);
 
         void computeNrLayers();
         void setLayersDepth();

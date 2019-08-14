@@ -525,6 +525,7 @@ bool loadAllSoils(QSqlDatabase* dbSoil, std::vector <soil::Crit3DSoil> *soilList
     int idSoil;
     QString soilName;
     QString wrongSoils = "";
+
     do
     {
         getValue(query.value("id_soil"), &idSoil);
@@ -535,6 +536,7 @@ bool loadAllSoils(QSqlDatabase* dbSoil, std::vector <soil::Crit3DSoil> *soilList
             soil::Crit3DSoil *mySoil = new soil::Crit3DSoil;
             if (loadSoil(dbSoil, soilCode, mySoil, textureClassList, fittingOptions, error))
             {
+                mySoil->id = idSoil;
                 mySoil->code = soilCode.toStdString();
                 mySoil->name = soilName.toStdString();
                 soilList->push_back(*mySoil);

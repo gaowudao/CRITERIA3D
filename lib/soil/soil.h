@@ -141,6 +141,7 @@
         class Crit3DSoil
         {
         public:
+            int id;
             std::string code;
             std::string name;
             unsigned int nrHorizons;
