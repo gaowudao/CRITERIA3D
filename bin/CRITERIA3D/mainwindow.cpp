@@ -1112,12 +1112,28 @@ void MainWindow::on_actionCompute_AllMeteoMaps_triggered()
 }
 
 
+void MainWindow::openSoilWidget(QPoint windowPos)
+{
+    double x, y;
+
+    Position geoPos = mapView->mapToScene(getMapPoint(&windowPos));
+    gis::latLonToUtmForceZone(myProject.gisSettings.utmZone, geoPos.latitude(), geoPos.longitude(), &x, &y);
+    QString soilCode = myProject.getCrit3DSoilCode(x, y);
+
+    if (soilCode != "")
+    {
+        soilWidget = new Crit3DSoilWidget();
+        soilWidget->show();
+    }
+}
+
+
 void MainWindow::contextMenuRequested(QPoint windowPos, QPoint globalPos)
 {
     QMenu submenu;
     int nrItems = 0;
 
-    if (myProject.soilMap.isLoaded && myProject.nrSoils > 0)
+    if (myProject.soilMap.isLoaded)
     {
         submenu.addAction("Soil data");
         nrItems++;
@@ -1130,14 +1146,11 @@ void MainWindow::contextMenuRequested(QPoint windowPos, QPoint globalPos)
     {
         if (myAction->text().contains("Soil data") )
         {
-            double x, y;
-            Position geoPos = mapView->mapToScene(getMapPoint(&windowPos));
-            gis::latLonToUtmForceZone(myProject.gisSettings.utmZone, geoPos.latitude(), geoPos.longitude(), &x, &y);
-            QString soilCode = myProject.getCrit3DSoilCode(x, y);
-            if (soilCode != "")
-            {
-                soilWidget = new Crit3DSoilWidget();
-                soilWidget->show();
+            if (myProject.nrSoils > 0) {
+                openSoilWidget(windowPos);
+            }
+            else {
+                myProject.logError("Load soil database before.");
             }
         }
     }
