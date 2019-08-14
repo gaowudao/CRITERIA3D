@@ -19,7 +19,11 @@ INCLUDEPATH +=  ./shared ../PRAGA/shared  \
                 ../../lib/soil ../../lib/soilWidget \
                 ../../lib/meteo ../../lib/gis ../../lib/utilities  \
                 ../../lib/interpolation ../../lib/solarRadiation  \
-                ../../lib/dbMeteoPoints ../../lib/dbMeteoGrid \
+                ../../lib/dbMeteoPoints ../../lib/dbMeteoGrid
+
+unix:{
+    INCLUDEPATH += /usr/include/qwt/
+}
 
 CONFIG += debug_and_release
 
@@ -109,3 +113,9 @@ HEADERS += mainwindow.h \
 FORMS += mainwindow.ui \
     ../PRAGA/shared/formInfo.ui
 
+win32:{
+    include($$(QWT_ROOT)/features/qwt.prf)
+}
+unix:{
+    include(/usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/qwt.prf)
+}

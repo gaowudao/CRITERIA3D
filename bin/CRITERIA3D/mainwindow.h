@@ -1,6 +1,7 @@
 #ifndef MAINWINDOW_H
 #define MAINWINDOW_H
 
+    #include "soilWidget.h"
     #include "tileSources/OSMTileSource.h"
     #include "Position.h"
     #include "MapGraphicsView.h"
@@ -137,6 +138,7 @@
         visualizationType currentPointsVisualization;
 
         Viewer3D *viewer3D;
+        Crit3DSoilWidget *soilWidget;
 
         void setMapSource(OSMTileSource::OSMTileType mySource);
 
@@ -156,7 +158,7 @@
         bool initializeViewer3D();
         bool checkMapVariable(bool isComputed);
         void setMapVariable(meteoVariable myVar, gis::Crit3DRasterGrid *myGrid);
-        void contextMenuRequested(const QPoint globalPos);
+        void contextMenuRequested(QPoint windowPos, QPoint globalPos);
 
         void setInputRasterVisible(bool value);
         void setOutputRasterVisible(bool value);

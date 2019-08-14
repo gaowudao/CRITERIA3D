@@ -25,7 +25,6 @@
 #include "utilities.h"
 #include "soilDbTools.h"
 #include "gis.h"
-#include "commonConstants.h"
 #include "dialogSelection.h"
 #include "spatialControl.h"
 #include "dialogInterpolation.h"
@@ -39,6 +38,7 @@
 #include <Qt3DInput>
 
 #include "crit3dProject.h"
+#include "commonConstants.h"
 
 extern Crit3DProject myProject;
 
@@ -243,7 +243,7 @@ void MainWindow::mousePressEvent(QMouseEvent *event)
             myRubberBand->isActive = true;
             myRubberBand->show();
         }
-        else contextMenuRequested(event->globalPos());
+        else contextMenuRequested(event->pos(), event->globalPos());
 
         #ifdef NETCDF
         if (myProject.netCDF.isLoaded)
@@ -1112,7 +1112,7 @@ void MainWindow::on_actionCompute_AllMeteoMaps_triggered()
 }
 
 
-void MainWindow::contextMenuRequested(const QPoint globalPos)
+void MainWindow::contextMenuRequested(QPoint windowPos, QPoint globalPos)
 {
     QMenu submenu;
     int nrItems = 0;
@@ -1130,7 +1130,15 @@ void MainWindow::contextMenuRequested(const QPoint globalPos)
     {
         if (myAction->text().contains("Soil data") )
         {
-            // shows soil
+            double x, y;
+            Position geoPos = mapView->mapToScene(getMapPoint(&windowPos));
+            gis::latLonToUtmForceZone(myProject.gisSettings.utmZone, geoPos.latitude(), geoPos.longitude(), &x, &y);
+            QString soilCode = myProject.getCrit3DSoilCode(x, y);
+            if (soilCode != "")
+            {
+                soilWidget = new Crit3DSoilWidget();
+                soilWidget->show();
+            }
         }
     }
 }
