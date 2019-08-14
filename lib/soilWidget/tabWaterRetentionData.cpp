@@ -105,7 +105,7 @@ void TabWaterRetentionData::tableVerticalHeaderClick(int index)
 
 void TabWaterRetentionData::addRowClicked()
 {
-    waterPotentialChanged = false;
+
     int numRow;
     if (!tableWaterRetention->selectedItems().isEmpty())
     {
@@ -259,15 +259,6 @@ void TabWaterRetentionData::cellChanged(int row, int column)
             else
             {
                 tableWaterRetention->item(row, column)->setText(QString::number(data.toDouble(), 'f', 1));
-                if ( (row != 0 && data != tableWaterRetention->item(row-1,column)->text()) || (row == 0 && data.toDouble() != 0) )
-                {
-                    waterPotentialChanged = true;
-                }
-                else
-                {
-                    waterPotentialChanged = false;
-                }
-
             }
             break;
         }
@@ -295,24 +286,14 @@ void TabWaterRetentionData::cellChanged(int row, int column)
         }
 
     }
-    if (waterPotentialChanged)
-    {
-        // check position and move the row
-        int newPos = moveRow(row, tableWaterRetention->item(row,0)->text().toInt(), tableWaterRetention->item(row,1)->text().toInt(), tableWaterRetention->item(row,2)->text().toInt());
-        std::string errorString;
-        // TO DO soil set new value
-        soilCodeChanged = mySoil->code;
-    }
+    tableWaterRetention->sortByColumn(1, Qt::AscendingOrder);
+    tableWaterRetention->sortByColumn(0, Qt::AscendingOrder);
+    std::string errorString;
+    // TO DO soil set new value
+    soilCodeChanged = mySoil->code;
 
 }
 
-int TabWaterRetentionData::moveRow(int row, int horizon, double waterPotential, double waterContent)
-{
-    // check waterPotential
-    qDebug() << "moveRow";
-    int newPos = row;
-    return newPos;
-}
 
 
 
