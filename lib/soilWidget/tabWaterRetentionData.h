@@ -28,7 +28,6 @@
         soil::Crit3DSoil* mySoil;
         std::string soilCodeChanged;
         QVector<int> lastPositionHorizon;
-        bool waterPotentialChanged;
 
     };
 
