@@ -153,27 +153,43 @@ bool Crit3DProject::setSoilIndexMap()
 }
 
 
-int Crit3DProject::getCrit3DSoilIndex(int demRow, int demCol)
+int Crit3DProject::getCrit3DSoilIndex(double x, double y)
 {
-    double x, y;
-    int idSoil;
+    if (! soilMap.isLoaded)
+        return INDEX_ERROR;
 
-    gis::getUtmXYFromRowCol(*(DEM.header), demRow, demCol, &x, &y);
-    idSoil = int(gis::getValueFromXY(soilMap, x, y));
+    int idSoil = int(gis::getValueFromXY(soilMap, x, y));
 
-    if (idSoil == int(this->soilMap.header->flag))
+    if (idSoil == int(soilMap.header->flag))
     {
         return INDEX_ERROR;
     }
-
-    // search id soil
-    for (unsigned int i = 0; i < soilList.size(); i++)
+    else
     {
-        if (soilList[i].id == idSoil) return(int(i));
+        return idSoil;
+    }
+}
+
+
+QString Crit3DProject::getCrit3DSoilCode(double x, double y)
+{
+    QString soilCode = "";
+
+    int idSoil = getCrit3DSoilIndex(x, y);
+
+    if (idSoil != INDEX_ERROR)
+    {
+        for (unsigned int i = 0; i < soilList.size(); i++)
+        {
+            if (soilList[i].id == idSoil)
+            {
+                soilCode = QString::fromStdString(soilList[i].code);
+                break;
+            }
+        }
     }
 
-    // no soil data
-    return INDEX_ERROR;
+    return soilCode;
 }
 
 

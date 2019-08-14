@@ -49,7 +49,8 @@
         double* getSoilVarProfile(int row, int col, soil::soilVariable myVar);
         bool setSoilProfileCrop(int row, int col);
 
-        int getCrit3DSoilIndex(int demRow, int demCol);
+        int getCrit3DSoilIndex(double x, double y);
+        QString getCrit3DSoilCode(double x, double y);
 
         bool interpolationRelHumidity(const Crit3DTime& myTime, gis::Crit3DRasterGrid *myRaster, bool showInfo);
         bool computeAllMeteoMaps(const Crit3DTime &myTime, bool showInfo);

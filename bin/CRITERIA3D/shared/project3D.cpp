@@ -93,7 +93,7 @@ bool Project3D::loadSoilDatabase(QString fileName)
     }
     nrSoils = unsigned(soilList.size());
 
-    logInfo("Soil data = " + fileName);
+    logInfo("Soil database = " + fileName);
     return true;
 }
 
