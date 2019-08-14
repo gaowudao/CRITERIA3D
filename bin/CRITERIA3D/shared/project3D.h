@@ -60,7 +60,7 @@
 
         void clearWaterBalance3D();
 
-        bool loadSoilData(QString fileName);
+        bool loadSoilDatabase(QString fileName);
 
         void computeNrLayers();
         void setLayersDepth();

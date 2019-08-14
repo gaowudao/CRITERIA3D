@@ -1168,7 +1168,7 @@ void MainWindow::on_actionLoad_soil_data_triggered()
     QString fileName = QFileDialog::getOpenFileName(this, tr("Load DB soil"), "", tr("SQLite files (*.db)"));
     if (fileName == "") return;
 
-    myProject.loadSoilData(fileName);
+    myProject.loadSoilDatabase(fileName);
 }
 
 

@@ -84,7 +84,7 @@ void Project3D::clearWaterBalance3D()
 }
 
 
-bool Project3D::loadSoilData(QString fileName)
+bool Project3D::loadSoilDatabase(QString fileName)
 {
     if (! loadAllSoils(fileName, &(soilList), texturalClassList, &fittingOptions, &errorString))
     {
