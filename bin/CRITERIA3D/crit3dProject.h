@@ -32,7 +32,6 @@
 
         Crit3DProject();
 
-
         bool loadCriteria3DProject(QString myFileName);
 
         bool loadCriteria3DSettings();

@@ -159,8 +159,8 @@
         bool checkMapVariable(bool isComputed);
         void setMapVariable(meteoVariable myVar, gis::Crit3DRasterGrid *myGrid);
 
-        void openSoilWidget(QPoint windowPos);
-        void contextMenuRequested(QPoint windowPos, QPoint globalPos);
+        void openSoilWidget(QPoint localPos);
+        void contextMenuRequested(QPoint localPos, QPoint globalPos);
 
         void setInputRasterVisible(bool value);
         void setOutputRasterVisible(bool value);

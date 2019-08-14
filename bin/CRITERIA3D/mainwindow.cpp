@@ -228,14 +228,13 @@ void MainWindow::mouseMoveEvent(QMouseEvent * event)
 
 void MainWindow::mousePressEvent(QMouseEvent *event)
 {
-    QPoint pos = event->pos();
-    QPoint mapPoint = getMapPoint(&pos);
-
     if (event->button() == Qt::RightButton)
     {
         if (myRubberBand != nullptr)
         {
             // rubber band
+            QPoint pos = event->pos();
+            QPoint mapPoint = getMapPoint(&pos);
             QPointF firstCorner = event->localPos();
             myRubberBand->setFirstCorner(firstCorner);
             myRubberBand->setOrigin(mapPoint);
@@ -243,7 +242,10 @@ void MainWindow::mousePressEvent(QMouseEvent *event)
             myRubberBand->isActive = true;
             myRubberBand->show();
         }
-        else contextMenuRequested(event->pos(), event->globalPos());
+        else
+        {
+            contextMenuRequested(event->pos(), event->globalPos());
+        }
 
         #ifdef NETCDF
         if (myProject.netCDF.isLoaded)
@@ -426,10 +428,11 @@ QPoint MainWindow::getMapPoint(QPoint* point) const
     int dx, dy;
     dx = this->ui->widgetMap->x();
     dy = this->ui->widgetMap->y() + this->ui->menuBar->height();
-    mapPoint.setX(point->x() - dx);
-    mapPoint.setY(point->y() - dy);
+    mapPoint.setX(point->x() - dx - MAPBORDER);
+    mapPoint.setY(point->y() - dy - MAPBORDER);
     return mapPoint;
 }
+
 
 
 void MainWindow::resetMeteoPoints()
@@ -1112,11 +1115,11 @@ void MainWindow::on_actionCompute_AllMeteoMaps_triggered()
 }
 
 
-void MainWindow::openSoilWidget(QPoint windowPos)
+void MainWindow::openSoilWidget(QPoint localPos)
 {
     double x, y;
 
-    Position geoPos = mapView->mapToScene(getMapPoint(&windowPos));
+    Position geoPos = mapView->mapToScene(getMapPoint(&localPos));
     gis::latLonToUtmForceZone(myProject.gisSettings.utmZone, geoPos.latitude(), geoPos.longitude(), &x, &y);
     QString soilCode = myProject.getCrit3DSoilCode(x, y);
 
@@ -1128,7 +1131,7 @@ void MainWindow::openSoilWidget(QPoint windowPos)
 }
 
 
-void MainWindow::contextMenuRequested(QPoint windowPos, QPoint globalPos)
+void MainWindow::contextMenuRequested(QPoint localPos, QPoint globalPos)
 {
     QMenu submenu;
     int nrItems = 0;
@@ -1147,10 +1150,10 @@ void MainWindow::contextMenuRequested(QPoint windowPos, QPoint globalPos)
         if (myAction->text().contains("Soil data") )
         {
             if (myProject.nrSoils > 0) {
-                openSoilWidget(windowPos);
+                openSoilWidget(localPos);
             }
             else {
-                myProject.logError("Load soil database before.");
+                myProject.logInfoGUI("Load soil database before.");
             }
         }
     }
