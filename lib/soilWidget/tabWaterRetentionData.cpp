@@ -20,6 +20,8 @@ TabWaterRetentionData::TabWaterRetentionData()
     int margin = 25; // now table is empty
     tableWaterRetention->setFixedWidth(tableWaterRetention->horizontalHeader()->length() + tableWaterRetention->verticalHeader()->width() + margin);
     tableWaterRetention->setItemDelegate(new TableDelegateWaterRetention(tableWaterRetention));
+    tableWaterRetention->setSortingEnabled(true);
+    tableWaterRetention->sortByColumn(0, Qt::AscendingOrder);
 
     QHBoxLayout *addDeleteRowLayout = new QHBoxLayout;
     QLabel* addDeleteLabel = new QLabel("Modify data:");
@@ -66,6 +68,7 @@ void TabWaterRetentionData::insertData(soil::Crit3DSoil *soil)
     tableWaterRetention->setRowCount(row);
     int pos = 0;
     this->blockSignals(true);
+    tableWaterRetention->setSortingEnabled(false);
     for (int i = 0; i < mySoil->nrHorizons; i++)
     {
         for (int j = 0; j < mySoil->horizon[i].dbData.waterRetention.size(); j++)
@@ -76,6 +79,7 @@ void TabWaterRetentionData::insertData(soil::Crit3DSoil *soil)
             pos = pos + 1;
         }
     }
+    tableWaterRetention->setSortingEnabled(true);
     this->blockSignals(false);
     connect(tableWaterRetention, &QTableWidget::cellClicked, [=](int row, int column){ this->cellClicked(row, column); });
     connect(tableWaterRetention, &QTableWidget::cellChanged, [=](int row, int column){ this->cellChanged(row, column); });
@@ -101,6 +105,7 @@ void TabWaterRetentionData::tableVerticalHeaderClick(int index)
 
 void TabWaterRetentionData::addRowClicked()
 {
+    waterPotentialChanged = false;
     int numRow;
     if (!tableWaterRetention->selectedItems().isEmpty())
     {
@@ -119,6 +124,7 @@ void TabWaterRetentionData::addRowClicked()
     tableWaterRetention->insertRow(numRow);
 
     // fill default row (copy the previous row
+    tableWaterRetention->setSortingEnabled(false);
     if (numRow == 0)
     {
         tableWaterRetention->setItem(numRow, 0, new QTableWidgetItem(QString::number(1)));
@@ -131,6 +137,7 @@ void TabWaterRetentionData::addRowClicked()
         tableWaterRetention->setItem(numRow, 1, new QTableWidgetItem(tableWaterRetention->item(numRow-1,1)->text()));
         tableWaterRetention->setItem(numRow, 2, new QTableWidgetItem(tableWaterRetention->item(numRow-1,2)->text()));
     }
+    tableWaterRetention->setSortingEnabled(true);
     tableWaterRetention->selectRow(numRow);
     deleteRow->setEnabled(true);
 
@@ -214,7 +221,7 @@ void TabWaterRetentionData::cellChanged(int row, int column)
     switch (column) {
         case 0:
         {
-            if (data.toInt() < 0 || round(data.toDouble()) > mySoil->nrHorizons)
+            if (data.toInt() <= 0 || round(data.toDouble()) > mySoil->nrHorizons)
             { 
                 QMessageBox::critical(nullptr, "Error!", "Invalid horizon");
                 if (row == 0)
@@ -252,6 +259,15 @@ void TabWaterRetentionData::cellChanged(int row, int column)
             else
             {
                 tableWaterRetention->item(row, column)->setText(QString::number(data.toDouble(), 'f', 1));
+                if ( (row != 0 && data != tableWaterRetention->item(row-1,column)->text()) || (row == 0 && data.toDouble() != 0) )
+                {
+                    waterPotentialChanged = true;
+                }
+                else
+                {
+                    waterPotentialChanged = false;
+                }
+
             }
             break;
         }
@@ -279,12 +295,24 @@ void TabWaterRetentionData::cellChanged(int row, int column)
         }
 
     }
-    if (tableWaterRetention->itemAt(row,0) != nullptr && tableWaterRetention->itemAt(row,1) != nullptr && tableWaterRetention->itemAt(row,2) != nullptr)
+    if (waterPotentialChanged)
     {
-        // move row TO DO
+        // check position and move the row
+        int newPos = moveRow(row, tableWaterRetention->item(row,0)->text().toInt(), tableWaterRetention->item(row,1)->text().toInt(), tableWaterRetention->item(row,2)->text().toInt());
         std::string errorString;
         // TO DO soil set new value
         soilCodeChanged = mySoil->code;
     }
 
 }
+
+int TabWaterRetentionData::moveRow(int row, int horizon, double waterPotential, double waterContent)
+{
+    // check waterPotential
+    qDebug() << "moveRow";
+    int newPos = row;
+    return newPos;
+}
+
+
+
