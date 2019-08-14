@@ -198,11 +198,11 @@ namespace soil
         /*! sandy clay */
         if ((clay >= 35) && (sand >= 45)) myClass = 10;
         /*! silty loam */
-        if (((clay < 27.5f) && (silt >= 50) & (silt <= 80)) || ((clay >= 12.5f) && (silt >= 80))) myClass = 4;
+        if (((clay < 25) && (silt >= 50) & (silt <= 80)) || ((clay >= 12.5f) && (silt >= 80))) myClass = 4;
         /*! silt */
         if ((clay < 12.5f) && (silt >= 80)) myClass = 6;
         /*! silty clay loam */
-        if ((clay < 40) && (sand < 20) && (clay >= 27.5f)) myClass = 8;
+        if ((clay < 40) && (sand < 20) && (clay >= 25)) myClass = 8;
         /*! loamy sand */
         if (((clay < 20) && (sand >= 52.5f)) ||
            ((clay < 7.5f) && (silt < 50) && (sand >= 42.5f) && (sand <= 52.5f))) myClass = 3;
@@ -213,9 +213,9 @@ namespace soil
         /*! sandy clay loam */
         if ((clay >= 20) && (clay < 35) && (sand >= 45) && (silt < 27.5f)) myClass = 7;
         /*! loam */
-        if ((clay >= 7.5f) && (clay < 27.5f) && (sand < 52.5f)  && (silt >= 27.5f) & (silt < 50)) myClass = 5;
+        if ((clay >= 7.5f) && (clay < 25) && (sand < 52.5f)  && (silt >= 27.5f) & (silt < 50)) myClass = 5;
         /*! clay loam */
-        if ((clay >= 27.5f) && (clay < 40) && (sand >= 20) && (sand < 45)) myClass = 9;
+        if ((clay >= 25) && (clay < 40) && (sand >= 20) && (sand < 45)) myClass = 9;
 
         return myClass;
     }
