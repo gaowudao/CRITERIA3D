@@ -42,7 +42,7 @@
 
 extern Crit3DProject myProject;
 
-#define MAPBORDER 8
+#define MAPBORDER 11
 #define TOOLSWIDTH 260
 
 MainWindow::MainWindow(QWidget *parent) :
@@ -114,10 +114,10 @@ void MainWindow::resizeEvent(QResizeEvent * event)
     ui->widgetMap->setGeometry(TOOLSWIDTH, 0, this->width()-TOOLSWIDTH, this->height() - INFOHEIGHT);
     mapView->resize(ui->widgetMap->size());
 
-    ui->groupBoxInput->move(MAPBORDER/2, MAPBORDER*2);
+    ui->groupBoxInput->move(MAPBORDER/2, MAPBORDER);
     ui->groupBoxInput->resize(TOOLSWIDTH, ui->groupBoxInput->height());
 
-    ui->groupBoxOutput->move(MAPBORDER/2, ui->groupBoxInput->y() + ui->groupBoxInput->height() + MAPBORDER*2);
+    ui->groupBoxOutput->move(MAPBORDER/2, ui->groupBoxInput->y() + ui->groupBoxInput->height() + MAPBORDER);
     ui->groupBoxOutput->resize(TOOLSWIDTH, ui->groupBoxOutput->height());
 }
 
