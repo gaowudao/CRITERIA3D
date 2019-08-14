@@ -781,7 +781,7 @@ void Project::closeMeteoGridDB()
  */
 bool Project::loadDEM(QString myFileName)
 {
-    this->logInfo("Read Digital Elevation Model...");
+    logInfo("Read Digital Elevation Model...");
 
     if (myFileName == "")
     {
@@ -831,7 +831,7 @@ bool Project::loadDEM(QString myFileName)
     //check points position with respect to DEM
     checkMeteoPointsDEM();
 
-    this->logInfo("DEM = " + myFileName);
+    logInfo("DEM = " + myFileName);
     return true;
 }
 
@@ -839,6 +839,7 @@ bool Project::loadDEM(QString myFileName)
 bool Project::loadMeteoPointsDB(QString dbName)
 {
     if (dbName == "") return false;
+    logInfo("Read meteo points database...");
 
     closeMeteoPointsDB();
 
@@ -891,6 +892,7 @@ bool Project::loadMeteoPointsDB(QString dbName)
         checkMeteoPointsDEM();
 
     meteoPointsLoaded = true;
+    logInfo("Meteo points DB = " + dbName);
 
     return true;
 }
