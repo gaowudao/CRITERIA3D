@@ -211,6 +211,42 @@ Crit3DSoilWidget::Crit3DSoilWidget()
 }
 
 
+void Crit3DSoilWidget::setDbSoil(QString dbSoilName, QString soilCode)
+{
+    // open soil db
+    QString error;
+    if (! openDbSoil(dbSoilName, &dbSoil, &error))
+    {
+        QMessageBox::critical(nullptr, "Error!", error);
+        return;
+    }
+
+    // load default VG parameters
+    if (! loadVanGenuchtenParameters(&dbSoil, textureClassList, &error))
+    {
+        QMessageBox::critical(nullptr, "Error!", error);
+        return;
+    }
+
+    // read soil list
+    QStringList soilStringList;
+    if (! getSoilList(&dbSoil, &soilStringList, &error))
+    {
+        QMessageBox::critical(nullptr, "Error!", error);
+        return;
+    }
+
+    // show soil list
+    soilListComboBox.clear();
+    for (int i = 0; i < soilStringList.size(); i++)
+    {
+        soilListComboBox.addItem(soilStringList[i]);
+    }
+
+    soilListComboBox.setCurrentText(soilCode);
+}
+
+
 void Crit3DSoilWidget::on_actionOpenSoilDB()
 {
     QString dbSoilName = QFileDialog::getOpenFileName(this, tr("Open soil database"), "", tr("SQLite files (*.db)"));
@@ -245,7 +281,6 @@ void Crit3DSoilWidget::on_actionOpenSoilDB()
     {
         this->soilListComboBox.addItem(soilStringList[i]);
     }
-
 }
 
 
