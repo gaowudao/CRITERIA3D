@@ -157,7 +157,7 @@ Crit3DSoilWidget::Crit3DSoilWidget()
 
     // actions
     QAction* openSoilDB = new QAction(tr("&Open dbSoil"), this);
-    QAction* saveChanges = new QAction(tr("&Save Changes"), this);
+    saveChanges = new QAction(tr("&Save Changes"), this);
     QAction* newSoil = new QAction(tr("&New Soil"), this);
     QAction* deleteSoil = new QAction(tr("&Delete Soil"), this);
     restoreData = new QAction(tr("&Restore Data"), this);
@@ -166,6 +166,7 @@ Crit3DSoilWidget::Crit3DSoilWidget()
     addHorizon->setEnabled(false);
     deleteHorizon->setEnabled(false);
     restoreData->setEnabled(false);
+    saveChanges->setEnabled(false);
 
     useWaterRetentionData = new QAction(tr("&Use Water Retention Data"), this);
     airEntryFixed = new QAction(tr("&Air Entry fixed"), this);
@@ -281,6 +282,7 @@ void Crit3DSoilWidget::on_actionOpenSoilDB()
     {
         this->soilListComboBox.addItem(soilStringList[i]);
     }
+    saveChanges->setEnabled(true);
 }
 
 
@@ -468,17 +470,14 @@ void Crit3DSoilWidget::on_actionSave()
     if (!soilCodeChangedWaterRetentionTab.empty())
     {
         wrDataTab->updateSoil(&mySoil);
-        for (int i = 0; i < mySoil.nrHorizons; i++)
-        {
-            qDebug() << "i = " << i;
-            qDebug() << "mySoil.horizon[i].dbData.waterRetention.size() = " << mySoil.horizon[i].dbData.waterRetention.size();
-            for (int j = 0; j < mySoil.horizon[i].dbData.waterRetention.size(); j++)
-            {
-                qDebug() << mySoil.horizon[i].dbData.waterRetention[j].water_potential;
-                qDebug() << mySoil.horizon[i].dbData.waterRetention[j].water_content;
-            }
+        // TO update DB
+//        for (int i = 0; i < mySoil.nrHorizons; i++)
+//        {
+//            for (int j = 0; j < mySoil.horizon[i].dbData.waterRetention.size(); j++)
+//            {
+//            }
 
-        }
+//        }
 
 //        if ()
 //        {

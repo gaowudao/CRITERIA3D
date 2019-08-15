@@ -54,6 +54,7 @@
             QLineEdit* awValue;
             QLineEdit* potFCValue;
             QAction* restoreData;
+            QAction* saveChanges;
             QAction* addHorizon;
             QAction* deleteHorizon;
             QAction* useWaterRetentionData;

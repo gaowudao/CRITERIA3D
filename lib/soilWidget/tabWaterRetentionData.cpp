@@ -311,17 +311,15 @@ void TabWaterRetentionData::cellChanged(int row, int column)
 void TabWaterRetentionData::updateSoil(soil::Crit3DSoil *soil)
 {
     qSort(horizonChanged);
-    qDebug() << "horizonChanged" << horizonChanged;
     soil::Crit3DWaterRetention waterRetention;
     for (int i = 0; i < horizonChanged.size(); i++)
     {
         //remove all prev points
         soil->horizon[horizonChanged[i]-1].dbData.waterRetention.erase(soil->horizon[horizonChanged[i]-1].dbData.waterRetention.begin(), soil->horizon[horizonChanged[i]-1].dbData.waterRetention.end());
         soil->horizon[horizonChanged[i]-1].dbData.waterRetention.clear();
-        qDebug() << "tableWaterRetention->rowCount()" << tableWaterRetention->rowCount();
         for (int j = 0; j < tableWaterRetention->rowCount(); j++)
         {
-            if (tableWaterRetention->item(j,0)->text().toInt() == (i+1))
+            if (tableWaterRetention->item(j,0)->text().toInt() == horizonChanged[i])
             {
                 waterRetention.water_potential = tableWaterRetention->item(j,1)->text().toDouble();  // [kPa]
                 waterRetention.water_content = tableWaterRetention->item(j,2)->text().toDouble();      // [m3 m-3]
