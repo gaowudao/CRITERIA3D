@@ -22,6 +22,7 @@
         void updateSoil(soil::Crit3DSoil *soil);
         std::string getSoilCodeChanged() const;
         void resetSoilCodeChanged();
+        QVector<int> getHorizonChanged() const;
 
     private:
         QTableWidget* tableWaterRetention;
@@ -30,7 +31,6 @@
         soil::Crit3DSoil* mySoil;
         std::string soilCodeChanged;
         QVector<int> horizonChanged;
-        //QVector<int> lastPositionHorizon;
 
     };
 

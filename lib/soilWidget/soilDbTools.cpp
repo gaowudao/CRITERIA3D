@@ -387,6 +387,58 @@ bool updateSoilData(QSqlDatabase* dbSoil, QString soilCode, soil::Crit3DSoil* my
         return true;
 }
 
+bool updateWaterRetentionData(QSqlDatabase* dbSoil, QString soilCode, soil::Crit3DSoil* mySoil, int horizon, QString *error)
+{
+
+    QSqlQuery qry(*dbSoil);
+    if (soilCode.isEmpty())
+    {
+        *error = "soilCode missing";
+        return false;
+    }
+
+    // delete all row from table horizons of soil:soilCode
+    qry.prepare( "DELETE FROM water_retention WHERE soil_code = :soil_code AND horizon_nr = :horizon_nr");
+    qry.bindValue(":soil_code", soilCode);
+    qry.bindValue(":horizon_nr", horizon);
+
+    if( !qry.exec() )
+    {
+        *error = qry.lastError().text();
+        return false;
+    }
+
+    // insert new rows
+    qry.prepare( "INSERT INTO water_retention (soil_code, horizon_nr, water_potential, water_content)"
+                                              " VALUES (?, ?, ?, ?)" );
+
+    QVariantList soil_code;
+    QVariantList horizon_nr;
+    QVariantList water_potential;
+    QVariantList water_content;
+
+    for (unsigned int i=0; i < mySoil->horizon[horizon-1].dbData.waterRetention.size(); i++)
+    {
+        soil_code << soilCode;
+        horizon_nr << horizon;
+        water_potential << mySoil->horizon[horizon-1].dbData.waterRetention[i].water_potential;
+        water_content << mySoil->horizon[horizon-1].dbData.waterRetention[i].water_content;
+    }
+
+    qry.addBindValue(soil_code);
+    qry.addBindValue(horizon_nr);
+    qry.addBindValue(water_potential);
+    qry.addBindValue(water_content);
+
+    if( !qry.execBatch() )
+    {
+        *error = qry.lastError().text();
+        return false;
+    }
+    else
+        return true;
+}
+
 
 bool deleteSoilData(QSqlDatabase* dbSoil, QString soilCode, QString *error)
 {
