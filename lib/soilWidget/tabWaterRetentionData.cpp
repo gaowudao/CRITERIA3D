@@ -43,6 +43,7 @@ TabWaterRetentionData::TabWaterRetentionData()
     mainLayout->addWidget(tableWaterRetention);
     mainLayout->addLayout(addDeleteRowLayout);
     setLayout(mainLayout);
+    fillData = false;
 }
 
 void TabWaterRetentionData::insertData(soil::Crit3DSoil *soil)
@@ -51,8 +52,9 @@ void TabWaterRetentionData::insertData(soil::Crit3DSoil *soil)
     {
         return;
     }
-    tableWaterRetention->clearSelection();
     resetAll();
+    fillData = true;
+    tableWaterRetention->clearSelection();
     deleteRow->setEnabled(false);
     mySoil = soil;
     int row = 0;
@@ -179,6 +181,8 @@ void TabWaterRetentionData::resetAll()
     deleteRow->setEnabled(false);
     addRow->setEnabled(false);
     tableWaterRetention->setRowCount(0);
+    fillData = false;
+    resetSoilCodeChanged();
 }
 
 void TabWaterRetentionData::cellClicked(int row, int column)
@@ -322,6 +326,16 @@ void TabWaterRetentionData::resetSoilCodeChanged()
 QVector<int> TabWaterRetentionData::getHorizonChanged() const
 {
     return horizonChanged;
+}
+
+bool TabWaterRetentionData::getFillData() const
+{
+    return fillData;
+}
+
+void TabWaterRetentionData::setFillData(bool value)
+{
+    fillData = value;
 }
 
 

@@ -16,6 +16,8 @@
         TabWaterRetentionCurve();
         void insertElements(soil::Crit3DSoil* soil);
         void resetAll();
+        bool getFillElement() const;
+        void setFillElement(bool value);
 
     private:
         soil::Crit3DSoil* mySoil;
@@ -24,6 +26,7 @@
         QList<LineHorizont*> lineList;
         QList<QwtPlotCurve*> curveList;
         Crit3CurvePicker *pick;
+        bool fillElement;
 
     private slots:
         void widgetClicked(int index);

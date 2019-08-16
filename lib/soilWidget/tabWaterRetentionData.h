@@ -23,6 +23,8 @@
         std::string getSoilCodeChanged() const;
         void resetSoilCodeChanged();
         QVector<int> getHorizonChanged() const;
+        bool getFillData() const;
+        void setFillData(bool value);
 
     private:
         QTableWidget* tableWaterRetention;
@@ -31,6 +33,7 @@
         soil::Crit3DSoil* mySoil;
         std::string soilCodeChanged;
         QVector<int> horizonChanged;
+        bool fillData;
 
     };
 

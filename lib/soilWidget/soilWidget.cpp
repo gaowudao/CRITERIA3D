@@ -295,6 +295,8 @@ void Crit3DSoilWidget::on_actionChooseSoil(QString soilCode)
     if (soilCode.isEmpty())
     {
         horizonsTab->resetAll();
+        wrDataTab->resetAll();
+        wrCurveTab->resetAll();
         return;
     }
 
@@ -375,11 +377,21 @@ void Crit3DSoilWidget::on_actionChooseSoil(QString soilCode)
     // tab water retention curve is opened
     if (tabWidget->currentIndex() == 1)
     {
-        wrDataTab->insertData(&mySoil);
+        if (!wrDataTab->getFillData())
+        {
+            wrDataTab->insertData(&mySoil);
+            addHorizon->setEnabled(false);
+            deleteHorizon->setEnabled(false);
+            wrDataTab->setFillData(true);
+        }
     }
     else if (tabWidget->currentIndex() == 2)
     {
-        wrCurveTab->insertElements(&mySoil);
+        if (!wrCurveTab->getFillElement())
+        {
+            wrCurveTab->insertElements(&mySoil);
+            wrCurveTab->setFillElement(true);
+        }
     }
 
     // circle inside triangle
@@ -524,14 +536,14 @@ void Crit3DSoilWidget::on_actionRestoreData()
 {
     mySoil = savedSoil;
     horizonsTab->insertSoilHorizons(&mySoil, textureClassList, &fittingOptions);
-    if (tabWidget->currentIndex() == 1)
-    {
-        wrDataTab->insertData(&mySoil);
-    }
-    else if (tabWidget->currentIndex() == 2)
-    {
-        wrCurveTab->insertElements(&mySoil);
-    }
+
+    wrDataTab->insertData(&mySoil);
+    addHorizon->setEnabled(false);
+    deleteHorizon->setEnabled(false);
+    wrDataTab->setFillData(true);
+
+    wrCurveTab->insertElements(&mySoil);
+    wrCurveTab->setFillElement(true);
 }
 
 void Crit3DSoilWidget::on_actionAddHorizon()
@@ -650,15 +662,23 @@ void Crit3DSoilWidget::tabChanged(int index)
     }
     if (index == 1) // tab water retention data
     {
-        wrDataTab->insertData(&mySoil);
-        addHorizon->setEnabled(false);
-        deleteHorizon->setEnabled(false);
+        if (!wrDataTab->getFillData() && !soilListComboBox.currentText().isEmpty())
+        {
+            wrDataTab->insertData(&mySoil);
+            addHorizon->setEnabled(false);
+            deleteHorizon->setEnabled(false);
+            wrDataTab->setFillData(true);
+        }
+
     }
     else if (index == 2) // tab water retention curve
     {
-        wrCurveTab->insertElements(&mySoil);
-        addHorizon->setEnabled(false);
-        deleteHorizon->setEnabled(false);
+        if (!wrCurveTab->getFillElement() && !soilListComboBox.currentText().isEmpty())
+        {
+            wrCurveTab->insertElements(&mySoil);
+            wrCurveTab->setFillElement(true);
+        }
+
     }
 
 }

@@ -67,6 +67,7 @@ TabWaterRetentionCurve::TabWaterRetentionCurve()
     mainLayout->addLayout(plotLayout);
 
     setLayout(mainLayout);
+    fillElement = false;
 
 }
 
@@ -90,7 +91,18 @@ void TabWaterRetentionCurve::resetAll()
         delete pick;
         pick = nullptr;
     }
+    fillElement = false;
 
+}
+
+bool TabWaterRetentionCurve::getFillElement() const
+{
+    return fillElement;
+}
+
+void TabWaterRetentionCurve::setFillElement(bool value)
+{
+    fillElement = value;
 }
 
 void TabWaterRetentionCurve::insertElements(soil::Crit3DSoil *soil)
@@ -103,8 +115,9 @@ void TabWaterRetentionCurve::insertElements(soil::Crit3DSoil *soil)
 
     if (soil!=nullptr)
     {
-        mySoil = soil;
         resetAll();
+        fillElement = true;
+        mySoil = soil;
         QVector<double> xVector;
         QVector<double> yVector;
         double x;
