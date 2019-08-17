@@ -294,12 +294,11 @@ void Crit3DSoilWidget::on_actionChooseSoil(QString soilCode)
     // soilListComboBox has been cleared
     if (soilCode.isEmpty())
     {
-        horizonsTab->resetAll();
-        wrDataTab->resetAll();
-        wrCurveTab->resetAll();
         return;
     }
-
+    horizonsTab->resetAll();
+    wrDataTab->setFillData(false);
+    wrCurveTab->setFillElement(false);
     QString error;
     // somethig has been modified, ask for saving
     if (!horizonsTab->getSoilCodeChanged().empty() || !wrDataTab->getSoilCodeChanged().empty())
@@ -366,34 +365,12 @@ void Crit3DSoilWidget::on_actionChooseSoil(QString soilCode)
     awValue->clear();
     potFCValue->clear();
 
-    horizonsTab->insertSoilHorizons(&mySoil, textureClassList, &fittingOptions);
-    addHorizon->setEnabled(true);
-    deleteHorizon->setEnabled(true);
     restoreData->setEnabled(true);
     infoGroup->setVisible(true);
     infoGroup->setTitle(soilName);
     soilCodeValue->setText(QString::fromStdString(mySoil.code));
 
-    // tab water retention curve is opened
-    if (tabWidget->currentIndex() == 1)
-    {
-        if (!wrDataTab->getFillData())
-        {
-            wrDataTab->insertData(&mySoil);
-            addHorizon->setEnabled(false);
-            deleteHorizon->setEnabled(false);
-            wrDataTab->setFillData(true);
-        }
-    }
-    else if (tabWidget->currentIndex() == 2)
-    {
-        if (!wrCurveTab->getFillElement())
-        {
-            wrCurveTab->insertElements(&mySoil);
-            wrCurveTab->setFillElement(true);
-        }
-    }
-
+    tabChanged(tabWidget->currentIndex());
     // circle inside triangle
     for (unsigned int i = 0; i < mySoil.nrHorizons; i++)
     {
@@ -655,8 +632,9 @@ void Crit3DSoilWidget::setInfoTextural(int nHorizon)
 void Crit3DSoilWidget::tabChanged(int index)
 {
 
-    if (index == 0)
+    if (index == 0 && !soilListComboBox.currentText().isEmpty())
     {
+        horizonsTab->insertSoilHorizons(&mySoil, textureClassList, &fittingOptions);
         addHorizon->setEnabled(true);
         deleteHorizon->setEnabled(true);
     }
