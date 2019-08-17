@@ -296,39 +296,30 @@ void Crit3DSoilWidget::on_actionChooseSoil(QString soilCode)
     {
         return;
     }
-    horizonsTab->resetAll();
+    horizonsTab->setInsertSoilElement(false);
     wrDataTab->setFillData(false);
     wrCurveTab->setFillElement(false);
     QString error;
     // somethig has been modified, ask for saving
-    if (!horizonsTab->getSoilCodeChanged().empty() || !wrDataTab->getSoilCodeChanged().empty())
+    if (horizonsTab->getSoilCodeChanged() == true || wrDataTab->getSoilCodeChanged() == true)
     {
-        std::string soilCodeChangedHorizonTab = horizonsTab->getSoilCodeChanged();
-        std::string soilCodeChangedWaterRetentionTab = wrDataTab->getSoilCodeChanged();
-        std::string soilCodeChanged;
+
+        QString soilCodeChanged = QString::fromStdString(mySoil.code);
         QMessageBox::StandardButton confirm;
-        if (!soilCodeChangedHorizonTab.empty())
-        {
-            soilCodeChanged = soilCodeChangedHorizonTab;
-        }
-        else
-        {
-            soilCodeChanged = soilCodeChangedWaterRetentionTab;
-        }
-        QString msg = "Do you want to save changes to soil "+QString::fromStdString(soilCodeChanged)+" ?";
+        QString msg = "Do you want to save changes to soil "+ soilCodeChanged + " ?";
         confirm = QMessageBox::question(nullptr, "Warning", msg, QMessageBox::Yes|QMessageBox::No, QMessageBox::Yes);
 
         if (confirm == QMessageBox::Yes)
         {
-            if (!soilCodeChangedHorizonTab.empty())
+            if (horizonsTab->getSoilCodeChanged() == true)
             {
-                if (!updateSoilData(&dbSoil, QString::fromStdString(soilCodeChangedHorizonTab), &mySoil, &error))
+                if (!updateSoilData(&dbSoil, soilCodeChanged, &mySoil, &error))
                 {
                     QMessageBox::critical(nullptr, "Error!", error);
                     return;
                 }
             }
-            if (!soilCodeChangedWaterRetentionTab.empty())
+            if (wrDataTab->getSoilCodeChanged() == true)
             {
                 // update Soil
                 wrDataTab->updateSoil(&mySoil);
@@ -336,7 +327,7 @@ void Crit3DSoilWidget::on_actionChooseSoil(QString soilCode)
                 // update water_retention DB table
                 for (int i = 0; i < horizonChanged.size(); i++)
                 {
-                    if (!updateWaterRetentionData(&dbSoil, QString::fromStdString(soilCodeChangedWaterRetentionTab), &mySoil, horizonChanged[i], &error))
+                    if (!updateWaterRetentionData(&dbSoil, soilCodeChanged, &mySoil, horizonChanged[i], &error))
                     {
                         QMessageBox::critical(nullptr, "Error!", error);
                         return;
@@ -473,23 +464,22 @@ void Crit3DSoilWidget::on_actionParameterRestriction()
 void Crit3DSoilWidget::on_actionSave()
 {
     QString error;
-    std::string soilCodeChangedHorizonTab = horizonsTab->getSoilCodeChanged();
-    std::string soilCodeChangedWaterRetentionTab = wrDataTab->getSoilCodeChanged();
-    if (soilCodeChangedHorizonTab.empty() && soilCodeChangedWaterRetentionTab.empty())
+    if (horizonsTab->getSoilCodeChanged() == false && wrDataTab->getSoilCodeChanged() == false)
     {
         QMessageBox::critical(nullptr, "Warning", "The soil has already been updated");
         return;
     }
-    if (!soilCodeChangedHorizonTab.empty())
+    QString soilCodeChanged = QString::fromStdString(mySoil.code);
+    if (horizonsTab->getSoilCodeChanged() == true)
     {
-        if (!updateSoilData(&dbSoil, QString::fromStdString(soilCodeChangedHorizonTab), &mySoil, &error))
+        if (!updateSoilData(&dbSoil, soilCodeChanged, &mySoil, &error))
         {
             QMessageBox::critical(nullptr, "Error!", error);
             return;
         }
         horizonsTab->resetSoilCodeChanged();
     }
-    if (!soilCodeChangedWaterRetentionTab.empty())
+    if (wrDataTab->getSoilCodeChanged() == true)
     {
         // update Soil
         wrDataTab->updateSoil(&mySoil);
@@ -497,7 +487,7 @@ void Crit3DSoilWidget::on_actionSave()
         // update water_retention DB table
         for (int i = 0; i < horizonChanged.size(); i++)
         {
-            if (!updateWaterRetentionData(&dbSoil, QString::fromStdString(soilCodeChangedWaterRetentionTab), &mySoil, horizonChanged[i], &error))
+            if (!updateWaterRetentionData(&dbSoil, soilCodeChanged, &mySoil, horizonChanged[i], &error))
             {
                 QMessageBox::critical(nullptr, "Error!", error);
                 return;
@@ -512,15 +502,11 @@ void Crit3DSoilWidget::on_actionSave()
 void Crit3DSoilWidget::on_actionRestoreData()
 {
     mySoil = savedSoil;
-    horizonsTab->insertSoilHorizons(&mySoil, textureClassList, &fittingOptions);
+    horizonsTab->setInsertSoilElement(false);
+    wrDataTab->setFillData(false);
+    wrCurveTab->setFillElement(false);
 
-    wrDataTab->insertData(&mySoil);
-    addHorizon->setEnabled(false);
-    deleteHorizon->setEnabled(false);
-    wrDataTab->setFillData(true);
-
-    wrCurveTab->insertElements(&mySoil);
-    wrCurveTab->setFillElement(true);
+    tabChanged(tabWidget->currentIndex());
 }
 
 void Crit3DSoilWidget::on_actionAddHorizon()
@@ -632,11 +618,14 @@ void Crit3DSoilWidget::setInfoTextural(int nHorizon)
 void Crit3DSoilWidget::tabChanged(int index)
 {
 
-    if (index == 0 && !soilListComboBox.currentText().isEmpty())
+    if (index == 0)
     {
-        horizonsTab->insertSoilHorizons(&mySoil, textureClassList, &fittingOptions);
-        addHorizon->setEnabled(true);
-        deleteHorizon->setEnabled(true);
+        if (!horizonsTab->getInsertSoilElement() && !soilListComboBox.currentText().isEmpty())
+        {
+            horizonsTab->insertSoilHorizons(&mySoil, textureClassList, &fittingOptions);
+            addHorizon->setEnabled(true);
+            deleteHorizon->setEnabled(true);
+        }
     }
     if (index == 1) // tab water retention data
     {
@@ -645,7 +634,6 @@ void Crit3DSoilWidget::tabChanged(int index)
             wrDataTab->insertData(&mySoil);
             addHorizon->setEnabled(false);
             deleteHorizon->setEnabled(false);
-            wrDataTab->setFillData(true);
         }
 
     }
@@ -654,7 +642,6 @@ void Crit3DSoilWidget::tabChanged(int index)
         if (!wrCurveTab->getFillElement() && !soilListComboBox.currentText().isEmpty())
         {
             wrCurveTab->insertElements(&mySoil);
-            wrCurveTab->setFillElement(true);
         }
 
     }

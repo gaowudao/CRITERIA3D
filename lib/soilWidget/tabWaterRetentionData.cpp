@@ -44,15 +44,17 @@ TabWaterRetentionData::TabWaterRetentionData()
     mainLayout->addLayout(addDeleteRowLayout);
     setLayout(mainLayout);
     fillData = false;
+    soilCodeChanged = false;
 }
 
 void TabWaterRetentionData::insertData(soil::Crit3DSoil *soil)
 {
+
     if (soil == nullptr)
     {
         return;
     }
-    resetAll();
+
     fillData = true;
     tableWaterRetention->clearSelection();
     deleteRow->setEnabled(false);
@@ -146,6 +148,7 @@ void TabWaterRetentionData::addRowClicked()
         horizonChanged << tableWaterRetention->item(numRow,0)->text().toInt();
     }
     deleteRow->setEnabled(true);
+    soilCodeChanged = true;
 
 }
 
@@ -173,7 +176,7 @@ void TabWaterRetentionData::removeRowClicked()
     }
 
     tableWaterRetention->removeRow(row);
-    soilCodeChanged = mySoil->code;
+    soilCodeChanged = true;
 }
 
 void TabWaterRetentionData::resetAll()
@@ -287,7 +290,7 @@ void TabWaterRetentionData::cellChanged(int row, int column)
     }
 
     tableWaterRetention->update();
-    soilCodeChanged = mySoil->code;
+    soilCodeChanged = true;
 
 }
 
@@ -312,14 +315,14 @@ void TabWaterRetentionData::updateSoil(soil::Crit3DSoil *soil)
     }
 }
 
-std::string TabWaterRetentionData::getSoilCodeChanged() const
+bool TabWaterRetentionData::getSoilCodeChanged()
 {
     return soilCodeChanged;
 }
 
 void TabWaterRetentionData::resetSoilCodeChanged()
 {
-    soilCodeChanged.clear();
+    soilCodeChanged = false;
     horizonChanged.clear();
 }
 

@@ -20,7 +20,7 @@
         void cellClicked(int row, int column);
         void cellChanged(int row, int column);
         void updateSoil(soil::Crit3DSoil *soil);
-        std::string getSoilCodeChanged() const;
+        bool getSoilCodeChanged();
         void resetSoilCodeChanged();
         QVector<int> getHorizonChanged() const;
         bool getFillData() const;
@@ -31,7 +31,7 @@
         QPushButton* addRow;
         QPushButton* deleteRow;
         soil::Crit3DSoil* mySoil;
-        std::string soilCodeChanged;
+        bool soilCodeChanged;
         QVector<int> horizonChanged;
         bool fillData;
 

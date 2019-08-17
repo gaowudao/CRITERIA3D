@@ -31,9 +31,11 @@
         void cellClickedModel(int row, int column);
         void addRowClicked();
         void removeRowClicked();
-        std::string getSoilCodeChanged() const;
+        bool getSoilCodeChanged();
         void resetSoilCodeChanged();
         void resetAll();
+        bool getInsertSoilElement() const;
+        void setInsertSoilElement(bool value);
 
     private:
         Crit3DSoilTable* tableDb;
@@ -43,7 +45,8 @@
         soil::Crit3DSoil* mySoil;
         soil::Crit3DTextureClass* myTextureClassList;
         soil::Crit3DFittingOptions* myFittingOptions;
-        std::string soilCodeChanged;
+        bool soilCodeChanged;
+        bool insertSoilElement;
 
     signals:
         void horizonSelected(int nHorizon);

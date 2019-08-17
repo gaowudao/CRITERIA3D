@@ -44,13 +44,15 @@ TabHorizons::TabHorizons()
     mainLayout->addWidget(tableModel);
 
     setLayout(mainLayout);
+    insertSoilElement = false;
+    soilCodeChanged = false;
 }
 
 void TabHorizons::insertSoilHorizons(soil::Crit3DSoil *soil, soil::Crit3DTextureClass* textureClassList,
                                      soil::Crit3DFittingOptions* fittingOptions)
 {
-    clearSelections();
-    resetSoilCodeChanged();
+    resetAll();
+    insertSoilElement = true;
     //disable events otherwise setBackgroundColor call again cellChanged event
     tableDb->blockSignals(true);
     mySoil = soil;
@@ -610,7 +612,7 @@ void TabHorizons::cellChanged(int row, int column)
 
     clearSelections();
     tableDb->blockSignals(false);
-    soilCodeChanged = mySoil->code;
+    soilCodeChanged = true;
 }
 
 void TabHorizons::addRowClicked()
@@ -666,7 +668,7 @@ void TabHorizons::addRowClicked()
     mySoil->addHorizon(numRow,newHor);
     checkDepths();
     tableDb->blockSignals(false);
-    soilCodeChanged = mySoil->code;
+    soilCodeChanged = true;
 
 }
 
@@ -694,21 +696,34 @@ void TabHorizons::removeRowClicked()
     mySoil->deleteHorizon(row);
     checkDepths();
     tableDb->blockSignals(false);
-    soilCodeChanged = mySoil->code;
+    soilCodeChanged = true;
 }
 
-std::string TabHorizons::getSoilCodeChanged() const
+bool TabHorizons::getSoilCodeChanged()
 {
     return soilCodeChanged;
 }
 
 void TabHorizons::resetSoilCodeChanged()
 {
-    soilCodeChanged.clear();
+    soilCodeChanged = false;
 }
 
 void TabHorizons::resetAll()
 {
     tableDb->setRowCount(0);
     tableModel->setRowCount(0);
+    insertSoilElement = false;
+    clearSelections();
+    resetSoilCodeChanged();
+}
+
+bool TabHorizons::getInsertSoilElement() const
+{
+    return insertSoilElement;
+}
+
+void TabHorizons::setInsertSoilElement(bool value)
+{
+    insertSoilElement = value;
 }
