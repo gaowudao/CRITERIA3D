@@ -296,9 +296,7 @@ void Crit3DSoilWidget::on_actionChooseSoil(QString soilCode)
     {
         return;
     }
-    horizonsTab->setInsertSoilElement(false);
-    wrDataTab->setFillData(false);
-    wrCurveTab->setFillElement(false);
+
     QString error;
     // somethig has been modified, ask for saving
     if (horizonsTab->getSoilCodeChanged() == true || wrDataTab->getSoilCodeChanged() == true)
@@ -337,10 +335,11 @@ void Crit3DSoilWidget::on_actionChooseSoil(QString soilCode)
 
             }
         }
-        horizonsTab->resetSoilCodeChanged();
-        wrDataTab->resetSoilCodeChanged();
     }
 
+    horizonsTab->resetAll();
+    wrDataTab->resetAll();
+    wrCurveTab->resetAll();
 
     if (! loadSoil(&dbSoil, soilCode, &mySoil, textureClassList, &fittingOptions, &error))
     {
@@ -618,9 +617,13 @@ void Crit3DSoilWidget::setInfoTextural(int nHorizon)
 void Crit3DSoilWidget::tabChanged(int index)
 {
 
+    if (soilListComboBox.currentText().isEmpty())
+    {
+        return;
+    }
     if (index == 0)
     {
-        if (!horizonsTab->getInsertSoilElement() && !soilListComboBox.currentText().isEmpty())
+        if (!horizonsTab->getInsertSoilElement())
         {
             horizonsTab->insertSoilHorizons(&mySoil, textureClassList, &fittingOptions);
             addHorizon->setEnabled(true);
@@ -629,7 +632,7 @@ void Crit3DSoilWidget::tabChanged(int index)
     }
     if (index == 1) // tab water retention data
     {
-        if (!wrDataTab->getFillData() && !soilListComboBox.currentText().isEmpty())
+        if (!wrDataTab->getFillData())
         {
             wrDataTab->insertData(&mySoil);
             addHorizon->setEnabled(false);
@@ -639,7 +642,7 @@ void Crit3DSoilWidget::tabChanged(int index)
     }
     else if (index == 2) // tab water retention curve
     {
-        if (!wrCurveTab->getFillElement() && !soilListComboBox.currentText().isEmpty())
+        if (!wrCurveTab->getFillElement())
         {
             wrCurveTab->insertElements(&mySoil);
         }

@@ -56,6 +56,7 @@ void TabWaterRetentionData::insertData(soil::Crit3DSoil *soil)
     }
     resetAll();
     fillData = true;
+    this->blockSignals(true);
     tableWaterRetention->clearSelection();
     deleteRow->setEnabled(false);
     mySoil = soil;
@@ -70,7 +71,6 @@ void TabWaterRetentionData::insertData(soil::Crit3DSoil *soil)
     }
     tableWaterRetention->setRowCount(row);
     int pos = 0;
-    this->blockSignals(true);
     tableWaterRetention->setSortingEnabled(false);
     for (int i = 0; i < mySoil->nrHorizons; i++)
     {
@@ -83,9 +83,6 @@ void TabWaterRetentionData::insertData(soil::Crit3DSoil *soil)
         }
     }
     tableWaterRetention->setSortingEnabled(true);
-    this->blockSignals(false);
-    connect(tableWaterRetention, &QTableWidget::cellClicked, [=](int row, int column){ this->cellClicked(row, column); });
-    connect(tableWaterRetention, &QTableWidget::cellChanged, [=](int row, int column){ this->cellChanged(row, column); });
     if (!mySoil->code.empty())
     {
         addRow->setEnabled(true);
@@ -94,6 +91,9 @@ void TabWaterRetentionData::insertData(soil::Crit3DSoil *soil)
     {
         addRow->setEnabled(false);
     }
+    this->blockSignals(false);
+    connect(tableWaterRetention, &QTableWidget::cellClicked, [=](int row, int column){ this->cellClicked(row, column); });
+    connect(tableWaterRetention, &QTableWidget::cellChanged, [=](int row, int column){ this->cellChanged(row, column); });
 
 }
 
@@ -183,6 +183,7 @@ void TabWaterRetentionData::resetAll()
 {
     deleteRow->setEnabled(false);
     addRow->setEnabled(false);
+    tableWaterRetention->clear();
     tableWaterRetention->setRowCount(0);
     tableWaterRetention->clearSelection();
     fillData = false;
@@ -196,7 +197,7 @@ void TabWaterRetentionData::cellClicked(int row, int column)
     tableWaterRetention->setSelectionBehavior(QAbstractItemView::SelectItems);
     tableWaterRetention->setItemSelected(tableWaterRetention->item(row,column), true);
     deleteRow->setEnabled(false);
-    soilCodeChanged = false;
+
 }
 
 void TabWaterRetentionData::cellChanged(int row, int column)
@@ -206,7 +207,7 @@ void TabWaterRetentionData::cellChanged(int row, int column)
     {
         return;
     }
-
+    tableWaterRetention->blockSignals(true);
     QString data = tableWaterRetention->item(row, column)->text();
     data.replace(",", ".");
     // set new value
@@ -291,6 +292,7 @@ void TabWaterRetentionData::cellChanged(int row, int column)
     }
 
     tableWaterRetention->update();
+    tableWaterRetention->blockSignals(false);
     soilCodeChanged = true;
 
 }
