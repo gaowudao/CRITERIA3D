@@ -54,7 +54,7 @@ void TabWaterRetentionData::insertData(soil::Crit3DSoil *soil)
     {
         return;
     }
-
+    resetAll();
     fillData = true;
     tableWaterRetention->clearSelection();
     deleteRow->setEnabled(false);
@@ -184,6 +184,7 @@ void TabWaterRetentionData::resetAll()
     deleteRow->setEnabled(false);
     addRow->setEnabled(false);
     tableWaterRetention->setRowCount(0);
+    tableWaterRetention->clearSelection();
     fillData = false;
     resetSoilCodeChanged();
 }
@@ -195,6 +196,7 @@ void TabWaterRetentionData::cellClicked(int row, int column)
     tableWaterRetention->setSelectionBehavior(QAbstractItemView::SelectItems);
     tableWaterRetention->setItemSelected(tableWaterRetention->item(row,column), true);
     deleteRow->setEnabled(false);
+    soilCodeChanged = false;
 }
 
 void TabWaterRetentionData::cellChanged(int row, int column)
@@ -207,7 +209,6 @@ void TabWaterRetentionData::cellChanged(int row, int column)
 
     QString data = tableWaterRetention->item(row, column)->text();
     data.replace(",", ".");
-    int horizon = tableWaterRetention->item(row,0)->text().toInt(); 
     // set new value
     switch (column) {
         case 0:

@@ -51,6 +51,10 @@ TabHorizons::TabHorizons()
 void TabHorizons::insertSoilHorizons(soil::Crit3DSoil *soil, soil::Crit3DTextureClass* textureClassList,
                                      soil::Crit3DFittingOptions* fittingOptions)
 {
+    if (soil == nullptr)
+    {
+        return;
+    }
     resetAll();
     insertSoilElement = true;
     //disable events otherwise setBackgroundColor call again cellChanged event

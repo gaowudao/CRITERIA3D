@@ -113,75 +113,76 @@ void TabWaterRetentionCurve::insertElements(soil::Crit3DSoil *soil)
     int x1 = layoutSize.topLeft().x();
     int totHeight = layoutSize.height();
 
-    if (soil!=nullptr)
+    if (soil == nullptr)
     {
-        resetAll();
-        fillElement = true;
-        mySoil = soil;
-        QVector<double> xVector;
-        QVector<double> yVector;
-        double x;
-
-        for (int i = 0; i<mySoil->nrHorizons; i++)
-        {
-            // insertVerticalLines
-            int length = (mySoil->horizon[i].lowerDepth*100 - mySoil->horizon[i].upperDepth*100) * totHeight / (mySoil->totalDepth*100);
-            LineHorizont* line = new LineHorizont();
-            line->setIndex(i);
-            line->setFixedWidth(20);
-            line->setFixedHeight(length);
-            line->setClass(mySoil->horizon[i].texture.classUSDA);
-            linesLayout->addWidget(line);
-            lineList.push_back(line);
-
-            // insert Curves
-            QwtPlotCurve *curve = new QwtPlotCurve;
-            xVector.clear();
-            yVector.clear();
-            x = XMIN;
-            while (x < XMAX)
-            {
-                double y = soil::thetaFromSignPsi(-x, &mySoil->horizon[i]);
-                if (y != NODATA)
-                {
-                    xVector.push_back(x);
-                    yVector.push_back(y);
-                }
-                x=x*1.25;
-            }
-            QwtPointArrayData *data = new QwtPointArrayData(xVector,yVector);
-            curve->setSamples(data);
-            curve->attach(myPlot);
-            curveList.push_back(curve);
-
-            // insert marker
-            for (int j = 0; j < mySoil->horizon[i].dbData.waterRetention.size(); j++)
-            {
-                QwtPlotMarker* m = new QwtPlotMarker();
-                double x = mySoil->horizon[i].dbData.waterRetention[j].water_potential;
-                double y = mySoil->horizon[i].dbData.waterRetention[j].water_content;
-                if (x != NODATA && y != NODATA)
-                {
-                    QwtSymbol *xsymbol = new QwtSymbol( QwtSymbol::Ellipse,
-                                                           QBrush( Qt::black ), QPen( Qt::black, 0 ), QSize( 5, 5 ) );
-                    m->setSymbol(xsymbol);
-                    m->setValue( QPointF( x, y ) );
-                    m->attach( myPlot );
-                }
-            }
-        }
-
-        pick = new Crit3CurvePicker(myPlot, curveList);
-        pick->setStateMachine(new QwtPickerClickPointMachine());
-        connect(pick, SIGNAL(clicked(int)), this, SLOT(curveClicked(int)));
-
-        for (int i=0; i<lineList.size(); i++)
-        {
-            connect(lineList[i], SIGNAL(clicked(int)), this, SLOT(widgetClicked(int)));
-        }
-        linesLayout->update();
-        myPlot->replot();
+        return;
     }
+    resetAll();
+    fillElement = true;
+    mySoil = soil;
+    QVector<double> xVector;
+    QVector<double> yVector;
+    double x;
+
+    for (int i = 0; i<mySoil->nrHorizons; i++)
+    {
+        // insertVerticalLines
+        int length = (mySoil->horizon[i].lowerDepth*100 - mySoil->horizon[i].upperDepth*100) * totHeight / (mySoil->totalDepth*100);
+        LineHorizont* line = new LineHorizont();
+        line->setIndex(i);
+        line->setFixedWidth(20);
+        line->setFixedHeight(length);
+        line->setClass(mySoil->horizon[i].texture.classUSDA);
+        linesLayout->addWidget(line);
+        lineList.push_back(line);
+
+        // insert Curves
+        QwtPlotCurve *curve = new QwtPlotCurve;
+        xVector.clear();
+        yVector.clear();
+        x = XMIN;
+        while (x < XMAX)
+        {
+            double y = soil::thetaFromSignPsi(-x, &mySoil->horizon[i]);
+            if (y != NODATA)
+            {
+                xVector.push_back(x);
+                yVector.push_back(y);
+            }
+            x=x*1.25;
+        }
+        QwtPointArrayData *data = new QwtPointArrayData(xVector,yVector);
+        curve->setSamples(data);
+        curve->attach(myPlot);
+        curveList.push_back(curve);
+
+        // insert marker
+        for (int j = 0; j < mySoil->horizon[i].dbData.waterRetention.size(); j++)
+        {
+            QwtPlotMarker* m = new QwtPlotMarker();
+            double x = mySoil->horizon[i].dbData.waterRetention[j].water_potential;
+            double y = mySoil->horizon[i].dbData.waterRetention[j].water_content;
+            if (x != NODATA && y != NODATA)
+            {
+                QwtSymbol *xsymbol = new QwtSymbol( QwtSymbol::Ellipse,
+                                                       QBrush( Qt::black ), QPen( Qt::black, 0 ), QSize( 5, 5 ) );
+                m->setSymbol(xsymbol);
+                m->setValue( QPointF( x, y ) );
+                m->attach( myPlot );
+            }
+        }
+    }
+
+    pick = new Crit3CurvePicker(myPlot, curveList);
+    pick->setStateMachine(new QwtPickerClickPointMachine());
+    connect(pick, SIGNAL(clicked(int)), this, SLOT(curveClicked(int)));
+
+    for (int i=0; i<lineList.size(); i++)
+    {
+        connect(lineList[i], SIGNAL(clicked(int)), this, SLOT(widgetClicked(int)));
+    }
+    linesLayout->update();
+    myPlot->replot();
 
 }
 
