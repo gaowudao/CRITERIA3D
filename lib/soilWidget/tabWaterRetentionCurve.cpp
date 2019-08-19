@@ -16,6 +16,8 @@
 
 #define XMIN 0.1
 #define XMAX 100000
+#define XABSOLUTEMIN 0.001
+#define XABSOLUTEMAX 1000000
 #define YMIN 0.0
 #define YMAX 0.6
 
@@ -34,11 +36,7 @@ TabWaterRetentionCurve::TabWaterRetentionCurve()
     myPlot->setAxisScale(QwtPlot::yLeft,YMIN, YMAX);
 
     // Setting Magnifier
-    // Shift+MouseWheel --> Magnifier x
-    //Crit3DCurveMagnifier* zoom_x = new Crit3DCurveMagnifier(myPlot, QwtPlot::xBottom);
-    //zoom_x->setWheelModifiers(Qt::ShiftModifier);
     // CTRL + MouseWheel --> Magnifier y
-
     Crit3DCurveMagnifier* zoom_y = new Crit3DCurveMagnifier(myPlot, QwtPlot::yLeft);
     zoom_y->setWheelModifiers(Qt::ControlModifier);
 
@@ -143,8 +141,8 @@ void TabWaterRetentionCurve::insertElements(soil::Crit3DSoil *soil)
         QwtPlotCurve *curve = new QwtPlotCurve;
         xVector.clear();
         yVector.clear();
-        x = XMIN;
-        while (x < XMAX)
+        x = XABSOLUTEMIN;
+        while (x < XABSOLUTEMAX)
         {
             double y = soil::thetaFromSignPsi(-x, &mySoil->horizon[i]);
             if (y != NODATA)
