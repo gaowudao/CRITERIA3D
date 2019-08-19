@@ -120,7 +120,7 @@
 
         void setProxyDEM();
         void clearProxyDEM();
-        bool checkProxy(QString name_, QString gridName_, QString table_, QString field_, QString *error);
+        bool checkProxy(QString name_, QString gridName_, std::vector<QString> gridNames_, QString table_, QString field_, QString *error);
         void addProxyToProject(QString name_, QString gridName_, QString table_, QString field_, bool isForQuality_, bool isActive_);
 
         void setCurrentDate(QDate myDate);

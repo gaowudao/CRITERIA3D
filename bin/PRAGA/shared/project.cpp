@@ -149,7 +149,7 @@ void Project::setProxyDEM()
     }
 }
 
-bool Project::checkProxy(QString name_, QString gridName_, QString table_, QString field_, QString *error)
+bool Project::checkProxy(QString name_, QString gridName_, std::vector <QString> gridNames_, QString table_, QString field_, QString *error)
 {
     if (name_ == "")
     {
@@ -159,10 +159,21 @@ bool Project::checkProxy(QString name_, QString gridName_, QString table_, QStri
 
     bool isHeight = (getProxyPragaName(name_.toStdString()) == height);
 
-    if (gridName_ == "" && !isHeight && (table_ == "" && field_ == ""))
+    bool gridNameExists = false;
+
+    if (!isHeight && (table_ == "" && field_ == ""))
     {
-        *error = "error reading grid, table or field for proxy " + name_;
-        return false;
+        if (gridName_ == "")
+        {
+            for (unsigned i = 0; i < gridNames_.size(); i++)
+                if (gridNames_[i] != "") gridNameExists = true;
+        }
+
+        if (! gridNameExists)
+        {
+            *error = "error reading grid, table or field for proxy " + name_;
+            return false;
+        }
     }
 
     return true;
@@ -208,8 +219,8 @@ bool Project::loadParameters(QString parametersFileName)
     QString proxyName = "", proxyGridName = "", proxyTable = "", proxyField = "";
     bool isActive = false, forQuality = false;
     QStringList myList;
-    std::vector <QString> myGridSeries;
-    std::vector <int> myGridSeriesYears;
+    std::vector <QString> proxyGridSeriesNames;
+    std::vector <int> proxyGridSeriesYears;
     bool proxyGridSeriesFound;
 
     Q_FOREACH (QString group, parameters->childGroups())
@@ -574,15 +585,15 @@ bool Project::loadParameters(QString parametersFileName)
                 else if (key.left(13) == "raster_series")
                 {
                     proxyGridSeriesFound = true;
-                    myGridSeriesYears.push_back(key.right(4).toInt());
-                    myGridSeries.push_back(parameters->value(key).toString());
+                    proxyGridSeriesYears.push_back(key.right(4).toInt());
+                    proxyGridSeriesNames.push_back(parameters->value(key).toString());
                 }
 
-            if (proxyGridSeriesFound) proxyGridName = myGridSeries[0];
+            if (proxyGridSeriesFound) proxyGridName = proxyGridSeriesNames[0];
 
             parameters->endGroup();
 
-            if (checkProxy(proxyName, proxyGridName, proxyTable, proxyField, &errorString))
+            if (checkProxy(proxyName, proxyGridName, proxyGridSeriesNames, proxyTable, proxyField, &errorString))
                 addProxyToProject(proxyName, proxyGridName, proxyTable, proxyField, forQuality, isActive);
             else
                 logError();

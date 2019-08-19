@@ -18,29 +18,12 @@
     std::string getKeyStringInterpolationMethod(TInterpolationMethod value);
     TProxyVar getProxyPragaName(std::string name_);
 
-    class Crit3DProxyGridSeries
-    {
-    private:
-        std::vector <std::string> gridName;
-        std::vector <int> gridYear;
-        std::vector<gis::Crit3DRasterGrid *> grid;
-
-    public:
-        Crit3DProxyGridSeries();
-
-        void initialize();
-        void addGridToSeries(std::string name_, int year_);
-        std::vector<gis::Crit3DRasterGrid *> getGrid() const;
-        void setGrid(const std::vector<gis::Crit3DRasterGrid *> &value);
-    };
-
     class Crit3DProxy
     {
     private:
         std::string name;
         std::string gridName;
         gis::Crit3DRasterGrid* grid;
-        Crit3DProxyGridSeries gridSeries;
         std::string proxyTable;
         std::string proxyField;
         bool isSignificant;

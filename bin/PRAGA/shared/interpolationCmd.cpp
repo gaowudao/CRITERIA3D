@@ -3,6 +3,35 @@
 #include "formInfo.h"
 #include "gis.h"
 
+
+void Crit3DProxyGridSeries::initialize()
+{
+    gridName.clear();
+    grid.clear();
+    gridYear.clear();
+}
+
+std::vector<gis::Crit3DRasterGrid *> Crit3DProxyGridSeries::getGrid() const
+{
+    return grid;
+}
+
+void Crit3DProxyGridSeries::setGrid(const std::vector<gis::Crit3DRasterGrid *> &value)
+{
+    grid = value;
+}
+
+Crit3DProxyGridSeries::Crit3DProxyGridSeries()
+{
+    initialize();
+}
+
+void Crit3DProxyGridSeries::addGridToSeries(std::string name_, int year_)
+{
+    gridName.push_back(name_);
+    gridYear.push_back(year_);
+}
+
 bool interpolationRaster(std::vector <Crit3DInterpolationDataPoint> &myPoints, Crit3DInterpolationSettings* mySettings,
                         gis::Crit3DRasterGrid* myGrid, const gis::Crit3DRasterGrid& raster, meteoVariable myVar, bool showInfo)
 {
