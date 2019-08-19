@@ -25,7 +25,7 @@
         QwtPlot *myPlot;
         QList<LineHorizont*> lineList;
         QList<QwtPlotCurve*> curveList;
-        Crit3CurvePicker *pick;
+        Crit3DCurvePicker *pick;
         bool fillElement;
 
     private slots:

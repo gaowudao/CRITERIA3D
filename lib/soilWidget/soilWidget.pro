@@ -39,7 +39,8 @@ SOURCES += \
     tabHydraulicConductivityCurve.cpp \
     tableDelegate.cpp \
     lineHorizont.cpp \
-    tableDelegateWaterRetention.cpp
+    tableDelegateWaterRetention.cpp \
+    curveMagnifier.cpp
 
 HEADERS += \
     curvePicker.h \
@@ -52,7 +53,8 @@ HEADERS += \
     tabHydraulicConductivityCurve.h \
     tableDelegate.h \
     lineHorizont.h \
-    tableDelegateWaterRetention.h
+    tableDelegateWaterRetention.h \
+    curveMagnifier.h
 
 unix {
     target.path = /usr/lib

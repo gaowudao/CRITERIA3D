@@ -1,9 +1,10 @@
 #include "tabWaterRetentionCurve.h"
 
 #include "commonConstants.h"
+#include "curveMagnifier.h"
 #include <qwt_point_data.h>
 #include <qwt_scale_engine.h>
-#include <qwt_plot_magnifier.h>
+
 #include <qwt_plot_grid.h>
 #include <qwt_plot_panner.h>
 #include <qwt_plot_zoomer.h>
@@ -33,8 +34,8 @@ TabWaterRetentionCurve::TabWaterRetentionCurve()
     myPlot->setAxisScale(QwtPlot::yLeft,YMIN, YMAX);
 
     // Setting Magnifier
-    QwtPlotMagnifier* zoom_x = new QwtPlotMagnifier(myPlot->canvas());
-    QwtPlotMagnifier* zoom_y = new QwtPlotMagnifier(myPlot->canvas());
+    Crit3DCurveMagnifier* zoom_x = new Crit3DCurveMagnifier(myPlot, QwtPlot::xBottom);
+    Crit3DCurveMagnifier* zoom_y = new Crit3DCurveMagnifier(myPlot, QwtPlot::yLeft);
     // Shift+MouseWheel --> Magnifier x
     zoom_x->setWheelModifiers(Qt::ShiftModifier);
     zoom_x->setAxisEnabled(QwtPlot::xBottom, true);
@@ -184,7 +185,7 @@ void TabWaterRetentionCurve::insertElements(soil::Crit3DSoil *soil)
     // rescale to maxThetaSat
     myPlot->setAxisScale(QwtPlot::yLeft,YMIN, std::max(YMAX, maxThetaSat));
 
-    pick = new Crit3CurvePicker(myPlot, curveList);
+    pick = new Crit3DCurvePicker(myPlot, curveList);
     pick->setStateMachine(new QwtPickerClickPointMachine());
     connect(pick, SIGNAL(clicked(int)), this, SLOT(curveClicked(int)));
 

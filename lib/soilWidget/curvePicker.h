@@ -7,13 +7,13 @@
     #include <qwt_plot.h>
     #include <qwt_plot_picker.h>
 
-    class Crit3CurvePicker : public QwtPlotPicker
+    class Crit3DCurvePicker : public QwtPlotPicker
     {
         Q_OBJECT
     public:
-        Crit3CurvePicker(QwtPlot *plot, QList<QwtPlotCurve*> allCurveList);
+        Crit3DCurvePicker(QwtPlot *plot, QList<QwtPlotCurve*> allCurveList);
 
-        Crit3CurvePicker( int xAxis = QwtPlot::xBottom,
+        Crit3DCurvePicker( int xAxis = QwtPlot::xBottom,
                   int yAxis = QwtPlot::yLeft,
                   RubberBand rubberBand = CrossRubberBand,
                   DisplayMode trackerMode = QwtPicker::AlwaysOn,
