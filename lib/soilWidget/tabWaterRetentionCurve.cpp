@@ -123,11 +123,16 @@ void TabWaterRetentionCurve::insertElements(soil::Crit3DSoil *soil)
     QVector<double> xVector;
     QVector<double> yVector;
     double x;
+    double maxThetaSat = 0;
 
     for (int i = 0; i<mySoil->nrHorizons; i++)
     {
         // insertVerticalLines
         int length = (mySoil->horizon[i].lowerDepth*100 - mySoil->horizon[i].upperDepth*100) * totHeight / (mySoil->totalDepth*100);
+        if (mySoil->horizon[i].dbData.thetaSat > maxThetaSat)
+        {
+            maxThetaSat = mySoil->horizon[i].dbData.thetaSat;
+        }
         LineHorizont* line = new LineHorizont();
         line->setIndex(i);
         line->setFixedWidth(20);
@@ -172,6 +177,12 @@ void TabWaterRetentionCurve::insertElements(soil::Crit3DSoil *soil)
             }
         }
     }
+    // round maxThetaSat to first decimal
+    maxThetaSat = (int)(maxThetaSat * 10 + 0.5);
+    maxThetaSat = (double)maxThetaSat / 10;
+
+    // rescale to maxThetaSat
+    myPlot->setAxisScale(QwtPlot::yLeft,YMIN, std::max(YMAX, maxThetaSat));
 
     pick = new Crit3CurvePicker(myPlot, curveList);
     pick->setStateMachine(new QwtPickerClickPointMachine());
