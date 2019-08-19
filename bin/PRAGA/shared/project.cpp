@@ -560,32 +560,25 @@ bool Project::loadParameters(QString parametersFileName)
 
             proxyGridSeriesFound = false;
 
-            //proxy grid temporal series
             foreach (const QString &key, parameters->childKeys())
-                if (key == "raster_series")
+                if (key == "table")
+                    proxyTable = parameters->value(key).toString();
+                else if (key == "field")
+                    proxyField = parameters->value(key).toString();
+                else if (key == "active")
+                    isActive = parameters->value(key).toBool();
+                else if (key == "use_for_spatial_quality_control")
+                    forQuality = parameters->value(key).toBool();
+                else if (key == "raster")
+                    proxyGridName = parameters->value(key).toString();
+                else if (key.left(13) == "raster_series")
                 {
-                    myList = parameters->value("raster_series").toStringList();
-                    if (myList.size() < 2)
-                    {
-                        errorString = "Incomplete raster series for proxy";
-                        return  false;
-                    }
-                    else
-                        proxyGridSeriesFound = true;
-
-                    myGridSeries.push_back(myList[0]);
-                    myGridSeriesYears.push_back(myList[1].toInt());
+                    proxyGridSeriesFound = true;
+                    myGridSeriesYears.push_back(key.right(4).toInt());
+                    myGridSeries.push_back(parameters->value(key).toString());
                 }
 
-            proxyTable = parameters->value("table").toString();
-            proxyField = parameters->value("field").toString();
-            isActive = parameters->value("active").toBool();
-            forQuality = parameters->value("use_for_spatial_quality_control").toBool();
-
-            if (! proxyGridSeriesFound)
-                proxyGridName = parameters->value("raster").toString();
-            else
-                proxyGridName = myGridSeries[0];
+            if (proxyGridSeriesFound) proxyGridName = myGridSeries[0];
 
             parameters->endGroup();
 
