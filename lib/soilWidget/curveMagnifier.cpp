@@ -12,6 +12,7 @@ Crit3DCurveMagnifier::Crit3DCurveMagnifier(QwtPlot *plot, int axisIndex) : QwtPl
 
 void Crit3DCurveMagnifier::rescale(double factor)
 {
+
     factor = qAbs(factor);
     if ( factor == 1.0 || factor == 0.0 )
         return;
@@ -24,35 +25,28 @@ void Crit3DCurveMagnifier::rescale(double factor)
     const QwtScaleDiv *scaleDiv;
     scaleDiv = &qwtPlot->axisScaleDiv(index);
 
-    const double center = scaleDiv->lowerBound() + scaleDiv->range() / 2;
+    double center = scaleDiv->lowerBound() + scaleDiv->range() / 2;
     double width_2 = scaleDiv->range() / 2 * factor;
-    if (factor == 1.1)
+    //y
+    if (index == QwtPlot::yLeft)
     {
-        //y
-        if (index == QwtPlot::yLeft)
+        if (scaleDiv->range() > 2 || scaleDiv->lowerBound() < -0.5)
         {
-
+            width_2 = 2 / 2 * factor;
+            center = width_2 / 2;
+            qwtPlot->setAxisScale(index, center - width_2, center + width_2);
         }
-                // x
-//                if (index == QwtPlot::xBottom)
-//                {
-//
-//                }
-    }
-    else if (factor == 0.9)
-    {
-                //y
-        if (index == QwtPlot::yLeft)
+        else if(scaleDiv->range() < 0.3)
         {
-
+            width_2 = 0.3 / 2 * factor;
+            center = width_2 / 2;
+            qwtPlot->setAxisScale(index, center - width_2, center + width_2);
         }
-        // x
-//                if (index == QwtPlot::xBottom && width_2 > YMINWIDTH)
-//                {
-//                    width_2 = YMINWIDTH;
-//                }
+        else
+        {
+            qwtPlot->setAxisScale(index, center - width_2, center + width_2);
+        }
     }
-
 
     qwtPlot->setAxisScale(index, center - width_2, center + width_2);
     doReplot = true;

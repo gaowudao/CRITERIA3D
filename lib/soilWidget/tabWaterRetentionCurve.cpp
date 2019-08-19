@@ -34,16 +34,13 @@ TabWaterRetentionCurve::TabWaterRetentionCurve()
     myPlot->setAxisScale(QwtPlot::yLeft,YMIN, YMAX);
 
     // Setting Magnifier
-    Crit3DCurveMagnifier* zoom_x = new Crit3DCurveMagnifier(myPlot, QwtPlot::xBottom);
-    Crit3DCurveMagnifier* zoom_y = new Crit3DCurveMagnifier(myPlot, QwtPlot::yLeft);
     // Shift+MouseWheel --> Magnifier x
-    zoom_x->setWheelModifiers(Qt::ShiftModifier);
-    zoom_x->setAxisEnabled(QwtPlot::xBottom, true);
-    zoom_x->setAxisEnabled(QwtPlot::yLeft, false);
+    //Crit3DCurveMagnifier* zoom_x = new Crit3DCurveMagnifier(myPlot, QwtPlot::xBottom);
+    //zoom_x->setWheelModifiers(Qt::ShiftModifier);
     // CTRL + MouseWheel --> Magnifier y
+
+    Crit3DCurveMagnifier* zoom_y = new Crit3DCurveMagnifier(myPlot, QwtPlot::yLeft);
     zoom_y->setWheelModifiers(Qt::ControlModifier);
-    zoom_y->setAxisEnabled(QwtPlot::xBottom,false);
-    zoom_y->setAxisEnabled(QwtPlot::yLeft,true);
 
     // Left Button for panning
     QwtPlotPanner* panner = new QwtPlotPanner (myPlot->canvas());
