@@ -1776,6 +1776,17 @@ void Project::saveGenericParameters()
         parameters->setValue("relhum_tolerance", QString::number(quality->getRelHumTolerance()));
     parameters->endGroup();
 
+    parameters->beginGroup("climate");
+        parameters->setValue("tmin", FloatVectorToStringList(climateParameters.tmin));
+        parameters->setValue("tmax", FloatVectorToStringList(climateParameters.tmax));
+        parameters->setValue("tdmin", FloatVectorToStringList(climateParameters.tdmin));
+        parameters->setValue("tdmax", FloatVectorToStringList(climateParameters.tdmax));
+        parameters->setValue("tmin_lapserate", FloatVectorToStringList(climateParameters.tminLapseRate));
+        parameters->setValue("tmax_lapserate", FloatVectorToStringList(climateParameters.tmaxLapseRate));
+        parameters->setValue("tdmin_lapserate", FloatVectorToStringList(climateParameters.tdMinLapseRate));
+        parameters->setValue("tdmax_lapserate", FloatVectorToStringList(climateParameters.tdMaxLapseRate));
+    parameters->endGroup();
+
     parameters->sync();
 }
 
