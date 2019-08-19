@@ -381,13 +381,11 @@ bool ProxyDialog::checkProxies(QString *error)
 {
     QStringList fields;
     std::string table_;
-    std::vector <QString> gridSeries;
 
     for (unsigned i=0; i < _proxy.size(); i++)
     {
         if (!_project->checkProxy(QString::fromStdString(_proxy[i].getName()),
                                   QString::fromStdString(_proxy[i].getGridName()),
-                                  gridSeries,
                                   QString::fromStdString(_proxy[i].getProxyTable()),
                                   QString::fromStdString(_proxy[i].getProxyField()),
                                   error))

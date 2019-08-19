@@ -13,21 +13,23 @@
 #ifndef INTERPOLATIONPOINT_H
     #include "interpolationPoint.h"
 #endif
+#ifndef QSTRING_H
+    #include <QString>
+#endif
 
 class Crit3DProxyGridSeries
 {
 private:
-    std::vector <std::string> gridName;
-    std::vector <int> gridYear;
-    std::vector<gis::Crit3DRasterGrid *> grid;
+    std::vector <QString> gridName;
+    std::vector <unsigned> gridYear;
+    QString proxyName;
 
 public:
     Crit3DProxyGridSeries();
+    Crit3DProxyGridSeries(QString name_);
 
     void initialize();
-    void addGridToSeries(std::string name_, int year_);
-    std::vector<gis::Crit3DRasterGrid *> getGrid() const;
-    void setGrid(const std::vector<gis::Crit3DRasterGrid *> &value);
+    void addGridToSeries(QString name_, unsigned year_);
 };
 
 bool interpolationRaster(std::vector <Crit3DInterpolationDataPoint> &myPoints, Crit3DInterpolationSettings* mySettings,

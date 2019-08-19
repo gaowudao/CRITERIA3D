@@ -7,18 +7,8 @@
 void Crit3DProxyGridSeries::initialize()
 {
     gridName.clear();
-    grid.clear();
     gridYear.clear();
-}
-
-std::vector<gis::Crit3DRasterGrid *> Crit3DProxyGridSeries::getGrid() const
-{
-    return grid;
-}
-
-void Crit3DProxyGridSeries::setGrid(const std::vector<gis::Crit3DRasterGrid *> &value)
-{
-    grid = value;
+    proxyName = "";
 }
 
 Crit3DProxyGridSeries::Crit3DProxyGridSeries()
@@ -26,7 +16,13 @@ Crit3DProxyGridSeries::Crit3DProxyGridSeries()
     initialize();
 }
 
-void Crit3DProxyGridSeries::addGridToSeries(std::string name_, int year_)
+Crit3DProxyGridSeries::Crit3DProxyGridSeries(QString name_)
+{
+    initialize();
+    proxyName = name_;
+}
+
+void Crit3DProxyGridSeries::addGridToSeries(QString name_, unsigned year_)
 {
     gridName.push_back(name_);
     gridYear.push_back(year_);

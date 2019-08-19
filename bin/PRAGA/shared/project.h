@@ -19,6 +19,9 @@
     #ifndef SOLARRADIATION_H
         #include "solarRadiation.h"
     #endif
+    #ifndef INTERPOLATIONCMD_H
+        #include "interpolationCmd.h"
+    #endif
 
     #ifndef QSETTINGS_H
         #include <QSettings>
@@ -92,6 +95,8 @@
         Crit3DInterpolationSettings interpolationSettings;
         Crit3DInterpolationSettings qualityInterpolationSettings;
 
+        std::vector <Crit3DProxyGridSeries> proxyGridSeries;
+
         Crit3DClimateParameters climateParameters;
 
         #ifdef NETCDF
@@ -120,9 +125,9 @@
 
         void setProxyDEM();
         void clearProxyDEM();
-        bool checkProxy(QString name_, QString gridName_, std::vector<QString> gridNames_, QString table_, QString field_, QString *error);
+        bool checkProxy(QString name_, QString gridName_, QString table_, QString field_, QString *error);
         void addProxyToProject(QString name_, QString gridName_, QString table_, QString field_, bool isForQuality_, bool isActive_);
-
+        bool addProxyGridSeries(QString name_, std::vector <QString> gridNames, std::vector <unsigned> gridYears);
         void setCurrentDate(QDate myDate);
         void setCurrentHour(int myHour);
         void setFrequency(frequencyType frequency);
