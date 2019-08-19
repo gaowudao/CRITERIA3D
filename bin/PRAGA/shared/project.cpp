@@ -1713,6 +1713,7 @@ void Project::saveRadiationParameters()
         parameters->setValue("clear_sky", QString::number(double(radSettings.getClearSky())));
         parameters->setValue("linke_map", getRelativePath(QString::fromStdString(radSettings.getLinkeMapName())));
         parameters->setValue("albedo_map", getRelativePath(QString::fromStdString(radSettings.getAlbedoMapName())));
+        parameters->setValue("linke_monthly", FloatVectorToStringList(radSettings.getLinkeMonthly()));
     parameters->endGroup();
 }
 

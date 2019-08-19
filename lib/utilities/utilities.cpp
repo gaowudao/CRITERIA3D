@@ -346,3 +346,12 @@ std::vector <float> StringListToFloat(QStringList myList)
 
     return myVector;
 }
+
+QStringList FloatVectorToStringList(std::vector <float> myVector)
+{
+    QStringList myList;
+    for (unsigned i=0; i < unsigned(myVector.size()); i++)
+        myList.push_back(QString::number(double(myVector[i])));
+
+    return myList;
+}

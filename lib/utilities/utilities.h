@@ -39,5 +39,6 @@
     QString getFileName(QString fileNameComplete);
 
     std::vector <float> StringListToFloat(QStringList myList);
+    QStringList FloatVectorToStringList(std::vector <float> myVector);
 
 #endif // UTILITIES_H

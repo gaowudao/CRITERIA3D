@@ -25,8 +25,8 @@
         float aspect;
         float clearSky;
 
-        std::vector <float> monthlyLinke;
-        std::vector <float> monthlyAlbedo;
+        std::vector <float> LinkeMonthly;
+        std::vector <float> AlbedoMonthly;
 
         std::string linkeMapName;
         std::string albedoMapName;
@@ -79,6 +79,7 @@
         void setAlbedoMapName(const std::string &value);
         void setLinkeMonthly(std::vector <float> myLinke);
         void setAlbedoMonthly(std::vector<float> myAlbedo);
+        std::vector<float> getLinkeMonthly() const;
     } ;
 
     std::string getKeyStringRadAlgorithm(TradiationAlgorithm value);
