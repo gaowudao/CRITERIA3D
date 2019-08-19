@@ -1,5 +1,4 @@
 #include "curveMagnifier.h"
-#include "qdebug.h"
 
 #include "qwt_plot.h"
 #include "qwt_scale_div.h"

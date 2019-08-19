@@ -2,6 +2,7 @@
 
 #include "commonConstants.h"
 #include "curveMagnifier.h"
+#include "curvePanner.h"
 #include <qwt_point_data.h>
 #include <qwt_scale_engine.h>
 
@@ -41,7 +42,7 @@ TabWaterRetentionCurve::TabWaterRetentionCurve()
     zoom_y->setWheelModifiers(Qt::ControlModifier);
 
     // Left Button for panning
-    QwtPlotPanner* panner = new QwtPlotPanner (myPlot->canvas());
+    Crit3DCurvePanner* panner = new Crit3DCurvePanner(myPlot);
     panner->setMouseButton(Qt::LeftButton);
     QwtPlotZoomer* zoomer = new QwtPlotZoomer( QwtPlot::xBottom, QwtPlot::yLeft, myPlot->canvas()  );
     zoomer->setRubberBandPen( QColor( Qt::black ) );

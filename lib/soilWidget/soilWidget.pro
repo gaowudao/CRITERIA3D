@@ -40,7 +40,8 @@ SOURCES += \
     tableDelegate.cpp \
     lineHorizont.cpp \
     tableDelegateWaterRetention.cpp \
-    curveMagnifier.cpp
+    curveMagnifier.cpp \
+    curvePanner.cpp
 
 HEADERS += \
     curvePicker.h \
@@ -54,7 +55,8 @@ HEADERS += \
     tableDelegate.h \
     lineHorizont.h \
     tableDelegateWaterRetention.h \
-    curveMagnifier.h
+    curveMagnifier.h \
+    curvePanner.h
 
 unix {
     target.path = /usr/lib
