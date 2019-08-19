@@ -341,6 +341,8 @@ void Crit3DSoilWidget::on_actionChooseSoil(QString soilCode)
     wrDataTab->resetAll();
     wrCurveTab->resetAll();
 
+    mySoil.cleanSoil();
+
     if (! loadSoil(&dbSoil, soilCode, &mySoil, textureClassList, &fittingOptions, &error))
     {
         QMessageBox::critical(nullptr, "Error!", error);

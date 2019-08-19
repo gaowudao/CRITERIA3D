@@ -56,7 +56,8 @@ void TabWaterRetentionData::insertData(soil::Crit3DSoil *soil)
     }
     resetAll();
     fillData = true;
-    this->blockSignals(true);
+
+    tableWaterRetention->blockSignals(true);
     tableWaterRetention->clearSelection();
     deleteRow->setEnabled(false);
     mySoil = soil;
@@ -91,7 +92,7 @@ void TabWaterRetentionData::insertData(soil::Crit3DSoil *soil)
     {
         addRow->setEnabled(false);
     }
-    this->blockSignals(false);
+    tableWaterRetention->blockSignals(false);
     connect(tableWaterRetention, &QTableWidget::cellClicked, [=](int row, int column){ this->cellClicked(row, column); });
     connect(tableWaterRetention, &QTableWidget::cellChanged, [=](int row, int column){ this->cellChanged(row, column); });
 
@@ -293,6 +294,7 @@ void TabWaterRetentionData::cellChanged(int row, int column)
 
     tableWaterRetention->update();
     tableWaterRetention->blockSignals(false);
+    qDebug() << "cell changed";
     soilCodeChanged = true;
 
 }

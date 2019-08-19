@@ -9,6 +9,7 @@ class Crit3DCurvePanner : public QwtPlotPanner
     Q_OBJECT
 public:
     Crit3DCurvePanner(QwtPlot *plot);
+    void moveCanvas(int dx, int dy);
 
 private:
     QwtPlot *qwtPlot;
