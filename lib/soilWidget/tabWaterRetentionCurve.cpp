@@ -11,7 +11,6 @@
 #include <qwt_plot_zoomer.h>
 #include <qwt_event_pattern.h>
 #include <qwt_picker_machine.h>
-#include <qwt_plot_marker.h>
 #include <qwt_symbol.h>
 #include <QWidget>
 
@@ -65,12 +64,10 @@ TabWaterRetentionCurve::TabWaterRetentionCurve()
 
     setLayout(mainLayout);
     fillElement = false;
-
 }
 
 void TabWaterRetentionCurve::resetAll()
 {
-
     // delete all Widgets
     if (!lineList.isEmpty())
     {
@@ -80,7 +77,6 @@ void TabWaterRetentionCurve::resetAll()
         qDeleteAll(curveList);
         curveList.clear();
     }
-
     myPlot->detachItems( QwtPlotItem::Rtti_PlotCurve );
     myPlot->detachItems( QwtPlotItem::Rtti_PlotMarker );
     if (pick != nullptr)
@@ -88,6 +84,20 @@ void TabWaterRetentionCurve::resetAll()
         delete pick;
         pick = nullptr;
     }
+/*
+    if (!markerList.isEmpty())
+    {
+        for (int i  = 0; i < markerList.size(); i++)
+        {
+            if (!markerList[i].isEmpty())
+            {
+                qDeleteAll(markerList[i]);
+                markerList[i].clear();
+            }
+        }
+        markerList.clear();
+    }
+    */
     fillElement = false;
 
 }
@@ -121,7 +131,7 @@ void TabWaterRetentionCurve::insertElements(soil::Crit3DSoil *soil)
     QVector<double> yVector;
     double x;
     double maxThetaSat = 0;
-
+    QList<QwtPlotMarker*> horizonMarkers;
     for (int i = 0; i<mySoil->nrHorizons; i++)
     {
         // insertVerticalLines
@@ -159,20 +169,25 @@ void TabWaterRetentionCurve::insertElements(soil::Crit3DSoil *soil)
         curveList.push_back(curve);
 
         // insert marker
-        for (int j = 0; j < mySoil->horizon[i].dbData.waterRetention.size(); j++)
+        if (!mySoil->horizon[i].dbData.waterRetention.empty())
         {
-            QwtPlotMarker* m = new QwtPlotMarker();
-            double x = mySoil->horizon[i].dbData.waterRetention[j].water_potential;
-            double y = mySoil->horizon[i].dbData.waterRetention[j].water_content;
-            if (x != NODATA && y != NODATA)
+            for (int j = 0; j < mySoil->horizon[i].dbData.waterRetention.size(); j++)
             {
-                QwtSymbol *xsymbol = new QwtSymbol( QwtSymbol::Ellipse,
-                                                       QBrush( Qt::black ), QPen( Qt::black, 0 ), QSize( 5, 5 ) );
-                m->setSymbol(xsymbol);
-                m->setValue( QPointF( x, y ) );
-                m->attach( myPlot );
+                QwtPlotMarker* m = new QwtPlotMarker();
+                double x = mySoil->horizon[i].dbData.waterRetention[j].water_potential;
+                double y = mySoil->horizon[i].dbData.waterRetention[j].water_content;
+                if (x != NODATA && y != NODATA)
+                {
+                    m->setSymbol(new QwtSymbol( QwtSymbol::Ellipse, QBrush( Qt::black ), QPen( Qt::black, 0 ), QSize( 5, 5 ) ));
+                    m->setValue( QPointF( x, y ) );
+                    m->attach( myPlot );
+                }
+                horizonMarkers.push_back(m);
             }
+            markerList[i] = horizonMarkers;
+            horizonMarkers.clear();
         }
+
     }
     // round maxThetaSat to first decimal
     maxThetaSat = (int)(maxThetaSat * 10 + 0.5);
@@ -212,6 +227,13 @@ void TabWaterRetentionCurve::widgetClicked(int index)
         // select the right curve
         pick->setSelectedCurveIndex(index);
         pick->highlightCurve(true);
+
+        // set the markers
+//        qDebug() << "markerList[index].size()" << markerList[index].size();
+//        for (int i = 0; i < markerList[index].size(); i++)
+//        {
+//            qDebug() << "markerList[index][i] " << markerList[index][i]->value();
+//        }
     }
     else
     {

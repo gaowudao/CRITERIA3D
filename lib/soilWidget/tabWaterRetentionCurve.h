@@ -2,8 +2,10 @@
 #define TABWATERRETENTIONCURVE_H
 
     #include <QtWidgets>
+    #include <QMap>
     #include <qwt_plot_curve.h>
     #include <qwt_plot.h>
+    #include <qwt_plot_marker.h>
     #include "soil.h"
     #include "lineHorizont.h"
     #include "curvePicker.h"
@@ -25,6 +27,7 @@
         QwtPlot *myPlot;
         QList<LineHorizont*> lineList;
         QList<QwtPlotCurve*> curveList;
+        QMap< int, QList<QwtPlotMarker*> > markerList;
         Crit3DCurvePicker *pick;
         bool fillElement;
 
