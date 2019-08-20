@@ -184,7 +184,7 @@ void TabWaterRetentionData::resetAll()
 {
     deleteRow->setEnabled(false);
     addRow->setEnabled(false);
-    tableWaterRetention->clear();
+    tableWaterRetention->clearContents();
     tableWaterRetention->setRowCount(0);
     tableWaterRetention->clearSelection();
     fillData = false;
@@ -294,7 +294,6 @@ void TabWaterRetentionData::cellChanged(int row, int column)
 
     tableWaterRetention->update();
     tableWaterRetention->blockSignals(false);
-    qDebug() << "cell changed";
     soilCodeChanged = true;
 
 }
