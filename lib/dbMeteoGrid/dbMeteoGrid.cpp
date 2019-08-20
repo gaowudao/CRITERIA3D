@@ -1841,6 +1841,33 @@ bool Crit3DMeteoGridDbHandler::saveCellCurrentGridDailyFF(QString *myError, QStr
     return true;
 }
 
+bool Crit3DMeteoGridDbHandler::saveGridData(QString *myError, QDateTime firstDate, QDateTime lastDate, QList<meteoVariable> meteoVariableList)
+{
+    std::string id;
+
+    for (int row = 0; row < gridStructure().header().nrRows; row++)
+    {
+        for (int col = 0; col < gridStructure().header().nrCols; col++)
+        {
+            if (meteoGrid()->getMeteoPointActiveId(row, col, &id))
+            {
+                if (! gridStructure().isFixedFields())
+                {
+                    saveCellGridDailyData(myError, QString::fromStdString(id), row, col, firstDate.date(), lastDate.date(), meteoVariableList);
+                    saveCellGridDailyData(myError, QString::fromStdString(id), row, col, firstDate.date(), lastDate.date(), meteoVariableList);
+                }
+                else
+                {
+                    saveCellGridDailyDataFF(myError, QString::fromStdString(id), row, col, firstDate.date(), lastDate.date());
+                    saveCellGridHourlyDataFF(myError, QString::fromStdString(id), row, col, firstDate, lastDate);
+                }
+            }
+        }
+    }
+
+    return true;
+}
+
 bool Crit3DMeteoGridDbHandler::saveGridHourlyData(QString *myError, QDateTime firstDate, QDateTime lastDate, QList<meteoVariable> meteoVariableList)
 {
     std::string id;
@@ -1858,6 +1885,31 @@ bool Crit3DMeteoGridDbHandler::saveGridHourlyData(QString *myError, QDateTime fi
                 else
                 {
                     saveCellGridHourlyDataFF(myError, QString::fromStdString(id), row, col, firstDate, lastDate);
+                }
+            }
+        }
+    }
+
+    return true;
+}
+
+bool Crit3DMeteoGridDbHandler::saveGridDailyData(QString *myError, QDateTime firstDate, QDateTime lastDate, QList<meteoVariable> meteoVariableList)
+{
+    std::string id;
+
+    for (int row = 0; row < gridStructure().header().nrRows; row++)
+    {
+        for (int col = 0; col < gridStructure().header().nrCols; col++)
+        {
+            if (meteoGrid()->getMeteoPointActiveId(row, col, &id))
+            {
+                if (! gridStructure().isFixedFields())
+                {
+                    saveCellGridDailyData(myError, QString::fromStdString(id), row, col, firstDate.date(), lastDate.date(), meteoVariableList);
+                }
+                else
+                {
+                    saveCellGridDailyDataFF(myError, QString::fromStdString(id), row, col, firstDate.date(), lastDate.date());
                 }
             }
         }

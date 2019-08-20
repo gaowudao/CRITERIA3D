@@ -1,11 +1,12 @@
-#include "pragaProject.h"
-#include "project.h"
+#include "basicMath.h"
 #include "climate.h"
 #include "dbClimate.h"
 #include "download.h"
 #include "dbAggregationsHandler.h"
-#include "basicMath.h"
 #include "formInfo.h"
+#include "utilities.h"
+#include "project.h"
+#include "pragaProject.h"
 
 
 bool PragaProject::getIsElabMeteoPointsValue() const
@@ -1346,17 +1347,34 @@ bool PragaProject::interpolationMeteoGridPeriod(QDate dateIni, QDate dateFin, QL
     FormInfo myInfo;
     int infoStep = 1;
     std::string id;
+    QString myError;
+    int myHour;
+    QDate myDate = dateIni;
+    gis::Crit3DRasterGrid* myGrid = new gis::Crit3DRasterGrid(DEM);
 
     QString infoStr = "Save meteo grid hourly data";
     infoStep = myInfo.start(infoStr, this->meteoGridDbHandler->gridStructure().header().nrRows);
 
-    QDate myDate = dateIni;
+    if (! loadMeteoPointsData(dateIni, dateFin, true))
+        return false;
 
     while (myDate <= dateFin)
     {
+        // check proxy grid series
+
+        for (myHour = 1; myHour <= 24; myHour++)
+        {
+            foreach (meteoVariable myVar, variables)
+            {
+                if (! interpolationDemMain(myVar, getCrit3DTime(myDate, myHour), myGrid, false))
+                    return false;
+            }
+        }
 
         myDate = myDate.addDays(1);
     }
+
+    meteoGridDbHandler->saveGridData(&myError, QDateTime(dateIni, QTime(0,0,0)), QDateTime(dateFin.addDays(1), QTime(0,0,0)), variables);
 
     return true;
 
@@ -1673,7 +1691,7 @@ bool PragaProject::interpolationMeteoGridPeriod(QDate dateIni, QDate dateFin, QL
         Next myDate
 
         If Interpolation.GetUseTAD Then Erase TadMaps
-        Interpolation.SetSettings previousSettings
+
         PragaShell.StopInfo
         Print #myHandleFile, "Interpolation finished at " & format(Now, "YYYY-MM-DD HH:MM:SS")
         Close #myHandleFile
