@@ -19,7 +19,6 @@ class DialogPragaProject : public DialogProject
     public:
         explicit DialogPragaProject(PragaProject* myProject);
 
-        bool acceptPraga();
         void accept();
 
     protected:

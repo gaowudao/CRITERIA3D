@@ -49,8 +49,6 @@ DialogProject::DialogProject(Project *myProject)
 
     layoutMain->addStretch(1);
     setLayout(layoutMain);
-
-    exec();
 }
 
 
@@ -75,5 +73,6 @@ void DialogProject::accept()
 
     project_->createProject(lineEditProjectPath->text(), lineEditProjectName->text(),
                             lineEditProjectDescription->text());
+
     QDialog::done(QDialog::Accepted);
 }

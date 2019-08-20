@@ -2018,19 +2018,16 @@ void MainWindow::on_actionClose_project_triggered()
     if (! myProject.loadPragaProject(myProject.getApplicationPath() + "default.ini")) return;
 
     drawProject();
-
     checkSaveProject();
 }
 
 void MainWindow::on_actionSave_project_as_triggered()
 {
-    QString myName, myFilename, myPath;
-
     DialogPragaProject* myProjectDialog = new DialogPragaProject(&myProject);
+    myProjectDialog->exec();
     myProjectDialog->close();
 
     redrawTitle();
-
     checkSaveProject();
 }
 
