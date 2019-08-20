@@ -1330,7 +1330,7 @@ void PragaProject::savePragaParameters()
 }
 
 
-bool PragaProject::interpolationMeteoGridPeriod(QDate dateIni, QDate dateFin, std::vector <meteoVariable> variables)
+bool PragaProject::interpolationMeteoGridPeriod(QDate dateIni, QDate dateFin, QList <meteoVariable> variables)
 {
     // check dates
     if (dateIni.isNull() || dateFin.isNull() || dateIni > dateFin)
@@ -1342,6 +1342,21 @@ bool PragaProject::interpolationMeteoGridPeriod(QDate dateIni, QDate dateFin, st
     if (interpolationSettings.getUseTAD())
         if (! loadTopographicDistanceMaps())
             return false;
+
+    FormInfo myInfo;
+    int infoStep = 1;
+    std::string id;
+
+    QString infoStr = "Save meteo grid hourly data";
+    infoStep = myInfo.start(infoStr, this->meteoGridDbHandler->gridStructure().header().nrRows);
+
+    QDate myDate = dateIni;
+
+    while (myDate <= dateFin)
+    {
+
+        myDate = myDate.addDays(1);
+    }
 
     return true;
 
@@ -1370,14 +1385,6 @@ bool PragaProject::interpolationMeteoGridPeriod(QDate dateIni, QDate dateFin, st
         computeEtpHargreaves = computeTemp
 
         myYearUrban = Definitions.NO_DATA
-
-        'check tables
-        If checkTables Then
-            If Not dbGridManagement.checkGridTables(True, True) Then
-                PragaShell.setErrorMsg "Error checking hourly or daily tables"
-                Exit Function
-            End If
-        End If
 
         'log file
         myHandleFile = FreeFile
@@ -1686,9 +1693,9 @@ bool PragaProject::interpolationMeteoGrid(meteoVariable myVar, frequencyType myF
         {
             return false;
         }
-        // GA dataRaster = myRaster ???
+
         meteoGridDbHandler->meteoGrid()->aggregateMeteoGrid(myVar, myFrequency, myTime.date, myTime.getHour(),
-                            myTime.getMinutes(), &DEM, dataRaster, interpolationSettings.getMeteoGridAggrMethod());
+                            myTime.getMinutes(), &DEM, myRaster, interpolationSettings.getMeteoGridAggrMethod());
         meteoGridDbHandler->meteoGrid()->fillMeteoRaster();
     }
     else

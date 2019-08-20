@@ -1841,6 +1841,31 @@ bool Crit3DMeteoGridDbHandler::saveCellCurrentGridDailyFF(QString *myError, QStr
     return true;
 }
 
+bool Crit3DMeteoGridDbHandler::saveGridHourlyData(QString *myError, QDateTime firstDate, QDateTime lastDate, QList<meteoVariable> meteoVariableList)
+{
+    std::string id;
+
+    for (int row = 0; row < gridStructure().header().nrRows; row++)
+    {
+        for (int col = 0; col < gridStructure().header().nrCols; col++)
+        {
+            if (meteoGrid()->getMeteoPointActiveId(row, col, &id))
+            {
+                if (!gridStructure().isFixedFields())
+                {
+                    saveCellGridHourlyData(myError, QString::fromStdString(id), row, col, firstDate, lastDate, meteoVariableList);
+                }
+                else
+                {
+                    saveCellGridHourlyDataFF(myError, QString::fromStdString(id), row, col, firstDate, lastDate);
+                }
+            }
+        }
+    }
+
+    return true;
+}
+
 bool Crit3DMeteoGridDbHandler::saveCellGridHourlyData(QString *myError, QString meteoPointID, int row, int col, QDateTime firstDate, QDateTime lastDate, QList<meteoVariable> meteoVariableList)
 {
     QSqlQuery qry(_db);

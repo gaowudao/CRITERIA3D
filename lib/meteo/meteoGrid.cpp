@@ -649,7 +649,8 @@ void Crit3DMeteoGrid::assignCellAggregationPoints(int row, int col, gis::Crit3DR
     // TO DO compute std deviation
 }
 
-void Crit3DMeteoGrid::aggregateMeteoGrid(meteoVariable myVar, frequencyType freq, Crit3DDate date, int  hour, int minute, gis::Crit3DRasterGrid* myDEM, gis::Crit3DRasterGrid dataRaster, aggregationMethod elab)
+void Crit3DMeteoGrid::aggregateMeteoGrid(meteoVariable myVar, frequencyType freq, Crit3DDate date, int  hour, int minute,
+                                         gis::Crit3DRasterGrid* myDEM, gis::Crit3DRasterGrid *dataRaster, aggregationMethod elab)
 {
     int numberOfDays = 1;
     int initialize;
@@ -675,8 +676,8 @@ void Crit3DMeteoGrid::aggregateMeteoGrid(meteoVariable myVar, frequencyType freq
                 {
                     double x = _meteoPoints[row][col]->aggregationPoints[i].utm.x;
                     double y = _meteoPoints[row][col]->aggregationPoints[i].utm.y;
-                    double interpolatedValue = gis::getValueFromXY(dataRaster, x, y);
-                    if (interpolatedValue != dataRaster.header->flag)
+                    double interpolatedValue = gis::getValueFromXY(*dataRaster, x, y);
+                    if (interpolatedValue != dataRaster->header->flag)
                     {
                         _meteoPoints[row][col]->aggregationPoints[i].z = interpolatedValue;
                         validValues = validValues + 1;
@@ -705,8 +706,6 @@ void Crit3DMeteoGrid::aggregateMeteoGrid(meteoVariable myVar, frequencyType freq
                             }
                             fillMeteoPointHourlyValue(row, col, numberOfDays, initialize, date, hour, minute, myVar, float(myValue));
                             fillMeteoPointCurrentHourlyValue(date, hour, minute, myVar);
-                            //std::cout << "id: " << _meteoPoints[row][col]->id << "row: " << row << "col: " << col << " value: " << myValue << " currentValue: " << _meteoPoints[row][col]->currentValue <<std::endl;
-
                         }
                         else if (freq == daily)
                         {
