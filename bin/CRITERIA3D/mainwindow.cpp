@@ -806,19 +806,6 @@ void MainWindow::on_actionProjectSettings_triggered()
 }
 
 
-void mouseManager(Qt3DExtras::Qt3DWindow *view3D, QMouseEvent *e)
-{
-    if(e->buttons() == Qt::RightButton)
-    {
-        QVector3D camPos = view3D->camera()->position();
-        camPos.normalize();
-        float dy = float(e->x()) / 300.f;
-        camPos = view3D->camera()->position() - QVector3D(dy, dy, dy);
-        view3D->camera()->setPosition(camPos);
-    }
-}
-
-
 void MainWindow::on_actionCriteria3D_Initialize_triggered()
 {
     myProject.initializeCriteria3D();
@@ -1129,15 +1116,16 @@ void MainWindow::openSoilWidget(QPoint localPos)
     gis::latLonToUtmForceZone(myProject.gisSettings.utmZone, geoPos.latitude(), geoPos.longitude(), &x, &y);
     QString soilCode = myProject.getCrit3DSoilCode(x, y);
 
-    if (soilCode != "")
-    {
+    if (soilCode == "") {
+        myProject.logInfoGUI("No soil.");
+    }
+    else if (soilCode == "NOT FOUND") {
+        myProject.logError("Soil code not found: check soil database.");
+    }
+    else {
         soilWidget = new Crit3DSoilWidget();
         soilWidget->setDbSoil(myProject.dbSoilName, soilCode);
         soilWidget->show();
-    }
-    else
-    {
-        myProject.logInfoGUI("No soil.");
     }
 }
 

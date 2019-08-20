@@ -408,3 +408,17 @@ void Viewer3D::createScene()
     m_rootEntity->addComponent(geometryRenderer);
 }
 
+
+// ?
+void mouseManager(Qt3DExtras::Qt3DWindow *view3D, QMouseEvent *e)
+{
+    if(e->buttons() == Qt::RightButton)
+    {
+        QVector3D camPos = view3D->camera()->position();
+        camPos.normalize();
+        float dy = float(e->x()) / 300.f;
+        camPos = view3D->camera()->position() - QVector3D(dy, dy, dy);
+        view3D->camera()->setPosition(camPos);
+    }
+}
+
