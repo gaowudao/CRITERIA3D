@@ -1135,6 +1135,10 @@ void MainWindow::openSoilWidget(QPoint localPos)
         soilWidget->setDbSoil(myProject.dbSoilName, soilCode);
         soilWidget->show();
     }
+    else
+    {
+        myProject.logInfoGUI("No soil.");
+    }
 }
 
 
@@ -1209,7 +1213,7 @@ void MainWindow::on_actionLoad_model_parameters_triggered()
     if (fileName == "") return;
 
     if (myProject.loadModelParameters(fileName))
-        QMessageBox::information(nullptr, "", "Model parameters loaded");
+        myProject.logInfoGUI("Model parameters loaded");
 }
 
 
