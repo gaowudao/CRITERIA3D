@@ -26,6 +26,7 @@
 #include "project3D.h"
 #include "soilFluxes3D.h"
 #include "soilDbTools.h"
+#include "math.h"
 
 
 Project3D::Project3D() : Project()
@@ -35,6 +36,8 @@ Project3D::Project3D() : Project()
 
 void Project3D::initializeProject3D()
 {
+    dbSoilName = "";
+
     nrSoils = 0;
     soilDepth = 1.0;            // [m]
 
@@ -47,21 +50,6 @@ void Project3D::initializeProject3D()
     nrLateralLink = 8;
 
     meteoMaps = nullptr;
-}
-
-
-void Project3D::clearProject3D()
-{
-    clearWaterBalance3D();
-
-    for (unsigned int i = 0; i < soilList.size(); i++)
-    {
-        soilList[i].cleanSoil();
-    }
-
-    delete meteoMaps;
-
-    clearProject();
 }
 
 
@@ -84,8 +72,35 @@ void Project3D::clearWaterBalance3D()
 }
 
 
+void Project3D::clearProject3D()
+{
+    clearWaterBalance3D();
+
+    for (unsigned int i = 0; i < soilList.size(); i++)
+    {
+        soilList[i].cleanSoil();
+    }
+    soilList.clear();
+
+    delete meteoMaps;
+
+    initializeProject3D();
+
+    clearProject();
+}
+
+
 bool Project3D::loadSoilDatabase(QString fileName)
 {
+    if (fileName == "")
+    {
+        logError("Missing Soil DB filename");
+        return false;
+    }
+
+    dbSoilName = fileName;
+    fileName = getCompleteFileName(fileName, PATH_SOIL);
+
     if (! loadAllSoils(fileName, &(soilList), texturalClassList, &fittingOptions, &errorString))
     {
         logError();
@@ -159,7 +174,7 @@ bool Project3D::setIndexMaps()
 
     indexMap.resize(nrLayers);
 
-    long currentIndex = 0;
+    unsigned long currentIndex = 0;
     for (unsigned int i = 0; i < nrLayers; i++)
     {
         indexMap.at(i).initializeGrid(DEM);
@@ -248,12 +263,12 @@ bool Project3D::setCrit3DSoils()
 
     for (unsigned int soilIndex = 0; soilIndex < nrSoils; soilIndex++)
     {
-        for (int horizIndex = 0; horizIndex < soilList[soilIndex].nrHorizons; horizIndex++)
+        for (unsigned int horizIndex = 0; horizIndex < soilList[soilIndex].nrHorizons; horizIndex++)
         {
             myHorizon = &(soilList[soilIndex].horizon[horizIndex]);
             if ((myHorizon->texture.classUSDA > 0) && (myHorizon->texture.classUSDA <= 12))
             {
-                result = soilFluxes3D::setSoilProperties(int(soilIndex), horizIndex,
+                result = soilFluxes3D::setSoilProperties(signed(soilIndex), signed(horizIndex),
                      myHorizon->vanGenuchten.alpha * GRAVITY,               // [kPa-1] -> [m-1]
                      myHorizon->vanGenuchten.n,
                      myHorizon->vanGenuchten.m,
@@ -323,7 +338,7 @@ bool Project3D::setCrit3DTopography()
                         lateralArea = float(DEM.header->cellSize * layerThickness[layer]);
 
                         // last project layer or last soil layer
-                        if (int(layer) == nrLayers - 1 || ! isWithinSoil(soilIndex, layerDepth.at(size_t(layer+1))))
+                        if (layer == (nrLayers - 1) || ! isWithinSoil(soilIndex, layerDepth.at(size_t(layer+1))))
                             myResult = soilFluxes3D::setNode(index, float(x), float(y), z, volume, false, true, BOUNDARY_FREEDRAINAGE, 0.0);
                         else
                         {
@@ -358,7 +373,7 @@ bool Project3D::setCrit3DTopography()
                     }
 
                     // down link
-                    if (int(layer) < (nrLayers - 1) && isWithinSoil(soilIndex, layerDepth.at(size_t(layer + 1))))
+                    if (layer < (nrLayers - 1) && isWithinSoil(soilIndex, layerDepth.at(size_t(layer + 1))))
                     {
                         linkIndex = long(indexMap.at(layer + 1).value[row][col]);
 
@@ -492,10 +507,16 @@ bool Project3D::initializeSoilMoisture(int month)
                     else
                     {
                         soilIndex = getSoilIndex(row, col);
-                        horizonIndex = soil::getHorizonIndex(&(soilList[soilIndex]), layerDepth[size_t(layer)]);
-                        fieldCapacity = soilList[soilIndex].horizon[horizonIndex].fieldCapacity;
-                        waterPotential = fieldCapacity - moistureIndex * (fieldCapacity-dry);
-                        crit3dResult = soilFluxes3D::setMatricPotential(index, waterPotential);
+                        if (soilIndex != NODATA)
+                        {
+                            horizonIndex = soil::getHorizonIndex(&(soilList[unsigned(soilIndex)]), layerDepth[size_t(layer)]);
+                            if (horizonIndex != NODATA)
+                            {
+                                fieldCapacity = soilList[unsigned(soilIndex)].horizon[unsigned(horizonIndex)].fieldCapacity;
+                                waterPotential = fieldCapacity - moistureIndex * (fieldCapacity-dry);
+                                crit3dResult = soilFluxes3D::setMatricPotential(index, waterPotential);
+                            }
+                        }
                     }
 
                     if (isCrit3dError(crit3dResult, &error))
@@ -514,10 +535,13 @@ bool Project3D::initializeSoilMoisture(int month)
 
 int Project3D::getSoilIndex(long row, long col)
 {
-    if ( !soilIndexMap.isLoaded) return NODATA;
+    if ( !soilIndexMap.isLoaded)
+        return NODATA;
 
     int soilIndex = int(soilIndexMap.getValueFromRowCol(row, col));
-    if (soilIndex == int(soilIndexMap.header->flag)) return NODATA;
+
+    if (soilIndex == int(soilIndexMap.header->flag))
+        return NODATA;
 
     return soilIndex;
 }
@@ -528,7 +552,7 @@ bool Project3D::isWithinSoil(int soilIndex, double depth)
     if (soilIndex == int(NODATA) || soilIndex >= int(soilList.size())) return false;
 
     // check if depth is lower than lowerDepth of last horizon
-    int lastHorizon = soilList[unsigned(soilIndex)].nrHorizons -1;
+    unsigned int lastHorizon = soilList[unsigned(soilIndex)].nrHorizons -1;
     double lowerDepth = soilList[unsigned(soilIndex)].horizon[lastHorizon].lowerDepth;
 
     return (depth <= lowerDepth);

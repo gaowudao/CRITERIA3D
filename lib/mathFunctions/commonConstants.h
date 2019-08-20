@@ -44,6 +44,7 @@
     #define PATH_METEOPOINT "METEOPOINT/"
     #define PATH_METEOGRID "METEOGRID/"
     #define PATH_GEO "GEO/"
+    #define PATH_SOIL "SOIL/"
     #define PATH_PROJECT "PROJECT/"
     #define PATH_TEMPLATE "TEMPLATE/"
     #define PATH_SETTINGS "SETTINGS/"

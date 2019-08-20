@@ -180,7 +180,7 @@
         Crit3DProxyCombination getSelectedCombination() const;
         Crit3DProxyCombination* getSelectedCombinationRef();
         void setSelectedCombination(const Crit3DProxyCombination &value);
-        void setValueSelectedCombination(int index, bool isActive);
+        void setValueSelectedCombination(unsigned int index, bool isActive);
         int getIndexHeight() const;
         void setIndexHeight(int value);
         Crit3DProxyCombination *getCurrentCombination() const;

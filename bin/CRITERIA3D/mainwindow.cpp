@@ -590,75 +590,81 @@ void MainWindow::redrawMeteoPoints(visualizationType myType, bool updateColorSCa
 
     switch(currentPointsVisualization)
     {
-    case notShown:
-    {
-        meteoPointsLegend->setVisible(false);
-        this->ui->actionView_PointsHide->setChecked(true);
-        break;
-    }
-    case showLocation:
-    {
-        this->ui->actionView_PointsLocation->setChecked(true);
-        for (int i = 0; i < myProject.nrMeteoPoints; i++)
+        case notShown:
         {
-                myProject.meteoPoints[i].currentValue = NODATA;
-                pointList[i]->setFillColor(QColor(Qt::white));
-                pointList[i]->setRadius(5);
-                pointList[i]->setToolTip(&(myProject.meteoPoints[i]));
-                pointList[i]->setVisible(true);
+            meteoPointsLegend->setVisible(false);
+            this->ui->actionView_PointsHide->setChecked(true);
+            break;
         }
-
-        myProject.meteoPointsColorScale->setRange(NODATA, NODATA);
-        meteoPointsLegend->update();
-        break;
-    }
-    case showCurrentVariable:
-    {
-        this->ui->actionView_PointsCurrentVariable->setChecked(true);
-        // quality control
-        checkData(myProject.quality, myProject.getCurrentVariable(),
-                  myProject.meteoPoints, myProject.nrMeteoPoints, myProject.getCurrentTime(),
-                  &myProject.qualityInterpolationSettings, &(myProject.climateParameters), myProject.checkSpatialQuality);
-
-        if (updateColorSCale)
+        case showLocation:
         {
-            float minimum, maximum;
-            myProject.getMeteoPointsRange(&minimum, &maximum);
-
-            myProject.meteoPointsColorScale->setRange(minimum, maximum);
-        }
-
-        roundColorScale(myProject.meteoPointsColorScale, 4, true);
-        setColorScale(myProject.getCurrentVariable(), myProject.meteoPointsColorScale);
-
-        Crit3DColor *myColor;
-        for (int i = 0; i < myProject.nrMeteoPoints; i++)
-        {
-            if (int(myProject.meteoPoints[i].currentValue) != NODATA)
+            this->ui->actionView_PointsLocation->setChecked(true);
+            for (int i = 0; i < myProject.nrMeteoPoints; i++)
             {
-                if (myProject.meteoPoints[i].quality == quality::accepted)
-                {
+                    myProject.meteoPoints[i].currentValue = NODATA;
+                    pointList[i]->setFillColor(QColor(Qt::white));
                     pointList[i]->setRadius(5);
-                    myColor = myProject.meteoPointsColorScale->getColor(myProject.meteoPoints[i].currentValue);
-                    pointList[i]->setFillColor(QColor(myColor->red, myColor->green, myColor->blue));
-                    pointList[i]->setOpacity(1.0);
-                }
-                else
-                {
-                    // Wrong data
-                    pointList[i]->setRadius(10);
-                    pointList[i]->setFillColor(QColor(Qt::black));
-                    pointList[i]->setOpacity(0.5);
-                }
-
-                pointList[i]->setToolTip(&(myProject.meteoPoints[i]));
-                pointList[i]->setVisible(true);
+                    pointList[i]->setToolTip(&(myProject.meteoPoints[i]));
+                    pointList[i]->setVisible(true);
             }
-        }
 
-        meteoPointsLegend->update();
-        break;
-    }
+            myProject.meteoPointsColorScale->setRange(NODATA, NODATA);
+            meteoPointsLegend->update();
+            break;
+        }
+        case showCurrentVariable:
+        {
+            this->ui->actionView_PointsCurrentVariable->setChecked(true);
+            // quality control
+            checkData(myProject.quality, myProject.getCurrentVariable(),
+                      myProject.meteoPoints, myProject.nrMeteoPoints, myProject.getCurrentTime(),
+                      &myProject.qualityInterpolationSettings, &(myProject.climateParameters), myProject.checkSpatialQuality);
+
+            if (updateColorSCale)
+            {
+                float minimum, maximum;
+                myProject.getMeteoPointsRange(&minimum, &maximum);
+
+                myProject.meteoPointsColorScale->setRange(minimum, maximum);
+            }
+
+            roundColorScale(myProject.meteoPointsColorScale, 4, true);
+            setColorScale(myProject.getCurrentVariable(), myProject.meteoPointsColorScale);
+
+            Crit3DColor *myColor;
+            for (int i = 0; i < myProject.nrMeteoPoints; i++)
+            {
+                if (int(myProject.meteoPoints[i].currentValue) != NODATA)
+                {
+                    if (myProject.meteoPoints[i].quality == quality::accepted)
+                    {
+                        pointList[i]->setRadius(5);
+                        myColor = myProject.meteoPointsColorScale->getColor(myProject.meteoPoints[i].currentValue);
+                        pointList[i]->setFillColor(QColor(myColor->red, myColor->green, myColor->blue));
+                        pointList[i]->setOpacity(1.0);
+                    }
+                    else
+                    {
+                        // Wrong data
+                        pointList[i]->setRadius(10);
+                        pointList[i]->setFillColor(QColor(Qt::black));
+                        pointList[i]->setOpacity(0.5);
+                    }
+
+                    pointList[i]->setToolTip(&(myProject.meteoPoints[i]));
+                    pointList[i]->setVisible(true);
+                }
+            }
+
+            meteoPointsLegend->update();
+            break;
+        }
+        default:
+        {
+            meteoPointsLegend->setVisible(false);
+            this->ui->actionView_PointsHide->setChecked(true);
+            break;
+        }
     }
 }
 
@@ -1126,6 +1132,7 @@ void MainWindow::openSoilWidget(QPoint localPos)
     if (soilCode != "")
     {
         soilWidget = new Crit3DSoilWidget();
+        soilWidget->setDbSoil(myProject.dbSoilName, soilCode);
         soilWidget->show();
     }
 }

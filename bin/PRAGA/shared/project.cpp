@@ -112,13 +112,13 @@ void Project::clearProxyDEM()
 
     if (index != NODATA)
     {
-        proxyHeight = interpolationSettings.getProxy(index);
+        proxyHeight = interpolationSettings.getProxy(unsigned(index));
         proxyHeight->setGrid(nullptr);
     }
 
     if (indexQuality != NODATA)
     {
-        proxyHeight = qualityInterpolationSettings.getProxy(indexQuality);
+        proxyHeight = qualityInterpolationSettings.getProxy(unsigned(indexQuality));
         proxyHeight->setGrid(nullptr);
     }
 }
@@ -136,7 +136,7 @@ void Project::setProxyDEM()
 
     if (index != NODATA)
     {
-        proxyHeight = interpolationSettings.getProxy(index);
+        proxyHeight = interpolationSettings.getProxy(unsigned(index));
 
         // if no alternative DEM defined and project DEM loaded, use it for elevation proxy
         if (proxyHeight->getGridName() == "" && DEM.isLoaded)
@@ -145,7 +145,7 @@ void Project::setProxyDEM()
 
     if (indexQuality != NODATA)
     {
-        proxyHeight = qualityInterpolationSettings.getProxy(indexQuality);
+        proxyHeight = qualityInterpolationSettings.getProxy(unsigned(indexQuality));
         if (proxyHeight->getGridName() == "" && DEM.isLoaded)
             proxyHeight->setGrid(&DEM);
     }
@@ -603,10 +603,10 @@ bool Project::loadParameters(QString parametersFileName)
 
             parameters->beginGroup(group);
             int nrGrids = parameters->beginReadArray("grids");
-            for (unsigned i = 0; i < nrGrids; ++i) {
+            for (int i = 0; i < nrGrids; ++i) {
                 parameters->setArrayIndex(i);
                 proxyGridSeriesNames.push_back(parameters->value("name").toString());
-                proxyGridSeriesYears.push_back(parameters->value("year").toInt());
+                proxyGridSeriesYears.push_back(parameters->value("year").toUInt());
             }
             parameters->endArray();
             parameters->endGroup();

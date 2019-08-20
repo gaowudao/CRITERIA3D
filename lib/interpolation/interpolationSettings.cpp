@@ -163,7 +163,7 @@ void Crit3DInterpolationSettings::setSelectedCombination(const Crit3DProxyCombin
     selectedCombination = value;
 }
 
-void Crit3DInterpolationSettings::setValueSelectedCombination(int index, bool isActive)
+void Crit3DInterpolationSettings::setValueSelectedCombination(unsigned int index, bool isActive)
 {
     selectedCombination.setValue(index, isActive);
 }
@@ -306,7 +306,7 @@ bool Crit3DInterpolationSettings::getUseDewPoint()
 { return (useDewPoint);}
 
 int Crit3DInterpolationSettings::getProxyNr()
-{ return (int)currentProxy.size();}
+{ return int(currentProxy.size());}
 
 Crit3DProxy* Crit3DInterpolationSettings::getProxy(unsigned pos)
 { return &(currentProxy[pos]);}
@@ -485,7 +485,7 @@ void Crit3DInterpolationSettings::addProxy(Crit3DProxy myProxy, bool isActive_)
     currentProxy.push_back(myProxy);
 
     if (getProxyPragaName(myProxy.getName()) == height)
-        setIndexHeight((int)currentProxy.size()-1);
+        setIndexHeight(int(currentProxy.size())-1);
 
     selectedCombination.addValue(isActive_);
     optimalCombination.addValue(isActive_);
@@ -504,7 +504,7 @@ float Crit3DInterpolationSettings::getProxyValue(unsigned pos, std::vector <floa
 
 void Crit3DInterpolationSettings::computeShepardInitialRadius(float area, int nrPoints)
 {
-    setShepardInitialRadius(sqrt((SHEPARD_AVG_NRPOINTS * area) / ((float)PI * nrPoints)));
+    setShepardInitialRadius(sqrt((SHEPARD_AVG_NRPOINTS * area) / (float(PI) * nrPoints)));
 }
 
 std::deque<bool> Crit3DProxyCombination::getIsActive() const

@@ -30,6 +30,8 @@
         public:
             Crit3DSoilWidget();
 
+            void setDbSoil(QString dbSoilName, QString soilCode);
+
         private:
             QComboBox soilListComboBox;
             QTabWidget* tabWidget;
@@ -71,7 +73,6 @@
             constexpr static const double heightTriangle = 236.0;
 
             void on_actionOpenSoilDB();
-            void setDbSoil(QString dbSoilName, QString soilCode);
             void on_actionSave();
             void on_actionNewSoil();
             void on_actionDeleteSoil();

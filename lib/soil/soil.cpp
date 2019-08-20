@@ -167,7 +167,7 @@ namespace soil
 
     void Crit3DSoil::cleanSoil()
     {
-        for (int i = 0; i < this->horizon.size(); i++)
+        for (unsigned int i = 0; i < this->horizon.size(); i++)
         {
             this->horizon[i].dbData.waterRetention.erase(this->horizon[i].dbData.waterRetention.begin(), this->horizon[i].dbData.waterRetention.end());
             this->horizon[i].dbData.waterRetention.clear();

@@ -182,9 +182,9 @@ bool setWaterSinkSource(Crit3DProject* myProject, double* totalPrecipitation,
             }
         }
 
-    for (long i = 0; i < myProject->nrNodes; i++)
+    for (unsigned long i = 0; i < myProject->nrNodes; i++)
     {
-        myResult = soilFluxes3D::setWaterSinkSource(i, myProject->waterSinkSource[i]);
+        myResult = soilFluxes3D::setWaterSinkSource(signed(i), myProject->waterSinkSource[i]);
         if (isCrit3dError(myResult, &myError))
         {
             myProject->errorString = "initializeSoilMoisture:" + myError;
