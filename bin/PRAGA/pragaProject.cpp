@@ -1346,17 +1346,27 @@ bool PragaProject::interpolationMeteoGridPeriod(QDate dateIni, QDate dateFin, QL
     FormInfo myInfo;
     int infoStep = 1;
     std::string id;
+    QString myError;
 
     QString infoStr = "Save meteo grid hourly data";
     infoStep = myInfo.start(infoStr, this->meteoGridDbHandler->gridStructure().header().nrRows);
 
     QDate myDate = dateIni;
 
+    if (! loadMeteoPointsData(dateIni, dateFin, true))
+        return false;
+
     while (myDate <= dateFin)
     {
+        foreach (meteoVariable myVar, variables)
+        {
+
+        }
 
         myDate = myDate.addDays(1);
     }
+
+    meteoGridDbHandler->saveGridHourlyData(&myError, QDateTime(dateIni, QTime(0,0,0)), QDateTime(dateFin.addDays(1), QTime(0,0,0)), variables);
 
     return true;
 
@@ -1673,7 +1683,7 @@ bool PragaProject::interpolationMeteoGridPeriod(QDate dateIni, QDate dateFin, QL
         Next myDate
 
         If Interpolation.GetUseTAD Then Erase TadMaps
-        Interpolation.SetSettings previousSettings
+
         PragaShell.StopInfo
         Print #myHandleFile, "Interpolation finished at " & format(Now, "YYYY-MM-DD HH:MM:SS")
         Close #myHandleFile

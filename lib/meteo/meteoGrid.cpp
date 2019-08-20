@@ -646,7 +646,6 @@ void Crit3DMeteoGrid::assignCellAggregationPoints(int row, int col, gis::Crit3DR
 
         }
     }
-    // TO DO compute std deviation
 }
 
 void Crit3DMeteoGrid::aggregateMeteoGrid(meteoVariable myVar, frequencyType freq, Crit3DDate date, int  hour, int minute,
@@ -659,10 +658,6 @@ void Crit3DMeteoGrid::aggregateMeteoGrid(meteoVariable myVar, frequencyType freq
     {
         findGridAggregationPoints(myDEM);
     }
-
-    // TO DO
-    //dbGridManagement.initializeStandardDeviation
-
 
     for (int col = 0; col < _gridStructure.header().nrCols; col++)
     {
