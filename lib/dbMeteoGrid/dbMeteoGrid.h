@@ -140,7 +140,7 @@
 
         bool saveCellGridDailyDataFF(QString *myError, QString meteoPointID, int row, int col, QDate firstDate, QDate lastDate);
 
-        bool saveCellCurrrentGridDaily(QString *myError, QString meteoPointID, QDate date, int varCode, float value);
+        bool saveCellCurrentGridDaily(QString *myError, QString meteoPointID, QDate date, int varCode, float value);
 
         bool saveCellCurrentGridDailyFF(QString *myError, QString meteoPointID, QDate date, QString varPragaName, float value);
 

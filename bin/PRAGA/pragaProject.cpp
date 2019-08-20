@@ -146,7 +146,7 @@ bool PragaProject::saveGrid(meteoVariable myVar, frequencyType myFrequency, cons
                 {
                     if (!this->meteoGridDbHandler->gridStructure().isFixedFields())
                     {
-                        this->meteoGridDbHandler->saveCellCurrrentGridDaily(&errorString, QString::fromStdString(id), QDate(myTime.date.year, myTime.date.month, myTime.date.day), this->meteoGridDbHandler->getDailyVarCode(myVar), this->meteoGridDbHandler->meteoGrid()->meteoPoint(row,col).currentValue);
+                        this->meteoGridDbHandler->saveCellCurrentGridDaily(&errorString, QString::fromStdString(id), QDate(myTime.date.year, myTime.date.month, myTime.date.day), this->meteoGridDbHandler->getDailyVarCode(myVar), this->meteoGridDbHandler->meteoGrid()->meteoPoint(row,col).currentValue);
                     }
                     else
                     {
@@ -1339,6 +1339,10 @@ bool PragaProject::interpolationMeteoGridPeriod(QDate dateIni, QDate dateFin, st
         return false;
     }
 
+    if (interpolationSettings.getUseTAD())
+        if (! loadTopographicDistanceMaps())
+            return false;
+
     return true;
 
     /*
@@ -1350,69 +1354,12 @@ bool PragaProject::interpolationMeteoGridPeriod(QDate dateIni, QDate dateFin, st
         ByVal computeRelHum As Boolean, ByVal computeRad As Boolean, _
         ByVal computeWind As Boolean) As Boolean
 
-        Dim myHour As Byte, i As Byte
-        Dim myDate As Date
-        Dim isPeriodCorrect As Boolean
-        Dim infoString As String
-        Dim myHandleFile As Integer, myFileName As String
-
-        InterpolationERG5v2 = False
-
-        InterpolationCmd.SetInterpolationType INTERPOLATION_TYPE_DEM
-
-        ' IMPOSTAZIONI RADIAZIONE
-        Radiation.SetComputeRealData True
-        Radiation.SetTransmissivityUseTotal False
-        Radiation.SetAlgorithm Radiation.RADIATION_ALGORITHM_RSUN
-        Radiation.SetTransmissivityModel Radiation.TRANSMISSIVITY_MODEL_HOURLYRAD_FIXEDWINDOW
-        Radiation.SetTransmissivityComputationPeriod Radiation.TRANSMISSIVITY_COMPUTATION_DYNAMIC
-        Radiation.SetClearSkyTransmissivityMode Radiation.CLEAR_SKY_TRANSMISSIVITY_MODE_FIXED
-        Radiation.SetClearSkyTransmissivity Radiation.CLEAR_SKY_TRANSMISSIVITY_DEFAULT
-        Radiation.SetComputeShadowing True
-        Radiation.SetShadowFactor 1
-        Radiation.SetTiltMode Radiation.TILT_TYPE_DEM
-        Radiation.SetLandUse Radiation.LAND_USE_INDUSTRIAL
-        Radiation.SetLinkeMode Radiation.RAD_MODE_MONTHLY
-
-        'AGGREGATION POINTS
-        If Not MeteoGrid.isAggregationDefined Then
-            If Not dbGridManagement.findGridAggregationPoints(GIS.DEM, MeteoGrid, True) Then
-                PragaShell.setErrorMsg "Error defining aggregation points"
-                Exit Function
-            End If
-        End If
-
-        'LOAD OROG INDEX MAP
-        If Interpolation.GetUseOrogIndex Then
-            PragaShell.StartInfo "Loading orog index map...", 0
-            If GIS.ReadESRIGrid(myOrogIndexMapName, Interpolation.OrogIndexMap) Then
-                Dim myMap As GIS.grid
-                GIS.resampleGridWithHeader Interpolation.OrogIndexMap, myMap, GIS.DEM.header, Definitions.ELAB_MEAN, 0, False
-                GIS.clearGrid Interpolation.OrogIndexMap
-                Interpolation.OrogIndexMap = myMap
-                GIS.clearGrid myMap
-            Else
-                PragaShell.setErrorMsg "Error loading orog index map: " & myOrogIndexMapName
-                Exit Function
-            End If
-        End If
-
-        'LOAD URBAN MAPS
-        If Interpolation.GetUseUrban Then
-            PragaShell.StartInfo "Checking urban maps...", 0
-            If Not Interpolation.createUrbanMapSeries(myUrbanMapFileNames, myUrbanMapYears) Then Exit Function
-        End If
-
-        'CHECK MAPS
-        If Not checkLoadedGrids(INTERPOLATION_TYPE_DEM) Then Exit Function
-
         Dim grdTemperature As GIS.grid, grdDewTemperature As GIS.grid
         Dim grdHumidity As GIS.grid, grdPrecipitation As GIS.grid
         Dim grdRadiation As GIS.grid, grdTransmissivity As GIS.grid
         Dim grdWindX As GIS.grid, grdWindY As GIS.grid, grdWindInt As GIS.grid, grdWindDir As GIS.grid
         Dim grdEtpPenman As GIS.grid, grdEtpHargreaves As GIS.grid, grdLeafWetness As GIS.grid, grdPrecPreviousHour As GIS.grid
         Dim grdTmin As GIS.grid, grdTmax As GIS.grid, grdPrecDaily As GIS.grid, grdWindMax As GIS.grid
-
         Dim myYearUrban As Integer
         Dim myFilenamePre As String, myFilenamePost As String
         Dim computeEtpPenman As Boolean, computeEtpHargreaves As Boolean
@@ -1423,13 +1370,6 @@ bool PragaProject::interpolationMeteoGridPeriod(QDate dateIni, QDate dateFin, st
         computeEtpHargreaves = computeTemp
 
         myYearUrban = Definitions.NO_DATA
-
-        'LOAD TAD MAPS
-        If Interpolation.GetUseTAD() Then
-            If Not InterpolationCmd.loadTADMaps(True) Then
-                Exit Function
-            End If
-        End If
 
         'check tables
         If checkTables Then
@@ -1746,6 +1686,7 @@ bool PragaProject::interpolationMeteoGrid(meteoVariable myVar, frequencyType myF
         {
             return false;
         }
+        // GA dataRaster = myRaster ???
         meteoGridDbHandler->meteoGrid()->aggregateMeteoGrid(myVar, myFrequency, myTime.date, myTime.getHour(),
                             myTime.getMinutes(), &DEM, dataRaster, interpolationSettings.getMeteoGridAggrMethod());
         meteoGridDbHandler->meteoGrid()->fillMeteoRaster();
