@@ -88,6 +88,11 @@ bool operator == (const Crit3DTime& time1, const Crit3DTime& time2)
     return (time1.isEqual(time2));
 }
 
+bool operator != (const Crit3DTime& time1, const Crit3DTime& time2)
+{
+    return (! time1.isEqual(time2));
+}
+
 Crit3DTime getNullTime()
 {
     Crit3DTime* nullTime = new Crit3DTime();

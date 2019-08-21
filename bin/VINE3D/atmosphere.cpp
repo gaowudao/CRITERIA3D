@@ -272,9 +272,7 @@ bool interpolationProjectDemMain(Vine3DProject* myProject, meteoVariable myVar, 
     {
         if (myProject->interpolationSettings.getUseDewPoint())
         {
-            std::string myTime = getQDateTime(myCrit3DTime).toString("yyyyMMdd:hhmm").toStdString();
-
-            if (myProject->meteoMaps->airTemperatureMap->timeString != myTime)
+            if (myProject->meteoMaps->airTemperatureMap->mapTime != myCrit3DTime)
             {
                 if (! vine3DInterpolationDem(myProject, airTemperature, myCrit3DTime, isLoadData))
                     return false;

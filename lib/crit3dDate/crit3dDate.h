@@ -48,6 +48,7 @@
         friend bool operator >= (const Crit3DTime& myFirstTime, const Crit3DTime& mySecondTime);
         friend bool operator <= (const Crit3DTime& myFirstTime, const Crit3DTime& mySecondTime);
         friend bool operator == (const Crit3DTime& myFirstTime, const Crit3DTime& mySecondTime);
+        friend bool operator != (const Crit3DTime& myFirstTime, const Crit3DTime& mySecondTime);
 
         Crit3DTime addSeconds(float mySeconds) const;
         bool isEqual(const Crit3DTime&) const;
