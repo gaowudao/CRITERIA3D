@@ -3,6 +3,7 @@
 #include "project.h"
 #include "formInfo.h"
 #include "commonConstants.h"
+#include "basicMath.h"
 #include "spatialControl.h"
 #include "radiationSettings.h"
 #include "solarRadiation.h"
@@ -633,8 +634,8 @@ bool Project::getMeteoPointSelected(int i)
 
     for (int j = 0; j < meteoPointsSelected.size(); j++)
     {
-        if (abs(meteoPoints[i].latitude - meteoPointsSelected[j].latitude) < EPSILON
-            && abs(meteoPoints[i].longitude - meteoPointsSelected[j].longitude) < EPSILON)
+        if (isEqual(meteoPoints[i].latitude, meteoPointsSelected[j].latitude)
+            && isEqual(meteoPoints[i].longitude, meteoPointsSelected[j].longitude))
             return true;
     }
 
@@ -1164,7 +1165,7 @@ bool Project::readPointProxyValues(Crit3DMeteoPoint* myPoint, QSqlDatabase* myDb
     int nrProxy;
     Crit3DProxy* myProxy;
 
-    nrProxy = interpolationSettings.getProxyNr();
+    nrProxy = int(interpolationSettings.getProxyNr());
     myPoint->proxyValues.resize(unsigned(nrProxy));
 
     for (unsigned int i=0; i < unsigned(nrProxy); i++)

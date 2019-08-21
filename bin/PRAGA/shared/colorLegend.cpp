@@ -1,4 +1,5 @@
 #include "commonConstants.h"
+#include "basicMath.h"
 #include "colorLegend.h"
 #include <QPainter>
 #include <cmath>
@@ -22,8 +23,8 @@ void ColorLegend::paintEvent(QPaintEvent *event)
     Q_UNUSED(event)
 
     if (this->colorScale == nullptr) return;
-    if (this->colorScale->minimum == NODATA
-        || this->colorScale->maximum == NODATA) return;
+    if (isEqual(this->colorScale->minimum, NODATA)
+        || isEqual(this->colorScale->maximum, NODATA)) return;
 
     QPainter painter(this);
     Crit3DColor* myColor;
@@ -48,7 +49,7 @@ void ColorLegend::paintEvent(QPaintEvent *event)
 
         if ((i % stepText) == 0)
         {
-            if (fabs(int(value) - value) < float(EPSILON))
+            if (isEqual(int(value), value))
             {
                 painter.drawText(int(DELTA*0.5f + dx*i), 36, QString::number(int(value)));
             }

@@ -135,7 +135,7 @@
 
     bool findLinesIntersection(float q1, float m1, float q2, float m2, float* x, float* y)
     {
-        if (fabs(double(m1 - m2)) >= EPSILON)
+        if (! isEqual(m1, m2))
         {
             *x = (q2 - q1) / (m1 - m2);
             *y = m1 * (q2 - q1) / (m1 - m2) + q1;
@@ -151,7 +151,7 @@
 
     bool findLinesIntersectionAboveThreshold(float q1, float m1, float q2, float m2, float myThreshold, float* x, float* y)
     {
-        if (fabs(double(m1 - m2)) >= EPSILON)
+        if (! isEqual(m1, m2))
         {
             *x = (q2 - q1) / (m1 - m2);
             *y = m1 * (q2 - q1) / (m1 - m2) + q1;
@@ -175,9 +175,14 @@
       return 0;
     }
 
-    bool isNODATA(double value)
+    bool isEqual(float value1, float value2)
     {
-        return fabs(value - NODATA) < EPSILON;
+        return (fabs(double(value1) - double(value2)) < EPSILON);
+    }
+
+    bool isEqual(double value1, double value2)
+    {
+        return (fabs(value1 - value2) < EPSILON);
     }
 
     char* decimal_to_binary(unsigned int n, int nrBits)

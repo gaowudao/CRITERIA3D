@@ -13,6 +13,9 @@
     #ifndef CRIT3DDATE_H
         #include "crit3dDate.h"
     #endif
+    #ifndef STATISTICS_H
+        #include "statistics.h"
+    #endif
 
     enum operationType {operationMin, operationMax, operationSum, operationSubtract, operationProduct, operationDivide};
 
@@ -235,6 +238,8 @@
                                   const gis::Crit3DRasterGrid& myDEM);
         bool topographicDistanceMap(Crit3DPoint myPoint, const gis::Crit3DRasterGrid& myDEM, Crit3DRasterGrid* myMap);
         bool compareGrids(const gis::Crit3DRasterGrid& first, const gis::Crit3DRasterGrid& second);
+        void resampleGrid(const gis::Crit3DRasterGrid& oldGrid, gis::Crit3DRasterGrid* newGrid,
+                          gis::Crit3DRasterHeader header, aggregationMethod elab, float nodataThreshold);
     }
 
 

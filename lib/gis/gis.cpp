@@ -29,6 +29,7 @@
 #include <algorithm>
 
 #include "commonConstants.h"
+#include "basicMath.h"
 #include "statistics.h"
 #include "gis.h"
 
@@ -594,7 +595,7 @@ namespace gis
         if (myRow < 0 || myRow > (header->nrRows - 1) || myCol < 0 || myCol > header->nrCols - 1)
             return true;
         else
-            return (fabs(double(value[myRow][myCol] - header->flag)) < EPSILON);
+            return (isEqual(value[myRow][myCol], header->flag));
     }
 
     float Crit3DRasterGrid::getFastValueXY(double x, double y) const
@@ -1376,8 +1377,8 @@ namespace gis
         *(newGrid->header) = header;
 
         double factor = newGrid->header->cellSize / oldGrid.header->cellSize;
-        int row, col, tmpRow, tmpCol, counter;
-        float value;
+        int row, col, tmpRow, tmpCol, cellsNr;
+        float value, tmpValue;
         double x, y;
         gis::Crit3DPoint myLL, myUR;
         std::vector <float> values;
@@ -1407,22 +1408,25 @@ namespace gis
                     myUR.utm.x = x + (newGrid->header->cellSize / 2);
                     myUR.utm.y = y + (newGrid->header->cellSize / 2);
 
-                    counter = ((myUR.utm.x - myLL.utm.x) / oldGrid.header->cellSize) * ((myUR.utm.y - myLL.utm.y) / oldGrid.header->cellSize);
+                    cellsNr = int(((myUR.utm.x - myLL.utm.x) / oldGrid.header->cellSize) * ((myUR.utm.y - myLL.utm.y) / oldGrid.header->cellSize));
 
                     values.clear();
+                    for (x = myLL.utm.x; x <= myUR.utm.x; x += oldGrid.header->cellSize / 2)
+                        for (y = myLL.utm.y; y <= myUR.utm.y; y += oldGrid.header->cellSize / 2)
+                        {
+                            tmpValue = gis::getValueFromXY(oldGrid, x, y);
+                            if (isEqual(tmpValue, oldGrid.header->flag))
+                                values.push_back(tmpValue);
+                        }
+
+                    if (int(values.size()) / cellsNr > nodataThreshold)
+                    {
+                        if (elab == aggrAverage)
+                            value = statistics::mean(values, values.size());
+                    }
                 }
             }
                     /*
-                    For myX = myLL.x To myUR.x Step (oldGrid.header.cellSize / 2)
-                        For myY = myLL.y To myUR.y Step (oldGrid.header.cellSize / 2)
-                            myTmpValue = GIS.GetValueFromXY(oldGrid, myX, myY)
-                            If myTmpValue <> oldGrid.header.flag Then
-                                myValues(UBound(myValues)) = myTmpValue
-                                ReDim Preserve myValues(UBound(myValues) + 1)
-                            End If
-                        Next myY
-                    Next myX
-
                     If UBound(myValues) / myTotCounter > myNodataThreshold Then
                         Select Case myElab
                             Case Definitions.ELAB_MEAN

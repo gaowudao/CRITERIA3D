@@ -85,13 +85,15 @@ void interpolateProxyGridSeries(Crit3DProxyGridSeries mySeries, QDate myDate, gi
     secondGrid.setMapTime(getCrit3DTime(myDate, 0));
 
     // use first as reference if different resolution when resampling
-    /*if (! gis::compareGrids(firstGrid, secondGrid))
+    if (! gis::compareGrids(firstGrid, secondGrid))
     {
-
-
+        gis::Crit3DRasterGrid tmpGrid = secondGrid;
+        secondGrid.clear();
+        gis::resampleGrid(tmpGrid, &secondGrid, *firstGrid.header, aggrAverage, 0);
     }
 
-        If Not GIS.CompareGrids(myFirstMap, mySecondMap) Then
+    /*
+    If Not GIS.CompareGrids(myFirstMap, mySecondMap) Then
             Dim myTmpGrid As GIS.grid
             myTmpGrid = mySecondMap
             GIS.clearGrid mySecondMap
