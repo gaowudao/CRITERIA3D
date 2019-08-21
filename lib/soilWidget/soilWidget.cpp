@@ -362,7 +362,6 @@ void Crit3DSoilWidget::on_actionChooseSoil(QString soilCode)
     infoGroup->setTitle(soilName);
     soilCodeValue->setText(QString::fromStdString(mySoil.code));
 
-    tabChanged(tabWidget->currentIndex());
     // circle inside triangle
     for (unsigned int i = 0; i < mySoil.nrHorizons; i++)
     {
@@ -389,6 +388,7 @@ void Crit3DSoilWidget::on_actionChooseSoil(QString soilCode)
             }
         }
     }
+    tabChanged(tabWidget->currentIndex());
 }
 
 
@@ -618,7 +618,7 @@ void Crit3DSoilWidget::setInfoTextural(int nHorizon)
 
 void Crit3DSoilWidget::tabChanged(int index)
 {
-
+    qDebug() << "index = " << index;
     if (soilListComboBox.currentText().isEmpty())
     {
         return;
@@ -644,6 +644,7 @@ void Crit3DSoilWidget::tabChanged(int index)
     }
     else if (index == 2) // tab water retention curve
     {
+        qDebug() << "2 tab water retention curve " ;
         if (!wrCurveTab->getFillElement())
         {
             wrCurveTab->insertElements(&mySoil);
