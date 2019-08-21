@@ -83,8 +83,8 @@ void MapGraphicsShapeObject::setPolygon(unsigned int i, unsigned int j, QPolygon
 void MapGraphicsShapeObject::drawShape(QPainter* myPainter)
 {
     QPolygonF polygon;
-    QPainterPath path;
-    QPainterPath inner;
+    QPainterPath* path;
+    QPainterPath* inner;
 
     myPainter->setPen(Qt::black);
     myPainter->setBrush(Qt::red);
@@ -112,17 +112,21 @@ void MapGraphicsShapeObject::drawShape(QPainter* myPainter)
             }
             else
             {
-                path.addPolygon(polygon);
+                path = new QPainterPath();
+                inner = new QPainterPath();
+
+                path->addPolygon(polygon);
 
                 for (unsigned int k = 0; k < holes[i][j].size(); k++)
                 {
                     setPolygon(i, holes[i][j][k], &polygon);
-                    inner.addPolygon(polygon);
+                    inner->addPolygon(polygon);
                 }
 
-                myPainter->drawPath(path.subtracted(inner));
-                inner.clear();
-                path.clear();
+                myPainter->drawPath(path->subtracted(*inner));
+
+                delete inner;
+                delete path;
             }
         }
     }
