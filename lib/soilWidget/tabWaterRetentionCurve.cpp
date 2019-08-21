@@ -136,12 +136,13 @@ void TabWaterRetentionCurve::insertElements(soil::Crit3DSoil *soil)
     QList< QwtPlotMarker* > horizonMarkers;
     for (int i = 0; i<mySoil->nrHorizons; i++)
     {
-        // insertVerticalLines
-        int length = (mySoil->horizon[i].lowerDepth*100 - mySoil->horizon[i].upperDepth*100) * totHeight / (mySoil->totalDepth*100);
         if (mySoil->horizon[i].dbData.thetaSat > maxThetaSat)
         {
             maxThetaSat = mySoil->horizon[i].dbData.thetaSat;
         }
+
+        // insertVerticalLines
+        int length = (mySoil->horizon[i].lowerDepth*100 - mySoil->horizon[i].upperDepth*100) * totHeight / (mySoil->totalDepth*100);
         LineHorizont* line = new LineHorizont();
         line->setIndex(i);
         line->setFixedWidth(20);
@@ -190,6 +191,7 @@ void TabWaterRetentionCurve::insertElements(soil::Crit3DSoil *soil)
             horizonMarkers.clear();
         }
 
+
     }
     // round maxThetaSat to first decimal
     maxThetaSat = (int)(maxThetaSat * 10 + 0.5);
@@ -213,7 +215,7 @@ void TabWaterRetentionCurve::insertElements(soil::Crit3DSoil *soil)
 
 void TabWaterRetentionCurve::widgetClicked(int index)
 {
-
+    qDebug() << "index " << index;
     // check selection state
     if (lineList[index]->getSelected())
     {
@@ -231,14 +233,38 @@ void TabWaterRetentionCurve::widgetClicked(int index)
         pick->highlightCurve(true);
 
         // set the markers
-//        qDebug() << "markerList[index].size()" << markerList[index].size();
-//        for (int i = 0; i < markerList[index].size(); i++)
-//        {
-//            qDebug() << "markerList[index][i] " << markerList[index][i]->value();
-//        }
+        if (!markerList.isEmpty())
+        {
+            QMap< int, QList<QwtPlotMarker*> >::Iterator iterator;
+            for (iterator = markerList.begin(); iterator!=markerList.end(); ++iterator)
+            {
+
+                if (iterator.key() == index)
+                {
+                    qDebug() << "iterator.key() " << iterator.key();
+                    for (int i = 0; i < markerList[index].size(); i++)
+                    {
+                        markerList[index][i]->setSymbol(new QwtSymbol( QwtSymbol::Ellipse, QBrush( Qt::red ), QPen( Qt::red, 0 ), QSize( 5, 5 ) ));
+                    }
+                }
+                else
+                {
+                    for (int i = 0; i < markerList[index].size(); i++)
+                    {
+                        markerList[index][i]->setSymbol(new QwtSymbol( QwtSymbol::Ellipse, QBrush( Qt::black ), QPen( Qt::black, 0 ), QSize( 5, 5 ) ));
+                    }
+                }
+            }
+        }
     }
     else
     {
+
+        for (int i = 0; i < markerList[index].size(); i++)
+        {
+            markerList[index][i]->setSymbol(new QwtSymbol( QwtSymbol::Ellipse, QBrush( Qt::black ), QPen( Qt::black, 0 ), QSize( 5, 5 ) ));
+        }
+
         pick->highlightCurve(false);
         pick->setSelectedCurveIndex(-1);
     }
