@@ -14,13 +14,6 @@
 #include <qwt_symbol.h>
 #include <QWidget>
 
-#define XMIN 0.1
-#define XMAX 100000
-#define XABSOLUTEMIN 0.001
-#define XABSOLUTEMAX 1000000
-#define YMIN 0.0
-#define YMAX 0.6
-
 TabWaterRetentionCurve::TabWaterRetentionCurve()
 {
     pick = nullptr;
@@ -155,8 +148,8 @@ void TabWaterRetentionCurve::insertElements(soil::Crit3DSoil *soil)
         QwtPlotCurve *curve = new QwtPlotCurve;
         xVector.clear();
         yVector.clear();
-        x = XABSOLUTEMIN;
-        while (x < XABSOLUTEMAX)
+        x = DXMIN;
+        while (x < DXMAX)
         {
             double y = soil::thetaFromSignPsi(-x, &mySoil->horizon[i]);
             if (y != NODATA)
@@ -164,7 +157,7 @@ void TabWaterRetentionCurve::insertElements(soil::Crit3DSoil *soil)
                 xVector.push_back(x);
                 yVector.push_back(y);
             }
-            x=x*1.25;
+            x = x * 1.25;
         }
         QwtPointArrayData *data = new QwtPointArrayData(xVector,yVector);
         curve->setSamples(data);

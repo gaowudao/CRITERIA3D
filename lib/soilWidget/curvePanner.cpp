@@ -3,10 +3,6 @@
 #include "qwt_plot.h"
 #include <math.h>
 
-#define DXMIN 0.0001
-#define DXMAX 10000000
-#define DYMIN -0.2
-#define DYMAX 1.2
 
 Crit3DCurvePanner::Crit3DCurvePanner(QwtPlot *plot) : QwtPlotPanner (plot->canvas()), qwtPlot(plot)
 {
