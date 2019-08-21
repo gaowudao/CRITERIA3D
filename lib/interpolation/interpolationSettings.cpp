@@ -305,8 +305,8 @@ bool Crit3DInterpolationSettings::getUseThermalInversion()
 bool Crit3DInterpolationSettings::getUseDewPoint()
 { return (useDewPoint);}
 
-int Crit3DInterpolationSettings::getProxyNr()
-{ return int(currentProxy.size());}
+size_t Crit3DInterpolationSettings::getProxyNr()
+{ return currentProxy.size();}
 
 Crit3DProxy* Crit3DInterpolationSettings::getProxy(unsigned pos)
 { return &(currentProxy[pos]);}

@@ -1330,7 +1330,6 @@ void PragaProject::savePragaParameters()
     parameters->endGroup();
 }
 
-
 bool PragaProject::interpolationMeteoGridPeriod(QDate dateIni, QDate dateFin, QList <meteoVariable> variables)
 {
     // check dates

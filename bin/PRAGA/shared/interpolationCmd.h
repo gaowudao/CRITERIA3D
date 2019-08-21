@@ -30,6 +30,9 @@ public:
 
     void initialize();
     void addGridToSeries(QString name_, unsigned year_);
+    std::vector<QString> getGridName() const;
+    std::vector<unsigned> getGridYear() const;
+    QString getProxyName() const;
 };
 
 bool interpolationRaster(std::vector <Crit3DInterpolationDataPoint> &myPoints, Crit3DInterpolationSettings* mySettings,

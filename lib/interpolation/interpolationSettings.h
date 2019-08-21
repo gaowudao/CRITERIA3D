@@ -135,7 +135,7 @@
 
         Crit3DProxy* getProxy(unsigned pos);
         std::string getProxyName(unsigned pos);
-        int getProxyNr();
+        size_t getProxyNr();
         void addProxy(Crit3DProxy myProxy, bool isActive_);
         float getProxyValue(unsigned pos, std::vector <float> proxyValues);
         bool getCombination(int combinationInteger, Crit3DProxyCombination* outCombination);
