@@ -1440,46 +1440,35 @@ namespace gis
     }
 
     bool temporalYearlyInterpolation(const gis::Crit3DRasterGrid& firstGrid, const gis::Crit3DRasterGrid& secondGrid,
-                                     unsigned myYear, gis::Crit3DRasterGrid* outGrid)
+                                     unsigned myYear, float minValue, float maxValue, gis::Crit3DRasterGrid* outGrid)
     {
-        /*
-            ByVal myYear As Integer, _
-        ByRef myFirstGrid As GIS.grid, ByRef mySecondGrid As GIS.grid, ByRef myOutGrid As GIS.grid, _
-        ByVal minValue As Single, ByVal maxValue As Single) As Boolean
 
-    Dim r As Long, c As Long
-    Dim myFirstValue As Single, mySecondValue As Single
-    Dim myFirstYear As Integer, mySecondYear As Integer
+        int row, col;
+        float firstVal, secondVal;
+        int firstYear, secondYear;
 
-        TemporalInterpolateMap = False
+        if (! firstGrid.isLoaded || ! secondGrid.isLoaded) return false;
+        if (isNullTime(firstGrid.getMapTime()) || isNullTime(secondGrid.getMapTime())) return false;
+        if (! compareGrids(firstGrid, secondGrid)) return false;
 
-        If Not myFirstGrid.isLoaded Or Not mySecondGrid.isLoaded Then Exit Function
-        If myFirstGrid.info.date_ = Definitions.NODATE Or mySecondGrid.info.date_ = Definitions.NODATE Then Exit Function
+        outGrid->initializeGrid(firstGrid);
+        firstYear = firstGrid.getMapTime().date.year;
+        secondYear = secondGrid.getMapTime().date.year;
 
-        If Not GIS.CompareGrids(myFirstGrid, mySecondGrid) Then Exit Function
+        for (row = 0; row < firstGrid.header->nrRows; row++)
+            for (col = 0; col < firstGrid.header->nrCols; col++)
+                if (! gis::isOutOfGridRowCol(row, col, secondGrid))
+                {
+                    firstVal = firstGrid.value[row][col];
+                    secondVal = firstGrid.value[row][col];
 
-        GIS.GridInitFrom myFirstGrid, myOutGrid
-
-        myFirstYear = Year(myFirstGrid.info.date_)
-        mySecondYear = Year(mySecondGrid.info.date_)
-
-        For r = 0 To myFirstGrid.header.nrRows - 1
-            For c = 0 To myFirstGrid.header.nrCols - 1
-                If Not GIS.isOutOfGridRowCol(r, c, mySecondGrid) Then
-                    myFirstValue = myFirstGrid.Value(r, c)
-                    mySecondValue = mySecondGrid.Value(r, c)
-                    If myFirstValue <> Definitions.NO_DATA And mySecondValue <> Definitions.NO_DATA Then
-                        myOutGrid.Value(r, c) = math.LinearInterpolation(CSng(myFirstYear), myFirstValue, CSng(mySecondYear), mySecondValue, myYear)
-                        If minValue <> Definitions.NO_DATA Then myOutGrid.Value(r, c) = max(minValue, myOutGrid.Value(r, c))
-                        If maxValue <> Definitions.NO_DATA Then myOutGrid.Value(r, c) = min(maxValue, myOutGrid.Value(r, c))
-                    End If
-                End If
-            Next c
-        Next r
-
-        TemporalInterpolateMap = True
-
-                    */
+                    if (! isEqual(firstVal, NODATA) && ! isEqual(secondVal, NODATA))
+                    {
+                        outGrid->value[row][col] = statistics::linearInterpolation(firstYear, firstVal, secondYear, secondVal, myYear);
+                        if (! isEqual(minValue, NODATA)) outGrid->value[row][col] = MAXVALUE(minValue, outGrid->value[row][col]);
+                        if (! isEqual(maxValue, NODATA)) outGrid->value[row][col] = MINVALUE(maxValue, outGrid->value[row][col]);
+                    }
+                }
 
         return true;
     }

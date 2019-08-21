@@ -64,6 +64,7 @@
     Crit3DTime getNullTime();
     Crit3DDate getNullDate();
     bool isNullDate(Crit3DDate);
+    bool isNullTime(const Crit3DTime& myTime);
 
     bool isLeapYear(int year);
     int getDaysInMonth(int month, int year);

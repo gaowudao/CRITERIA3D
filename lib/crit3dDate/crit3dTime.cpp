@@ -99,6 +99,11 @@ Crit3DTime getNullTime()
     return (*nullTime);
 }
 
+bool isNullTime(const Crit3DTime& myTime)
+{
+    return (myTime.isEqual(getNullTime()));
+}
+
 bool Crit3DTime::isEqual(const Crit3DTime& myTime) const
 {
     return ((this->date == myTime.date) && (int(this->time) == int(myTime.time)));
