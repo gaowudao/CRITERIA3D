@@ -1351,7 +1351,7 @@ bool PragaProject::interpolationMeteoGridPeriod(QDate dateIni, QDate dateFin, QL
     int myHour;
     QDate myDate = dateIni;
     gis::Crit3DRasterGrid* myGrid = new gis::Crit3DRasterGrid(DEM);
-    unsigned currentYear = NODATA;
+    unsigned currentYear = unsigned(NODATA);
 
     QString infoStr = "Save meteo grid hourly data";
     infoStep = myInfo.start(infoStr, this->meteoGridDbHandler->gridStructure().header().nrRows);
@@ -1362,8 +1362,8 @@ bool PragaProject::interpolationMeteoGridPeriod(QDate dateIni, QDate dateFin, QL
     while (myDate <= dateFin)
     {
         // check proxy grid series
-        if (currentYear != myDate.year())
-            if (checkProxyGridSeries(&interpolationSettings, proxyGridSeries, myDate))
+        if (currentYear != unsigned(myDate.year()))
+            if (checkProxyGridSeries(&interpolationSettings, DEM, proxyGridSeries, myDate))
                 if (! updateProxy()) return false;
 
         for (myHour = 1; myHour <= 24; myHour++)
