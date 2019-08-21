@@ -17,7 +17,7 @@ TabWaterRetentionData::TabWaterRetentionData()
     tableWaterRetention->setStyleSheet("QTableView::item:selected { color:black;  border: 3px solid black}");
     tableWaterRetention->setShowGrid(true);
     tableWaterRetention->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
-    int margin = 25; // now table is empty
+    int margin = 70; // now table is empty
     tableWaterRetention->setFixedWidth(tableWaterRetention->horizontalHeader()->length() + tableWaterRetention->verticalHeader()->width() + margin);
     tableWaterRetention->setItemDelegate(new TableDelegateWaterRetention(tableWaterRetention));
     tableWaterRetention->setSortingEnabled(true);
