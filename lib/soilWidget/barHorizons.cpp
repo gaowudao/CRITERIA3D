@@ -88,7 +88,7 @@ void BarHorizons::setClass(int classUSDA)
 
 
     }
-    this->setAutoFillBackground(false);
+    this->setAutoFillBackground(true);
     this->setPalette(linePalette);
 
 }
