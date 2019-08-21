@@ -216,8 +216,8 @@ bool Vine3D_Grapevine::setSoilProfile(Crit3DModelCase* modelCase, double* myWilt
     //layer 0: surface, no soil
     for (int i = 1; i < modelCase->soilLayersNr; i++)
     {
-        if (isNODATA(myPsiSoilProfile[i]) || isNODATA(myFieldCapacity[i]) || isNODATA(mySoilWaterContentProfile[i])
-                || isNODATA(mySoilWaterContentProfile[i]) || isNODATA(mySoilWaterContentWP[i]))
+        if (isEqual(myPsiSoilProfile[i], NODATA) || isEqual(myFieldCapacity[i], NODATA) || isEqual(mySoilWaterContentProfile[i], NODATA)
+                || isEqual(mySoilWaterContentProfile[i], NODATA) || isEqual(mySoilWaterContentWP[i], NODATA))
             return false;
 
         soilFieldCapacity = myFieldCapacity[i]/101.97; // conversion from mH2O to MPa
