@@ -1092,7 +1092,7 @@ float dewPoint(float relHumAir, float tempAir)
     if (relHumAir == NODATA || relHumAir == 0 || tempAir == NODATA)
         return NODATA;
 
-    relHumAir = minValue(100, relHumAir);
+    relHumAir = MINVALUE(100, relHumAir);
 
     float saturatedVaporPres = exp((16.78 * tempAir - 116.9) / (tempAir + 237.3));
     float actualVaporPres = relHumAir / 100 * saturatedVaporPres;

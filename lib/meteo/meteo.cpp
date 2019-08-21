@@ -167,7 +167,7 @@ float computeTminHourlyWeight(int myHour)
     if (myHour >= 6 && myHour <= 14)
         return (1 - (myHour - 6) / 8.f);
     else if (myHour > 14)
-        return (1 - minValue(24 - myHour + 6, 12) / 12.f);
+        return (1 - MINVALUE(24 - myHour + 6, 12) / 12.f);
     else
         return (1 - (6 - myHour) / 12.f);
 }
@@ -246,7 +246,7 @@ float tDewFromRelHum(float rhAir, float airT)
     if (int(rhAir) == int(NODATA) || int(airT) == int(NODATA))
         return NODATA;
 
-    rhAir = minValue(100, rhAir);
+    rhAir = MINVALUE(100, rhAir);
 
     double mySaturatedVaporPres = exp((16.78 * double(airT) - 116.9) / (double(airT) + 237.3));
     double actualVaporPres = double(rhAir) / 100. * mySaturatedVaporPres;
@@ -351,7 +351,7 @@ double ET0_Penman_daily(int myDOY, double myElevation, double myLatitude,
 
         myExtraRad = dailyExtrRadiation(myLatitude, myDOY);
         if (myExtraRad > 0)
-            myTransmissivity = minValue(MAXTRANSMISSIVITY, mySWGlobRad / myExtraRad);
+            myTransmissivity = MINVALUE(MAXTRANSMISSIVITY, mySWGlobRad / myExtraRad);
         else
             myTransmissivity = 0;
 
@@ -428,7 +428,7 @@ double ET0_Penman_hourly(double heigth, double normalizedTransmissivity, double 
     emissivity = emissivityFromVaporPressure(ea);
     tAirK = airTemp + ZEROCELSIUS;
     mySigma = STEFAN_BOLTZMANN * HOUR_SECONDS;
-    cloudFactor = maxValue(0, 1.35 * minValue(normalizedTransmissivity, 1) - 0.35);
+    cloudFactor = MAXVALUE(0, 1.35 * MINVALUE(normalizedTransmissivity, 1) - 0.35);
     netLWRadiation = cloudFactor * emissivity * mySigma * (pow(tAirK, 4));
 
     /*!   from [W m-2] to [J h-1 m-2] */
@@ -459,7 +459,7 @@ double ET0_Penman_hourly(double heigth, double normalizedTransmissivity, double 
     firstTerm = delta * (netRadiation - g) / (lambda * denominator);
     secondTerm = (gamma * (37 / tAirK) * windSpeed2 * (es - ea)) / denominator;
 
-    return maxValue(firstTerm + secondTerm, 0);
+    return MAXVALUE(firstTerm + secondTerm, 0);
 }
 
 
@@ -480,7 +480,7 @@ double ET0_Hargreaves(double KT, double myLat, int myDoy, double tmax, double tm
         return NODATA;
 
     extraTerrRadiation = dailyExtrRadiation(myLat, myDoy);
-    deltaT = maxValue(fabs(tmax - tmin), 0.25);
+    deltaT = MAXVALUE(fabs(tmax - tmin), 0.25);
 
     tavg = (tmax + tmin) * 0.5;
 

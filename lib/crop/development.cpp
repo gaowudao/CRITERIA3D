@@ -88,11 +88,11 @@ namespace leafDevelopment
                 incrementalRatio = (getTheoreticalLAIGrowth(DD+5,a,b,laiMIN,laiMAX)-getTheoreticalLAIGrowth(DD-5,a,b,laiMIN,laiMAX))/(10.);
                 incrementalRatio *= getLaiStressCoefficient(fractionTranspirableSoilWater);
                 if (currentDD < growthDD)
-                newLai = minValue(previousLai + thermalUnits*incrementalRatio,laiMAX);
+                newLai = MINVALUE(previousLai + thermalUnits*incrementalRatio,laiMAX);
                 else
                 {
                     *isSenescence = true;
-                    newLai = minValue(previousLai + (thermalUnits-currentDD+growthDD)*incrementalRatio,laiMAX);
+                    newLai = MINVALUE(previousLai + (thermalUnits-currentDD+growthDD)*incrementalRatio,laiMAX);
                 }
                 *actualLaiMax = newLai;
             }
@@ -126,7 +126,7 @@ namespace leafDevelopment
             return myCrop->LAImin + (myCrop->LAImax - myCrop->LAImin) / (1 + exp(myCrop->LAIcurve_a + myCrop->LAIcurve_b * myDegreeDays));
         else
             return myCrop->LAImin + (myCrop->LAImax - myCrop->LAImin) / (1 + pow(10 * ((myDegreeDays - myCrop->degreeDaysIncrease)
-                                                                                       / maxValue(myCrop->degreeDaysDecrease, 1)) / c4, n4));
+                                                                                       / MAXVALUE(myCrop->degreeDaysDecrease, 1)) / c4, n4));
     }
 
     double getLAISenescence(double LaiMin, double LAIStartSenescence, int daysFromStartSenescence)
@@ -137,8 +137,8 @@ namespace leafDevelopment
         if (daysFromStartSenescence > LENGTH_SENESCENCE)
             return LaiMin;
 
-        a = log(maxValue(LAIStartSenescence, 0.1));
-        b = (log(maxValue(LaiMin, 0.01)) - a) / LENGTH_SENESCENCE;
+        a = log(MAXVALUE(LAIStartSenescence, 0.1));
+        b = (log(MAXVALUE(LaiMin, 0.01)) - a) / LENGTH_SENESCENCE;
 
         return exp(a + b * daysFromStartSenescence);
     }

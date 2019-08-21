@@ -120,14 +120,14 @@ void Plot::addCurve(QString myTitle, QwtPlotGappedCurve::CurveStyle myStyle, QPe
     myCurve->attach( this );
 }
 
-QVector<QPointF> getSingleSeries(Crit3DOut* myOut, outputVar myVar, float* minValue, float* maxValue)
+QVector<QPointF> getSingleSeries(Crit3DOut* myOut, outputVar myVar, float* MINVALUE, float* MAXVALUE)
 {
     QVector<QPointF> mySeries;
     QPointF myPoint;
     qreal myVal;
 
-    *minValue = NODATA;
-    *maxValue = NODATA;
+    *MINVALUE = NODATA;
+    *MAXVALUE = NODATA;
 
     for (int i=0; i<myOut->nrValues; i++)
     {
@@ -170,21 +170,21 @@ QVector<QPointF> getSingleSeries(Crit3DOut* myOut, outputVar myVar, float* minVa
 
         myPoint.setY(myVal);
         mySeries.push_back(myPoint);
-        *minValue = (*minValue == NODATA) ? myVal : ((myVal < *minValue) ? myVal : *minValue);
-        *maxValue = (*maxValue == NODATA) ? myVal : ((myVal > *maxValue) ? myVal : *maxValue);
+        *MINVALUE = (*MINVALUE == NODATA) ? myVal : ((myVal < *MINVALUE) ? myVal : *MINVALUE);
+        *MAXVALUE = (*MAXVALUE == NODATA) ? myVal : ((myVal > *MAXVALUE) ? myVal : *MAXVALUE);
     }
 
     return mySeries;
 }
 
-QVector<QPointF> getProfileSeries(Crit3DOut* myOut, outputGroup myVar, int layerIndex, float* minValue, float* maxValue)
+QVector<QPointF> getProfileSeries(Crit3DOut* myOut, outputGroup myVar, int layerIndex, float* MINVALUE, float* MAXVALUE)
 {
     QVector<QPointF> mySeries;
     QPointF myPoint;
     qreal myVal;
 
-    *minValue = NODATA;
-    *maxValue = NODATA;
+    *MINVALUE = NODATA;
+    *MAXVALUE = NODATA;
 
     for (int i=0; i<myOut->nrValues; i++)
     {
@@ -239,8 +239,8 @@ QVector<QPointF> getProfileSeries(Crit3DOut* myOut, outputGroup myVar, int layer
 
         myPoint.setY(myVal);
         mySeries.push_back(myPoint);
-        *minValue = (*minValue == NODATA) ? myVal : ((myVal < *minValue) ? myVal : *minValue);
-        *maxValue = (*maxValue == NODATA) ? myVal : ((myVal > *maxValue) ? myVal : *maxValue);
+        *MINVALUE = (*MINVALUE == NODATA) ? myVal : ((myVal < *MINVALUE) ? myVal : *MINVALUE);
+        *MAXVALUE = (*MAXVALUE == NODATA) ? myVal : ((myVal > *MAXVALUE) ? myVal : *MAXVALUE);
     }
 
     return mySeries;

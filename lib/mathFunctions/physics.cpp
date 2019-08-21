@@ -197,7 +197,7 @@ double AerodynamicConductance(double heightTemperature,
     double H;                           // (W m-2) sensible heat flux
     double Ch;                          // (J m-3 K-1) volumetric specific heat of air
 
-    windSpeed = maxValue(windSpeed, 0.1);
+    windSpeed = MAXVALUE(windSpeed, 0.1);
 
     zeroPlane = 0.77 * roughnessHeight;
     roughnessMomentum = 0.13 * roughnessHeight;

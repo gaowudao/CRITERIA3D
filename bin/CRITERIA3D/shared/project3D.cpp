@@ -122,7 +122,7 @@ void Project3D::computeNrLayers()
     nrLayers = 1;
     while (depth < soilDepth)
     {
-        nextThickness = minValue(maxThickness, prevThickness * thickFactor);
+        nextThickness = MINVALUE(maxThickness, prevThickness * thickFactor);
         depth = depth + (prevThickness + nextThickness) * 0.5;
         prevThickness = nextThickness;
         nrLayers++;
@@ -150,7 +150,7 @@ void Project3D::setLayersDepth()
         }
         else
         {
-            layerThickness[i] = minValue(maxThickness, layerThickness[i-1] * thickFactor);
+            layerThickness[i] = MINVALUE(maxThickness, layerThickness[i-1] * thickFactor);
         }
 
         layerDepth[i] = layerDepth[i-1] + (layerThickness[i-1] + layerThickness[i]) * 0.5;
@@ -485,7 +485,7 @@ bool Project3D::initializeSoilMoisture(int month)
 
     // [0-1] min: august  max: february
     moistureIndex = fabs(1 - (month - 2) / 6);
-    moistureIndex = maxValue(moistureIndex, 0.001);
+    moistureIndex = MAXVALUE(moistureIndex, 0.001);
     moistureIndex = log(moistureIndex) / log(0.001);
 
     logInfo("Initialize soil moisture");

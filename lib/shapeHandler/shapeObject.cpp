@@ -136,10 +136,10 @@ void ShapeObject::assign(const SHPObject* obj)
 
             for (unsigned int k = part->offset; k < part->offset + part->length; k++)
             {
-                part->boundsPart.xmin = minValue(part->boundsPart.xmin, obj->padfX[k]);
-                part->boundsPart.xmax = maxValue(part->boundsPart.xmax, obj->padfX[k]);
-                part->boundsPart.ymin = minValue(part->boundsPart.ymin, obj->padfY[k]);
-                part->boundsPart.ymax = maxValue(part->boundsPart.ymax, obj->padfY[k]);
+                part->boundsPart.xmin = MINVALUE(part->boundsPart.xmin, obj->padfX[k]);
+                part->boundsPart.xmax = MAXVALUE(part->boundsPart.xmax, obj->padfX[k]);
+                part->boundsPart.ymin = MINVALUE(part->boundsPart.ymin, obj->padfY[k]);
+                part->boundsPart.ymax = MAXVALUE(part->boundsPart.ymax, obj->padfY[k]);
             }
             parts.push_back(*part);
             ps++;

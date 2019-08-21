@@ -114,7 +114,7 @@ bool computeInfiltration(CriteriaModel* myCase, float prec, float surfaceIrrigat
         // find layer in water surplus
         if (myCase->layer[l].waterContent > myCase->layer[l].critical)
         {
-            fluxLayer = minValue(myCase->layer[l].maxInfiltration, myCase->layer[l].waterContent - myCase->layer[l].critical);
+            fluxLayer = MINVALUE(myCase->layer[l].maxInfiltration, myCase->layer[l].waterContent - myCase->layer[l].critical);
             myCase->layer[l].flux += fluxLayer;
             myCase->layer[l].waterContent -= fluxLayer;
 
@@ -132,7 +132,7 @@ bool computeInfiltration(CriteriaModel* myCase, float prec, float surfaceIrrigat
                 while ((i < myCase->nrLayers-1) && (distrH2O > 0.0))
                 {
                     distrH2O -= (myCase->layer[i].SAT - myCase->layer[i].waterContent);
-                    distrH2O = minValue(distrH2O, myCase->layer[i].maxInfiltration);
+                    distrH2O = MINVALUE(distrH2O, myCase->layer[i].maxInfiltration);
                     if (distrH2O > 0.0) i++;
                 }
                 reached = i;
@@ -163,14 +163,14 @@ bool computeInfiltration(CriteriaModel* myCase, float prec, float surfaceIrrigat
                 {
                     // layer before critical point
                     waterDeficit = myCase->layer[i].critical - myCase->layer[i].waterContent;
-                    localWater = minValue(fluxLayer, waterDeficit);
+                    localWater = MINVALUE(fluxLayer, waterDeficit);
                     fluxLayer -= localWater;
                     myCase->layer[i].waterContent += localWater;
                     if (fluxLayer <= 0.0) break;
                 }
 
                 residualFlux = myCase->layer[i].maxInfiltration - myCase->layer[i].flux;
-                residualFlux = maxValue(residualFlux, 0.0);
+                residualFlux = MAXVALUE(residualFlux, 0.0);
 
                 if (residualFlux >= fluxLayer)
                 {
@@ -197,7 +197,7 @@ bool computeInfiltration(CriteriaModel* myCase, float prec, float surfaceIrrigat
                         {
                             if (localFlux <= 0.0) break;
 
-                            localWater = minValue(localFlux, myCase->layer[j].SAT - myCase->layer[j].waterContent);
+                            localWater = MINVALUE(localFlux, myCase->layer[j].SAT - myCase->layer[j].waterContent);
                             if (j < i)
                                 myCase->layer[j].flux -= localFlux;
 
@@ -226,7 +226,7 @@ bool computeInfiltration(CriteriaModel* myCase, float prec, float surfaceIrrigat
             i = reached;
             while ((fluxLayer > 0) && (i >= l+1))
             {
-                localWater = minValue(fluxLayer, myCase->layer[i].SAT - myCase->layer[i].waterContent);
+                localWater = MINVALUE(fluxLayer, myCase->layer[i].SAT - myCase->layer[i].waterContent);
                 fluxLayer -= localWater;
                 myCase->layer[i].flux -= localWater;
                 myCase->layer[i].waterContent += localWater;
@@ -343,7 +343,7 @@ bool computeCapillaryRise(CriteriaModel* myCase, double waterTableDepth)
             capillaryRise = k_psi * ((dPsi / dz) - 1);                      // [mm day-1]
 
             maxCapillaryRise = myCase->layer[i].critical - myCase->layer[i].waterContent;
-            capillaryRise = minValue(capillaryRise, maxCapillaryRise);
+            capillaryRise = MINVALUE(capillaryRise, maxCapillaryRise);
 
             // update water contet
             myCase->layer[i].waterContent += capillaryRise;
@@ -424,7 +424,7 @@ bool computeLateralDrainage(CriteriaModel* myCase)
             maxDrainage =  10 * myCase->layer[l].horizon->Driessen.k0 * hydrHead /
                     (hydrHead + (fieldWidth / PI) * log(fieldWidth / (PI * drainRadius)));      // [mm]
 
-            layerDrainage = minValue(waterSurplus, maxDrainage);                                // [mm]
+            layerDrainage = MINVALUE(waterSurplus, maxDrainage);                                // [mm]
 
             myCase->layer[l].waterContent -= layerDrainage;
             myCase->output.dailyLateralDrainage += layerDrainage;

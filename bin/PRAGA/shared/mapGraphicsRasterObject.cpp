@@ -136,7 +136,7 @@ gis::Crit3DRasterGrid* RasterObject::getRaster()
  */
 float RasterObject::getRasterMaxSize()
 {
-    return float(maxValue(this->latLonHeader.nrRows * this->latLonHeader.dy,
+    return float(MAXVALUE(this->latLonHeader.nrRows * this->latLonHeader.dy,
                           this->latLonHeader.nrCols * this->latLonHeader.dx));
 }
 

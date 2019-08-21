@@ -138,8 +138,8 @@ double evaporation(Vine3DProject* myProject, int row, int col)
         }
 
         residualEvap = E0 - realEvap;
-        layerEvap = minValue(E0 * layerCoeff, residualEvap);
-        layerEvap = minValue(layerEvap, availableWater);
+        layerEvap = MINVALUE(E0 * layerCoeff, residualEvap);
+        layerEvap = MINVALUE(layerEvap, availableWater);
 
         if (layerEvap > 0.0)
         {
@@ -444,7 +444,7 @@ bool getSoilSurfaceMoisture(Vine3DProject* myProject, gis::Crit3DRasterGrid* out
                     }
                 }
                 soilSurfaceMoisture = 100 * ((sumWater-minWater) / (maxWater-minWater));
-                soilSurfaceMoisture = minValue(maxValue(soilSurfaceMoisture, 0), 100);
+                soilSurfaceMoisture = MINVALUE(MAXVALUE(soilSurfaceMoisture, 0), 100);
                 outputMap->value[row][col] = float(soilSurfaceMoisture);
             }
          }
@@ -506,7 +506,7 @@ bool getCriteria3DIntegrationMap(Vine3DProject* myProject, criteria3DVariable my
                        double upperDepth, double lowerDepth, gis::Crit3DRasterGrid* criteria3DMap)
 {
     if (upperDepth > myProject->soilDepth) return false;
-    lowerDepth = minValue(lowerDepth, myProject->soilDepth);
+    lowerDepth = MINVALUE(lowerDepth, myProject->soilDepth);
 
     if (upperDepth == lowerDepth)
     {

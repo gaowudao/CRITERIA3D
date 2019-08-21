@@ -1,12 +1,12 @@
 #ifndef COMMONCONSTANTS_H
 #define COMMONCONSTANTS_H
 
-    #ifndef minValue
-        #define minValue(a, b) (((a) < (b))? (a) : (b))
+    #ifndef MINVALUE
+        #define MINVALUE(a, b) (((a) < (b))? (a) : (b))
     #endif
 
-    #ifndef maxValue
-        #define maxValue(a, b) (((a) > (b))? (a) : (b))
+    #ifndef MAXVALUE
+        #define MAXVALUE(a, b) (((a) > (b))? (a) : (b))
     #endif
 
     #ifndef sgnVariable

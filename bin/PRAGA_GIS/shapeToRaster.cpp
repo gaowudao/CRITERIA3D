@@ -23,10 +23,10 @@ gis::Crit3DRasterGrid* initializeRasterFromShape(Crit3DShapeHandler* shape, gis:
     {
         shape->getShape(i, object);
         bounds = object.getBounds();
-        ymin = minValue(ymin, bounds.ymin);
-        xmin = minValue(xmin, bounds.xmin);
-        ymax = maxValue(ymax, bounds.ymax);
-        xmax = maxValue(xmax, bounds.xmax);
+        ymin = MINVALUE(ymin, bounds.ymin);
+        xmin = MINVALUE(xmin, bounds.xmin);
+        ymax = MAXVALUE(ymax, bounds.ymax);
+        xmax = MAXVALUE(xmax, bounds.xmax);
     }
 
     xmin = floor(xmin);
@@ -67,10 +67,10 @@ void fillRasterWithShapeNumber(gis::Crit3DRasterGrid* raster, Crit3DShapeHandler
         gis::getRowColFromXY(*(raster->header), bounds.xmin, bounds.ymax, &r0, &c0);
         gis::getRowColFromXY(*(raster->header), bounds.xmax, bounds.ymin, &r1, &c1);
         // check bounds
-        r0 = maxValue(r0, 0);
-        r1 = minValue(r1, raster->header->nrRows -1);
-        c0 = maxValue(c0, 0);
-        c1 = minValue(c1, raster->header->nrCols -1);
+        r0 = MAXVALUE(r0, 0);
+        r1 = MINVALUE(r1, raster->header->nrRows -1);
+        c0 = MAXVALUE(c0, 0);
+        c1 = MINVALUE(c1, raster->header->nrCols -1);
 
         for (int row = r0; row <= r1; row++)
         {
@@ -131,10 +131,10 @@ void fillRasterWithField(gis::Crit3DRasterGrid* raster, Crit3DShapeHandler* shap
             gis::getRowColFromXY(*(raster->header), bounds.xmin, bounds.ymax, &r0, &c0);
             gis::getRowColFromXY(*(raster->header), bounds.xmax, bounds.ymin, &r1, &c1);
             // check bounds
-            r0 = maxValue(r0, 0);
-            r1 = minValue(r1, raster->header->nrRows -1);
-            c0 = maxValue(c0, 0);
-            c1 = minValue(c1, raster->header->nrCols -1);
+            r0 = MAXVALUE(r0, 0);
+            r1 = MINVALUE(r1, raster->header->nrRows -1);
+            c0 = MAXVALUE(c0, 0);
+            c1 = MINVALUE(c1, raster->header->nrCols -1);
 
             for (int row = r0; row <= r1; row++)
             {

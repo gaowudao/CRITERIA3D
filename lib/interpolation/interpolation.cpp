@@ -123,7 +123,7 @@ int sortPointsByDistance(unsigned maxIndex, vector <Crit3DInterpolationDataPoint
         }
     }
 
-    outIndex = minValue(index, maxIndex);
+    outIndex = MINVALUE(index, maxIndex);
     myValidPoints.resize(outIndex);
 
     for (i=0; i < outIndex; i++)
@@ -304,7 +304,7 @@ bool regressionSimpleT(std::vector <Crit3DInterpolationDataPoint> &myPoints, Cri
     {
         myProxyOrog->setInversionLapseRate(m);
 
-        float maxZ = minValue(getMaxHeight(myPoints, useLRCode), mySettings->getMaxHeightInversion());
+        float maxZ = MINVALUE(getMaxHeight(myPoints, useLRCode), mySettings->getMaxHeightInversion());
         myProxyOrog->setLapseRateH1(maxZ);
         myProxyOrog->setRegressionSlope(myClimate->getClimateLapseRate(myVar, myTime));
         myProxyOrog->setInversionIsSignificative(true);
@@ -363,8 +363,8 @@ bool regressionOrographyT(std::vector <Crit3DInterpolationDataPoint> &myPoints, 
 
     Crit3DProxy* myProxyOrog = mySettings->getProxy(orogProxyPos);
 
-    mySignificativeR2 = maxValue(mySettings->getMinRegressionR2(), float(0.2));
-    mySignificativeR2Inv = maxValue(mySettings->getMinRegressionR2(), float(0.1));
+    mySignificativeR2 = MAXVALUE(mySettings->getMinRegressionR2(), float(0.2));
+    mySignificativeR2Inv = MAXVALUE(mySettings->getMinRegressionR2(), float(0.1));
 
     /*! initialize */
     myProxyOrog->initializeOrography();
@@ -505,7 +505,7 @@ bool regressionOrographyT(std::vector <Crit3DInterpolationDataPoint> &myPoints, 
             myProxyOrog->setInversionIsSignificative(false);
             myProxyOrog->setLapseRateH1(NODATA);
             myProxyOrog->setInversionLapseRate(NODATA);
-            myProxyOrog->setRegressionSlope(minValue(m, float(0.0)));
+            myProxyOrog->setRegressionSlope(MINVALUE(m, float(0.0)));
             myProxyOrog->setRegressionR2(r2);
             return true;
         }
@@ -518,7 +518,7 @@ bool regressionOrographyT(std::vector <Crit3DInterpolationDataPoint> &myPoints, 
         {
             if (r2 >= mySignificativeR2)
             {
-                myProxyOrog->setRegressionSlope(minValue(m2, float(0.0)));
+                myProxyOrog->setRegressionSlope(MINVALUE(m2, float(0.0)));
                 lapseRateT1 = q2 + myProxyOrog->getLapseRateH1() * myProxyOrog->getRegressionSlope();
                 lapseRateT0 = lapseRateT1;
                 myProxyOrog->setRegressionR2(r2);
@@ -530,7 +530,7 @@ bool regressionOrographyT(std::vector <Crit3DInterpolationDataPoint> &myPoints, 
                                              int(myIntervalsHeight2.size()), false, &q2, &m2, &r2);
                 if (r2 >= mySignificativeR2)
                 {
-                    myProxyOrog->setRegressionSlope(minValue(m2, float(0.0)));
+                    myProxyOrog->setRegressionSlope(MINVALUE(m2, float(0.0)));
                     lapseRateT1 = q2 + myProxyOrog->getLapseRateH1() * myProxyOrog->getRegressionSlope();
                     lapseRateT0 = lapseRateT1;
                     return true;
@@ -550,7 +550,7 @@ bool regressionOrographyT(std::vector <Crit3DInterpolationDataPoint> &myPoints, 
 
         if (r2 >= mySignificativeR2)
         {
-            myProxyOrog->setRegressionSlope(minValue(m, 0));
+            myProxyOrog->setRegressionSlope(MINVALUE(m, 0));
             lapseRateT0 = q;
             myProxyOrog->setRegressionR2(r2);
             return true;
@@ -643,7 +643,7 @@ bool regressionOrographyT(std::vector <Crit3DInterpolationDataPoint> &myPoints, 
                                      long(myIntervalsHeight2.size()), false, &q, &m, &r2);
         if (r2 >= mySignificativeR2)
         {
-            myProxyOrog->setRegressionSlope(minValue(m, float(0.)));
+            myProxyOrog->setRegressionSlope(MINVALUE(m, float(0.)));
             findLinesIntersection(lapseRateT0, myProxyOrog->getInversionLapseRate(), q, myProxyOrog->getRegressionSlope(), &lapseRateH1_, &lapseRateT1);
             myProxyOrog->setLapseRateH1(lapseRateH1_);
         }
@@ -679,7 +679,7 @@ bool regressionOrographyT(std::vector <Crit3DInterpolationDataPoint> &myPoints, 
 
         if (r2 >= mySignificativeR2)
         {
-            myProxyOrog->setRegressionSlope(minValue(m, 0));
+            myProxyOrog->setRegressionSlope(MINVALUE(m, 0));
             if (findLinesIntersectionAboveThreshold(lapseRateT0, myProxyOrog->getInversionLapseRate(), q, myProxyOrog->getRegressionSlope(), 40, &lapseRateH1_, &lapseRateT1))
             {
                 myProxyOrog->setLapseRateH1(lapseRateH1_);
@@ -933,12 +933,12 @@ void detrendPoints(std::vector <Crit3DInterpolationDataPoint> &myPoints, Crit3DI
                     float LR_below = myProxy->getInversionLapseRate();
 
                     if (proxyValue <= LR_H1)
-                        detrendValue = maxValue(proxyValue - LR_H0, 0) * LR_below;
+                        detrendValue = MAXVALUE(proxyValue - LR_H0, 0) * LR_below;
                     else
                         detrendValue = ((LR_H1 - LR_H0) * LR_below) + (proxyValue - LR_H1) * LR_above;
                 }
                 else
-                    detrendValue = maxValue(proxyValue, 0) * LR_above;
+                    detrendValue = MAXVALUE(proxyValue, 0) * LR_above;
             }
         }
 
@@ -983,12 +983,12 @@ float retrend(meteoVariable myVar, vector <float> myProxyValues, Crit3DInterpola
                         float LR_H1 = myProxy->getLapseRateH1();
                         float LR_Below = myProxy->getInversionLapseRate();
                         if (myProxyValue <= LR_H1)
-                            retrendValue += (maxValue(myProxyValue - LR_H0, 0) * LR_Below);
+                            retrendValue += (MAXVALUE(myProxyValue - LR_H0, 0) * LR_Below);
                         else
                             retrendValue += ((LR_H1 - LR_H0) * LR_Below) + (myProxyValue - LR_H1) * proxySlope;
                     }
                     else
-                        retrendValue += maxValue(myProxyValue, 0) * proxySlope;
+                        retrendValue += MAXVALUE(myProxyValue, 0) * proxySlope;
                 }
                 else
                     retrendValue += myProxyValue * proxySlope;
@@ -1234,12 +1234,12 @@ float interpolate(vector <Crit3DInterpolationDataPoint> &myPoints, Crit3DInterpo
     }
     else if (myVar == airRelHumidity || myVar == dailyAirRelHumidityAvg
              || myVar == dailyAirRelHumidityMax || myVar == dailyAirRelHumidityMin)
-        myResult = maxValue(minValue(myResult, 100), 0);
+        myResult = MAXVALUE(MINVALUE(myResult, 100), 0);
     else if (myVar == dailyAirTemperatureRange || myVar == leafWetness || myVar == dailyLeafWetness
              || myVar == globalIrradiance || myVar == dailyGlobalRadiation || myVar == atmTransmissivity
              || myVar == windIntensity || myVar == dailyWindIntensityAvg || myVar == dailyWindIntensityMax
              || myVar == atmPressure)
-        myResult = maxValue(myResult, 0);
+        myResult = MAXVALUE(myResult, 0);
 
     return myResult;
 

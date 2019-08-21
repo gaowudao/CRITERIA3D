@@ -105,7 +105,7 @@ void computeHeatBalance(double myTimeStep, double timeStepWater)
     double deltaHeatStorage = balanceCurrentTimeStep.storageHeat - balancePreviousTimeStep.storageHeat;
     balanceCurrentTimeStep.heatMBE = deltaHeatStorage - balanceCurrentTimeStep.sinkSourceHeat;
 
-    double referenceHeat = maxValue(fabs(balanceCurrentTimeStep.sinkSourceHeat), balanceCurrentTimeStep.storageHeat * 1e-6);
+    double referenceHeat = MAXVALUE(fabs(balanceCurrentTimeStep.sinkSourceHeat), balanceCurrentTimeStep.storageHeat * 1e-6);
     balanceCurrentTimeStep.heatMBR = 1. - balanceCurrentTimeStep.heatMBE / referenceHeat;
 }
 
@@ -288,7 +288,7 @@ double ThermalLiquidConductivity(double temp_celsius, double h, double Klh)
     double dGammadT;        // [g s-2 K-1] derivative of surface tension with respect to temperature
 
     dGammadT = -0.1425 - 0.000576 * temp_celsius;
-    return (maxValue(0., Klh * h * Gwt * dGammadT / GAMMA0));
+    return (MAXVALUE(0., Klh * h * Gwt * dGammadT / GAMMA0));
 }
 
 /*!
@@ -675,7 +675,7 @@ bool computeHeatFlux(long i, int myMatrixIndex, TlinkedNode *myLink, double time
     if (fluxCourant != 0)
     {
         nodeDistance = distance(i, myLinkIndex);
-        CourantHeat = maxValue(CourantHeat, fabs(fluxCourant) * timeStep / (C[i] * nodeDistance));
+        CourantHeat = MAXVALUE(CourantHeat, fabs(fluxCourant) * timeStep / (C[i] * nodeDistance));
     }
 
     return (true);
@@ -886,7 +886,7 @@ double computeMaximumDeltaT()
 {
     double maxDeltaT = 0.;
     for (long i = 1; i < myStructure.nrNodes; i++)
-        maxDeltaT = maxValue(maxDeltaT, fabs(myNode[i].extra->Heat->T - myNode[i].extra->Heat->oldT));
+        maxDeltaT = MAXVALUE(maxDeltaT, fabs(myNode[i].extra->Heat->T - myNode[i].extra->Heat->oldT));
 
     return maxDeltaT;
 }

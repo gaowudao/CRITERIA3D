@@ -799,9 +799,9 @@ bool Vine3DProject::loadSoils()
     double maxSoilDepth = 0;
     for (unsigned int i = 0; i < nrSoils; i++)
     {
-        maxSoilDepth = maxValue(maxSoilDepth, soilList[i].totalDepth);
+        maxSoilDepth = MAXVALUE(maxSoilDepth, soilList[i].totalDepth);
     }
-    soilDepth = minValue(soilDepth, maxSoilDepth);
+    soilDepth = MINVALUE(soilDepth, maxSoilDepth);
 
     logInfo("Soil depth = " + QString::number(this->soilDepth));
     return true;
@@ -947,7 +947,7 @@ float Vine3DProject::meteoDataConsistency(meteoVariable myVar, const Crit3DTime&
 {
     float dataConsistency = 0.0;
     for (int i = 0; i < nrMeteoPoints; i++)
-        dataConsistency = maxValue(dataConsistency, meteoPoints[i].obsDataConsistencyH(myVar, myTimeIni, myTimeFin));
+        dataConsistency = MAXVALUE(dataConsistency, meteoPoints[i].obsDataConsistencyH(myVar, myTimeIni, myTimeFin));
 
     return dataConsistency;
 }

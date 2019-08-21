@@ -1026,11 +1026,11 @@ namespace gis
                 {
                     if (myOperation == operationMin)
                     {
-                        myMapOut->value[myRow][myCol] = minValue(myMap1->value[myRow][myCol], myMap2->value[myRow][myCol]);
+                        myMapOut->value[myRow][myCol] = MINVALUE(myMap1->value[myRow][myCol], myMap2->value[myRow][myCol]);
                     }
                     else if (myOperation == operationMax)
                     {
-                        myMapOut->value[myRow][myCol] = maxValue(myMap1->value[myRow][myCol], myMap2->value[myRow][myCol]);
+                        myMapOut->value[myRow][myCol] = MAXVALUE(myMap1->value[myRow][myCol], myMap2->value[myRow][myCol]);
                     }
                     else if (myOperation == operationSum)
                         myMapOut->value[myRow][myCol] = (myMap1->value[myRow][myCol] + myMap2->value[myRow][myCol]);
@@ -1063,9 +1063,9 @@ namespace gis
                 if (myMap1->value[myRow][myCol] != myMap1->header->flag)
                 {
                     if (myOperation == operationMin)
-                        myMapOut->value[myRow][myCol] = minValue(myMap1->value[myRow][myCol], myValue);
+                        myMapOut->value[myRow][myCol] = MINVALUE(myMap1->value[myRow][myCol], myValue);
                     else if (myOperation == operationMax)
-                        myMapOut->value[myRow][myCol] = maxValue(myMap1->value[myRow][myCol], myValue);
+                        myMapOut->value[myRow][myCol] = MAXVALUE(myMap1->value[myRow][myCol], myValue);
                     else if (myOperation == operationSum)
                         myMapOut->value[myRow][myCol] = (myMap1->value[myRow][myCol] + myValue);
                     else if (myOperation == operationSubtract)
@@ -1329,7 +1329,7 @@ namespace gis
             demValue = myDEM.getFastValueXY(x, y);
             if (demValue != myDEM.header->flag)
                 if (demValue > Zi)
-                    maxDeltaZ = maxValue(maxDeltaZ, demValue - Zi);
+                    maxDeltaZ = MAXVALUE(maxDeltaZ, demValue - Zi);
         }
 
         return maxDeltaZ;

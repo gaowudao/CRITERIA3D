@@ -65,7 +65,7 @@ bool computePowderyMildew(Vine3DProject* myProject)
                         // save output
                         myProject->outputPlantMaps->powderyCOLMap->value[row][col] = powdery.output.col;
                         myProject->outputPlantMaps->powderyINFRMap->value[row][col] = powdery.output.infectionRate;
-                        myProject->outputPlantMaps->powderyPrimaryInfectionRiskMap->value[row][col] = minValue(5.0 * powdery.output.infectionRisk, 1.0);
+                        myProject->outputPlantMaps->powderyPrimaryInfectionRiskMap->value[row][col] = MINVALUE(5.0 * powdery.output.infectionRisk, 1.0);
                     }
                     else
                     {
@@ -107,7 +107,7 @@ bool computeDownyMildew(Vine3DProject* myProject, QDate firstDate, QDate lastDat
     }
 
     //check date
-    firstDoy = maxValue(firstDoy, VEGETATIVESTART);
+    firstDoy = MAXVALUE(firstDoy, VEGETATIVESTART);
     firstDate = firstJanuary.addDays(firstDoy - 1);
     if (lastDoy > VEGETATIVEEND)
     {

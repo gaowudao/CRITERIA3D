@@ -54,7 +54,7 @@ Viewer3D::Viewer3D(QWidget *parent)
 void Viewer3D::initialize(Crit3DProject *project)
 {
     m_project = project;
-    float dz = maxValue(m_project->DEM.maximum - m_project->DEM.minimum, 10.f);
+    float dz = MAXVALUE(m_project->DEM.maximum - m_project->DEM.minimum, 10.f);
     float z = m_project->DEM.minimum + dz * 0.5f;
     double dy = m_project->DEM.header->nrRows * m_project->DEM.header->cellSize;
     double dx = m_project->DEM.header->nrCols * m_project->DEM.header->cellSize;
@@ -62,7 +62,7 @@ void Viewer3D::initialize(Crit3DProject *project)
     m_center.y = m_project->DEM.header->llCorner->y + dy * 0.5;
     m_size = float(sqrt(dx*dy));
     m_ratio = m_size / dz;
-    m_magnify = maxValue(1.f, minValue(10.f, m_ratio / 5.f));
+    m_magnify = MAXVALUE(1.f, MINVALUE(10.f, m_ratio / 5.f));
 
     // Set root object of the scene
     createScene();
@@ -117,7 +117,7 @@ void Viewer3D::wheelEvent(QWheelEvent *we)
     else
         m_zoomLevel *= 0.8f;
 
-    float dz = maxValue(m_project->DEM.maximum - m_project->DEM.minimum, 10.f);
+    float dz = MAXVALUE(m_project->DEM.maximum - m_project->DEM.minimum, 10.f);
     float z = m_project->DEM.minimum + dz * 0.5f;
     QVector3D translation = QVector3D(m_cameraPosition.x(), m_cameraPosition.y(), (z + dz * m_zoomLevel) * m_magnify);
 
@@ -153,7 +153,7 @@ void Viewer3D::mouseMoveEvent(QMouseEvent *ev)
             QMatrix4x4 matrix = zoomMatrix * m_cameraMatrix;
             m_view->camera()->transform()->setMatrix(matrix);*/
 
-            /*float dz = maxValue(m_project->DEM.maximum - m_project->DEM.minimum, 10.f);
+            /*float dz = MAXVALUE(m_project->DEM.maximum - m_project->DEM.minimum, 10.f);
             float z = m_project->DEM.minimum + dz * 0.5f;
             float dy = delta.y() * m_zoomLevel;
             m_view->camera()->setViewCenter(QVector3D(float(m_center.x), float(m_center.y), z * m_magnify));*/

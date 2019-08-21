@@ -1,3 +1,5 @@
+#include "commonConstants.h"
+
 #include <QGridLayout>
 #include <QFileDialog>
 #include <QtDebug>
@@ -38,7 +40,6 @@
 #include <Qt3DInput>
 
 #include "crit3dProject.h"
-#include "commonConstants.h"
 
 extern Crit3DProject myProject;
 

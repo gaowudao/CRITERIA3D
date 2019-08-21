@@ -13,9 +13,9 @@ float findThreshold(meteoVariable myVar, float value, float stdDev, float nrStdD
     if (   myVar == precipitation
         || myVar == dailyPrecipitation)
     {
-        distWeight = maxValue(1.f, minDistance / 2000.f);
+        distWeight = MAXVALUE(1.f, minDistance / 2000.f);
         if (value < float(PREC_THRESHOLD))
-            threshold = maxValue(5.f, distWeight + stdDev * (nrStdDev + 1));
+            threshold = MAXVALUE(5.f, distWeight + stdDev * (nrStdDev + 1));
         else
             return 800.f;
     }
@@ -29,7 +29,7 @@ float findThreshold(meteoVariable myVar, float value, float stdDev, float nrStdD
         zWeight = stdDevZ / 100.f;
         distWeight = minDistance / 5000.f;
 
-        threshold = minValue(minValue(distWeight + threshold + zWeight, 12.f) + stdDev * nrStdDev, 15.f);
+        threshold = MINVALUE(MINVALUE(distWeight + threshold + zWeight, 12.f) + stdDev * nrStdDev, 15.f);
     }
     else if (   myVar == airRelHumidity
              || myVar == dailyAirRelHumidityMax
@@ -52,10 +52,10 @@ float findThreshold(meteoVariable myVar, float value, float stdDev, float nrStdD
     }
     else if (   myVar == globalIrradiance
              || myVar == dailyGlobalRadiation )
-        threshold = maxValue(stdDev * (nrStdDev + 1.f), 5.f);
+        threshold = MAXVALUE(stdDev * (nrStdDev + 1.f), 5.f);
 
     else if (myVar == atmTransmissivity)
-        threshold = maxValue(stdDev * nrStdDev, 0.5f);
+        threshold = MAXVALUE(stdDev * nrStdDev, 0.5f);
     else
         threshold = stdDev * nrStdDev;
 
@@ -170,7 +170,7 @@ void spatialQualityControl(meteoVariable myVar, Crit3DMeteoPoint* meteoPoints, i
                 {
                     myValue = meteoPoints[i].currentValue;
                     myResidual = meteoPoints[i].residual;
-                    stdDev = maxValue(stdDev, myValue/100.f);
+                    stdDev = MAXVALUE(stdDev, myValue/100.f);
                     if (fabs(myResidual) > findThreshold(myVar, myValue, stdDev, 2, stdDevZ, minDist))
                     {
                         listIndex.push_back(i);
@@ -295,10 +295,10 @@ bool passDataToInterpolation(Crit3DMeteoPoint* meteoPoints, int nrMeteoPoints,
             }
             else
             {
-                xMin = minValue(xMin, (float)myPoint.point->utm.x);
-                xMax = maxValue(xMax, (float)myPoint.point->utm.x);
-                yMin = minValue(yMin, (float)myPoint.point->utm.y);
-                yMax = maxValue(yMax, (float)myPoint.point->utm.y);
+                xMin = MINVALUE(xMin, (float)myPoint.point->utm.x);
+                xMax = MAXVALUE(xMax, (float)myPoint.point->utm.x);
+                yMin = MINVALUE(yMin, (float)myPoint.point->utm.y);
+                yMax = MAXVALUE(yMax, (float)myPoint.point->utm.y);
             }
 
             myInterpolationPoints.push_back(myPoint);

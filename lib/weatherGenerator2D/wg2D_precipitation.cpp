@@ -133,8 +133,8 @@ void weatherGenerator2D::precipitationMultiDistributionParameterization()
    {
        for (int j=0;j<nrData;j++)
        {
-           beginYear = minValue(beginYear,obsDataD[i][j].date.year);
-           endYear =  maxValue(endYear,obsDataD[i][j].date.year);
+           beginYear = MINVALUE(beginYear,obsDataD[i][j].date.year);
+           endYear =  MAXVALUE(endYear,obsDataD[i][j].date.year);
        }
    }
 
@@ -309,7 +309,7 @@ void weatherGenerator2D::precipitationMultiDistributionParameterization()
            if (obsPrecDataD[ijk][j].date.month == 9 || obsPrecDataD[ijk][j].date.month == 10 || obsPrecDataD[ijk][j].date.month == 11)
                numberObservedSON++;
        }
-       numberObservedMax = maxValue(numberObservedDJF,maxValue(numberObservedMAM,maxValue(numberObservedJJA,numberObservedSON)));
+       numberObservedMax = MAXVALUE(numberObservedDJF,MAXVALUE(numberObservedMAM,MAXVALUE(numberObservedJJA,numberObservedSON)));
 
        moran[ijk] = (double**)calloc(4, sizeof(double*));
        rainfallLessThreshold[ijk] = (double**)calloc(4, sizeof(double*));
@@ -1435,7 +1435,7 @@ void weatherGenerator2D::spatialIterationAmounts(double** correlationMatrixSimul
                     }
                     else
                     {*/
-                        dummyMatrix[i][j] = minValue(2*amountsCorrelationMatrix[i][j]/(amountsCorrelationMatrix[i][i]+ amountsCorrelationMatrix[j][j]),ONELESSEPSILON);
+                        dummyMatrix[i][j] = MINVALUE(2*amountsCorrelationMatrix[i][j]/(amountsCorrelationMatrix[i][i]+ amountsCorrelationMatrix[j][j]),ONELESSEPSILON);
                         dummyMatrix[j][i] = dummyMatrix[i][j];
                     //}
                }
@@ -1500,7 +1500,7 @@ void weatherGenerator2D::spatialIterationAmounts(double** correlationMatrixSimul
        {
            for (int j=0;j<nrStations;j++)
            {
-               val = maxValue(val,fabs(correlationMatrixSimulatedData[i][j] - initialAmountsCorrelationMatrix[i][j]));
+               val = MAXVALUE(val,fabs(correlationMatrixSimulatedData[i][j] - initialAmountsCorrelationMatrix[i][j]));
            }
        }
        if (val < fabs(minimalValueToExitFromCycle))
@@ -1531,7 +1531,7 @@ void weatherGenerator2D::spatialIterationAmounts(double** correlationMatrixSimul
                    else
                    {
                        amountsCorrelationMatrix[i][j] += kiter*(initialAmountsCorrelationMatrix[i][j]-correlationMatrixSimulatedData[i][j]);
-                       amountsCorrelationMatrix[i][j] = minValue(amountsCorrelationMatrix[i][j],ONELESSEPSILON);
+                       amountsCorrelationMatrix[i][j] = MINVALUE(amountsCorrelationMatrix[i][j],ONELESSEPSILON);
                    }
                }
            }
@@ -1640,7 +1640,7 @@ int weatherGenerator2D::bestParametersNonLinearFit(double *par, double*x, double
    rootMeanSquare = NODATA;
    for (int i=0 ; i<nrX-1; i++)
    {
-       maxPar[0]= maxValue(yObs[i],yObs[i+1])*10;
+       maxPar[0]= MAXVALUE(yObs[i],yObs[i+1])*10;
        maxPar[1]= 5*maxPar[0];
    }
    deltaStep[0] = int(ceil((maxPar[0]-par[0])/accuracy));

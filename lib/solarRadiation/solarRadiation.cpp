@@ -382,7 +382,7 @@ namespace radiation
 
         Trd = -0.015843 + myLinke * (0.030543 + 0.0003797 * myLinke);
 
-        sinElev = maxValue(getSinDecimalDegree(mySunPosition->elevation), 0.);
+        sinElev = MAXVALUE(getSinDecimalDegree(mySunPosition->elevation), 0.);
         A0 = 0.26463 + myLinke * (-0.061581 + 0.0031408 * myLinke);
         if ((A0 * Trd) < 0.0022) A0 = 0.002 / Trd;
         A1 = 2.0402 + myLinke * (0.018945 - 0.011161 * myLinke);
@@ -423,7 +423,7 @@ namespace radiation
         double Kb;        /*!< amount of beam irradiance available [] */
         double Fg, r_sky, Fx, Aln;
         double n;
-        sinElev = maxValue(getSinDecimalDegree(mySunPosition->elevation), 0.001);
+        sinElev = MAXVALUE(getSinDecimalDegree(mySunPosition->elevation), 0.001);
         cosSlope = getCosDecimalDegree(float(myPoint->slope));
         sinSlope = getSinDecimalDegree(float(myPoint->slope));
         slopeRad = myPoint->slope * DEG_TO_RAD;
@@ -558,11 +558,11 @@ namespace radiation
 
         //in attesa di studi mirati (Bristow and Campbell, 1985)
         maximumDiffuseTransmissivity = float(0.6 / (myClearSkyTransmissivity - 0.4));
-        *Tt = float(maxValue(minValue(transmissivity, myClearSkyTransmissivity), 0.00001));
+        *Tt = float(MAXVALUE(MINVALUE(transmissivity, myClearSkyTransmissivity), 0.00001));
         *td = (*Tt) * (1 - exp(maximumDiffuseTransmissivity - (maximumDiffuseTransmissivity * myClearSkyTransmissivity) / (*Tt)));
 
         /*! FT 0.12 stimato da Settefonti agosto 2007 */
-        if ((*Tt) > 0.6) *td = maxValue((*td), float(0.12));
+        if ((*Tt) > 0.6) *td = MAXVALUE((*td), float(0.12));
     }
 
 
@@ -883,7 +883,7 @@ bool computeRadiationPointRsun(Crit3DRadiationSettings* mySettings, float myTemp
 
          RSUN_get_results(&((*mySunPosition).relOptAirMass), &((*mySunPosition).relOptAirMassCorr), &((*mySunPosition).azimuth), &sunCosIncidenceCompl, &cosZen, &((*mySunPosition).elevation), &((*mySunPosition).elevationRefr), &((*mySunPosition).extraIrradianceHorizontal), &((*mySunPosition).extraIrradianceNormal), &etrTilt, &prime, &sbcf, &sunRiseMinutes, &sunSetMinutes, &unPrime, &zenRef);
 
-        (*mySunPosition).incidence = float(maxValue(0, RAD_TO_DEG * ((PI / 2.0) - acos(sunCosIncidenceCompl))));
+        (*mySunPosition).incidence = float(MAXVALUE(0, RAD_TO_DEG * ((PI / 2.0) - acos(sunCosIncidenceCompl))));
         (*mySunPosition).rise = float(sunRiseMinutes * 60.0);
         (*mySunPosition).set = float(sunSetMinutes * 60.0);
         return true;
@@ -944,14 +944,14 @@ bool computeRadiationPointRsun(Crit3DRadiationSettings* mySettings, float myTemp
                                  + cos(myPoint->lat) * cos(solarDeclination)
                                  * cos((PI / 12) * (solarTime - 12)));
 
-        extraTerrestrialRad = maxValue(0, SOLAR_CONSTANT * sin(elevationAngle));
+        extraTerrestrialRad = MAXVALUE(0, SOLAR_CONSTANT * sin(elevationAngle));
 
         azimuthSouth = acos((sin(elevationAngle)
                                 * sin(myPoint->lat) - sin(solarDeclination))
                                / (cos(elevationAngle) * cos(myPoint->lat)));
 
         azimuthNorth = (solarTime>12) ? PI + azimuthSouth : PI - azimuthSouth;
-        incidenceAngle = maxValue(0, asin(getSinDecimalDegree(float(myPoint->slope)) *
+        incidenceAngle = MAXVALUE(0, asin(getSinDecimalDegree(float(myPoint->slope)) *
                                         cos(elevationAngle) * cos(azimuthNorth - float(myPoint->aspect))
                                         + getCosDecimalDegree(float(myPoint->slope)) * sin(elevationAngle)));
 
@@ -965,7 +965,7 @@ bool computeRadiationPointRsun(Crit3DRadiationSettings* mySettings, float myTemp
             }
         }
 
-        coeffBH = maxValue(0, (Tt - td));
+        coeffBH = MAXVALUE(0, (Tt - td));
 
         radDiffuse = extraTerrestrialRad * td;
 
@@ -976,7 +976,7 @@ bool computeRadiationPointRsun(Crit3DRadiationSettings* mySettings, float myTemp
         }
         else
         {
-            radBeam = extraTerrestrialRad * coeffBH * maxValue(0, sin(incidenceAngle) / sin(elevationAngle));
+            radBeam = extraTerrestrialRad * coeffBH * MAXVALUE(0, sin(incidenceAngle) / sin(elevationAngle));
             //aggiungere Snow albedo!
             //Muneer 1997
             radReflected = extraTerrestrialRad * Tt * 0.2 * (1 - getCosDecimalDegree(float(myPoint->slope))) / 2.0;
@@ -1107,11 +1107,11 @@ bool computeRadiationPointRsun(Crit3DRadiationSettings* mySettings, float myTemp
             }
         }
 
-        ratioTransmissivity = maxValue(sumMeasuredRad/sumPotentialRad, float(0.0));
+        ratioTransmissivity = MAXVALUE(sumMeasuredRad/sumPotentialRad, float(0.0));
         myTransmissivity = ratioTransmissivity * myClearSkyTransmissivity;
 
         /*! transmissivity can't be over 0.85 */
-        return minValue(myTransmissivity, float(0.85));
+        return MINVALUE(myTransmissivity, float(0.85));
     }
 }
 

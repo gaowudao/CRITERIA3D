@@ -598,7 +598,7 @@ namespace soilFluxes3D {
             return (myNode[index].H - myNode[index].z);
         else
             /*! sub-surface */
-            return maxValue(0.0, theta_from_Se(index) - theta_from_sign_Psi(-160, index));
+            return MAXVALUE(0.0, theta_from_Se(index) - theta_from_sign_Psi(-160, index));
  }
 
 
@@ -893,7 +893,7 @@ double DLL_EXPORT __STDCALL computeStep(double maxTime)
     if (myStructure.computeWater)
         computeWater(maxTime, &dtWater);
     else
-        dtWater = minValue(maxTime, myParameters.delta_t_max);
+        dtWater = MINVALUE(maxTime, myParameters.delta_t_max);
 
     dtHeat = dtWater;
 
@@ -906,7 +906,7 @@ double DLL_EXPORT __STDCALL computeStep(double maxTime)
         double dtHeatSum = 0;
         while (dtHeatSum < dtWater)
         {
-            dtHeatCurrent = minValue(dtHeat, dtWater - dtHeatSum);
+            dtHeatCurrent = MINVALUE(dtHeat, dtWater - dtHeatSum);
 
             updateBoundaryHeat();
 
@@ -922,7 +922,7 @@ double DLL_EXPORT __STDCALL computeStep(double maxTime)
         }
     }
 
-    return minValue(dtWater, dtHeat);
+    return MINVALUE(dtWater, dtHeat);
 }
 
 /*!

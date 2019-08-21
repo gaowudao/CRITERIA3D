@@ -49,14 +49,14 @@ static bool isHalfTimeStepForced = false;
 inline void doubleTimeStep()
 {
     myParameters.current_delta_t *= 2.0;
-    myParameters.current_delta_t = minValue(myParameters.current_delta_t, myParameters.delta_t_max);
+    myParameters.current_delta_t = MINVALUE(myParameters.current_delta_t, myParameters.delta_t_max);
 }
 
 
 void halveTimeStep()
 {
     myParameters.current_delta_t /= 2.0;
-    myParameters.current_delta_t = maxValue(myParameters.current_delta_t, myParameters.delta_t_min);
+    myParameters.current_delta_t = MAXVALUE(myParameters.current_delta_t, myParameters.delta_t_min);
 }
 
 
@@ -159,10 +159,10 @@ void computeMassBalance(double deltaT)
      balanceCurrentTimeStep.waterMBE = dStorage - balanceCurrentTimeStep.sinkSourceWater;
 
      /*! reference water: sumWaterFlow or 0.1% of storage */
-     double denominator = maxValue(fabs(balanceCurrentTimeStep.sinkSourceWater), balanceCurrentTimeStep.storageWater * 1e-3);
+     double denominator = MAXVALUE(fabs(balanceCurrentTimeStep.sinkSourceWater), balanceCurrentTimeStep.storageWater * 1e-3);
 
      /*! no water - minimum 1 liter */
-     denominator = maxValue(denominator, 0.001);
+     denominator = MAXVALUE(denominator, 0.001);
 
 	 balanceCurrentTimeStep.waterMBR = balanceCurrentTimeStep.waterMBE / denominator;
 }

@@ -331,7 +331,7 @@ bool getStatePlantToMap(long row,long col, Vine3DProject* myProject, TstatePlant
     myProject->outputPlantMaps->deltaBrixMap->value[row][col] = myProject->outputPlantMaps->deltaBrixMap->header->flag;
     if ((myProject->outputPlantMaps->brixMaximumMap->value[row][col] != myProject->outputPlantMaps->brixMaximumMap->header->flag) &&
         (myProject->outputPlantMaps->brixBerryMap->value[row][col] != myProject->outputPlantMaps->brixBerryMap->header->flag))
-        myProject->outputPlantMaps->deltaBrixMap->value[row][col] = maxValue(myProject->outputPlantMaps->brixMaximumMap->value[row][col] - myProject->outputPlantMaps->brixBerryMap->value[row][col],0);
+        myProject->outputPlantMaps->deltaBrixMap->value[row][col] = MAXVALUE(myProject->outputPlantMaps->brixMaximumMap->value[row][col] - myProject->outputPlantMaps->brixBerryMap->value[row][col],0);
 
     return(true);
 }
@@ -451,9 +451,9 @@ bool updateThermalSum(Vine3DProject* myProject, QDate myDate)
                 if (myDate >= firstMarch)
                 {
                     if (degreeDays == flag)
-                        degreeDays = maxValue(0.0, airTemp);
+                        degreeDays = MAXVALUE(0.0, airTemp);
                     else
-                        degreeDays += maxValue(0.0, airTemp);
+                        degreeDays += MAXVALUE(0.0, airTemp);
                 }
                 else
                     degreeDays = flag;

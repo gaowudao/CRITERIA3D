@@ -229,7 +229,7 @@ double getTotalReadilyAvailableWater(CriteriaModel* myCase)
     while ((lastLayer < (myCase->nrLayers-1)) && (myCase->layer[lastLayer].depth < 1.0))
         lastLayer++;
 
-    lastLayer = maxValue(lastLayer, myCase->myCrop.roots.lastRootLayer);
+    lastLayer = MAXVALUE(lastLayer, myCase->myCrop.roots.lastRootLayer);
 
     // surface water
     double RAW = myCase->layer[0].waterContent;
@@ -302,12 +302,12 @@ float cropIrrigationDemand(CriteriaModel* myCase, int doy, float currentPrec, fl
 
     if (myCase->optimizeIrrigation)
     {
-        return float(minValue(getCropWaterDeficit(myCase), myCase->myCrop.irrigationVolume));
+        return float(MINVALUE(getCropWaterDeficit(myCase), myCase->myCrop.irrigationVolume));
     }
     else
     {
         //return float(myCase->myCrop.irrigationVolume);
-        return float(maxValue(int(myCase->output.dailyMaxTranspiration), myCase->myCrop.irrigationVolume));
+        return float(MAXVALUE(int(myCase->output.dailyMaxTranspiration), myCase->myCrop.irrigationVolume));
     }
 }
 
@@ -323,7 +323,7 @@ bool optimalIrrigation(CriteriaModel* myCase, float myIrrigation)
         if (myCase->layer[i].waterContent < myCase->layer[i].FC)
         {
             myDeficit = float(myCase->layer[i].FC - myCase->layer[i].waterContent);
-            myDeficit = minValue(myDeficit, residualIrrigation);
+            myDeficit = MINVALUE(myDeficit, residualIrrigation);
 
             myCase->layer[i].waterContent += double(myDeficit);
             residualIrrigation -= myDeficit;
@@ -339,7 +339,7 @@ bool optimalIrrigation(CriteriaModel* myCase, float myIrrigation)
 bool evaporation(CriteriaModel* myCase)
 {
     // evaporation on surface
-    double evaporationOpenWater = minValue(myCase->output.dailyMaxEvaporation, myCase->layer[0].waterContent);
+    double evaporationOpenWater = MINVALUE(myCase->output.dailyMaxEvaporation, myCase->layer[0].waterContent);
     myCase->layer[0].waterContent -= evaporationOpenWater;
     myCase->output.dailyEvaporation = evaporationOpenWater;
 
@@ -358,7 +358,7 @@ bool evaporation(CriteriaModel* myCase)
     {
         layerDepth = myCase->layer[i].depth + myCase->layer[i].thickness / 2.0;
         // coeff = ~0.9 at 1 cm, ~0.1 at MAX_EVAPORATION_DEPTH
-        coeffEvap[i-1] = minValue(1.0, exp((-layerDepth * 2.0) / MAX_EVAPORATION_DEPTH));
+        coeffEvap[i-1] = MINVALUE(1.0, exp((-layerDepth * 2.0) / MAX_EVAPORATION_DEPTH));
         sumCoeff += coeffEvap[i-1];
     }
 
@@ -500,9 +500,9 @@ double cropTranspiration(CriteriaModel* myCase, bool getWaterStress)
         // at least 20% of roots moist
         if ((stress > EPSILON) && (totRootDensityWithoutStress > 0.2))
         {
-            redistribution = minValue(stress, totRootDensityWithoutStress) * myCase->output.dailyMaxTranspiration;
+            redistribution = MINVALUE(stress, totRootDensityWithoutStress) * myCase->output.dailyMaxTranspiration;
             // maximum 1.6 mm (Neumann at al. values span from 0 to 3.2)
-            redistribution = minValue(redistribution, 1.6);
+            redistribution = MINVALUE(redistribution, 1.6);
 
             for (int i = myCase->myCrop.roots.firstRootLayer; i <= myCase->myCrop.roots.lastRootLayer; i++)
             {
@@ -594,6 +594,6 @@ double getCropWaterDeficit(CriteriaModel* myCase)
     for (int i = myCase->myCrop.roots.firstRootLayer; i <= myCase->myCrop.roots.lastRootLayer; i++)
         waterDeficit += myCase->layer[i].FC - myCase->layer[i].waterContent;
 
-    return maxValue(waterDeficit, 0.0);
+    return MAXVALUE(waterDeficit, 0.0);
 }
 

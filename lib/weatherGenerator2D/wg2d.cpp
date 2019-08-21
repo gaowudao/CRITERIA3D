@@ -331,11 +331,11 @@ void weatherGenerator2D::precipitationP00P10()
         for (int month=0;month<12;month++)
         {
             if (daysWithoutRain[month] != 0)
-                precOccurence[idStation][month].p00 = minValue(ONELESSEPSILON,(double)((1.0*occurrence00[month])/daysWithoutRain[month]));
+                precOccurence[idStation][month].p00 = MINVALUE(ONELESSEPSILON,(double)((1.0*occurrence00[month])/daysWithoutRain[month]));
             else
                 precOccurence[idStation][month].p00 = 0.0;
             if (daysWithRain[month] != 0)
-                precOccurence[idStation][month].p10 = minValue(ONELESSEPSILON,(double)((1.0*occurrence10[month])/daysWithRain[month]));
+                precOccurence[idStation][month].p10 = MINVALUE(ONELESSEPSILON,(double)((1.0*occurrence10[month])/daysWithRain[month]));
             else
                 precOccurence[idStation][month].p10 = 0.0;
 
@@ -682,7 +682,7 @@ void weatherGenerator2D::spatialIterationOccurrence(double ** M, double** K,doub
         {
             for (int j=0;j<nrStations;j++) // avoid solutions with correlation coefficient greater than 1
             {
-                M[i][j] = minValue(M[i][j],1);
+                M[i][j] = MINVALUE(M[i][j],1);
                 correlationArray[counter] = M[i][j];
                 counter++;
             }
@@ -720,7 +720,7 @@ void weatherGenerator2D::spatialIterationOccurrence(double ** M, double** K,doub
                      }
                      else
                      {
-                         dummyMatrix[i][j] = minValue(2*M[i][j]/(M[i][i] + M[j][j]),ONELESSEPSILON);
+                         dummyMatrix[i][j] = MINVALUE(2*M[i][j]/(M[i][i] + M[j][j]),ONELESSEPSILON);
                          dummyMatrix[j][i] = dummyMatrix[i][j];
                      }
                 }
@@ -782,7 +782,7 @@ void weatherGenerator2D::spatialIterationOccurrence(double ** M, double** K,doub
         {
             for (int j=0;j<nrStations;j++)
             {
-                val = maxValue(val, fabs(K[i][j] - matrixOccurrence[i][j]));
+                val = MAXVALUE(val, fabs(K[i][j] - matrixOccurrence[i][j]));
             }
         }
 
@@ -811,7 +811,7 @@ void weatherGenerator2D::spatialIterationOccurrence(double ** M, double** K,doub
                 for (int j=i+1;j<nrStations;j++)
                 {
                     M[i][j] += kiter*(matrixOccurrence[i][j]-K[i][j]);
-                    M[j][i] = minValue(M[i][j],ONELESSEPSILON);
+                    M[j][i] = MINVALUE(M[i][j],ONELESSEPSILON);
                 }                
             }
         }

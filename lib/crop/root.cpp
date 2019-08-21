@@ -126,7 +126,7 @@ namespace root
             else
             {
                 // in order to avoid numerical divergences when calculating density through cardioid and gamma function
-                currentDD = maxValue(currentDD, 1.0);
+                currentDD = MAXVALUE(currentDD, 1.0);
                 myRootLength = getRootLengthDD(&(myCrop->roots), currentDD, myCrop->degreeDaysEmergence);
             }
         }
@@ -152,13 +152,13 @@ namespace root
             if (currentDD > myCrop->roots.degreeDaysRootGrowth)
                 myRootLength = myCrop->roots.rootLength;
             else
-                myRootLength = minValue(myRootLength, myCrop->roots.rootLength + MAX_DAILY_GROWTH);
+                myRootLength = MINVALUE(myRootLength, myCrop->roots.rootLength + MAX_DAILY_GROWTH);
 
             // check on watertable
             double maxLenght = waterTableDepth - myCrop->roots.rootDepthMin - MIN_WATERTABLE_DISTANCE;
             if (myRootLength > maxLenght)
             {
-                myRootLength = maxValue(myCrop->roots.rootLength, maxLenght);
+                myRootLength = MAXVALUE(myCrop->roots.rootLength, maxLenght);
             }
         }
 
@@ -262,7 +262,7 @@ namespace root
             *minThickness = layers[1].thickness;
 
         for(int i=1; i<nrLayers; i++)
-            *minThickness = minValue(*minThickness, layers[i].thickness);
+            *minThickness = MINVALUE(*minThickness, layers[i].thickness);
 
         double tmp = *minThickness * 1.001;
         if (tmp < 1)
@@ -299,7 +299,7 @@ namespace root
         {
             double sinAlfa, cosAlfa, alfa;
             sinAlfa = 1. - double(1.+i)/(double(nrLayersWithRoot));
-            cosAlfa = maxValue(sqrt(1. - pow(sinAlfa,2)), 0.0001);
+            cosAlfa = MAXVALUE(sqrt(1. - pow(sinAlfa,2)), 0.0001);
             alfa = atan(sinAlfa/cosAlfa);
             lunette[i]= ((PI/2) - alfa - sinAlfa*cosAlfa) / PI;
         }
@@ -401,7 +401,7 @@ namespace root
             int numberOfRootedLayers, numberOfTopUnrootedLayers, totalLayers;
             totalLayers = root::nrAtoms(layers, nrLayers, myCrop->roots.rootDepthMin, &minimumThickness, atoms);
             numberOfTopUnrootedLayers = int(round(myCrop->roots.rootDepthMin / minimumThickness));
-            numberOfRootedLayers = int(ceil(minValue(myCrop->roots.rootLength, soilDepth) / minimumThickness));
+            numberOfRootedLayers = int(ceil(MINVALUE(myCrop->roots.rootLength, soilDepth) / minimumThickness));
             double *densityThinLayers =  (double *) calloc(unsigned(totalLayers+1), sizeof(double));
             densityThinLayers[totalLayers] = 0.;
             for (i=0; i < totalLayers; i++)
@@ -445,10 +445,10 @@ namespace root
 
             for (i=1 ; i<nrLayers ; i++)
             {
-                b = maxValue(layers[i].depth + layers[i].thickness*0.5 - myCrop->roots.rootDepthMin,0); // right extreme
+                b = MAXVALUE(layers[i].depth + layers[i].thickness*0.5 - myCrop->roots.rootDepthMin,0); // right extreme
                 if (b>0)
                 {
-                    a = maxValue(layers[i].depth - layers[i].thickness*0.5 - myCrop->roots.rootDepthMin,0); //left extreme
+                    a = MAXVALUE(layers[i].depth - layers[i].thickness*0.5 - myCrop->roots.rootDepthMin,0); //left extreme
                     myCrop->roots.rootDensity[i] = Incomplete_Gamma_Function(b/theta,kappa) - Incomplete_Gamma_Function(a/theta,kappa);
                     myCrop->roots.rootDensity[i] /= normalizationFactor;
                 }
