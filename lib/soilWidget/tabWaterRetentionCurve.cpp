@@ -119,8 +119,17 @@ void TabWaterRetentionCurve::insertElements(soil::Crit3DSoil *soil)
 
     QRect layoutSize = linesLayout->geometry();
 
-    int x1 = layoutSize.topLeft().x();
-    int totHeight = layoutSize.height();
+    int totHeight = 0;
+
+    // if layoutSize has no size (case tab in use)
+    if (layoutSize.height() == 0)
+    {
+        totHeight = this->height() - (this->height() * 5 / 100);
+    }
+    else
+    {
+        totHeight = layoutSize.height();
+    }
 
     if (soil == nullptr)
     {

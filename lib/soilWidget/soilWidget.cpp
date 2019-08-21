@@ -208,7 +208,6 @@ Crit3DSoilWidget::Crit3DSoilWidget()
     fittingMenu->addAction(useWaterRetentionData);
     fittingMenu->addAction(airEntryFixed);
     fittingMenu->addAction(parameterRestriction);
-
 }
 
 
@@ -618,7 +617,7 @@ void Crit3DSoilWidget::setInfoTextural(int nHorizon)
 
 void Crit3DSoilWidget::tabChanged(int index)
 {
-    qDebug() << "index = " << index;
+
     if (soilListComboBox.currentText().isEmpty())
     {
         return;
@@ -644,7 +643,6 @@ void Crit3DSoilWidget::tabChanged(int index)
     }
     else if (index == 2) // tab water retention curve
     {
-        qDebug() << "2 tab water retention curve " ;
         if (!wrCurveTab->getFillElement())
         {
             wrCurveTab->insertElements(&mySoil);
