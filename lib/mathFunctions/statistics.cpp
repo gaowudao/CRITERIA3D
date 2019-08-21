@@ -211,6 +211,19 @@ namespace statistics
         return mean ;
     }
 
+    float linearInterpolation(float x1, float y1, float x2, float y2, float xx)
+    {
+        float rate;
+
+        if (isEqual(x1, x2))
+            return y1;
+
+        rate = (y2 - y1) / (x2 - x1);
+
+        return (y1 + rate * (xx - x1));
+    }
+
+
     void linearRegression( float* x,  float* y, long nrItems, bool zeroIntercept, float* y_intercept, float* mySlope, float* r2)
     {
        double SUMx = 0;         /*!< sum of x values */
