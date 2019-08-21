@@ -40,7 +40,6 @@ SOURCES += \
     tableDelegate.cpp \
     lineHorizont.cpp \
     tableDelegateWaterRetention.cpp \
-    curveMagnifier.cpp \
     curvePanner.cpp
 
 HEADERS += \
@@ -55,7 +54,6 @@ HEADERS += \
     tableDelegate.h \
     lineHorizont.h \
     tableDelegateWaterRetention.h \
-    curveMagnifier.h \
     curvePanner.h
 
 unix {

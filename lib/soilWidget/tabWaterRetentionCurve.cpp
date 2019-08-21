@@ -1,7 +1,6 @@
 #include "tabWaterRetentionCurve.h"
 
 #include "commonConstants.h"
-#include "curveMagnifier.h"
 #include "curvePanner.h"
 #include <qwt_point_data.h>
 #include <qwt_scale_engine.h>
@@ -27,11 +26,6 @@ TabWaterRetentionCurve::TabWaterRetentionCurve()
     myPlot->setAxisTitle(QwtPlot::xBottom,QString("Water potential [%1]").arg(QString("kPa")));
     myPlot->setAxisScale(QwtPlot::xBottom,XMIN, XMAX);
     myPlot->setAxisScale(QwtPlot::yLeft,YMIN, YMAX);
-
-    // Setting Magnifier
-    // CTRL + MouseWheel --> Magnifier y
-    Crit3DCurveMagnifier* zoom_y = new Crit3DCurveMagnifier(myPlot, QwtPlot::yLeft);
-    zoom_y->setWheelModifiers(Qt::ControlModifier);
 
     // Left Button for panning
     Crit3DCurvePanner* panner = new Crit3DCurvePanner(myPlot);
@@ -282,6 +276,31 @@ void TabWaterRetentionCurve::curveClicked(int index)
             lineList[i]->setSelected(false);
         }
     }
+
+    /*
+    if (!markerList.isEmpty())
+    {
+        QMap< int, QList<QwtPlotMarker*> >::Iterator iterator;
+        for (iterator = markerList.begin(); iterator!=markerList.end(); ++iterator)
+        {
+
+            if (iterator.key() == index)
+            {
+                for (int i = 0; i < markerList[iterator.key()].size(); i++)
+                {
+                    markerList[iterator.key()][i]->setSymbol(new QwtSymbol( QwtSymbol::Ellipse, QBrush( Qt::red ), QPen( Qt::red, 0 ), QSize( 5, 5 ) ));
+                }
+            }
+            else
+            {
+                for (int i = 0; i < markerList[iterator.key()].size(); i++)
+                {
+                    markerList[iterator.key()][i]->setSymbol(new QwtSymbol( QwtSymbol::Ellipse, QBrush( Qt::black ), QPen( Qt::black, 0 ), QSize( 5, 5 ) ));
+                }
+            }
+        }
+    }
+    */
     emit horizonSelected(index);
 
 }
