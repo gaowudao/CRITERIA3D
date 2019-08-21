@@ -1,14 +1,14 @@
-#ifndef LINEHORIZONT_H
-#define LINEHORIZONT_H
+#ifndef BARHORIZON_H
+#define BARHORIZON_H
 
     #include <QWidget>
     #include <QPainter>
 
-    class LineHorizont : public QWidget
+    class BarHorizons : public QWidget
     {
         Q_OBJECT
     public:
-        LineHorizont();
+        BarHorizons();
         void setClass(int classUSDA);
         int getIndex() const;
         void setIndex(int value);
@@ -31,4 +31,4 @@
 
     };
 
-#endif // LINEHORIZONT_H
+#endif // BARHORIZON_H

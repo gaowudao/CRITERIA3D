@@ -1,12 +1,12 @@
-#include "lineHorizont.h"
+#include "barHorizons.h"
 #include <qdebug.h>
 
-LineHorizont::LineHorizont()
+BarHorizons::BarHorizons()
 {
     selected = false;
 }
 
-void LineHorizont::setClass(int classUSDA)
+void BarHorizons::setClass(int classUSDA)
 {
 
     this->classUSDA = classUSDA;
@@ -93,7 +93,7 @@ void LineHorizont::setClass(int classUSDA)
 
 }
 
-void LineHorizont::mousePressEvent(QMouseEvent* event)
+void BarHorizons::mousePressEvent(QMouseEvent* event)
 {
 
     // select the element
@@ -112,12 +112,12 @@ void LineHorizont::mousePressEvent(QMouseEvent* event)
 
 }
 
-void LineHorizont::setSelected(bool value)
+void BarHorizons::setSelected(bool value)
 {
     selected = value;
 }
 
-void LineHorizont::setSelectedPalette()
+void BarHorizons::setSelectedPalette()
 {
     QPalette pal(this->palette());
     pal.setColor( QPalette::Background, pal.background().color().lighter(130));
@@ -125,23 +125,23 @@ void LineHorizont::setSelectedPalette()
     repaint();
 }
 
-void LineHorizont::restorePalette()
+void BarHorizons::restorePalette()
 {
     this->setPalette(linePalette);
     repaint();
 }
 
-bool LineHorizont::getSelected() const
+bool BarHorizons::getSelected() const
 {
     return selected;
 }
 
-int LineHorizont::getIndex() const
+int BarHorizons::getIndex() const
 {
     return index;
 }
 
-void LineHorizont::setIndex(int value)
+void BarHorizons::setIndex(int value)
 {
     index = value;
 }
