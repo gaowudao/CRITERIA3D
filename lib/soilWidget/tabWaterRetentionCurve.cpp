@@ -107,18 +107,16 @@ void TabWaterRetentionCurve::setFillElement(bool value)
 void TabWaterRetentionCurve::insertElements(soil::Crit3DSoil *soil)
 {
     // rescale
-    myPlot->setAxisScale(QwtPlot::xBottom,XMIN, XMAX);
-    myPlot->setAxisScale(QwtPlot::yLeft,YMIN, YMAX);
+    myPlot->setAxisScale(QwtPlot::xBottom, XMIN, XMAX);
+    myPlot->setAxisScale(QwtPlot::yLeft, YMIN, YMAX);
 
     QRect layoutSize = linesLayout->geometry();
 
     int x1 = layoutSize.topLeft().x();
     int totHeight = layoutSize.height();
 
-    if (soil == nullptr)
-    {
-        return;
-    }
+    if (soil == nullptr) return;
+
     resetAll();
     fillElement = true;
     mySoil = soil;
@@ -127,17 +125,12 @@ void TabWaterRetentionCurve::insertElements(soil::Crit3DSoil *soil)
     double x;
     double maxThetaSat = 0;
     QList< QwtPlotMarker* > horizonMarkers;
-    for (int i = 0; i<mySoil->nrHorizons; i++)
+    for (unsigned int i = 0; i < mySoil->nrHorizons; i++)
     {
-        if (mySoil->horizon[i].dbData.thetaSat > maxThetaSat)
-        {
-            maxThetaSat = mySoil->horizon[i].dbData.thetaSat;
-        }
-
         // insertVerticalLines
-        int length = (mySoil->horizon[i].lowerDepth*100 - mySoil->horizon[i].upperDepth*100) * totHeight / (mySoil->totalDepth*100);
+        int length = int((mySoil->horizon[i].lowerDepth*100 - mySoil->horizon[i].upperDepth*100) * totHeight / (mySoil->totalDepth*100));
         LineHorizont* line = new LineHorizont();
-        line->setIndex(i);
+        line->setIndex(signed(i));
         line->setFixedWidth(20);
         line->setFixedHeight(length);
         line->setClass(mySoil->horizon[i].texture.classUSDA);
@@ -149,15 +142,17 @@ void TabWaterRetentionCurve::insertElements(soil::Crit3DSoil *soil)
         xVector.clear();
         yVector.clear();
         x = DXMIN;
-        while (x < DXMAX)
+        double factor = 1.2;
+        while (x < DXMAX*factor)
         {
             double y = soil::thetaFromSignPsi(-x, &mySoil->horizon[i]);
             if (y != NODATA)
             {
                 xVector.push_back(x);
                 yVector.push_back(y);
+                maxThetaSat = MAXVALUE(maxThetaSat, y);
             }
-            x = x * 1.25;
+            x *= factor;
         }
         QwtPointArrayData *data = new QwtPointArrayData(xVector,yVector);
         curve->setSamples(data);
@@ -167,7 +162,7 @@ void TabWaterRetentionCurve::insertElements(soil::Crit3DSoil *soil)
         // insert marker
         if (!mySoil->horizon[i].dbData.waterRetention.empty())
         {
-            for (int j = 0; j < mySoil->horizon[i].dbData.waterRetention.size(); j++)
+            for (unsigned int j = 0; j < mySoil->horizon[i].dbData.waterRetention.size(); j++)
             {
                 QwtPlotMarker* m = new QwtPlotMarker();
                 double x = mySoil->horizon[i].dbData.waterRetention[j].water_potential;
@@ -180,18 +175,17 @@ void TabWaterRetentionCurve::insertElements(soil::Crit3DSoil *soil)
                 }
                 horizonMarkers.push_back(m);
             }
+
             markerList[i] = horizonMarkers;
             horizonMarkers.clear();
         }
-
-
     }
+
     // round maxThetaSat to first decimal
-    maxThetaSat = (int)(maxThetaSat * 10 + 0.5);
-    maxThetaSat = (double)maxThetaSat / 10;
+    maxThetaSat = ceil(maxThetaSat * 10) * 0.1;
 
     // rescale to maxThetaSat
-    myPlot->setAxisScale(QwtPlot::yLeft,YMIN, std::max(YMAX, maxThetaSat));
+    myPlot->setAxisScale(QwtPlot::yLeft, YMIN, std::max(YMAX, maxThetaSat));
 
     pick = new Crit3DCurvePicker(myPlot, curveList);
     pick->setStateMachine(new QwtPickerClickPointMachine());
