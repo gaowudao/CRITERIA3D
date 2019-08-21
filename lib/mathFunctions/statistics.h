@@ -5,6 +5,10 @@
         #include <vector>
     #endif
 
+    #ifndef _MAP_
+        #include <map>
+    #endif
+
     enum meteoComputation { average, stdDev, sum, maxInList, minInList,
                             differenceWithThreshold, lastDayBelowThreshold,
                             sumAbove, avgAbove, stdDevAbove,
@@ -16,6 +20,29 @@
                             winkler, huglin, fregoni,
                             correctedDegreeDaysSum, erosivityFactorElab, rainIntensityElab, noMeteoComp};
 
+    enum aggregationMethod {noAggrMethod, aggrAverage, aggrMedian, aggrStdDeviation, aggrMin, aggrMax, aggrSum, aggrPrevailing, aggrCenter};
+
+    const std::map<std::string, aggregationMethod> aggregationMethodToString = {
+      { "AVG", aggrAverage },
+      { "MEDIAN", aggrMedian },
+      { "STDDEV", aggrStdDeviation },
+      { "MIN", aggrMin },
+      { "MAX", aggrMax },
+      { "SUM", aggrSum },
+      { "PREVAILING", aggrPrevailing },
+      { "CENTER", aggrCenter }
+    };
+
+    const std::map<aggregationMethod, std::string> aggregationStringToMethod = {
+      { aggrAverage, "AVG" },
+      { aggrMedian, "MEDIAN" },
+      { aggrStdDeviation, "STDDEV" },
+      { aggrMin, "MIN" },
+      { aggrMax, "MAX" },
+      { aggrSum, "SUM" },
+      { aggrPrevailing, "PREVAILING" },
+      { aggrCenter, "CENTER" }
+    };
 
     float statisticalElab(meteoComputation elab, float param, std::vector<float> values, int nValues, float rainfallThreshold);
 

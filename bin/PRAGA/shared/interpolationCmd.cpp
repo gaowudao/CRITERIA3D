@@ -2,6 +2,7 @@
 
 #include "formInfo.h"
 #include "gis.h"
+#include "utilities.h"
 #include "interpolation.h"
 #include "interpolationCmd.h"
 
@@ -46,11 +47,77 @@ void Crit3DProxyGridSeries::addGridToSeries(QString name_, unsigned year_)
 
 void interpolateProxyGridSeries(Crit3DProxyGridSeries mySeries, QDate myDate, gis::Crit3DRasterGrid* gridOut)
 {
+    std::string myError;
+    std::vector <QString> gridNames = mySeries.getGridName();
+    size_t nrGrids = gridNames.size();
     gridOut = new gis::Crit3DRasterGrid();
+
+    if (nrGrids == 1)
+    {
+        gis::readEsriGrid(gridNames[0].toStdString(), gridOut, &myError);
+        return;
+    }
+
+    unsigned first, second;
+
+    for (second = 0; second < nrGrids; second++)
+        if (unsigned(myDate.year()) <= mySeries.getGridYear()[second]) break;
+
+    if (second == 0)
+    {
+        second = 1;
+        first = 0;
+    }
+    else if (second == nrGrids)
+    {
+        first = unsigned(nrGrids) - 2;
+        second = unsigned(nrGrids) - 1;
+    }
+    else
+        first = second - 1;
+
+    // load grids
+    gis::Crit3DRasterGrid firstGrid, secondGrid;
+    gis::readEsriGrid(gridNames[first].toStdString(), &firstGrid, &myError);
+    gis::readEsriGrid(gridNames[second].toStdString(), &secondGrid, &myError);
+
+    firstGrid.setMapTime(getCrit3DTime(myDate, 0));
+    secondGrid.setMapTime(getCrit3DTime(myDate, 0));
+
+    // use first as reference if different resolution when resampling
+    /*if (! gis::compareGrids(firstGrid, secondGrid))
+    {
+
+
+    }
+
+        If Not GIS.CompareGrids(myFirstMap, mySecondMap) Then
+            Dim myTmpGrid As GIS.grid
+            myTmpGrid = mySecondMap
+            GIS.clearGrid mySecondMap
+            GIS.resampleGridWithHeader myTmpGrid, mySecondMap, myFirstMap.header, _
+                Definitions.ELAB_MEAN, 0, False
+        End If
+
+        'temporal interpolation
+        If Not TemporalInterpolateMap(myYear, myFirstMap, mySecondMap, Interpolation.UrbanFractionMap, 0, 1) Then Exit Function
+        'l'assegnazione alle stazioni va fatta alla massima risoluzione
+        AssignGeoToStations Definitions.PROXYVAR_URBANFRACTION
+
+        'aggregazione sul DEM
+        Dim myUrbanMap As GIS.grid
+        GIS.resampleGridWithHeader Interpolation.UrbanFractionMap, myUrbanMap, GIS.DEM.header, Definitions.ELAB_MEAN, 0, False
+        GIS.clearGrid Interpolation.UrbanFractionMap
+        Interpolation.UrbanFractionMap = myUrbanMap
+
+
+        GIS.clearGrid myUrbanMap
+        GIS.clearGrid myFirstMap
+        GIS.clearGrid mySecondMap
+        */
 }
 
-bool checkProxyGridSeries(Crit3DInterpolationSettings* mySettings, std::vector <Crit3DProxyGridSeries> mySeries, QDate myDate,
-                          gis::Crit3DRasterGrid* gridOut)
+bool checkProxyGridSeries(Crit3DInterpolationSettings* mySettings, std::vector <Crit3DProxyGridSeries> mySeries, QDate myDate)
 {
     unsigned i,j;
 
@@ -64,6 +131,7 @@ bool checkProxyGridSeries(Crit3DInterpolationSettings* mySettings, std::vector <
                 {
                     if (mySeries[j].getGridName().size() > 0)
                     {
+                        gis::Crit3DRasterGrid* gridOut = nullptr;
                         interpolateProxyGridSeries(mySeries[j], myDate, gridOut);
                         return true;
                     }

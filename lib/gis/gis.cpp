@@ -29,6 +29,7 @@
 #include <algorithm>
 
 #include "commonConstants.h"
+#include "statistics.h"
 #include "gis.h"
 
 namespace gis
@@ -1360,5 +1361,100 @@ namespace gis
         return true;
     }
 
+    bool compareGrids(const gis::Crit3DRasterGrid& first, const gis::Crit3DRasterGrid& second)
+    {
+        return (first.header->nrRows == second.header->nrRows &&
+                first.header->nrCols == second.header->nrCols &&
+                first.header->cellSize == second.header->cellSize &&
+                first.header->llCorner->x == second.header->llCorner->x &&
+                first.header->llCorner->y == second.header->llCorner->y);
+    }
+
+    void resampleGrid(const gis::Crit3DRasterGrid& oldGrid, gis::Crit3DRasterGrid* newGrid,
+                      gis::Crit3DRasterHeader header, aggregationMethod elab, float nodataThreshold)
+    {
+        *(newGrid->header) = header;
+
+        double factor = newGrid->header->cellSize / oldGrid.header->cellSize;
+        int row, col, tmpRow, tmpCol, counter;
+        float value;
+        double x, y;
+        gis::Crit3DPoint myLL, myUR;
+        std::vector <float> values;
+
+        newGrid->initializeGrid();
+
+        for (row = 0; row < newGrid->header->nrRows; row++)
+            for (col = 0; col < newGrid->header->nrCols; col++)
+            {
+                newGrid->value[row][col] = newGrid->header->flag;
+
+                value = NODATA;
+
+                if (factor < 1 || elab == aggrCenter)
+                {
+                    gis::getUtmXYFromRowCol(*newGrid, row, col, &x, &y);
+                    gis::getRowColFromXY(oldGrid, x, y, &tmpRow, &tmpCol);
+                    if (! gis::isOutOfGridRowCol(tmpRow, tmpCol, oldGrid))
+                        value = oldGrid.value[tmpRow][tmpCol];
+                }
+                else
+                {
+                    gis::getUtmXYFromRowCol(*newGrid, row, col, &x, &y);
+
+                    myLL.utm.x = x - (newGrid->header->cellSize / 2);
+                    myLL.utm.y = y - (newGrid->header->cellSize / 2);
+                    myUR.utm.x = x + (newGrid->header->cellSize / 2);
+                    myUR.utm.y = y + (newGrid->header->cellSize / 2);
+
+                    counter = ((myUR.utm.x - myLL.utm.x) / oldGrid.header->cellSize) * ((myUR.utm.y - myLL.utm.y) / oldGrid.header->cellSize);
+
+                    values.clear();
+                }
+            }
+                    /*
+                    For myX = myLL.x To myUR.x Step (oldGrid.header.cellSize / 2)
+                        For myY = myLL.y To myUR.y Step (oldGrid.header.cellSize / 2)
+                            myTmpValue = GIS.GetValueFromXY(oldGrid, myX, myY)
+                            If myTmpValue <> oldGrid.header.flag Then
+                                myValues(UBound(myValues)) = myTmpValue
+                                ReDim Preserve myValues(UBound(myValues) + 1)
+                            End If
+                        Next myY
+                    Next myX
+
+                    If UBound(myValues) / myTotCounter > myNodataThreshold Then
+                        Select Case myElab
+                            Case Definitions.ELAB_MEAN
+                                myValue = math.mean(myValues, UBound(myValues))
+                            Case Definitions.ELAB_MEDIAN
+                                myValue = math.percentile(myValues, UBound(myValues), 50)
+                            Case Definitions.ELAB_PREVAILINGVALUE
+                                myValue = math.prevailingValue(myValues, UBound(myValues))
+                            Case Else
+                                myValue = math.mean(myValues, UBound(myValues))
+                        End Select
+                    End If
+
+                End If
+
+                If myValue <> Definitions.NO_DATA Then
+                    If Not NewGrid.isByte Then
+                        NewGrid.Value(myRow, myCol) = myValue
+                    Else
+                        NewGrid.byteValue(myRow, myCol) = myValue
+                    End If
+                End If
+
+            Next myCol
+        Next myRow
+
+        If isInfo Then PragaShell.StopInfo
+
+        GIS.updateMinMaxValueGrid NewGrid
+        NewGrid.isLoaded = True
+        */
+
+    }
 }
 
