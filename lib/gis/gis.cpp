@@ -1366,9 +1366,9 @@ namespace gis
     {
         return (first.header->nrRows == second.header->nrRows &&
                 first.header->nrCols == second.header->nrCols &&
-                first.header->cellSize == second.header->cellSize &&
-                first.header->llCorner->x == second.header->llCorner->x &&
-                first.header->llCorner->y == second.header->llCorner->y);
+                isEqual(first.header->cellSize, second.header->cellSize) &&
+                isEqual(first.header->llCorner->x, second.header->llCorner->x) &&
+                isEqual(first.header->llCorner->y, second.header->llCorner->y));
     }
 
     void resampleGrid(const gis::Crit3DRasterGrid& oldGrid, gis::Crit3DRasterGrid* newGrid,
@@ -1377,7 +1377,7 @@ namespace gis
         *(newGrid->header) = header;
 
         double factor = newGrid->header->cellSize / oldGrid.header->cellSize;
-        int row, col, tmpRow, tmpCol, cellsNr;
+        int row, col, tmpRow, tmpCol, nrValues, maxValues;
         float value, tmpValue;
         double x, y;
         gis::Crit3DPoint myLL, myUR;
@@ -1408,7 +1408,7 @@ namespace gis
                     myUR.utm.x = x + (newGrid->header->cellSize / 2);
                     myUR.utm.y = y + (newGrid->header->cellSize / 2);
 
-                    cellsNr = int(((myUR.utm.x - myLL.utm.x) / oldGrid.header->cellSize) * ((myUR.utm.y - myLL.utm.y) / oldGrid.header->cellSize));
+                    maxValues = int(((myUR.utm.x - myLL.utm.x) / oldGrid.header->cellSize) * ((myUR.utm.y - myLL.utm.y) / oldGrid.header->cellSize));
 
                     values.clear();
                     for (x = myLL.utm.x; x <= myUR.utm.x; x += oldGrid.header->cellSize / 2)
@@ -1419,46 +1419,69 @@ namespace gis
                                 values.push_back(tmpValue);
                         }
 
-                    if (int(values.size()) / cellsNr > nodataThreshold)
+                    nrValues = int(values.size());
+                    if (nrValues / maxValues > nodataThreshold)
                     {
                         if (elab == aggrAverage)
-                            value = statistics::mean(values, values.size());
+                            value = statistics::mean(values, nrValues);
+                        else if (elab == aggrMedian)
+                            value = sorting::percentile(values, &nrValues, 50, true);
+                        else if (elab == aggrPrevailing)
+                            value = prevailingValue(values);
                     }
                 }
+
+                if (! isEqual(value, NODATA)) newGrid->value[row][col] = value;
             }
-                    /*
-                    If UBound(myValues) / myTotCounter > myNodataThreshold Then
-                        Select Case myElab
-                            Case Definitions.ELAB_MEAN
-                                myValue = math.mean(myValues, UBound(myValues))
-                            Case Definitions.ELAB_MEDIAN
-                                myValue = math.percentile(myValues, UBound(myValues), 50)
-                            Case Definitions.ELAB_PREVAILINGVALUE
-                                myValue = math.prevailingValue(myValues, UBound(myValues))
-                            Case Else
-                                myValue = math.mean(myValues, UBound(myValues))
-                        End Select
+
+        gis::updateMinMaxRasterGrid(newGrid);
+        newGrid->isLoaded = true;
+
+    }
+
+    bool temporalYearlyInterpolation(const gis::Crit3DRasterGrid& firstGrid, const gis::Crit3DRasterGrid& secondGrid,
+                                     unsigned myYear, gis::Crit3DRasterGrid* outGrid)
+    {
+        /*
+            ByVal myYear As Integer, _
+        ByRef myFirstGrid As GIS.grid, ByRef mySecondGrid As GIS.grid, ByRef myOutGrid As GIS.grid, _
+        ByVal minValue As Single, ByVal maxValue As Single) As Boolean
+
+    Dim r As Long, c As Long
+    Dim myFirstValue As Single, mySecondValue As Single
+    Dim myFirstYear As Integer, mySecondYear As Integer
+
+        TemporalInterpolateMap = False
+
+        If Not myFirstGrid.isLoaded Or Not mySecondGrid.isLoaded Then Exit Function
+        If myFirstGrid.info.date_ = Definitions.NODATE Or mySecondGrid.info.date_ = Definitions.NODATE Then Exit Function
+
+        If Not GIS.CompareGrids(myFirstGrid, mySecondGrid) Then Exit Function
+
+        GIS.GridInitFrom myFirstGrid, myOutGrid
+
+        myFirstYear = Year(myFirstGrid.info.date_)
+        mySecondYear = Year(mySecondGrid.info.date_)
+
+        For r = 0 To myFirstGrid.header.nrRows - 1
+            For c = 0 To myFirstGrid.header.nrCols - 1
+                If Not GIS.isOutOfGridRowCol(r, c, mySecondGrid) Then
+                    myFirstValue = myFirstGrid.Value(r, c)
+                    mySecondValue = mySecondGrid.Value(r, c)
+                    If myFirstValue <> Definitions.NO_DATA And mySecondValue <> Definitions.NO_DATA Then
+                        myOutGrid.Value(r, c) = math.LinearInterpolation(CSng(myFirstYear), myFirstValue, CSng(mySecondYear), mySecondValue, myYear)
+                        If minValue <> Definitions.NO_DATA Then myOutGrid.Value(r, c) = max(minValue, myOutGrid.Value(r, c))
+                        If maxValue <> Definitions.NO_DATA Then myOutGrid.Value(r, c) = min(maxValue, myOutGrid.Value(r, c))
                     End If
-
                 End If
+            Next c
+        Next r
 
-                If myValue <> Definitions.NO_DATA Then
-                    If Not NewGrid.isByte Then
-                        NewGrid.Value(myRow, myCol) = myValue
-                    Else
-                        NewGrid.byteValue(myRow, myCol) = myValue
-                    End If
-                End If
+        TemporalInterpolateMap = True
 
-            Next myCol
-        Next myRow
+                    */
 
-        If isInfo Then PragaShell.StopInfo
-
-        GIS.updateMinMaxValueGrid NewGrid
-        NewGrid.isLoaded = True
-        */
-
+        return true;
     }
 }
 

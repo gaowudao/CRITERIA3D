@@ -93,13 +93,7 @@ void interpolateProxyGridSeries(Crit3DProxyGridSeries mySeries, QDate myDate, gi
     }
 
     /*
-    If Not GIS.CompareGrids(myFirstMap, mySecondMap) Then
-            Dim myTmpGrid As GIS.grid
-            myTmpGrid = mySecondMap
-            GIS.clearGrid mySecondMap
-            GIS.resampleGridWithHeader myTmpGrid, mySecondMap, myFirstMap.header, _
-                Definitions.ELAB_MEAN, 0, False
-        End If
+
 
         'temporal interpolation
         If Not TemporalInterpolateMap(myYear, myFirstMap, mySecondMap, Interpolation.UrbanFractionMap, 0, 1) Then Exit Function
