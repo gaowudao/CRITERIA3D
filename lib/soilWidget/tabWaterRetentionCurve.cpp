@@ -77,27 +77,26 @@ void TabWaterRetentionCurve::resetAll()
         qDeleteAll(curveList);
         curveList.clear();
     }
-    myPlot->detachItems( QwtPlotItem::Rtti_PlotCurve );
-    myPlot->detachItems( QwtPlotItem::Rtti_PlotMarker );
+
     if (pick != nullptr)
     {
         delete pick;
         pick = nullptr;
     }
-/*
+
     if (!markerList.isEmpty())
     {
-        for (int i  = 0; i < markerList.size(); i++)
+        QMap< int, QList<QwtPlotMarker*> >::Iterator iterator;
+        for (iterator = markerList.begin(); iterator!=markerList.end(); ++iterator)
         {
-            if (!markerList[i].isEmpty())
-            {
-                qDeleteAll(markerList[i]);
-                markerList[i].clear();
-            }
+            qDeleteAll(markerList[iterator.key()]);
+            markerList[iterator.key()].clear();
         }
         markerList.clear();
     }
-    */
+    myPlot->detachItems( QwtPlotItem::Rtti_PlotCurve );
+    myPlot->detachItems( QwtPlotItem::Rtti_PlotMarker );
+
     fillElement = false;
 
 }
@@ -114,6 +113,9 @@ void TabWaterRetentionCurve::setFillElement(bool value)
 
 void TabWaterRetentionCurve::insertElements(soil::Crit3DSoil *soil)
 {
+    // rescale
+    myPlot->setAxisScale(QwtPlot::xBottom,XMIN, XMAX);
+    myPlot->setAxisScale(QwtPlot::yLeft,YMIN, YMAX);
 
     QRect layoutSize = linesLayout->geometry();
 
@@ -131,7 +133,7 @@ void TabWaterRetentionCurve::insertElements(soil::Crit3DSoil *soil)
     QVector<double> yVector;
     double x;
     double maxThetaSat = 0;
-    QList<QwtPlotMarker*> horizonMarkers;
+    QList< QwtPlotMarker* > horizonMarkers;
     for (int i = 0; i<mySoil->nrHorizons; i++)
     {
         // insertVerticalLines

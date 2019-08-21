@@ -5,6 +5,10 @@
         #include "crit3dDate.h"
     #endif
 
+    #ifndef STATISTICS_H
+        #include "statistics.h"
+    #endif
+
     #ifndef _MAP_
         #include <map>
     #endif
@@ -164,28 +168,6 @@
     enum frequencyType {hourly, daily, monthly, noFrequency};
 
     enum surfaceType   {SurfaceTypeWater, SurfaceTypeSoil, SurfaceTypeCrop};
-
-    enum aggregationMethod {noAggrMethod, aggrAverage, aggrMedian, aggrStdDeviation, aggrMin, aggrMax, aggrSum, aggrPrevailing};
-
-    const std::map<std::string, aggregationMethod> aggregationMethodToString = {
-      { "AVG", aggrAverage },
-      { "MEDIAN", aggrMedian },
-      { "STDDEV", aggrStdDeviation },
-      { "MIN", aggrMin },
-      { "MAX", aggrMax },
-      { "SUM", aggrSum },
-      { "PREVAILING", aggrPrevailing }
-    };
-
-    const std::map<aggregationMethod, std::string> aggregationStringToMethod = {
-      { aggrAverage, "AVG" },
-      { aggrMedian, "MEDIAN" },
-      { aggrStdDeviation, "STDDEV" },
-      { aggrMin, "MIN" },
-      { aggrMax, "MAX" },
-      { aggrSum, "SUM" },
-      { aggrPrevailing, "PREVAILING" }
-    };
 
     class Crit3DClimateParameters
     {

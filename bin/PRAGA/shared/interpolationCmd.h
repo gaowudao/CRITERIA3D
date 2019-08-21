@@ -17,6 +17,8 @@
     #include <QString>
 #endif
 
+class QDate;
+
 class Crit3DProxyGridSeries
 {
 private:
@@ -34,6 +36,8 @@ public:
     std::vector<unsigned> getGridYear() const;
     QString getProxyName() const;
 };
+
+bool checkProxyGridSeries(Crit3DInterpolationSettings* mySettings, std::vector <Crit3DProxyGridSeries> mySeries, QDate myDate);
 
 bool interpolationRaster(std::vector <Crit3DInterpolationDataPoint> &myPoints, Crit3DInterpolationSettings* mySettings,
                         gis::Crit3DRasterGrid* myGrid, const gis::Crit3DRasterGrid& raster, meteoVariable myVar, bool showInfo);

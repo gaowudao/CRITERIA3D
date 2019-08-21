@@ -6,6 +6,7 @@
 #include "formInfo.h"
 #include "utilities.h"
 #include "project.h"
+#include "interpolationCmd.h"
 #include "pragaProject.h"
 
 
@@ -1350,6 +1351,7 @@ bool PragaProject::interpolationMeteoGridPeriod(QDate dateIni, QDate dateFin, QL
     int myHour;
     QDate myDate = dateIni;
     gis::Crit3DRasterGrid* myGrid = new gis::Crit3DRasterGrid(DEM);
+    unsigned currentYear = NODATA;
 
     QString infoStr = "Save meteo grid hourly data";
     infoStep = myInfo.start(infoStr, this->meteoGridDbHandler->gridStructure().header().nrRows);
@@ -1360,6 +1362,9 @@ bool PragaProject::interpolationMeteoGridPeriod(QDate dateIni, QDate dateFin, QL
     while (myDate <= dateFin)
     {
         // check proxy grid series
+        if (currentYear != myDate.year())
+            if (checkProxyGridSeries(&interpolationSettings, proxyGridSeries, myDate))
+                if (! updateProxy()) return false;
 
         for (myHour = 1; myHour <= 24; myHour++)
         {
@@ -1374,6 +1379,8 @@ bool PragaProject::interpolationMeteoGridPeriod(QDate dateIni, QDate dateFin, QL
     }
 
     meteoGridDbHandler->saveGridData(&myError, QDateTime(dateIni, QTime(0,0,0)), QDateTime(dateFin.addDays(1), QTime(0,0,0)), variables);
+
+    //restore original proxy grids
 
     return true;
 
