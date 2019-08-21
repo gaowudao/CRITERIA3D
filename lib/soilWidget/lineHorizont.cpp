@@ -88,7 +88,7 @@ void LineHorizont::setClass(int classUSDA)
 
 
     }
-    this->setAutoFillBackground(true);
+    this->setAutoFillBackground(false);
     this->setPalette(linePalette);
 
 }
