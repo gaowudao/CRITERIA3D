@@ -52,7 +52,6 @@ bool loadVanGenuchtenParameters(QSqlDatabase* dbSoil, soil::Crit3DTextureClass* 
     //read values
     int id, j;
     float myValue;
-    double m;
     query.first();
     do
     {
@@ -71,7 +70,7 @@ bool loadVanGenuchtenParameters(QSqlDatabase* dbSoil, soil::Crit3DTextureClass* 
         textureClassList[id].vanGenuchten.n = query.value(3).toDouble();
         textureClassList[id].vanGenuchten.he = query.value(4).toDouble();       //[kPa]
 
-        m = 1.0 - 1.0 / textureClassList[id].vanGenuchten.n;
+        double m = 1 - 1 / textureClassList[id].vanGenuchten.n;
         textureClassList[id].vanGenuchten.m = m;
         textureClassList[id].vanGenuchten.sc = pow(1.0 + pow(textureClassList[id].vanGenuchten.alpha
                                         * textureClassList[id].vanGenuchten.he, textureClassList[id].vanGenuchten.n), -m);

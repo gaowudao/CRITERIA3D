@@ -32,7 +32,9 @@
 
 #include "soil.h"
 #include "commonConstants.h"
-#include <iostream> //debug
+#include "furtherMathFunctions.h"
+
+//#include <iostream> //debug
 
 namespace soil
 {
@@ -54,7 +56,7 @@ namespace soil
     Crit3DFittingOptions::Crit3DFittingOptions()
     {
         this->waterRetentionCurve = MODIFIEDVANGENUCHTEN;
-        this->useWaterRetentionData = false;
+        this->useWaterRetentionData = true;
         this->airEntryFixed = false;
         this->mRestriction = false;
     }
@@ -671,6 +673,11 @@ namespace soil
             horizon->waterConductivity.kSat = soil::estimateSaturatedConductivity(horizon, horizon->bulkDensity);
         }
 
+        if (fittingOptions->useWaterRetentionData && horizon->dbData.waterRetention.size() > 0)
+        {
+            fittingWaterRetentionCurve(horizon, fittingOptions, error);
+        }
+
         // update with coarse fragment
         horizon->vanGenuchten.thetaS *= (1.0 - horizon->coarseFragments);
         horizon->vanGenuchten.thetaR *= (1.0 - horizon->coarseFragments);
@@ -685,4 +692,125 @@ namespace soil
 
         return true;
     }
+
+
+    bool fittingWaterRetentionCurve(Crit3DHorizon* horizon, Crit3DFittingOptions* fittingOptions, std::string* error)
+    {
+        if (! fittingOptions->useWaterRetentionData || horizon->dbData.waterRetention.size() == 0)
+        {
+            // nothing to do
+            return true;
+        }
+
+        if (fittingOptions->waterRetentionCurve != MODIFIEDVANGENUCHTEN)
+        {
+            // TODO
+            return false;
+        }
+
+        int functionCode;
+        int nrIterations = 200;
+
+        // parameters
+        unsigned int nrParameters = 5;
+        if (! fittingOptions->mRestriction) nrParameters = 6;
+
+        double* param = new double[nrParameters];
+        double* pmin = new double[nrParameters];
+        double* pmax = new double[nrParameters];
+        double* pdelta = new double[nrParameters];
+
+        // water content at saturation [m^3 m^-3]
+        param[0] = horizon->vanGenuchten.thetaS;
+        pmin[0] = 0;
+        pmax[0] = 1;
+
+        // water content residual [m^3 m^-3]
+        param[1] = horizon->vanGenuchten.thetaR;
+        pmin[1] = 0;
+        pmax[1] = horizon->vanGenuchten.thetaR;
+
+        // air entry [kPa]
+        param[2] = horizon->vanGenuchten.he;
+        if (fittingOptions->airEntryFixed)
+        {
+            pmin[2] = horizon->vanGenuchten.he;
+            pmax[2] = horizon->vanGenuchten.he;
+        }
+        else
+        {
+            pmin[2] = 0.1;
+            pmax[2] = 10;
+        }
+
+        // Van Genuchten alpha parameter [kPa^-1]
+        param[3] = horizon->vanGenuchten.alpha;
+        pmin[3] = 0.01;
+        pmax[3] = 10;
+
+        // Van Genuchten n parameter [-]
+        param[4] = horizon->vanGenuchten.n;
+        if (fittingOptions->mRestriction)
+        {
+            functionCode = FUNCTION_CODE_MODIFIED_VAN_GENUCHTEN_RESTRICTED;
+            pmin[4] = 1;
+            pmax[4] = 10;
+        }
+        else
+        {
+            functionCode = FUNCTION_CODE_MODIFIED_VAN_GENUCHTEN;
+            pmin[4] = 0.01;
+            pmax[4] = 10;
+        }
+
+        // Van Genuchten m parameter (restricted: 1-1/n) [-]
+        if (! fittingOptions->mRestriction)
+        {
+            param[5] = horizon->vanGenuchten.m;
+            pmin[5] = 0.01;
+            pmax[5] = 1;
+        }
+
+        for (unsigned int i = 0; i < nrParameters; i++)
+        {
+            pdelta[i] = (pmax[i]-pmin[i]) * 0.01;
+        }
+
+        // values
+        unsigned int nrValues = unsigned(horizon->dbData.waterRetention.size());
+        double* x = new double[nrValues];
+        double* y = new double[nrValues];
+        for (unsigned int i = 0; i < nrValues; i++)
+        {
+            x[i] = horizon->dbData.waterRetention[i].water_potential;
+            y[i] = horizon->dbData.waterRetention[i].water_content;
+        }
+
+        if ( interpolation::fittingMarquardt(pmin, pmax, param, signed(nrParameters), pdelta,
+                                   nrIterations, EPSILON, functionCode, x, y, signed(nrValues)) )
+        {
+            horizon->vanGenuchten.thetaS = param[0];
+            horizon->vanGenuchten.thetaR = param[1];
+            horizon->vanGenuchten.he = param[2];
+            horizon->vanGenuchten.alpha = param[3];
+            horizon->vanGenuchten.n = param[4];
+            if (fittingOptions->mRestriction)
+            {
+                horizon->vanGenuchten.m = 1 - 1 / horizon->vanGenuchten.n;
+            }
+            else
+            {
+                horizon->vanGenuchten.m = param[5];
+            }
+            horizon->vanGenuchten.sc = pow(1 + pow(horizon->vanGenuchten.alpha * horizon->vanGenuchten.he, horizon->vanGenuchten.n), -horizon->vanGenuchten.m);
+
+            return true;
+        }
+        else
+        {
+            return false;
+        }
+    }
+
 }
+

@@ -422,7 +422,7 @@ namespace interpolation
             if (diffSSE > 0)
             {
                 mySSE = newSSE;
-                for (int i = 0; i<nrParameters ; i++)
+                for (int i = 0; i < nrParameters ; i++)
                 {
                     parameters[i] = newParameters[i];
                     lambda[i] /= VFACTOR;
@@ -598,7 +598,10 @@ namespace interpolation
                 return harmonicsFourierGeneral(x, parameters, nrParameters);
 
             case FUNCTION_CODE_MODIFIED_VAN_GENUCHTEN :
-                return modifiedVanGenuchten(x, parameters);
+                return modifiedVanGenuchten(x, parameters, false);
+
+            case FUNCTION_CODE_MODIFIED_VAN_GENUCHTEN_RESTRICTED :
+                return modifiedVanGenuchten(x, parameters, true);
 
             default:
                 return NODATA ;
@@ -631,23 +634,34 @@ namespace interpolation
      * \param water potential (psi) [kPa]
      * \return volumetric water content [m^3 m-3]
      */
-    double modifiedVanGenuchten(double psi, double *parameters)
+    double modifiedVanGenuchten(double psi, double *parameters, bool isRestricted)
     {
         psi = fabs(psi);
-        double thetaS = parameters[0];      // water content at saturation [m^3 m-3]
-        double thetaR = parameters[1];      // water content residual [m^3 m-3]
-        double he = parameters[2];          // air entry [kPa]
-        double alpha = parameters[3];       // Van Genuchten curve parameter [kPa^-1]
-        double n = parameters[4];           // Van Genuchten curve parameter [-]
-        double m = 1 - 1/n;                 // Van Genuchten curve parameter (restricted: 1-1/n) [-]
-        double sc = pow(1 + pow(alpha * he, n), -m);   // reduction factor for modified VG (Ippisch, 2006) [-]
+        double thetaS, thetaR, he;
+        double alpha, n, m;
+
+        thetaS = parameters[0];         // water content at saturation [m^3 m^-3]
+        thetaR = parameters[1];         // water content residual [m^3 m^-3]
+        he = parameters[0];             // air entry [kPa]
 
         if (psi <= he) return thetaS;
+
+        alpha = parameters[3];          // Van Genuchten curve parameter [kPa^-1]
+        n = parameters[4];              // Van Genuchten curve parameter [-]
+        if (isRestricted) {
+            m = 1 - 1/n;                // Van Genuchten curve parameter (restricted: 1-1/n) [-]
+        }
+        else {
+            m = parameters[5];
+        }
+
+        // reduction factor for modified VG (Ippisch, 2006) [-]
+        double sc = pow(1 + pow(alpha * he, n), -m);
 
         // degree of saturation [-]
         double Se = pow(1 + pow(alpha * psi, n), -m) / sc;
 
-        // volumetri water content [m^3 m-3]
+        // volumetric water content [m^3 m^-3]
         return Se * (thetaS - thetaR) + thetaR;
     }
 

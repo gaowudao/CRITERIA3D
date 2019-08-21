@@ -24,7 +24,7 @@ win32:{
     TARGET = soil
 }
 
-INCLUDEPATH += ../mathFunctions
+INCLUDEPATH += ../mathFunctions  ../specialMathFunctions
 
 SOURCES += soil.cpp
 
