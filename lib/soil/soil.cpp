@@ -58,7 +58,7 @@ namespace soil
         this->waterRetentionCurve = MODIFIEDVANGENUCHTEN;
         this->useWaterRetentionData = true;
         this->airEntryFixed = false;
-        this->mRestriction = false;
+        this->mRestriction = true;
     }
 
     Crit3DLayer::Crit3DLayer()
