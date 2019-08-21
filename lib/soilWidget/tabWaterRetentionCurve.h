@@ -27,7 +27,7 @@
         QwtPlot *myPlot;
         QList<LineHorizont*> lineList;
         QList<QwtPlotCurve*> curveList;
-        QMap< int, QList<QwtPlotMarker*> > markerList;
+        QMap< int, QList<QwtPlotMarker*> >markerList;
         Crit3DCurvePicker *pick;
         bool fillElement;
 
