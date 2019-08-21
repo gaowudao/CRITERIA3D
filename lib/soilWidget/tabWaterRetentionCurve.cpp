@@ -217,7 +217,6 @@ void TabWaterRetentionCurve::insertElements(soil::Crit3DSoil *soil)
 
 void TabWaterRetentionCurve::widgetClicked(int index)
 {
-    qDebug() << "index " << index;
     // check selection state
     if (lineList[index]->getSelected())
     {
@@ -243,17 +242,16 @@ void TabWaterRetentionCurve::widgetClicked(int index)
 
                 if (iterator.key() == index)
                 {
-                    qDebug() << "iterator.key() " << iterator.key();
-                    for (int i = 0; i < markerList[index].size(); i++)
+                    for (int i = 0; i < markerList[iterator.key()].size(); i++)
                     {
-                        markerList[index][i]->setSymbol(new QwtSymbol( QwtSymbol::Ellipse, QBrush( Qt::red ), QPen( Qt::red, 0 ), QSize( 5, 5 ) ));
+                        markerList[iterator.key()][i]->setSymbol(new QwtSymbol( QwtSymbol::Ellipse, QBrush( Qt::red ), QPen( Qt::red, 0 ), QSize( 5, 5 ) ));
                     }
                 }
                 else
                 {
-                    for (int i = 0; i < markerList[index].size(); i++)
+                    for (int i = 0; i < markerList[iterator.key()].size(); i++)
                     {
-                        markerList[index][i]->setSymbol(new QwtSymbol( QwtSymbol::Ellipse, QBrush( Qt::black ), QPen( Qt::black, 0 ), QSize( 5, 5 ) ));
+                        markerList[iterator.key()][i]->setSymbol(new QwtSymbol( QwtSymbol::Ellipse, QBrush( Qt::black ), QPen( Qt::black, 0 ), QSize( 5, 5 ) ));
                     }
                 }
             }
