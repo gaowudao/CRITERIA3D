@@ -150,8 +150,8 @@ void TabWaterRetentionCurve::insertElements(soil::Crit3DSoil *soil)
         QwtPlotCurve *curve = new QwtPlotCurve;
         xVector.clear();
         yVector.clear();
-        x = DXMIN;
         double factor = 1.2;
+        x = DXMIN;
         while (x < DXMAX*factor)
         {
             double y = soil::thetaFromSignPsi(-x, &mySoil->horizon[i]);
@@ -206,8 +206,8 @@ void TabWaterRetentionCurve::insertElements(soil::Crit3DSoil *soil)
     }
     linesLayout->update();
     myPlot->replot();
-
 }
+
 
 void TabWaterRetentionCurve::widgetClicked(int index)
 {
