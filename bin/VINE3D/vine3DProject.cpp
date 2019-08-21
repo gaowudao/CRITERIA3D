@@ -349,7 +349,7 @@ bool Vine3DProject::loadFieldBook()
         nrOperations = 0;
         for(i=2; i<=8; i++)
         {
-            if (myQuery.value(i).toFloat() > 0.0)
+            if (myQuery.value(i).toFloat() > 0)
                 nrOperations++;
         }
         i = 2;
@@ -599,7 +599,7 @@ bool Vine3DProject::readFieldQuery(QSqlQuery myQuery, int* idField, Crit3DLandus
     std::string landuse_name = myQuery.value("landuse").toString().toStdString();
     if (landuseNames.find(landuse_name) == landuseNames.end())
     {
-        this->errorString = "Unknown landuse for field " + *idField;
+        this->errorString = "Unknown landuse for field " + QString::number(*idField);
         return false;
     }
     else
@@ -629,14 +629,17 @@ bool Vine3DProject::readFieldQuery(QSqlQuery myQuery, int* idField, Crit3DLandus
 
     //SOIL
     idSoil = myQuery.value("id_soil").toInt();
-    i=0;
-    while (i < this->nrSoils && idSoil != soilList[i].id) i++;
-    if (i == this->nrSoils)
+
+    unsigned int index=0;
+    while (index < this->nrSoils && idSoil != soilList[index].id)
+        index++;
+
+    if (index == this->nrSoils)
     {
         this->errorString = "soil " + QString::number(idSoil) + " not found" + myQuery.lastError().text();
         return false;
     }
-    *soilIndex = i;
+    *soilIndex = signed(index);
 
     *maxLaiGrass = myQuery.value("max_lai_grass").toFloat();
     *maxIrrigationRate = myQuery.value("irrigation_max_rate").toFloat();
@@ -729,14 +732,14 @@ bool Vine3DProject::loadClimateParameters()
     }
 
     //read values
-    int i;
+    unsigned int i;
     while (myQuery.next())
     {
-        i = myQuery.value(0).toInt();
+        i = myQuery.value(0).toUInt();
         climateParameters.tminLapseRate[i-1] = myQuery.value(1).toFloat();
         climateParameters.tmaxLapseRate[i-1] = myQuery.value(2).toFloat();
-        climateParameters.tDewMinLapseRate[i-1] = myQuery.value(3).toFloat();
-        climateParameters.tDewMaxLapseRate[i-1] = myQuery.value(4).toFloat();
+        climateParameters.tdMinLapseRate[i-1] = myQuery.value(3).toFloat();
+        climateParameters.tdMaxLapseRate[i-1] = myQuery.value(4).toFloat();
     }
 
     return(true);
@@ -786,12 +789,12 @@ bool Vine3DProject::loadSoils()
 {
     logInfo("Read soils...");
 
-    if (! loadAllSoils(&dbConnection, &soilList, texturalClassList, &errorString))
+    if (! loadAllSoils(&dbConnection, &soilList, texturalClassList, &fittingOptions, &errorString))
     {
         logError();
         return false;
     }
-    nrSoils = soilList.size();
+    nrSoils = unsigned(soilList.size());
 
     double maxSoilDepth = 0;
     for (unsigned int i = 0; i < nrSoils; i++)
