@@ -33,6 +33,7 @@ TabWaterRetentionCurve::TabWaterRetentionCurve()
     QwtPlotZoomer* zoomer = new QwtPlotZoomer( QwtPlot::xBottom, QwtPlot::yLeft, myPlot->canvas()  );
     zoomer->setRubberBandPen( QColor( Qt::black ) );
     zoomer->setTrackerPen( QColor( Qt::red ) );
+    zoomer->setMaxStackDepth(5);
     // CTRL+LeftButton for the zooming
     zoomer->setMousePattern( QwtEventPattern::MouseSelect1, Qt::LeftButton, Qt::ControlModifier);
     // CTRL+RightButton back to full size
