@@ -48,6 +48,7 @@ CONFIG(debug, debug|release) {
     LIBS += -L../../lib/gis/debug -lgis
     LIBS += -L../../lib/crit3dDate/debug -lcrit3dDate
     LIBS += -L../../lib/mathFunctions/debug -lmathFunctions
+    LIBS += -L../../lib/specialMathFunctions/debug -lspecialMathFunctions
 } else {
 
     LIBS += -L../../lib/soilWidget/release -lsoilWidget
@@ -63,6 +64,7 @@ CONFIG(debug, debug|release) {
     LIBS += -L../../lib/gis/release -lgis
     LIBS += -L../../lib/crit3dDate/release -lcrit3dDate
     LIBS += -L../../lib/mathFunctions/release -lmathFunctions
+    LIBS += -L../../lib/specialMathFunctions/release -lspecialMathFunctions
 }
 
 SOURCES += \
@@ -78,6 +80,7 @@ SOURCES += \
     ../PRAGA/shared/mapGraphicsRasterObject.cpp \
     ../PRAGA/shared/rubberBand.cpp \
     ../PRAGA/shared/colorLegend.cpp \
+    ../PRAGA/shared/formPeriod.cpp \
     atmosphere.cpp \
     dataHandler.cpp \
     disease.cpp \
@@ -88,7 +91,6 @@ SOURCES += \
     waterBalance.cpp \
     vine3DProject.cpp \
     mainWindow.cpp \
-    formPeriod.cpp \
     ../CRITERIA3D/shared/meteoMaps.cpp \
     ../CRITERIA3D/shared/project3D.cpp
 
@@ -105,6 +107,7 @@ HEADERS  += \
     ../PRAGA/shared/mapGraphicsRasterObject.h \
     ../PRAGA/shared/rubberBand.h \
     ../PRAGA/shared/colorLegend.h \
+    ../PRAGA/shared/formPeriod.h \
     atmosphere.h \
     dataHandler.h \
     disease.h \
@@ -114,11 +117,10 @@ HEADERS  += \
     waterBalance.h \
     vine3DProject.h \
     mainWindow.h \
-    formPeriod.h \
     ../CRITERIA3D/shared/meteoMaps.h \
     ../CRITERIA3D/shared/project3D.h
 
 FORMS    += \
     ../PRAGA/shared/formInfo.ui \
+    ../PRAGA/shared/formPeriod.ui \
     mainWindow.ui \
-    formPeriod.ui
