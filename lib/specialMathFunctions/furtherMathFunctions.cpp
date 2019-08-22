@@ -390,7 +390,7 @@ namespace interpolation
         }
 
         mySSE = normGeneric(idFunction, parameters, nrParameters, x, y, nrData);
-        diffSSE = myEpsilon * 1000 ;
+        diffSSE = myEpsilon * 1000;
 
         int iterationNr = 0;
         do

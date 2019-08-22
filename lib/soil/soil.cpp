@@ -57,7 +57,7 @@ namespace soil
     {
         this->waterRetentionCurve = MODIFIEDVANGENUCHTEN;
         this->useWaterRetentionData = true;
-        this->airEntryFixed = true;
+        this->airEntryFixed = false;
         this->mRestriction = false;
     }
 
