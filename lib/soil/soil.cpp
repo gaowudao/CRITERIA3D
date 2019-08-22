@@ -777,7 +777,7 @@ namespace soil
 
         for (unsigned int i = 0; i < nrParameters; i++)
         {
-            pdelta[i] = (pmax[i]-pmin[i]) * 0.01;
+            pdelta[i] = (pmax[i]-pmin[i]) * 0.001;
         }
 
         // values
