@@ -226,7 +226,7 @@ QDateTime Crit3DMeteoPointsDbHandler::getLastDate(frequencyType frequency)
 }
 
 
-QDateTime Crit3DMeteoPointsDbHandler::getFirstDay(frequencyType frequency)
+QDateTime Crit3DMeteoPointsDbHandler::getFirstDate(frequencyType frequency)
 {
 
     QSqlQuery qry(_db);

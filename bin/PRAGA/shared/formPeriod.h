@@ -13,16 +13,24 @@
         Q_OBJECT
 
     public:
-        explicit formPeriod(QWidget *parent = 0);
+        formPeriod(QWidget *parent = nullptr);
+        formPeriod(QDateTime timeIni, QDateTime timeFin, QWidget * parent = nullptr);
         ~formPeriod();
-        QDateTime dateTimeFirst;
-        QDateTime dateTimeLast;
+
+
+        QDateTime getDateTimeFirst() const;
+        void setDateTimeFirst(const QDateTime &value);
+        QDateTime getDateTimeLast() const;
+        void setDateTimeLast(const QDateTime &value);
 
     private slots:
         void on_buttonBox_accepted();
 
     private:
         Ui::formPeriod *ui;
+
+        QDateTime dateTimeFirst;
+        QDateTime dateTimeLast;
     };
 
 #endif // FORMDATE_H

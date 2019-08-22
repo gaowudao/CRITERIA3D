@@ -2059,11 +2059,42 @@ void MainWindow::on_actionSaveGridCurrentData_triggered()
 
 void MainWindow::on_actionInterpolateSaveGridPeriod_triggered()
 {
-    formPeriod myForm;
+    // check meteo point
+    if (myProject.meteoPointsDbHandler == nullptr)
+    {
+        myProject.logError("No meteo points DB open");
+        return;
+    }
+
+    // check meteo grid
+//    if (! myProject.meteoGridLoaded || myProject.meteoGridDbHandler == nullptr)
+//    {
+//        myProject.logError("No meteo grid DB open");
+//        return;
+//    }
+
+    QDate lastDateD = myProject.meteoPointsDbHandler->getLastDate(daily).date();
+    QDate lastDateH = myProject.meteoPointsDbHandler->getLastDate(hourly).date();
+    QDate lastDate = (lastDateD > lastDateH) ? lastDateD : lastDateH;
+
+    QDate firstDateD = myProject.meteoPointsDbHandler->getFirstDate(daily).date();
+    QDate firstDateH = myProject.meteoPointsDbHandler->getFirstDate(hourly).date();
+    QDate firstDate = (firstDateD > firstDateH) ? firstDateD : firstDateH;
+
+    QDateTime myFirstTime(firstDate);
+    QDateTime myLastTime(lastDate);
+
+    formPeriod myForm(myFirstTime, myLastTime);
     myForm.show();
     if (myForm.exec() == QDialog::Rejected) return;
 
-    QDateTime myTimeIni = myForm.dateTimeFirst;
-    QDateTime myTimeFin = myForm.dateTimeLast;
+    QDateTime myTimeIni = myForm.getDateTimeFirst();
+    QDateTime myTimeFin = myForm.getDateTimeLast();
 
+    meteoVariable myVar = chooseMeteoVariable(&myProject);
+    if (myVar == noMeteoVar) return;
+
+    QList <meteoVariable> myVariables;
+    myVariables.push_back(myVar);
+    myProject.interpolationMeteoGridPeriod(myTimeIni.date(), myTimeFin.date(), myVariables);
 }
