@@ -2807,7 +2807,7 @@
   </action>
   <action name="actionProjectSettings">
    <property name="text">
-    <string>Parameters...</string>
+    <string>Project Parameters...</string>
    </property>
   </action>
   <action name="actionView_3D">
