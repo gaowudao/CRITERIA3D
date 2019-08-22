@@ -482,7 +482,7 @@ namespace interpolation
             for (j = 0; j < nrData; j++)
             {
                 double newEst = estimateFunction(idFunction, parameters, nrParameters, x[j]);
-                P[i][j] = (newEst - firstEst[j]) / parametersDelta[i];
+                P[i][j] = (newEst - firstEst[j]) / MAXVALUE(parametersDelta[i], EPSILON) ;
             }
             parameters[i] -= parametersDelta[i];
         }
