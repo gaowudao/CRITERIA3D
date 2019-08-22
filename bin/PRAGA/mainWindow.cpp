@@ -16,6 +16,7 @@
 #include "tileSources/OSMTileSource.h"
 #include "tileSources/CompositeTileSource.h"
 
+#include "formPeriod.h"
 #include "mainWindow.h"
 #include "ui_mainWindow.h"
 #include "formInfo.h"
@@ -1112,17 +1113,18 @@ void MainWindow::on_rasterScaleButton_clicked()
 
 void MainWindow::on_variableButton_clicked()
 {
-    if (chooseMeteoVariable(&myProject))
-    {
-        this->updateVariable();
+    meteoVariable myVar = chooseMeteoVariable(&myProject);
+    if (myVar == noMeteoVar) return;
 
-        if (myProject.getFrequency() != noFrequency)
-        {
-            this->ui->actionShowPointsCurrent->setEnabled(true);
-            this->ui->actionShowGridCurrent->setEnabled(true);
-            redrawMeteoPoints(showCurrentVariable, true);
-            redrawMeteoGrid(showCurrentVariable);
-        }
+    myProject.setCurrentVariable(myVar);
+    this->updateVariable();
+
+    if (myProject.getFrequency() != noFrequency)
+    {
+        this->ui->actionShowPointsCurrent->setEnabled(true);
+        this->ui->actionShowGridCurrent->setEnabled(true);
+        redrawMeteoPoints(showCurrentVariable, true);
+        redrawMeteoGrid(showCurrentVariable);
     }
 }
 
@@ -1237,14 +1239,6 @@ void MainWindow::on_actionInterpolation_to_Grid_triggered()
     interpolateGridGUI();
 
     myInfo.close();
-}
-
-void MainWindow::on_actionSave_meteo_grid_triggered()
-{
-    if (myProject.meteoGridDbHandler != nullptr)
-    {
-        myProject.saveGrid(myProject.getCurrentVariable(), myProject.getFrequency(), myProject.getCurrentTime(), true);
-    }
 }
 
 void MainWindow::on_actionCompute_elaboration_triggered()
@@ -2054,3 +2048,22 @@ bool KeyboardFilter::eventFilter(QObject* obj, QEvent* event)
     }
 }
 
+
+void MainWindow::on_actionSaveGridCurrentData_triggered()
+{
+    if (myProject.meteoGridDbHandler != nullptr)
+    {
+        myProject.saveGrid(myProject.getCurrentVariable(), myProject.getFrequency(), myProject.getCurrentTime(), true);
+    }
+}
+
+void MainWindow::on_actionInterpolateSaveGridPeriod_triggered()
+{
+    formPeriod myForm;
+    myForm.show();
+    if (myForm.exec() == QDialog::Rejected) return;
+
+    QDateTime myTimeIni = myForm.dateTimeFirst;
+    QDateTime myTimeFin = myForm.dateTimeLast;
+
+}

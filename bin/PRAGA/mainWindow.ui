@@ -2947,9 +2947,6 @@
     <addaction name="separator"/>
     <addaction name="actionOpen_meteo_grid"/>
     <addaction name="actionClose_meteo_grid"/>
-    <addaction name="actionSave_meteo_grid"/>
-    <addaction name="separator"/>
-    <addaction name="separator"/>
     <addaction name="actionOpen_crop_map"/>
     <addaction name="actionOpen_NetCDF_data"/>
     <addaction name="separator"/>
@@ -2960,7 +2957,6 @@
     </property>
     <addaction name="actionVariableQualitySpatial"/>
     <addaction name="actionRectangle_Selection"/>
-    <addaction name="separator"/>
     <addaction name="separator"/>
    </widget>
    <widget class="QMenu" name="menuGIS_settings">
@@ -2989,8 +2985,16 @@
      <addaction name="actionWriteTAD"/>
      <addaction name="actionLoadTAD"/>
     </widget>
+    <widget class="QMenu" name="menuInterpolation_to_meteo_grid">
+     <property name="title">
+      <string>Interpolation to meteo grid</string>
+     </property>
+     <addaction name="actionCurrent_time"/>
+     <addaction name="actionSaveGridCurrentData"/>
+     <addaction name="actionInterpolateSaveGridPeriod"/>
+    </widget>
     <addaction name="actionInterpolation_to_DEM"/>
-    <addaction name="actionInterpolation_to_Grid"/>
+    <addaction name="menuInterpolation_to_meteo_grid"/>
     <addaction name="actionInterpolationSettings"/>
     <addaction name="separator"/>
     <addaction name="menuTopographic_distance_maps"/>
@@ -3186,16 +3190,6 @@
   <action name="actionInterpolation_to_DEM">
    <property name="text">
     <string>Interpolation to DEM</string>
-   </property>
-  </action>
-  <action name="actionInterpolation_to_Grid">
-   <property name="text">
-    <string>Interpolation to Meteo Grid</string>
-   </property>
-  </action>
-  <action name="actionSave_meteo_grid">
-   <property name="text">
-    <string>Save meteo grid...</string>
    </property>
   </action>
   <action name="actionOpen_crop_map">
@@ -3425,11 +3419,6 @@
     <string>New aggregation DB</string>
    </property>
   </action>
-  <action name="actionLoad_project">
-   <property name="text">
-    <string>Load project...</string>
-   </property>
-  </action>
   <action name="actionOpen_DEM">
    <property name="text">
     <string>Open DEM...</string>
@@ -3461,6 +3450,21 @@
   <action name="actionRadiationSettings">
    <property name="text">
     <string>Settings...</string>
+   </property>
+  </action>
+  <action name="actionCurrent_time">
+   <property name="text">
+    <string>Current time</string>
+   </property>
+  </action>
+  <action name="actionInterpolateSaveGridPeriod">
+   <property name="text">
+    <string>Interpolate and save period...</string>
+   </property>
+  </action>
+  <action name="actionSaveGridCurrentData">
+   <property name="text">
+    <string>Save current data</string>
    </property>
   </action>
  </widget>

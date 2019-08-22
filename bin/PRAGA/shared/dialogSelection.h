@@ -12,7 +12,7 @@
     meteoVariable chooseColorScale();
     frequencyType chooseFrequency();
 
-    bool chooseMeteoVariable(Project *project_);
+    meteoVariable chooseMeteoVariable(Project *project_);
 
     #ifdef NETCDF
         bool chooseNetCDFVariable(int *varId, QDateTime *firstDate, QDateTime *lastDate);

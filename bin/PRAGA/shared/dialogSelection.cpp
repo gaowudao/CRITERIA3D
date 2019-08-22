@@ -158,12 +158,12 @@ frequencyType chooseFrequency()
 }
 
 
-bool chooseMeteoVariable(Project* myProject)
+meteoVariable chooseMeteoVariable(Project* myProject)
 {
     if (myProject->getFrequency() == noFrequency)
     {
         QMessageBox::information(nullptr, "No frequency", "Choose frequency before");
-        return false;
+        return noMeteoVar;
     }
 
     QDialog myDialog;
@@ -174,16 +174,16 @@ bool chooseMeteoVariable(Project* myProject)
     myDialog.setWindowTitle("Choose variable");
     myDialog.setFixedWidth(300);
 
-    QRadioButton Tavg("Average temperature  °C");
-    QRadioButton Tmin("Minimum temperature  °C");
-    QRadioButton Tmax("Maximum temperature  °C");
-    QRadioButton Prec("Precipitation  mm");
-    QRadioButton RHavg("Average relative humidity  %");
-    QRadioButton RHmin("Minimum relative humidity  %");
-    QRadioButton RHmax("Maximum relative humidity  %");
-    QRadioButton Rad("Solar radiation  MJ m-2");
-    QRadioButton Wind("Average wind intensity  m s-1");
-    QRadioButton DewT("Air dew temperature  °C");
+    QRadioButton Tavg("Average temperature (°C)");
+    QRadioButton Tmin("Minimum temperature (°C)");
+    QRadioButton Tmax("Maximum temperature (°C)");
+    QRadioButton Prec("Precipitation (mm)");
+    QRadioButton RHavg("Average relative humidity (%)");
+    QRadioButton RHmin("Minimum relative humidity (%)");
+    QRadioButton RHmax("Maximum relative humidity (%)");
+    QRadioButton Rad("Solar radiation (MJ m-2)");
+    QRadioButton Wind("Average wind intensity (m s-1)");
+    QRadioButton DewT("Air dew temperature (°C)");
 
     if (myProject->getFrequency() == daily)
     {
@@ -199,10 +199,10 @@ bool chooseMeteoVariable(Project* myProject)
     }
     else if (myProject->getFrequency() == hourly)
     {
-        Tavg.setText("Average temperature °C");
-        Prec.setText("Precipitation mm");
-        RHavg.setText("Average relative humidity %");
-        Rad.setText("Solar irradiance W m-2");
+        Tavg.setText("Average temperature (°C)");
+        Prec.setText("Precipitation (mm)");
+        RHavg.setText("Average relative humidity (%)");
+        Rad.setText("Solar irradiance (W m-2)");
 
         layoutVariable.addWidget(&Tavg);
         layoutVariable.addWidget(&Prec);
@@ -211,7 +211,7 @@ bool chooseMeteoVariable(Project* myProject)
         layoutVariable.addWidget(&Wind);
         layoutVariable.addWidget(&DewT);
     }
-    else return false;
+    else return noMeteoVar;
 
     QDialogButtonBox buttonBox(QDialogButtonBox::Ok | QDialogButtonBox::Cancel);
 
@@ -226,48 +226,47 @@ bool chooseMeteoVariable(Project* myProject)
     myDialog.exec();
 
     if (myDialog.result() != QDialog::Accepted)
-        return false;
+        return noMeteoVar;
 
    if (myProject->getFrequency() == daily)
    {
        if (Tmin.isChecked())
-           myProject->setCurrentVariable(dailyAirTemperatureMin);
+           return (dailyAirTemperatureMin);
        else if (Tmax.isChecked())
-           myProject->setCurrentVariable(dailyAirTemperatureMax);
+           return (dailyAirTemperatureMax);
        else if (Tavg.isChecked())
-           myProject->setCurrentVariable(dailyAirTemperatureAvg);
+           return (dailyAirTemperatureAvg);
        else if (Prec.isChecked())
-           myProject->setCurrentVariable(dailyPrecipitation);
+           return (dailyPrecipitation);
        else if (Rad.isChecked())
-           myProject->setCurrentVariable(dailyGlobalRadiation);
+           return (dailyGlobalRadiation);
        else if (RHmin.isChecked())
-           myProject->setCurrentVariable(dailyAirRelHumidityMin);
+           return (dailyAirRelHumidityMin);
        else if (RHmax.isChecked())
-           myProject->setCurrentVariable(dailyAirRelHumidityMax);
+           return (dailyAirRelHumidityMax);
        else if (RHavg.isChecked())
-           myProject->setCurrentVariable(dailyAirRelHumidityAvg);
+           return (dailyAirRelHumidityAvg);
        else if (Wind.isChecked())
-           myProject->setCurrentVariable(dailyWindIntensityAvg);
+           return (dailyWindIntensityAvg);
    }
    else if (myProject->getFrequency() == hourly)
    {
        if (Tavg.isChecked())
-           myProject->setCurrentVariable(airTemperature);
+           return (airTemperature);
        else if (RHavg.isChecked())
-           myProject->setCurrentVariable(airRelHumidity);
+           return (airRelHumidity);
        else if (Prec.isChecked())
-           myProject->setCurrentVariable(precipitation);
+           return (precipitation);
        else if (Rad.isChecked())
-           myProject->setCurrentVariable(globalIrradiance);
+           return (globalIrradiance);
        else if (Wind.isChecked())
-           myProject->setCurrentVariable(windIntensity);
+           return (windIntensity);
        else if (DewT.isChecked())
-           myProject->setCurrentVariable(airDewTemperature);
+           return (airDewTemperature);
    }
    else
-       return false;
+       return noMeteoVar;
 
-   return true;
 }
 
 

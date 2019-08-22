@@ -43,6 +43,31 @@
         void on_actionOpen_meteo_points_DB_triggered();
         void on_actionOpen_meteo_grid_triggered();
         void on_actionDownload_meteo_data_triggered();
+        void on_actionClose_meteo_points_triggered();
+        void on_actionClose_meteo_grid_triggered();
+
+        void on_actionOpen_project_triggered();
+        void on_actionClose_project_triggered();
+        void on_actionSave_project_as_triggered();
+        void on_actionSave_project_triggered();
+
+        void on_actionShowPointsHide_triggered();
+        void on_actionShowPointsLocation_triggered();
+        void on_actionShowPointsCurrent_triggered();
+        void on_actionShowGridHide_triggered();
+        void on_actionShowGridLocation_triggered();
+        void on_actionShowGridCurrent_triggered();
+        void on_actionShowPointsElab_triggered();
+        void on_actionShowGridElab_triggered();
+        void on_meteoPoints_clicked();
+        void on_grid_clicked();
+        void on_actionShowPointsAnomalyAbs_triggered();
+        void on_actionShowGridAnomalyAbs_triggered();
+        void on_actionShowPointsAnomalyPerc_triggered();
+        void on_actionShowGridAnomalyPerc_triggered();
+        void on_actionShowPointsClimate_triggered();
+        void on_actionShowGridClimate_triggered();
+
         void on_rasterOpacitySlider_sliderMoved(int position);
         void on_meteoGridOpacitySlider_sliderMoved(int position);
 
@@ -55,75 +80,41 @@
         void on_rasterScaleButton_clicked();
         void on_variableButton_clicked();
         void on_frequencyButton_clicked();
+
         void enableAllDataset(bool toggled);
         void disableAllButton(bool toggled);
+
         void on_actionVariableQualitySpatial_triggered();
         void on_rasterRestoreButton_clicked();
         void on_timeEdit_timeChanged(const QTime &time);
         void on_dateEdit_dateChanged(const QDate &date);
-        void on_actionClose_meteo_points_triggered();
-        void on_actionClose_meteo_grid_triggered();
+
         void on_actionInterpolation_to_DEM_triggered();
         void on_actionInterpolation_to_Grid_triggered();
-        void on_actionSave_meteo_grid_triggered();
+        void on_actionInterpolationSettings_triggered();
+        void on_actionWriteTAD_triggered();
+        void on_actionLoadTAD_triggered();
+        void on_actionSaveGridCurrentData_triggered();
+
         void on_actionCompute_elaboration_triggered();
         void on_actionCompute_anomaly_triggered();
         void on_actionCompute_climate_triggered();
-        void on_actionInterpolationSettings_triggered();
-
-    #ifdef NETCDF
-        void on_actionOpen_NetCDF_data_triggered();
-        void on_actionExtract_NetCDF_series_triggered();
-    #endif
 
         void on_actionParameters_triggered();
-        void on_actionWriteTAD_triggered();
-        void on_actionLoadTAD_triggered();
+        void on_actionRadiationSettings_triggered();
+
         void on_actionClimate_fields_triggered();
 
-        void on_actionShowPointsHide_triggered();
-        void on_actionShowPointsLocation_triggered();
-        void on_actionShowPointsCurrent_triggered();
-
-        void on_actionShowGridHide_triggered();
-        void on_actionShowGridLocation_triggered();
-        void on_actionShowGridCurrent_triggered();
-
-        void on_actionShowPointsElab_triggered();
-
-        void on_actionShowGridElab_triggered();
-
-        void on_meteoPoints_clicked();
-
-        void on_grid_clicked();
-
-        void on_actionShowPointsAnomalyAbs_triggered();
-
-        void on_actionShowGridAnomalyAbs_triggered();
-
-        void on_actionShowPointsAnomalyPerc_triggered();
-
-        void on_actionShowGridAnomalyPerc_triggered();
-
-        void on_actionShowPointsClimate_triggered();
-
-        void on_actionShowGridClimate_triggered();
-
         void on_actionOpen_aggregation_DB_triggered();
-
         void on_actionNew_aggregation_DB_triggered();
-
         bool on_actionAggregate_from_grid_triggered();
 
-        void on_actionOpen_project_triggered();
+        #ifdef NETCDF
+            void on_actionOpen_NetCDF_data_triggered();
+            void on_actionExtract_NetCDF_series_triggered();
+        #endif
 
-        void on_actionClose_project_triggered();
-
-        void on_actionSave_project_as_triggered();
-
-        void on_actionSave_project_triggered();
-
-        void on_actionRadiationSettings_triggered();
+            void on_actionInterpolateSaveGridPeriod_triggered();
 
     protected:
         /*!
