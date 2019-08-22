@@ -5,7 +5,6 @@
     #include <QMap>
     #include <qwt_plot_curve.h>
     #include <qwt_plot.h>
-    #include <qwt_plot_marker.h>
     #include "soil.h"
     #include "barHorizons.h"
     #include "curvePicker.h"
@@ -27,7 +26,7 @@
         QwtPlot *myPlot;
         QList<BarHorizons*> lineList;
         QList<QwtPlotCurve*> curveList;
-        QMap< int, QList<QwtPlotMarker*> >markerList;
+        QMap< int, QwtPlotCurve* > curveMarkerMap;
         Crit3DCurvePicker *pick;
         bool fillElement;
 

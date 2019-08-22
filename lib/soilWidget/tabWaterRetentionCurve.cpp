@@ -71,19 +71,13 @@ void TabWaterRetentionCurve::resetAll()
         pick = nullptr;
     }
 
-    if (!markerList.isEmpty())
+    if (!curveMarkerMap.isEmpty())
     {
-        QMap< int, QList<QwtPlotMarker*> >::Iterator iterator;
-        for (iterator = markerList.begin(); iterator!=markerList.end(); ++iterator)
-        {
-            qDeleteAll(markerList[iterator.key()]);
-            markerList[iterator.key()].clear();
-        }
-        markerList.clear();
+        qDeleteAll(curveMarkerMap);
+        curveMarkerMap.clear();
     }
-    myPlot->detachItems( QwtPlotItem::Rtti_PlotCurve );
-    myPlot->detachItems( QwtPlotItem::Rtti_PlotMarker );
 
+    myPlot->detachItems( QwtPlotItem::Rtti_PlotCurve );
     fillElement = false;
 
 }
@@ -125,9 +119,11 @@ void TabWaterRetentionCurve::insertElements(soil::Crit3DSoil *soil)
     mySoil = soil;
     QVector<double> xVector;
     QVector<double> yVector;
+    QVector<double> xMarkers;
+    QVector<double> yMarkers;
     double x;
     double maxThetaSat = 0;
-    QList< QwtPlotMarker* > horizonMarkers;
+
     for (unsigned int i = 0; i < mySoil->nrHorizons; i++)
     {
         // insertVerticalLines
@@ -165,22 +161,25 @@ void TabWaterRetentionCurve::insertElements(soil::Crit3DSoil *soil)
         // insert marker
         if (!mySoil->horizon[i].dbData.waterRetention.empty())
         {
+            QwtPlotCurve *curveMarkers = new QwtPlotCurve;
+            xMarkers.clear();
+            yMarkers.clear();
             for (unsigned int j = 0; j < mySoil->horizon[i].dbData.waterRetention.size(); j++)
             {
-                QwtPlotMarker* m = new QwtPlotMarker();
+                curveMarkers->setSymbol(new QwtSymbol( QwtSymbol::Ellipse, QBrush( Qt::black ), QPen( Qt::black, 0 ), QSize( 5, 5 ) ));
+                curveMarkers->setStyle(QwtPlotCurve::NoCurve);
                 double x = mySoil->horizon[i].dbData.waterRetention[j].water_potential;
                 double y = mySoil->horizon[i].dbData.waterRetention[j].water_content;
                 if (x != NODATA && y != NODATA)
                 {
-                    m->setSymbol(new QwtSymbol( QwtSymbol::Ellipse, QBrush( Qt::black ), QPen( Qt::black, 0 ), QSize( 5, 5 ) ));
-                    m->setValue( QPointF( x, y ) );
-                    m->attach( myPlot );
+                    xMarkers.push_back(x);
+                    yMarkers.push_back(y);
                 }
-                horizonMarkers.push_back(m);
             }
-
-            markerList[i] = horizonMarkers;
-            horizonMarkers.clear();
+            QwtPointArrayData *dataMarker = new QwtPointArrayData(xMarkers,yMarkers);
+            curveMarkers->setSamples(dataMarker);
+            curveMarkers->attach(myPlot);
+            curveMarkerMap[i] = curveMarkers;
         }
     }
 
@@ -190,7 +189,7 @@ void TabWaterRetentionCurve::insertElements(soil::Crit3DSoil *soil)
     // rescale to maxThetaSat
     myPlot->setAxisScale(QwtPlot::yLeft, YMIN, std::max(YMAX, maxThetaSat));
 
-    pick = new Crit3DCurvePicker(myPlot, curveList);
+    pick = new Crit3DCurvePicker(myPlot, curveList, curveMarkerMap);
     pick->setStateMachine(new QwtPickerClickPointMachine());
     connect(pick, SIGNAL(clicked(int)), this, SLOT(curveClicked(int)));
 
@@ -220,39 +219,9 @@ void TabWaterRetentionCurve::widgetClicked(int index)
         // select the right curve
         pick->setSelectedCurveIndex(index);
         pick->highlightCurve(true);
-
-        // set the markers
-        if (!markerList.isEmpty())
-        {
-            QMap< int, QList<QwtPlotMarker*> >::Iterator iterator;
-            for (iterator = markerList.begin(); iterator!=markerList.end(); ++iterator)
-            {
-
-                if (iterator.key() == index)
-                {
-                    for (int i = 0; i < markerList[iterator.key()].size(); i++)
-                    {
-                        markerList[iterator.key()][i]->setSymbol(new QwtSymbol( QwtSymbol::Ellipse, QBrush( Qt::red ), QPen( Qt::red, 0 ), QSize( 5, 5 ) ));
-                    }
-                }
-                else
-                {
-                    for (int i = 0; i < markerList[iterator.key()].size(); i++)
-                    {
-                        markerList[iterator.key()][i]->setSymbol(new QwtSymbol( QwtSymbol::Ellipse, QBrush( Qt::black ), QPen( Qt::black, 0 ), QSize( 5, 5 ) ));
-                    }
-                }
-            }
-        }
     }
     else
     {
-
-        for (int i = 0; i < markerList[index].size(); i++)
-        {
-            markerList[index][i]->setSymbol(new QwtSymbol( QwtSymbol::Ellipse, QBrush( Qt::black ), QPen( Qt::black, 0 ), QSize( 5, 5 ) ));
-        }
-
         pick->highlightCurve(false);
         pick->setSelectedCurveIndex(-1);
     }
@@ -276,31 +245,6 @@ void TabWaterRetentionCurve::curveClicked(int index)
             lineList[i]->setSelected(false);
         }
     }
-
-    /*
-    if (!markerList.isEmpty())
-    {
-        QMap< int, QList<QwtPlotMarker*> >::Iterator iterator;
-        for (iterator = markerList.begin(); iterator!=markerList.end(); ++iterator)
-        {
-
-            if (iterator.key() == index)
-            {
-                for (int i = 0; i < markerList[iterator.key()].size(); i++)
-                {
-                    markerList[iterator.key()][i]->setSymbol(new QwtSymbol( QwtSymbol::Ellipse, QBrush( Qt::red ), QPen( Qt::red, 0 ), QSize( 5, 5 ) ));
-                }
-            }
-            else
-            {
-                for (int i = 0; i < markerList[iterator.key()].size(); i++)
-                {
-                    markerList[iterator.key()][i]->setSymbol(new QwtSymbol( QwtSymbol::Ellipse, QBrush( Qt::black ), QPen( Qt::black, 0 ), QSize( 5, 5 ) ));
-                }
-            }
-        }
-    }
-    */
     emit horizonSelected(index);
 
 }

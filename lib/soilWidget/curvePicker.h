@@ -11,7 +11,7 @@
     {
         Q_OBJECT
     public:
-        Crit3DCurvePicker(QwtPlot *plot, QList<QwtPlotCurve*> allCurveList);
+        Crit3DCurvePicker(QwtPlot *plot, QList<QwtPlotCurve*> allCurveList, QMap< int, QwtPlotCurve* > allCurveMarkerMap);
 
         Crit3DCurvePicker( int xAxis = QwtPlot::xBottom,
                   int yAxis = QwtPlot::yLeft,
@@ -32,6 +32,7 @@
         QwtPlot *qwtPlot;
         int selectedCurveIndex;
         QList<QwtPlotCurve*> allCurveList;
+        QMap< int, QwtPlotCurve* > allCurveMarkerMap;
 
     signals:
            void clicked(int curveIndex);

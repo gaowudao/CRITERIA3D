@@ -2,10 +2,11 @@
 #include "qwt_symbol.h"
 
 
-Crit3DCurvePicker::Crit3DCurvePicker(QwtPlot *plot, QList<QwtPlotCurve *> allCurveList) :
+Crit3DCurvePicker::Crit3DCurvePicker(QwtPlot *plot, QList<QwtPlotCurve *> allCurveList, QMap< int, QwtPlotCurve* > allCurveMarkerMap) :
     QwtPlotPicker(QwtPlot::xBottom, QwtPlot::yLeft, CrossRubberBand, QwtPicker::AlwaysOn, plot->canvas()),
     qwtPlot(plot),
-    allCurveList(allCurveList)
+    allCurveList(allCurveList),
+    allCurveMarkerMap(allCurveMarkerMap)
 {
     connect( this, SIGNAL( selected( const QPointF ) ), this, SLOT( slotSelected( const QPointF ) ) );
 }
@@ -78,6 +79,32 @@ void Crit3DCurvePicker::highlightCurve( bool isHightlight )
         else
         {
             allCurveList[i]->setPen(Qt::black, 1);
+        }
+    }
+    if (isHightlight && !allCurveMarkerMap.isEmpty())
+    {
+        QMap< int, QwtPlotCurve* > ::Iterator iterator;
+        for (iterator = allCurveMarkerMap.begin(); iterator!=allCurveMarkerMap.end(); ++iterator)
+        {
+            if (iterator.key() == selectedCurveIndex)
+            {
+                allCurveMarkerMap[iterator.key()]->setSymbol(new QwtSymbol( QwtSymbol::Ellipse, QBrush( Qt::red ), QPen( Qt::red, 0 ), QSize( 5, 5 ) ));
+            }
+            else
+            {
+                allCurveMarkerMap[iterator.key()]->setSymbol(new QwtSymbol( QwtSymbol::Ellipse, QBrush( Qt::black ), QPen( Qt::black, 0 ), QSize( 5, 5 ) ));
+            }
+        }
+    }
+    else if (!isHightlight && !allCurveMarkerMap.isEmpty())
+    {
+        QMap< int, QwtPlotCurve* > ::Iterator iterator;
+        for (iterator = allCurveMarkerMap.begin(); iterator!=allCurveMarkerMap.end(); ++iterator)
+        {
+            if (iterator.key() == selectedCurveIndex)
+            {
+                allCurveMarkerMap[iterator.key()]->setSymbol(new QwtSymbol( QwtSymbol::Ellipse, QBrush( Qt::black ), QPen( Qt::black, 0 ), QSize( 5, 5 ) ));
+            }
         }
     }
     qwtPlot->replot();
