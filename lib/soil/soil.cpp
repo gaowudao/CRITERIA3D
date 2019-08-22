@@ -57,8 +57,8 @@ namespace soil
     {
         this->waterRetentionCurve = MODIFIEDVANGENUCHTEN;
         this->useWaterRetentionData = true;
-        this->airEntryFixed = false;
-        this->mRestriction = true;
+        this->airEntryFixed = true;
+        this->mRestriction = false;
     }
 
     Crit3DLayer::Crit3DLayer()
@@ -709,12 +709,21 @@ namespace soil
         }
 
         int functionCode;
+        unsigned int nrParameters;
         int nrIterations = 200;
 
-        // parameters
-        unsigned int nrParameters = 5;
-        if (! fittingOptions->mRestriction) nrParameters = 6;
+        if (fittingOptions->mRestriction)
+        {
+            functionCode = FUNCTION_CODE_MODIFIED_VAN_GENUCHTEN_RESTRICTED;
+            nrParameters = 5;
+        }
+        else
+        {
+            functionCode = FUNCTION_CODE_MODIFIED_VAN_GENUCHTEN;
+            nrParameters = 6;
+        }
 
+        // parameters
         double* param = new double[nrParameters];
         double* pmin = new double[nrParameters];
         double* pmax = new double[nrParameters];
@@ -752,20 +761,15 @@ namespace soil
         param[4] = horizon->vanGenuchten.n;
         if (fittingOptions->mRestriction)
         {
-            functionCode = FUNCTION_CODE_MODIFIED_VAN_GENUCHTEN_RESTRICTED;
             pmin[4] = 1;
             pmax[4] = 10;
         }
         else
         {
-            functionCode = FUNCTION_CODE_MODIFIED_VAN_GENUCHTEN;
             pmin[4] = 0.01;
             pmax[4] = 10;
-        }
 
-        // Van Genuchten m parameter (restricted: 1-1/n) [-]
-        if (! fittingOptions->mRestriction)
-        {
+            // Van Genuchten m parameter (restricted: 1-1/n) [-]
             param[5] = horizon->vanGenuchten.m;
             pmin[5] = 0.01;
             pmax[5] = 1;
