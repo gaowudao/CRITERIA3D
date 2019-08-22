@@ -213,7 +213,7 @@ void TabWaterRetentionCurve::widgetClicked(int index)
         {
             if (i != index)
             {
-                lineList[i]->restorePalette();
+                lineList[i]->restoreFrame();
                 lineList[i]->setSelected(false);
             }
         }
@@ -237,12 +237,12 @@ void TabWaterRetentionCurve::curveClicked(int index)
     {
         if (i == index)
         {
-            lineList[i]->setSelectedPalette();
+            lineList[i]->setSelectedFrame();
             lineList[i]->setSelected(true);
         }
         else
         {
-            lineList[i]->restorePalette();
+            lineList[i]->restoreFrame();
             lineList[i]->setSelected(false);
         }
     }

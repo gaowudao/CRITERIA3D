@@ -1,16 +1,17 @@
 #include "barHorizons.h"
 #include <qdebug.h>
 
-BarHorizons::BarHorizons()
+BarHorizons::BarHorizons(QWidget *parent)
 {
     selected = false;
+    this->setFrameStyle(QFrame::NoFrame);
 }
 
 void BarHorizons::setClass(int classUSDA)
 {
 
     this->classUSDA = classUSDA;
-    linePalette = palette();
+    QPalette linePalette = palette();
 
     switch (classUSDA) {
     // sand
@@ -99,14 +100,14 @@ void BarHorizons::mousePressEvent(QMouseEvent* event)
     // select the element
     if (selected == false)
     {
-        selected = true;
-        setSelectedPalette();
+        selected = true;       
+        setSelectedFrame();
     }
     // de-select the element
     else
     {
         selected = false;
-        restorePalette();
+        restoreFrame();
     }
     emit clicked(index);
 
@@ -117,18 +118,15 @@ void BarHorizons::setSelected(bool value)
     selected = value;
 }
 
-void BarHorizons::setSelectedPalette()
+void BarHorizons::setSelectedFrame()
 {
-    QPalette pal(this->palette());
-    pal.setColor( QPalette::Background, pal.background().color().lighter(130));
-    this->setPalette(pal);
-    repaint();
+    this->setFrameStyle(QFrame::Box);
+    this->setLineWidth(2);
 }
 
-void BarHorizons::restorePalette()
+void BarHorizons::restoreFrame()
 {
-    this->setPalette(linePalette);
-    repaint();
+    this->setFrameStyle(QFrame::NoFrame);
 }
 
 bool BarHorizons::getSelected() const

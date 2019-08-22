@@ -2,20 +2,23 @@
 #define BARHORIZON_H
 
     #include <QWidget>
+    #include <QFrame>
     #include <QPainter>
 
-    class BarHorizons : public QWidget
+    //class BarHorizons : public QWidget
+    class BarHorizons : public QFrame
     {
         Q_OBJECT
     public:
-        BarHorizons();
+        //BarHorizons();
+        BarHorizons(QWidget *parent = nullptr);
         void setClass(int classUSDA);
         int getIndex() const;
         void setIndex(int value);
         bool getSelected() const;
-        void restorePalette();
+        void restoreFrame();
         void setSelected(bool value);
-        void setSelectedPalette();
+        void setSelectedFrame();
 
     protected:
         void mousePressEvent(QMouseEvent* event);
@@ -24,7 +27,6 @@
         int index;
         int classUSDA;
         bool selected;
-        QPalette linePalette;
 
     signals:
            void clicked(int index);
