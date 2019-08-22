@@ -675,7 +675,7 @@ namespace soil
 
         if (fittingOptions->useWaterRetentionData && horizon->dbData.waterRetention.size() > 0)
         {
-            fittingWaterRetentionCurve(horizon, fittingOptions, error);
+            fittingWaterRetentionCurve(horizon, fittingOptions);
         }
 
         // update with coarse fragment
@@ -694,7 +694,7 @@ namespace soil
     }
 
 
-    bool fittingWaterRetentionCurve(Crit3DHorizon* horizon, Crit3DFittingOptions* fittingOptions, std::string* error)
+    bool fittingWaterRetentionCurve(Crit3DHorizon* horizon, Crit3DFittingOptions* fittingOptions)
     {
         if (! fittingOptions->useWaterRetentionData || horizon->dbData.waterRetention.size() == 0)
         {

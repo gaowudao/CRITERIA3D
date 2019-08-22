@@ -224,7 +224,7 @@
                         Crit3DFittingOptions *fittingOptions, std::string* error);
 
         bool fittingWaterRetentionCurve(Crit3DHorizon* horizon,
-                        Crit3DFittingOptions* fittingOptions, std::string* error);
+                        Crit3DFittingOptions* fittingOptions);
     }
 
 #endif // SOIL_H
