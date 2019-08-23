@@ -1672,6 +1672,7 @@ bool Project::loadProjectSettings(QString settingsFileName)
         demFileName = projectSettings->value("dem").toString();
         dbPointsFileName = projectSettings->value("meteo_points").toString();
         dbGridXMLFileName = projectSettings->value("meteo_grid").toString();
+        loadGridDataAtStart = projectSettings->value("load_grid_data_at_start").toBool();
     projectSettings->endGroup();
 
     projectSettings->beginGroup("settings");
@@ -1721,6 +1722,7 @@ void Project::saveProjectSettings()
         projectSettings->setValue("dem", getRelativePath(demFileName));
         projectSettings->setValue("meteo_points", getRelativePath(dbPointsFileName));
         projectSettings->setValue("meteo_grid", getRelativePath(dbGridXMLFileName));
+        projectSettings->setValue("load_grid_data_at_start", loadGridDataAtStart);
     projectSettings->endGroup();
 
     projectSettings->beginGroup("settings");

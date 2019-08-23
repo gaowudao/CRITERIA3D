@@ -947,7 +947,7 @@ void MainWindow::drawMeteoGrid()
     myProject.setCurrentDate(myProject.meteoGridDbHandler->lastDate());
     this->updateDateTime();
 
-    myProject.loadMeteoGridData(myProject.getCurrentDate(), myProject.getCurrentDate(), true);
+    if (myProject.loadGridDataAtStart) myProject.loadMeteoGridData(myProject.getCurrentDate(), myProject.getCurrentDate(), true);
 
     meteoGridObj->redrawRequested();
 

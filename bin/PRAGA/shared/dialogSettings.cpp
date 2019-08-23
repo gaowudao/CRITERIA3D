@@ -4,38 +4,38 @@
 #define EDIT_SIZE 100
 
 
-GeoTab::GeoTab(gis::Crit3DGisSettings *gisSettings)
+ProjectTab::ProjectTab(Project* project_)
 {
     QLabel *startLocationLat = new QLabel(tr("<b>start location latitude </b> (negative for Southern Emisphere) [decimal degrees]:"));
     QDoubleValidator *doubleValLat = new QDoubleValidator( -90.0, 90.0, 5, this );
     doubleValLat->setNotation(QDoubleValidator::StandardNotation);
     startLocationLatEdit.setFixedWidth(EDIT_SIZE);
     startLocationLatEdit.setValidator(doubleValLat);
-    startLocationLatEdit.setText(QString::number(gisSettings->startLocation.latitude));
+    startLocationLatEdit.setText(QString::number(project_->gisSettings.startLocation.latitude));
 
     QLabel *startLocationLon = new QLabel(tr("<b>start location longitude </b> [decimal degrees]:"));
     QDoubleValidator *doubleValLon = new QDoubleValidator( -180.0, 180.0, 5, this );
     doubleValLon->setNotation(QDoubleValidator::StandardNotation);
     startLocationLonEdit.setFixedWidth(EDIT_SIZE);
     startLocationLonEdit.setValidator(doubleValLon);
-    startLocationLonEdit.setText(QString::number(gisSettings->startLocation.longitude));
+    startLocationLonEdit.setText(QString::number(project_->gisSettings.startLocation.longitude));
 
     QLabel *utmZone = new QLabel(tr("UTM zone:"));
     utmZoneEdit.setFixedWidth(EDIT_SIZE);
     utmZoneEdit.setValidator(new QIntValidator(0, 60));
-    utmZoneEdit.setText(QString::number(gisSettings->utmZone));
+    utmZoneEdit.setText(QString::number(project_->gisSettings.utmZone));
 
     QLabel *timeZone = new QLabel(tr("Time zone:"));
     timeZoneEdit.setFixedWidth(EDIT_SIZE);
     timeZoneEdit.setValidator(new QIntValidator(-12, 12));
-    timeZoneEdit.setText(QString::number(gisSettings->timeZone));
+    timeZoneEdit.setText(QString::number(project_->gisSettings.timeZone));
 
     QLabel *timeConvention = new QLabel(tr("Time Convention:"));
     QButtonGroup *group = new QButtonGroup();
     group->setExclusive(true);
     utc.setText("UTC");
     localTime.setText("Local Time");
-    if (gisSettings->isUTC)
+    if (project_->gisSettings.isUTC)
     {
         utc.setChecked(true);
         localTime.setChecked(false);
@@ -47,7 +47,9 @@ GeoTab::GeoTab(gis::Crit3DGisSettings *gisSettings)
     }
     group->addButton(&utc);
     group->addButton(&localTime);
-    QHBoxLayout *buttonLayout = new QHBoxLayout;
+
+    loadGridData.setText("Load grid data at start");
+    loadGridData.setChecked(project_->loadGridDataAtStart);
 
     QVBoxLayout *mainLayout = new QVBoxLayout;
     mainLayout->addWidget(startLocationLat);
@@ -62,11 +64,14 @@ GeoTab::GeoTab(gis::Crit3DGisSettings *gisSettings)
     mainLayout->addWidget(timeZone);
     mainLayout->addWidget(&timeZoneEdit);
 
+    QHBoxLayout *buttonLayout = new QHBoxLayout;
     buttonLayout->addWidget(timeConvention);
     buttonLayout->addWidget(&utc);
     buttonLayout->addWidget(&localTime);
 
     mainLayout->addLayout(buttonLayout);
+
+    mainLayout->addWidget(&loadGridData);
 
     mainLayout->addStretch(1);
     setLayout(mainLayout);
@@ -174,12 +179,12 @@ DialogSettings::DialogSettings(Project* myProject)
 
     setWindowTitle(tr("Parameters"));
     setFixedSize(650,700);
-    geoTab = new GeoTab(&(project_->gisSettings));
+    projectTab = new ProjectTab(myProject);
     qualityTab = new QualityTab(myProject->quality);
     metTab = new MeteoTab(myProject->meteoSettings);
 
     tabWidget = new QTabWidget;
-    tabWidget->addTab(geoTab, tr("GEO"));
+    tabWidget->addTab(projectTab, tr("PROJECT"));
     tabWidget->addTab(qualityTab, tr("QUALITY"));
     tabWidget->addTab(metTab, tr("METEO"));
 
@@ -197,39 +202,39 @@ DialogSettings::DialogSettings(Project* myProject)
 
 bool DialogSettings::acceptValues()
 {
-    if (geoTab->startLocationLatEdit.text().isEmpty() || geoTab->startLocationLatEdit.text() == "0")
+    if (projectTab->startLocationLatEdit.text().isEmpty() || projectTab->startLocationLatEdit.text() == "0")
     {
         QMessageBox::information(nullptr, "Missing Parameter", "insert start location latitude");
         return false;
     }
 
-    if (geoTab->startLocationLonEdit.text().isEmpty() || geoTab->startLocationLonEdit.text() == "0")
+    if (projectTab->startLocationLonEdit.text().isEmpty() || projectTab->startLocationLonEdit.text() == "0")
     {
         QMessageBox::information(nullptr, "Missing Parameter", "insert start location longitude");
         return false;
     }
 
-    if (geoTab->utmZoneEdit.text().isEmpty())
+    if (projectTab->utmZoneEdit.text().isEmpty())
     {
         QMessageBox::information(nullptr, "Missing Parameter", "insert UTM zone");
         return false;
     }
 
-    if (geoTab->timeZoneEdit.text().isEmpty())
+    if (projectTab->timeZoneEdit.text().isEmpty())
     {
         QMessageBox::information(nullptr, "Missing Parameter", "insert time zone");
         return false;
     }
 
-    if (!geoTab->utc.isChecked() && !geoTab->localTime.isChecked())
+    if (!projectTab->utc.isChecked() && !projectTab->localTime.isChecked())
     {
         QMessageBox::information(nullptr, "Missing time convention", "choose UTC or local time");
         return false;
     }
 
     // check UTM/time zone
-    int utmZone = geoTab->utmZoneEdit.text().toInt();
-    int timeZone = geoTab->timeZoneEdit.text().toInt();
+    int utmZone = projectTab->utmZoneEdit.text().toInt();
+    int timeZone = projectTab->timeZoneEdit.text().toInt();
     if (! gis::isValidUtmTimeZone(utmZone, timeZone))
     {
         QMessageBox::information(nullptr, "Wrong parameter", "Correct UTM zone or Time zone");
@@ -290,11 +295,12 @@ bool DialogSettings::acceptValues()
 
     // store elaboration values
 
-    project_->gisSettings.startLocation.latitude = geoTab->startLocationLatEdit.text().toDouble();
-    project_->gisSettings.startLocation.longitude = geoTab->startLocationLonEdit.text().toDouble();
-    project_->gisSettings.utmZone = geoTab->utmZoneEdit.text().toInt();
-    project_->gisSettings.timeZone = geoTab->timeZoneEdit.text().toInt();
-    project_->gisSettings.isUTC = geoTab->utc.isChecked();
+    project_->gisSettings.startLocation.latitude = projectTab->startLocationLatEdit.text().toDouble();
+    project_->gisSettings.startLocation.longitude = projectTab->startLocationLonEdit.text().toDouble();
+    project_->gisSettings.utmZone = projectTab->utmZoneEdit.text().toInt();
+    project_->gisSettings.timeZone = projectTab->timeZoneEdit.text().toInt();
+    project_->gisSettings.isUTC = projectTab->utc.isChecked();
+    project_->loadGridDataAtStart = projectTab->loadGridData.isChecked();
 
     project_->quality->setReferenceHeight(qualityTab->referenceClimateHeightEdit.text().toFloat());
     project_->quality->setDeltaTSuspect(qualityTab->deltaTSuspectEdit.text().toFloat());

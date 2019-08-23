@@ -27,12 +27,12 @@ class QFileInfo;
 class QTabWidget;
 
 
-class GeoTab : public QWidget
+class ProjectTab : public QWidget
 {
     Q_OBJECT
 
 public:
-    explicit GeoTab(gis::Crit3DGisSettings *gisSettings);
+    explicit ProjectTab(Project *project_);
 
     QLineEdit startLocationLatEdit;
     QLineEdit startLocationLonEdit;
@@ -40,7 +40,7 @@ public:
     QLineEdit timeZoneEdit;
     QCheckBox utc;
     QCheckBox localTime ;
-
+    QCheckBox loadGridData;
 
 private:
 
@@ -95,7 +95,7 @@ class DialogSettings : public QDialog
     private:
         QTabWidget *tabWidget;
         QDialogButtonBox *buttonBox;
-        GeoTab* geoTab;
+        ProjectTab* projectTab;
         QualityTab* qualityTab;
         MeteoTab* metTab;
 };
