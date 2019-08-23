@@ -75,10 +75,11 @@
         Crit3DMeteoPointsDbHandler* meteoPointsDbHandler;
         Crit3DAggregationsDbHandler* aggregationDbHandler;
         QList<gis::Crit3DGeoPoint> meteoPointsSelected;
+        Crit3DColorScale* meteoPointsColorScale;
 
         bool meteoGridLoaded;
         Crit3DMeteoGridDbHandler* meteoGridDbHandler;
-        Crit3DColorScale* meteoPointsColorScale;
+        bool loadGridDataAtStart;
 
         Crit3DQuality* quality;
         bool checkSpatialQuality;
@@ -110,7 +111,7 @@
 
         void createProject(QString path_, QString name_, QString description);
         void saveProject();
-        void saveSettings();
+        void saveProjectSettings();
         void saveAllParameters();
         void saveGenericParameters();
         void saveInterpolationParameters();

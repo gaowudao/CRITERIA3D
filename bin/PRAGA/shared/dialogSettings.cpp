@@ -306,7 +306,7 @@ bool DialogSettings::acceptValues()
     project_->meteoSettings->setThomThreshold(metTab->thomThresholdEdit.text().toFloat());
     project_->meteoSettings->setTransSamaniCoefficient(metTab->transSamaniCoefficientEdit.text().toFloat());
 
-    project_->saveSettings();
+    project_->saveProjectSettings();
     project_->saveGenericParameters();
 
     return true;

@@ -77,6 +77,8 @@ void Project::initializeProject()
 
     meteoPointsLoaded = false;
     meteoGridLoaded = false;
+
+    loadGridDataAtStart = false;
 }
 
 void Project::clearProject()
@@ -1704,7 +1706,7 @@ bool Project::searchDefaultPath(QString* path)
     return true;
 }
 
-void Project::saveSettings()
+void Project::saveProjectSettings()
 {
     projectSettings->beginGroup("location");
         projectSettings->setValue("lat", gisSettings.startLocation.latitude);
@@ -1833,7 +1835,7 @@ void Project::saveAllParameters()
 
 void Project::saveProject()
 {
-    saveSettings();
+    saveProjectSettings();
     saveAllParameters();
 }
 
