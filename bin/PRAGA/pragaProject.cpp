@@ -1333,6 +1333,20 @@ void PragaProject::savePragaParameters()
 
 bool PragaProject::interpolationMeteoGridPeriod(QDate dateIni, QDate dateFin, QList <meteoVariable> variables)
 {
+    // check meteo point
+    if (! meteoPointsLoaded || nrMeteoPoints == 0)
+    {
+        logError("No meteo points");
+        return false;
+    }
+
+    // check meteo grid
+    if (! meteoGridLoaded)
+    {
+        logError("No meteo grid");
+        return false;
+    }
+
     // check dates
     if (dateIni.isNull() || dateFin.isNull() || dateIni > dateFin)
     {

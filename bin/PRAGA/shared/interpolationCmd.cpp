@@ -115,21 +115,18 @@ bool checkProxyGridSeries(Crit3DInterpolationSettings* mySettings, const gis::Cr
 
     for (i=0; i < mySettings->getProxyNr(); i++)
     {
-        if (mySettings->getCurrentCombination()->getValue(i))
+        for (j=0; j < mySeries.size(); j++)
         {
-            for (j=0; j < mySeries.size(); j++)
+            if (mySeries[j].getProxyName() == QString::fromStdString(mySettings->getProxyName(i)))
             {
-                if (mySeries[j].getProxyName() == QString::fromStdString(mySettings->getProxyName(i)))
+                if (mySeries[j].getGridName().size() > 0)
                 {
-                    if (mySeries[j].getGridName().size() > 0)
-                    {
-                        gis::Crit3DRasterGrid* gridOut = nullptr;
-                        interpolateProxyGridSeries(mySeries[j], myDate, gridBase, gridOut);
-                        mySettings->getProxy(i)->setGrid(gridOut);
-                        return true;
-                    }
-
+                    gis::Crit3DRasterGrid* gridOut = nullptr;
+                    interpolateProxyGridSeries(mySeries[j], myDate, gridBase, gridOut);
+                    mySettings->getProxy(i)->setGrid(gridOut);
+                    return true;
                 }
+
             }
         }
     }
