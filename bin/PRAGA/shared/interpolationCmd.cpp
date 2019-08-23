@@ -18,7 +18,7 @@ std::vector<QString> Crit3DProxyGridSeries::getGridName() const
     return gridName;
 }
 
-std::vector<unsigned> Crit3DProxyGridSeries::getGridYear() const
+std::vector<int> Crit3DProxyGridSeries::getGridYear() const
 {
     return gridYear;
 }
@@ -49,6 +49,7 @@ bool interpolateProxyGridSeries(Crit3DProxyGridSeries mySeries, QDate myDate, co
 {
     std::string myError;
     std::vector <QString> gridNames = mySeries.getGridName();
+    std::vector <int> gridYears = mySeries.getGridYear();
     size_t nrGrids = gridNames.size();
     gridOut = new gis::Crit3DRasterGrid();
 
@@ -61,7 +62,7 @@ bool interpolateProxyGridSeries(Crit3DProxyGridSeries mySeries, QDate myDate, co
     unsigned first, second;
 
     for (second = 0; second < nrGrids; second++)
-        if (unsigned(myDate.year()) <= mySeries.getGridYear()[second]) break;
+        if (myDate.year() <= gridYears[second]) break;
 
     if (second == 0)
     {
@@ -81,8 +82,8 @@ bool interpolateProxyGridSeries(Crit3DProxyGridSeries mySeries, QDate myDate, co
     gis::readEsriGrid(gridNames[first].toStdString(), &firstGrid, &myError);
     gis::readEsriGrid(gridNames[second].toStdString(), &secondGrid, &myError);
 
-    firstGrid.setMapTime(getCrit3DTime(myDate, 0));
-    secondGrid.setMapTime(getCrit3DTime(myDate, 0));
+    firstGrid.setMapTime(getCrit3DTime(QDate(gridYears[first],1,1), 0));
+    secondGrid.setMapTime(getCrit3DTime(QDate(gridYears[second],1,1), 0));
 
     gis::Crit3DRasterGrid tmpGrid;
 
@@ -121,9 +122,9 @@ bool checkProxyGridSeries(Crit3DInterpolationSettings* mySettings, const gis::Cr
             {
                 if (mySeries[j].getGridName().size() > 0)
                 {
-                    gis::Crit3DRasterGrid* gridOut = nullptr;
-                    interpolateProxyGridSeries(mySeries[j], myDate, gridBase, gridOut);
-                    mySettings->getProxy(i)->setGrid(gridOut);
+                    gis::Crit3DRasterGrid gridOut;
+                    interpolateProxyGridSeries(mySeries[j], myDate, gridBase, &gridOut);
+                    mySettings->getProxy(i)->setGrid(&gridOut);
                     return true;
                 }
 

@@ -1358,8 +1358,6 @@ bool PragaProject::interpolationMeteoGridPeriod(QDate dateIni, QDate dateFin, QL
         if (! loadTopographicDistanceMaps())
             return false;
 
-    FormInfo myInfo;
-    int infoStep = 1;
     std::string id;
     QString myError;
     int myHour;
@@ -1367,18 +1365,20 @@ bool PragaProject::interpolationMeteoGridPeriod(QDate dateIni, QDate dateFin, QL
     gis::Crit3DRasterGrid* myGrid = new gis::Crit3DRasterGrid(DEM);
     unsigned currentYear = unsigned(NODATA);
 
-    QString infoStr = "Save meteo grid hourly data";
-    infoStep = myInfo.start(infoStr, this->meteoGridDbHandler->gridStructure().header().nrRows);
-
-    if (! loadMeteoPointsData(dateIni, dateFin, true))
+    logInfo("Loading meteo points data...");
+    if (! loadMeteoPointsData(dateIni, dateFin, false))
         return false;
 
+    /*
     while (myDate <= dateFin)
     {
         // check proxy grid series
         if (currentYear != unsigned(myDate.year()))
+        {
+            logInfo("Interpolating proxy grid series...");
             if (checkProxyGridSeries(&interpolationSettings, DEM, proxyGridSeries, myDate))
                 if (! updateProxy()) return false;
+        }
 
         for (myHour = 1; myHour <= 24; myHour++)
         {
@@ -1392,9 +1392,11 @@ bool PragaProject::interpolationMeteoGridPeriod(QDate dateIni, QDate dateFin, QL
         myDate = myDate.addDays(1);
     }
 
+    logInfo("Save meteo grid hourly data");
     meteoGridDbHandler->saveGridData(&myError, QDateTime(dateIni, QTime(0,0,0)), QDateTime(dateFin.addDays(1), QTime(0,0,0)), variables);
 
     //restore original proxy grids
+    */
 
     return true;
 

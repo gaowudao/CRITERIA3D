@@ -200,6 +200,8 @@ bool Project::addProxyGridSeries(QString name_, std::vector <QString> gridNames,
 
     for (unsigned i=0; i < gridNames.size(); i++)
     {
+        logInfo("Checking grid " + gridNames[i] + " for proxy " + name_ + " (" + QString::number(i) + "/" + QString::number(gridNames.size()));
+
         if (gis::readEsriGrid(getCompleteFileName(gridNames[i], PATH_GEO).toStdString(), myGrid, &myError))
             mySeries.addGridToSeries(gridNames[i], gridYears[i]);
         else {

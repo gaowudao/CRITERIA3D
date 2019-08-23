@@ -1408,14 +1408,14 @@ namespace gis
                     myUR.utm.x = x + (newGrid->header->cellSize / 2);
                     myUR.utm.y = y + (newGrid->header->cellSize / 2);
 
-                    maxValues = int(((myUR.utm.x - myLL.utm.x) / oldGrid.header->cellSize) * ((myUR.utm.y - myLL.utm.y) / oldGrid.header->cellSize));
-
                     values.clear();
+                    maxValues = 0;
                     for (x = myLL.utm.x; x <= myUR.utm.x; x += oldGrid.header->cellSize / 2)
                         for (y = myLL.utm.y; y <= myUR.utm.y; y += oldGrid.header->cellSize / 2)
                         {
+                            maxValues++;
                             tmpValue = gis::getValueFromXY(oldGrid, x, y);
-                            if (isEqual(tmpValue, oldGrid.header->flag))
+                            if (! isEqual(tmpValue, oldGrid.header->flag))
                                 values.push_back(tmpValue);
                         }
 
@@ -1440,7 +1440,7 @@ namespace gis
     }
 
     bool temporalYearlyInterpolation(const gis::Crit3DRasterGrid& firstGrid, const gis::Crit3DRasterGrid& secondGrid,
-                                     unsigned myYear, float minValue, float maxValue, gis::Crit3DRasterGrid* outGrid)
+                                     int myYear, float minValue, float maxValue, gis::Crit3DRasterGrid* outGrid)
     {
 
         int row, col;
@@ -1460,7 +1460,7 @@ namespace gis
                 if (! gis::isOutOfGridRowCol(row, col, secondGrid))
                 {
                     firstVal = firstGrid.value[row][col];
-                    secondVal = firstGrid.value[row][col];
+                    secondVal = secondGrid.value[row][col];
 
                     if (! isEqual(firstVal, NODATA) && ! isEqual(secondVal, NODATA))
                     {
@@ -1469,6 +1469,9 @@ namespace gis
                         if (! isEqual(maxValue, NODATA)) outGrid->value[row][col] = MINVALUE(maxValue, outGrid->value[row][col]);
                     }
                 }
+
+        updateMinMaxRasterGrid(outGrid);
+        outGrid->setMapTime(Crit3DTime(Crit3DDate(1,1,myYear), 0));
 
         return true;
     }

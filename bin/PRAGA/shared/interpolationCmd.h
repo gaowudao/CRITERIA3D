@@ -23,7 +23,7 @@ class Crit3DProxyGridSeries
 {
 private:
     std::vector <QString> gridName;
-    std::vector <unsigned> gridYear;
+    std::vector <int> gridYear;
     QString proxyName;
 
 public:
@@ -33,7 +33,7 @@ public:
     void initialize();
     void addGridToSeries(QString name_, unsigned year_);
     std::vector<QString> getGridName() const;
-    std::vector<unsigned> getGridYear() const;
+    std::vector<int> getGridYear() const;
     QString getProxyName() const;
 };
 

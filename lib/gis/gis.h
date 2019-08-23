@@ -241,7 +241,7 @@
         void resampleGrid(const gis::Crit3DRasterGrid& oldGrid, gis::Crit3DRasterGrid* newGrid,
                           gis::Crit3DRasterHeader header, aggregationMethod elab, float nodataThreshold);
         bool temporalYearlyInterpolation(const gis::Crit3DRasterGrid& firstGrid, const gis::Crit3DRasterGrid& secondGrid,
-                                         unsigned myYear, float minValue, float maxValue, gis::Crit3DRasterGrid* outGrid);
+                                         int myYear, float minValue, float maxValue, gis::Crit3DRasterGrid* outGrid);
     }
 
 
