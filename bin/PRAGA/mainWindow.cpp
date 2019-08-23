@@ -2067,11 +2067,11 @@ void MainWindow::on_actionInterpolateSaveGridPeriod_triggered()
     }
 
     // check meteo grid
-//    if (! myProject.meteoGridLoaded || myProject.meteoGridDbHandler == nullptr)
-//    {
-//        myProject.logError("No meteo grid DB open");
-//        return;
-//    }
+    if (! myProject.meteoGridLoaded || myProject.meteoGridDbHandler == nullptr)
+    {
+        myProject.logError("No meteo grid DB open");
+        return;
+    }
 
     QDateTime myFirstTime = myProject.findDbPointFirstTime();
     QDateTime myLastTime = myProject.findDbPointLastTime();
