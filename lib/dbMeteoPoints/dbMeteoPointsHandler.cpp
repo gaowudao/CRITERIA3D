@@ -159,7 +159,7 @@ QDateTime Crit3DMeteoPointsDbHandler::getLastDate(frequencyType frequency)
 {
     QSqlQuery qry(_db);
     QStringList tables;
-    QDateTime lastDay(QDate(1800, 1, 1), QTime(0, 0, 0));
+    QDateTime lastDate;
 
     QString dayHour;
     if (frequency == daily)
@@ -187,13 +187,8 @@ QDateTime Crit3DMeteoPointsDbHandler::getLastDate(frequencyType frequency)
     QString dateStr, statement;
     foreach (QString table, tables)
     {
-        //statement = QString( "SELECT date_time FROM `%1` ORDER BY datetime(date_time) DESC Limit 1").arg(table);
         statement = QString( "SELECT MAX(date_time) FROM `%1` AS dateTime").arg(table);
-        if( !qry.exec(statement) )
-        {
-            //qDebug() << qry.lastError();
-        }
-        else
+        if(qry.exec(statement))
         {
             if (qry.next())
             {
@@ -213,16 +208,16 @@ QDateTime Crit3DMeteoPointsDbHandler::getLastDate(frequencyType frequency)
                         }
                     }
 
-                    if (date > lastDay)
+                    if (lastDate.isNull() || date > lastDate)
                     {
-                        lastDay = date;
+                        lastDate = date;
                     }
                 }
             }
         }
     }
 
-    return lastDay;
+    return lastDate;
 }
 
 
@@ -231,7 +226,7 @@ QDateTime Crit3DMeteoPointsDbHandler::getFirstDate(frequencyType frequency)
 
     QSqlQuery qry(_db);
     QStringList tables;
-    QDateTime firstDay(QDate::currentDate().addDays(1), QTime(0, 0, 0));
+    QDateTime firstDate;
 
     QString dayHour;
     if (frequency == daily)
@@ -244,7 +239,7 @@ QDateTime Crit3DMeteoPointsDbHandler::getFirstDate(frequencyType frequency)
 
     if( !qry.exec() )
     {
-        qDebug() << qry.lastError();
+        error = qry.lastError().text();
     }
     else
     {
@@ -255,38 +250,37 @@ QDateTime Crit3DMeteoPointsDbHandler::getFirstDate(frequencyType frequency)
         }
     }
 
-    QString statement;
+    QDateTime date;
+    QString dateStr, statement;
     foreach (QString table, tables)
     {
-        //statement = QString( "SELECT date_time FROM `%1` ORDER BY datetime(date_time) ASC Limit 1").arg(table);
         statement = QString( "SELECT MIN(date_time) FROM `%1` AS dateTime").arg(table);
-        if( !qry.exec(statement) )
-        {
-            qDebug() << qry.lastError();
-        }
-        else
+        if(qry.exec(statement) )
         {
             if (qry.next())
             {
-                QString dateStr = qry.value(0).toString();
+                dateStr = qry.value(0).toString();
                 if (!dateStr.isEmpty())
                 {
-                    QDateTime date = QDateTime::fromString(dateStr,"yyyy-MM-dd HH:mm:ss");
-                    if (date < firstDay)
+                    if (frequency == daily)
                     {
-                        firstDay = date;
+                        date = QDateTime::fromString(dateStr,"yyyy-MM-dd");
+                    }
+                    else if (frequency == hourly)
+                    {
+                        date = QDateTime::fromString(dateStr,"yyyy-MM-dd HH:mm:ss");
+                    }
+
+                    if (firstDate.isNull() || date < firstDate)
+                    {
+                        firstDate = date;
                     }
                 }
             }
         }
     }
-    if (firstDay.date() == QDate::currentDate().addDays(1))
-    {
-        firstDay.date() = QDate(1800,1,1);
-        firstDay.time() = QTime(0, 0, 0);
-    }
 
-    return firstDay;
+    return firstDate;
 
 }
 

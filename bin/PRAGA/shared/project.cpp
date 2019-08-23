@@ -897,7 +897,12 @@ bool Project::loadMeteoPointsDB(QString dbName)
     listMeteoPoints.clear();
 
     // find last date
-    findLastMeteoDate();
+    QDateTime dbLastTime = findDbPointLastTime();
+    if (! dbLastTime.isNull())
+    {
+        setCurrentDate(dbLastTime.date());
+        setCurrentHour(dbLastTime.time().hour());
+    }
 
     // load proxy values for detrending
     if (! readProxyValues())
@@ -1134,17 +1139,43 @@ bool Project::loadMeteoGridHourlyData(QDateTime firstDate, QDateTime lastDate, b
 }
 
 
-void Project::findLastMeteoDate()
+QDateTime Project::findDbPointLastTime()
 {
-    QDate lastDateD = meteoPointsDbHandler->getLastDate(daily).date();
-    QDate lastDateH = meteoPointsDbHandler->getLastDate(hourly).date();
+    QDateTime lastTime;
 
-    QDate lastDate = (lastDateD > lastDateH) ? lastDateD : lastDateH;
+    QDateTime lastDateD = meteoPointsDbHandler->getLastDate(daily);
+    if (! lastDateD.isNull()) lastTime = lastDateD;
 
-    setCurrentDate(lastDate);
-    setCurrentHour(12);
+    QDateTime lastDateH = meteoPointsDbHandler->getLastDate(hourly);
+    if (! lastDateH.isNull())
+    {
+        if (! lastTime.isNull())
+            lastTime = (lastDateD > lastDateH) ? lastDateD : lastDateH;
+        else
+            lastTime = lastDateH;
+    }
+
+    return lastTime;
 }
 
+QDateTime Project::findDbPointFirstTime()
+{
+    QDateTime firstTime;
+
+    QDateTime firstDateD = meteoPointsDbHandler->getFirstDate(daily);
+    if (! firstDateD.isNull()) firstTime = firstDateD;
+
+    QDateTime firstDateH = meteoPointsDbHandler->getFirstDate(hourly);
+    if (! firstDateH.isNull())
+    {
+        if (! firstTime.isNull())
+            firstTime = (firstDateD > firstDateH) ? firstDateD : firstDateH;
+        else
+            firstTime = firstDateH;
+    }
+
+    return firstTime;
+}
 
 void Project::checkMeteoPointsDEM()
 {
