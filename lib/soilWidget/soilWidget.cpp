@@ -175,12 +175,8 @@ Crit3DSoilWidget::Crit3DSoilWidget()
 
     useWaterRetentionData->setCheckable(true);
     airEntryFixed->setCheckable(true);
-    airEntryFixed->setEnabled(false);
     parameterRestriction->setCheckable(true);
-    parameterRestriction->setEnabled(false);
-    useWaterRetentionData->setChecked(fittingOptions->useWaterRetentionData);
-    airEntryFixed->setChecked(fittingOptions->airEntryFixed);
-    parameterRestriction->setChecked(fittingOptions->mRestriction);
+    setFittingMenu();
 
     connect(openSoilDB, &QAction::triggered, this, &Crit3DSoilWidget::on_actionOpenSoilDB);
     connect(saveChanges, &QAction::triggered, this, &Crit3DSoilWidget::on_actionSave);
@@ -209,6 +205,19 @@ Crit3DSoilWidget::Crit3DSoilWidget()
     fittingMenu->addAction(useWaterRetentionData);
     fittingMenu->addAction(airEntryFixed);
     fittingMenu->addAction(parameterRestriction);
+}
+
+
+void Crit3DSoilWidget::setFittingMenu()
+{
+    bool isFittingActive = fittingOptions->useWaterRetentionData;
+
+    useWaterRetentionData->setChecked(isFittingActive);
+    airEntryFixed->setEnabled(isFittingActive);
+    parameterRestriction->setEnabled(isFittingActive);
+
+    airEntryFixed->setChecked(fittingOptions->airEntryFixed);
+    parameterRestriction->setChecked(fittingOptions->mRestriction);
 }
 
 
@@ -432,18 +441,9 @@ void Crit3DSoilWidget::on_actionDeleteSoil()
 
 void Crit3DSoilWidget::on_actionUseWaterRetentionData()
 {
-    if (useWaterRetentionData->isChecked())
-    {
-        airEntryFixed->setEnabled(true);
-        parameterRestriction->setEnabled(true);
-    }
-    else
-    {
-        airEntryFixed->setEnabled(false);
-        parameterRestriction->setEnabled(false);
-    }
-
     fittingOptions->useWaterRetentionData = this->useWaterRetentionData->isChecked();
+    setFittingMenu();
+
     // TO DO: update
 }
 
@@ -451,6 +451,7 @@ void Crit3DSoilWidget::on_actionUseWaterRetentionData()
 void Crit3DSoilWidget::on_actionAirEntry()
 {
     fittingOptions->airEntryFixed = this->airEntryFixed->isChecked();
+
     // TO DO: update
 }
 
@@ -458,6 +459,7 @@ void Crit3DSoilWidget::on_actionAirEntry()
 void Crit3DSoilWidget::on_actionParameterRestriction()
 {
     fittingOptions->mRestriction = this->parameterRestriction->isChecked();
+
     // TO DO: update
 }
 

@@ -72,6 +72,8 @@
             constexpr static const double widthTriangle = 271.0;
             constexpr static const double heightTriangle = 236.0;
 
+            void setFittingMenu();
+
             void on_actionOpenSoilDB();
             void on_actionSave();
             void on_actionNewSoil();
