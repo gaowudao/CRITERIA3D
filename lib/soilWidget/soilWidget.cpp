@@ -49,6 +49,7 @@
 Crit3DSoilWidget::Crit3DSoilWidget()
 {
     dbSoilType = DB_SQLITE;
+    fittingOptions = new soil::Crit3DFittingOptions();
 
     this->setWindowTitle(QStringLiteral("Soil"));
     this->resize(1240, 700);
@@ -177,9 +178,9 @@ Crit3DSoilWidget::Crit3DSoilWidget()
     airEntryFixed->setEnabled(false);
     parameterRestriction->setCheckable(true);
     parameterRestriction->setEnabled(false);
-    useWaterRetentionData->setChecked(fittingOptions.useWaterRetentionData);
-    airEntryFixed->setChecked(fittingOptions.airEntryFixed);
-    parameterRestriction->setChecked(fittingOptions.mRestriction);
+    useWaterRetentionData->setChecked(fittingOptions->useWaterRetentionData);
+    airEntryFixed->setChecked(fittingOptions->airEntryFixed);
+    parameterRestriction->setChecked(fittingOptions->mRestriction);
 
     connect(openSoilDB, &QAction::triggered, this, &Crit3DSoilWidget::on_actionOpenSoilDB);
     connect(saveChanges, &QAction::triggered, this, &Crit3DSoilWidget::on_actionSave);
@@ -342,7 +343,7 @@ void Crit3DSoilWidget::on_actionChooseSoil(QString soilCode)
 
     mySoil.cleanSoil();
 
-    if (! loadSoil(&dbSoil, soilCode, &mySoil, textureClassList, &fittingOptions, &error))
+    if (! loadSoil(&dbSoil, soilCode, &mySoil, textureClassList, fittingOptions, &error))
     {
         QMessageBox::critical(nullptr, "Error!", error);
         return;
@@ -442,21 +443,21 @@ void Crit3DSoilWidget::on_actionUseWaterRetentionData()
         parameterRestriction->setEnabled(false);
     }
 
-    fittingOptions.useWaterRetentionData = this->useWaterRetentionData->isChecked();
+    fittingOptions->useWaterRetentionData = this->useWaterRetentionData->isChecked();
     // TO DO: update
 }
 
 
 void Crit3DSoilWidget::on_actionAirEntry()
 {
-    fittingOptions.airEntryFixed = this->airEntryFixed->isChecked();
+    fittingOptions->airEntryFixed = this->airEntryFixed->isChecked();
     // TO DO: update
 }
 
 
 void Crit3DSoilWidget::on_actionParameterRestriction()
 {
-    fittingOptions.mRestriction = this->parameterRestriction->isChecked();
+    fittingOptions->mRestriction = this->parameterRestriction->isChecked();
     // TO DO: update
 }
 
@@ -626,7 +627,7 @@ void Crit3DSoilWidget::tabChanged(int index)
     {
         if (!horizonsTab->getInsertSoilElement())
         {
-            horizonsTab->insertSoilHorizons(&mySoil, textureClassList, &fittingOptions);
+            horizonsTab->insertSoilHorizons(&mySoil, textureClassList, fittingOptions);
             addHorizon->setEnabled(true);
             deleteHorizon->setEnabled(true);
         }

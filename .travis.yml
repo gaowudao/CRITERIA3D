@@ -7,5 +7,5 @@ before_install:
   - sudo apt-get update
 
 install:
-  - sudo apt-get install qt58base
+  - sudo apt-get install qtbase
  
