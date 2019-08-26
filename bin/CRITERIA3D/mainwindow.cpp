@@ -681,12 +681,6 @@ bool MainWindow::loadMeteoPointsDB(QString dbName)
 
     this->addMeteoPoints();
 
-    if (myProject.meteoGridDbHandler == nullptr)
-    {
-        myProject.findLastMeteoDate();
-        this->updateDateTime();
-    }
-
     myProject.loadMeteoPointsData(myProject.getCurrentDate(), myProject.getCurrentDate(), true);
 
     this->showPointsGroup->setEnabled(true);
