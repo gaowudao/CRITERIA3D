@@ -403,13 +403,15 @@ namespace interpolation
                 newParameters[i] = parameters[i] + paramChange[i];
                 if ((newParameters[i] > parametersMax[i]) && (lambda[i] < 1000))
                 {
-                    lambda[i] *= VFACTOR;
                     newParameters[i] = parametersMax[i];
+                    if (lambda[i] < 1000)
+                        lambda[i] *= VFACTOR;
                 }
-                if ((newParameters[i] < parametersMin[i]) && (lambda[i] < 1000))
+                if (newParameters[i] < parametersMin[i])
                 {
-                    lambda[i] *= VFACTOR;
                     newParameters[i] = parametersMin[i];
+                    if (lambda[i] < 1000)
+                        lambda[i] *= VFACTOR;
                 }
             }
 
@@ -642,7 +644,7 @@ namespace interpolation
 
         thetaS = parameters[0];         // water content at saturation [m^3 m^-3]
         thetaR = parameters[1];         // water content residual [m^3 m^-3]
-        he = parameters[0];             // air entry [kPa]
+        he = parameters[2];             // air entry [kPa]
 
         if (psi <= he) return thetaS;
 

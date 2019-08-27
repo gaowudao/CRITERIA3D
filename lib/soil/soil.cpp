@@ -748,7 +748,7 @@ namespace soil
         }
         else
         {
-            pmin[2] = 0.1;
+            pmin[2] = 0.01;
             pmax[2] = 10;
         }
 
