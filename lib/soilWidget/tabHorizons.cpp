@@ -637,7 +637,6 @@ void TabHorizons::addRowClicked()
         numRow = tableDb->rowCount();
     }
 
-    QString lowerDepth = tableDb->item(numRow-1, 1)->text();
     tableDb->insertRow(numRow);
     tableModel->insertRow(numRow);
 
@@ -652,13 +651,24 @@ void TabHorizons::addRowClicked()
     tableDb->scrollToBottom();
     tableModel->scrollToBottom();
     deleteRow->setEnabled(true);
-    tableDb->item(numRow, 0)->setText(lowerDepth);
+
     setInvalidTableModelRow(numRow);
 
     soil::Crit3DHorizon* newHor = new soil::Crit3DHorizon();
     // set newHor dbData
     newHor->dbData.horizonNr = numRow;
-    newHor->dbData.upperDepth = lowerDepth.toDouble();
+    QString lowerDepth;
+    if (numRow != 0)
+    {
+        lowerDepth = tableDb->item(numRow-1, 1)->text();
+        tableDb->item(numRow, 0)->setText(lowerDepth);
+        newHor->dbData.upperDepth = lowerDepth.toDouble();
+    }
+    else
+    {
+        newHor->dbData.upperDepth = 0;
+        tableDb->item(numRow, 0)->setText("0");
+    }
     newHor->dbData.lowerDepth = NODATA;
     newHor->dbData.sand = NODATA;
     newHor->dbData.silt = NODATA;
