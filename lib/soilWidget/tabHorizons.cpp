@@ -5,11 +5,13 @@
 
 TabHorizons::TabHorizons()
 {
-    QVBoxLayout *mainLayout = new QVBoxLayout;
+    QHBoxLayout *mainLayout = new QHBoxLayout;
+    linesLayout = new QVBoxLayout;
     QLabel* dbTableLabel = new QLabel("Soil parameters from DB:");
     dbTableLabel->setStyleSheet("font: 11pt;");
     QLabel* modelTableLabel = new QLabel("Soil parameters estimated by model:");
     modelTableLabel->setStyleSheet("font: 11pt;");
+    QVBoxLayout *tableLayout = new QVBoxLayout;
     tableDb = new Crit3DSoilTable(dbTable);
     tableModel = new Crit3DSoilTable(modelTable);
     QHBoxLayout *addDeleteRowLayout = new QHBoxLayout;
@@ -37,11 +39,14 @@ TabHorizons::TabHorizons()
     connect(addRow, &QPushButton::clicked, [=](){ this->addRowClicked(); });
     connect(deleteRow, &QPushButton::clicked, [=](){ this->removeRowClicked(); });
 
-    mainLayout->addWidget(dbTableLabel);
-    mainLayout->addWidget(tableDb);
-    mainLayout->addLayout(addDeleteRowLayout);
-    mainLayout->addWidget(modelTableLabel);
-    mainLayout->addWidget(tableModel);
+    tableLayout->addWidget(dbTableLabel);
+    tableLayout->addWidget(tableDb);
+    tableLayout->addLayout(addDeleteRowLayout);
+    tableLayout->addWidget(modelTableLabel);
+    tableLayout->addWidget(tableModel);
+
+    mainLayout->addLayout(linesLayout);
+    mainLayout->addLayout(tableLayout);
 
     setLayout(mainLayout);
     insertSoilElement = false;
@@ -51,6 +56,21 @@ TabHorizons::TabHorizons()
 void TabHorizons::insertSoilHorizons(soil::Crit3DSoil *soil, soil::Crit3DTextureClass* textureClassList,
                                      soil::Crit3DFittingOptions* fittingOptions)
 {
+
+    QRect layoutSize = linesLayout->geometry();
+
+    int totHeight = 0;
+
+    // if layoutSize has no size (case tab in use)
+    if (layoutSize.height() == 0)
+    {
+        totHeight = this->height() - (this->height() * 5 / 100);
+    }
+    else
+    {
+        totHeight = layoutSize.height();
+    }
+
     if (soil == nullptr)
     {
         return;
@@ -108,6 +128,16 @@ void TabHorizons::insertSoilHorizons(soil::Crit3DSoil *soil, soil::Crit3DTexture
         tableModel->setItem(i, 8, new QTableWidgetItem( QString::number(mySoil->horizon[i].vanGenuchten.alpha, 'f', 3 )));
         tableModel->setItem(i, 9, new QTableWidgetItem( QString::number(mySoil->horizon[i].vanGenuchten.n, 'f', 3 )));
         tableModel->setItem(i, 10, new QTableWidgetItem( QString::number(mySoil->horizon[i].vanGenuchten.m, 'f', 3 )));   
+
+        // insertVerticalLines
+        int length = int((mySoil->horizon[i].lowerDepth*100 - mySoil->horizon[i].upperDepth*100) * totHeight / (mySoil->totalDepth*100));
+        BarHorizons* line = new BarHorizons();
+        line->setIndex(signed(i));
+        line->setFixedWidth(20);
+        line->setFixedHeight(length);
+        line->setClass(mySoil->horizon[i].texture.classUSDA);
+        linesLayout->addWidget(line);
+        lineList.push_back(line);
     }
     // check all Depths
     checkDepths();
@@ -129,6 +159,11 @@ void TabHorizons::insertSoilHorizons(soil::Crit3DSoil *soil, soil::Crit3DTexture
     connect(tableDb, &QTableWidget::cellChanged, [=](int row, int column){ this->cellChanged(row, column); });
     connect(tableDb, &QTableWidget::cellClicked, [=](int row, int column){ this->cellClickedDb(row, column); });
     connect(tableModel, &QTableWidget::cellClicked, [=](int row, int column){ this->cellClickedModel(row, column); });
+    for (int i=0; i<lineList.size(); i++)
+    {
+        connect(lineList[i], SIGNAL(clicked(int)), this, SLOT(widgetClicked(int)));
+    }
+    cellClickedDb(0,0);
 
 
 }
@@ -308,6 +343,7 @@ void TabHorizons::clearSelections()
     tableDb->clearSelection();
     tableModel->clearSelection();
     deleteRow->setEnabled(false);
+    emit horizonSelected(-1);
 }
 
 void TabHorizons::editItem(int row, int column)
@@ -351,6 +387,19 @@ void TabHorizons::cellClickedDb(int row, int column)
         }
     }
 
+    for (int i = 0; i < lineList.size(); i++)
+    {
+        if (i != row)
+        {
+            lineList[i]->restoreFrame();
+            lineList[i]->setSelected(false);
+        }
+        else
+        {
+            lineList[i]->setSelected(true);
+            lineList[i]->setSelectedFrame();
+        }
+    }
     deleteRow->setEnabled(false);
     emit horizonSelected(row);
 }
@@ -390,6 +439,19 @@ void TabHorizons::cellClickedModel(int row, int column)
             break;
         }
     }
+    for (int i = 0; i < lineList.size(); i++)
+    {
+        if (i != row)
+        {
+            lineList[i]->restoreFrame();
+            lineList[i]->setSelected(false);
+        }
+        else
+        {
+            lineList[i]->setSelected(true);
+            lineList[i]->setSelectedFrame();
+        }
+    }
     deleteRow->setEnabled(false);
     emit horizonSelected(row);
 }
@@ -404,6 +466,20 @@ void TabHorizons::tableDbVerticalHeaderClick(int index)
     tableModel->selectRow(index);
     tableModel->horizontalHeader()->setHighlightSections(false);
     deleteRow->setEnabled(true);
+
+    for(int i = 0; i < lineList.size(); i++)
+    {
+        if (i != index)
+        {
+            lineList[i]->restoreFrame();
+            lineList[i]->setSelected(false);
+        }
+        else
+        {
+            lineList[i]->setSelected(true);
+            lineList[i]->setSelectedFrame();
+        }
+    }
     emit horizonSelected(index);
 
 }
@@ -629,18 +705,27 @@ void TabHorizons::addRowClicked()
 {
     tableDb->blockSignals(true);
     int numRow;
-    if (!tableDb->selectedItems().isEmpty())
+
+    if (tableDb->rowCount() != 0)
     {
-        if (tableDb->selectedItems().size() != tableDb->columnCount())
+        if (tableDb->selectedItems().isEmpty())
         {
             QMessageBox::critical(nullptr, "Warning", "Select the row of the horizon before the one you want to add");
             return;
         }
-        numRow = tableDb->selectedItems().at(0)->row()+1;
+        else
+        {
+            if (tableDb->selectedItems().size() != tableDb->columnCount())
+            {
+                QMessageBox::critical(nullptr, "Warning", "Select the row of the horizon before the one you want to add");
+                return;
+            }
+            numRow = tableDb->selectedItems().at(0)->row()+1;
+        }
     }
     else
     {
-        numRow = tableDb->rowCount();
+        numRow = 0;
     }
 
     tableDb->insertRow(numRow);
@@ -654,8 +739,6 @@ void TabHorizons::addRowClicked()
     {
         tableModel->setItem(numRow, j, new QTableWidgetItem());
     }
-    tableDb->scrollToBottom();
-    tableModel->scrollToBottom();
     deleteRow->setEnabled(true);
 
     setInvalidTableModelRow(numRow);
@@ -738,6 +821,12 @@ void TabHorizons::resetSoilCodeChanged()
 
 void TabHorizons::resetAll()
 {
+    // delete all Widgets
+    if (!lineList.isEmpty())
+    {
+        qDeleteAll(lineList);
+        lineList.clear();
+    }
     tableDb->setRowCount(0);
     tableModel->setRowCount(0);
     insertSoilElement = false;
@@ -753,4 +842,28 @@ bool TabHorizons::getInsertSoilElement() const
 void TabHorizons::setInsertSoilElement(bool value)
 {
     insertSoilElement = value;
+}
+
+void TabHorizons::widgetClicked(int index)
+{
+    // check selection state
+    if (lineList[index]->getSelected())
+    {
+        // clear previous selection
+        for(int i = 0; i < lineList.size(); i++)
+        {
+            if (i != index)
+            {
+                lineList[i]->restoreFrame();
+                lineList[i]->setSelected(false);
+            }
+        }
+        tableDbVerticalHeaderClick(index);
+    }
+    else
+    {
+        clearSelections();
+    }
+
+
 }
