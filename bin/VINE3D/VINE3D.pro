@@ -48,7 +48,6 @@ CONFIG(debug, debug|release) {
     LIBS += -L../../lib/gis/debug -lgis
     LIBS += -L../../lib/crit3dDate/debug -lcrit3dDate
     LIBS += -L../../lib/mathFunctions/debug -lmathFunctions
-    LIBS += -L../../lib/specialMathFunctions/debug -lspecialMathFunctions
 } else {
 
     LIBS += -L../../lib/soilWidget/release -lsoilWidget
@@ -64,7 +63,6 @@ CONFIG(debug, debug|release) {
     LIBS += -L../../lib/gis/release -lgis
     LIBS += -L../../lib/crit3dDate/release -lcrit3dDate
     LIBS += -L../../lib/mathFunctions/release -lmathFunctions
-    LIBS += -L../../lib/specialMathFunctions/release -lspecialMathFunctions
 }
 
 SOURCES += \
