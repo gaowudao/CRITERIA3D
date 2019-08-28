@@ -19,6 +19,10 @@ TabWaterRetentionCurve::TabWaterRetentionCurve()
     QHBoxLayout *mainLayout = new QHBoxLayout;
     QVBoxLayout *plotLayout = new QVBoxLayout;
     linesLayout = new QVBoxLayout;
+    linesLayout->setAlignment(Qt::AlignHCenter);
+    QGroupBox *linesGroup = new QGroupBox(tr(""));
+    linesGroup->setMinimumWidth(70);
+    linesGroup->setTitle("Depth");
 
     myPlot = new QwtPlot;
     myPlot->setAxisScaleEngine(QwtPlot::xBottom, new QwtLogScaleEngine(10));
@@ -46,7 +50,8 @@ TabWaterRetentionCurve::TabWaterRetentionCurve()
     grid->setMajorPen( Qt::darkGray, 0, Qt::SolidLine );
     grid->setMinorPen( Qt::gray, 0 , Qt::DotLine );
     grid->attach(myPlot);
-    mainLayout->addLayout(linesLayout);
+    linesGroup->setLayout(linesLayout);
+    mainLayout->addWidget(linesGroup);
     plotLayout->addWidget(myPlot);
     mainLayout->addLayout(plotLayout);
 
@@ -131,7 +136,7 @@ void TabWaterRetentionCurve::insertElements(soil::Crit3DSoil *soil)
         int length = int((mySoil->horizon[i].lowerDepth*100 - mySoil->horizon[i].upperDepth*100) * totHeight / (mySoil->totalDepth*100));
         BarHorizons* line = new BarHorizons();
         line->setIndex(signed(i));
-        line->setFixedWidth(20);
+        line->setFixedWidth(23);
         line->setFixedHeight(length);
         line->setClass(mySoil->horizon[i].texture.classUSDA);
         linesLayout->addWidget(line);

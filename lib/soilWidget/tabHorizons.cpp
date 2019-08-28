@@ -7,6 +7,10 @@ TabHorizons::TabHorizons()
 {
     QHBoxLayout *mainLayout = new QHBoxLayout;
     linesLayout = new QVBoxLayout;
+    linesLayout->setAlignment(Qt::AlignHCenter);
+    QGroupBox *linesGroup = new QGroupBox(tr(""));
+    linesGroup->setMinimumWidth(70);
+    linesGroup->setTitle("Depth");
     QLabel* dbTableLabel = new QLabel("Soil parameters from DB:");
     dbTableLabel->setStyleSheet("font: 11pt;");
     QLabel* modelTableLabel = new QLabel("Soil parameters estimated by model:");
@@ -45,7 +49,8 @@ TabHorizons::TabHorizons()
     tableLayout->addWidget(modelTableLabel);
     tableLayout->addWidget(tableModel);
 
-    mainLayout->addLayout(linesLayout);
+    linesGroup->setLayout(linesLayout);
+    mainLayout->addWidget(linesGroup);
     mainLayout->addLayout(tableLayout);
 
     setLayout(mainLayout);
@@ -133,7 +138,7 @@ void TabHorizons::insertSoilHorizons(soil::Crit3DSoil *soil, soil::Crit3DTexture
         int length = int((mySoil->horizon[i].lowerDepth*100 - mySoil->horizon[i].upperDepth*100) * totHeight / (mySoil->totalDepth*100));
         BarHorizons* line = new BarHorizons();
         line->setIndex(signed(i));
-        line->setFixedWidth(20);
+        line->setFixedWidth(23);
         line->setFixedHeight(length);
         line->setClass(mySoil->horizon[i].texture.classUSDA);
         linesLayout->addWidget(line);

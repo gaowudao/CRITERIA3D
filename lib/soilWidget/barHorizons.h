@@ -4,13 +4,13 @@
     #include <QWidget>
     #include <QFrame>
     #include <QPainter>
+    #include <QLabel>
 
     //class BarHorizons : public QWidget
     class BarHorizons : public QFrame
     {
         Q_OBJECT
     public:
-        //BarHorizons();
         BarHorizons(QWidget *parent = nullptr);
         void setClass(int classUSDA);
         int getIndex() const;
@@ -24,6 +24,7 @@
         void mousePressEvent(QMouseEvent* event);
 
     private:
+        QLabel *labelNumber;
         int index;
         int classUSDA;
         bool selected;

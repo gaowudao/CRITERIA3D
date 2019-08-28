@@ -7,7 +7,11 @@ TabWaterRetentionData::TabWaterRetentionData()
 {
     QHBoxLayout* mainLayout = new QHBoxLayout;
     linesLayout = new QVBoxLayout;
+    linesLayout->setAlignment(Qt::AlignHCenter);
     QVBoxLayout* tableLayout = new QVBoxLayout;
+    QGroupBox *linesGroup = new QGroupBox(tr(""));
+    linesGroup->setMinimumWidth(70);
+    linesGroup->setTitle("Depth");
     tableWaterRetention = new QTableWidget();
     tableWaterRetention->setColumnCount(3);
     QStringList tableHeader;
@@ -44,7 +48,8 @@ TabWaterRetentionData::TabWaterRetentionData()
 
     tableLayout->addWidget(tableWaterRetention);
     tableLayout->addLayout(addDeleteRowLayout);
-    mainLayout->addLayout(linesLayout);
+    linesGroup->setLayout(linesLayout);
+    mainLayout->addWidget(linesGroup);
     mainLayout->addLayout(tableLayout);
     setLayout(mainLayout);
     fillData = false;
@@ -86,7 +91,7 @@ void TabWaterRetentionData::insertData(soil::Crit3DSoil *soil)
         int length = int((mySoil->horizon[i].lowerDepth*100 - mySoil->horizon[i].upperDepth*100) * totHeight / (mySoil->totalDepth*100));
         BarHorizons* line = new BarHorizons();
         line->setIndex(signed(i));
-        line->setFixedWidth(20);
+        line->setFixedWidth(23);
         line->setFixedHeight(length);
         line->setClass(mySoil->horizon[i].texture.classUSDA);
         linesLayout->addWidget(line);

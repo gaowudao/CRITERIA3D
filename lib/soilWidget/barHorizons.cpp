@@ -1,10 +1,16 @@
 #include "barHorizons.h"
 #include <qdebug.h>
+#include <QLayout>
 
 BarHorizons::BarHorizons(QWidget *parent)
 {
     selected = false;
     this->setFrameStyle(QFrame::NoFrame);
+    labelNumber = new QLabel;
+    QHBoxLayout *layoutNumber = new QHBoxLayout;
+    layoutNumber->setAlignment(Qt::AlignCenter);
+    layoutNumber->addWidget(labelNumber);
+    setLayout(layoutNumber);
 }
 
 void BarHorizons::setClass(int classUSDA)
@@ -142,5 +148,6 @@ int BarHorizons::getIndex() const
 void BarHorizons::setIndex(int value)
 {
     index = value;
+    labelNumber->setText(QString::number(value));
 }
 
