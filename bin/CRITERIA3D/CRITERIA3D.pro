@@ -15,8 +15,7 @@ TEMPLATE = app
 INCLUDEPATH +=  ./shared ../PRAGA/shared  \
                 ../../mapGraphics \
                 ../../lib/soilFluxes3D/header  \
-                ../../lib/crit3dDate \
-                ../../lib/mathFunctions ../../lib/specialMathFunctions \
+                ../../lib/crit3dDate ../../lib/mathFunctions \
                 ../../lib/crop ../../lib/soil ../../lib/meteo ../../lib/gis \
                 ../../lib/interpolation ../../lib/solarRadiation  \
                 ../../lib/soilWidget ../../lib/utilities  \
@@ -51,7 +50,6 @@ CONFIG(debug, debug|release) {
     LIBS += -L../../lib/crop/debug -lcrop
     LIBS += -L../../lib/soilFluxes3D/debug -lsoilFluxes3D
     LIBS += -L../../lib/soil/debug -lsoil
-    LIBS += -L../../lib/specialMathFunctions/debug -lspecialMathFunctions
     LIBS += -L../../lib/mathFunctions/debug -lmathFunctions
     LIBS += -L../../lib/crit3dDate/debug -lcrit3dDate
 
@@ -68,7 +66,6 @@ CONFIG(debug, debug|release) {
     LIBS += -L../../lib/crop/release -lcrop
     LIBS += -L../../lib/soilFluxes3D/release -lsoilFluxes3D
     LIBS += -L../../lib/soil/release -lsoil
-    LIBS += -L../../lib/specialMathFunctions/release -lspecialMathFunctions
     LIBS += -L../../lib/mathFunctions/release -lmathFunctions
     LIBS += -L../../lib/crit3dDate/release -lcrit3dDate
 }
