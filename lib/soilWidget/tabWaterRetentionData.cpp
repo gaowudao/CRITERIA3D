@@ -78,7 +78,15 @@ void TabWaterRetentionData::insertData(soil::Crit3DSoil *soil)
         for (int j = 0; j < mySoil->horizon[i].dbData.waterRetention.size(); j++)
         {
             tableWaterRetention->setItem(pos, 0, new QTableWidgetItem( QString::number(i+1, 'f', 0)));
-            tableWaterRetention->setItem(pos, 1, new QTableWidgetItem( QString::number(mySoil->horizon[i].dbData.waterRetention[j].water_potential, 'f', 1)));
+            if (mySoil->horizon[i].dbData.waterRetention[j].water_potential < 1)
+            {
+                tableWaterRetention->setItem(pos, 1, new QTableWidgetItem( QString::number(mySoil->horizon[i].dbData.waterRetention[j].water_potential, 'f', 3)));
+            }
+            else
+            {
+                tableWaterRetention->setItem(pos, 1, new QTableWidgetItem( QString::number(mySoil->horizon[i].dbData.waterRetention[j].water_potential, 'f', 1)));
+            }
+
             tableWaterRetention->setItem(pos, 2, new QTableWidgetItem( QString::number(mySoil->horizon[i].dbData.waterRetention[j].water_content, 'f', 3 )));
             pos = pos + 1;
         }
@@ -241,7 +249,7 @@ void TabWaterRetentionData::cellChanged(int row, int column)
         case 1:
         {
         // water potential
-            if (data.toInt() < 0)
+            if (data.toDouble() < 0)
             {
                 QMessageBox::critical(nullptr, "Error!", "Insert valid water potential");
                 if (row == 0)
@@ -254,6 +262,10 @@ void TabWaterRetentionData::cellChanged(int row, int column)
                 }
                 return;
             }
+            else if (data.toDouble() < 1)
+            {
+                tableWaterRetention->item(row, column)->setText(QString::number(data.toDouble(), 'f', 3));
+            }
             else
             {
                 tableWaterRetention->item(row, column)->setText(QString::number(data.toDouble(), 'f', 1));
@@ -263,7 +275,7 @@ void TabWaterRetentionData::cellChanged(int row, int column)
         // water content
         case 2:
         {
-            if (data.toInt() < 0 || data.toInt() > 1)
+            if (data.toDouble() < 0 || data.toDouble() > 1)
             {
                 QMessageBox::critical(nullptr, "Error!", "Insert valid water content");
                 if (row == 0)
