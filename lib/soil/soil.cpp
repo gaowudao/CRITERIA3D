@@ -428,9 +428,9 @@ namespace soil
 
     /*!
      * \brief Compute water potential from volumetric water content
-     * \param theta  [m^3 m-3] volumetric water content
-     * \param horizon pointer to Crit3DHorizon class
-     * \return [same unit of vanGenuchten.he] water potential
+     * \param theta: volumetric water content   [m^3 m-3]
+     * \param horizon: pointer to Crit3DHorizon class
+     * \return water potential                  [kPa]
      */
     double psiFromTheta(double theta, Crit3DHorizon* horizon)
 
@@ -443,35 +443,48 @@ namespace soil
 
 
     /*!
-     * \brief Compute water content from signed water potential
+     * \brief Compute degree of stauration from signed water potential
+     * \param signPsi water potential       [kPa]
+     * \param horizon
+     * \return degree of saturation         [-]
+     */
+    double degreeOfSaturationFromSignPsi(double signPsi, Crit3DHorizon* horizon)
+    {
+        if (signPsi >= 0.0) return 1.0;
+
+        double psi = fabs(signPsi);
+        if (psi <=  horizon->vanGenuchten.he) return 1.0;
+
+        double degreeOfSaturation = pow(1.0 + pow(horizon->vanGenuchten.alpha * psi, horizon->vanGenuchten.n),
+                        - horizon->vanGenuchten.m) / horizon->vanGenuchten.sc;
+
+        return degreeOfSaturation;
+    }
+
+
+    /*!
+     * \brief Compute volumetric water content from signed water potential
      * \param signPsi water potential       [kPa]
      * \param horizon
      * \return volumetric water content     [m^3 m-3]
      */
     double thetaFromSignPsi(double signPsi, Crit3DHorizon* horizon)
-    {
-        if (signPsi >= 0.0) return horizon->vanGenuchten.thetaS;
+    {     
+        // degree of saturation [-]
+        double Se = degreeOfSaturationFromSignPsi(signPsi, horizon);
 
-        double psi = fabs(signPsi);
-        if (psi <=  horizon->vanGenuchten.he) return horizon->vanGenuchten.thetaS;
-
-        //[-] degree of saturation
-        double Se = pow(1.0 + pow(horizon->vanGenuchten.alpha * psi, horizon->vanGenuchten.n),
-                        - horizon->vanGenuchten.m) / horizon->vanGenuchten.sc;
-
-        double theta = (Se * (horizon->vanGenuchten.thetaS - horizon->vanGenuchten.thetaR) + horizon->vanGenuchten.thetaR);
+        double theta = Se * (horizon->vanGenuchten.thetaS - horizon->vanGenuchten.thetaR) + horizon->vanGenuchten.thetaR;
         return theta;
     }
 
 
     /*!
      * \brief Compute hydraulic conductivity
-     * \param Se [-] degree of saturation
-     * \param horizon pointer to Crit3DHorizon class
-     * \note Mualem equation for modified Van Genuchten curve: K(Se) = Ksat * Se^(L) * {1-[1-Se^(1/m)]^m}^2
+     * \brief Mualem equation for modified Van Genuchten curve
+     * \param Se: degree of saturation      [-]
+     * \param horizon: pointer to Crit3DHorizon class
+     * \return hydraulic conductivity       [cm day^-1]
      * \warning very low values are possible (es: 10^12)
-     * \return hydraulic conductivity
-     *  unit is the same of horizon->waterConductivity.kSat usually [cm day^-1]
      */
     double waterConductivity(double Se, Crit3DHorizon* horizon)
     {
@@ -484,6 +497,21 @@ namespace soil
 
         return (horizon->waterConductivity.kSat * pow(Se, horizon->waterConductivity.l) * pow(myTmp , 2.0));
     }
+
+
+    /*!
+     * \brief Compute water conductivity from signed water potential
+     * \param signPsi: water potential       [kPa]
+     * \param horizon
+     * \return water conductivity           [cm day-1]
+     */
+    double waterConductivityFromSignPsi(double signPsi, Crit3DHorizon* horizon)
+    {
+        double theta = soil::thetaFromSignPsi(signPsi, horizon);
+        double degreeOfSaturation = SeFromTheta(theta, horizon);
+        return waterConductivity(degreeOfSaturation, horizon);
+    }
+
 
     /*!
      * \brief getWaterContentFromPsi
