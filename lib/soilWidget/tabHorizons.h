@@ -7,7 +7,7 @@
     #ifndef SOILTABLE_H
         #include "soilTable.h"
     #endif
-
+    #include "barHorizons.h"
     #include <QtWidgets>
 
     class TabHorizons : public QWidget
@@ -40,6 +40,8 @@
     private:
         Crit3DSoilTable* tableDb;
         Crit3DSoilTable* tableModel;
+        QVBoxLayout* linesLayout;
+        QList<BarHorizons*> lineList;
         QPushButton* addRow;
         QPushButton* deleteRow;
         soil::Crit3DSoil* mySoil;
@@ -47,9 +49,12 @@
         soil::Crit3DFittingOptions* myFittingOptions;
         bool soilCodeChanged;
         bool insertSoilElement;
+    private slots:
+        void widgetClicked(int index);
 
     signals:
         void horizonSelected(int nHorizon);
+
 
     };
 
