@@ -30,12 +30,14 @@ win32:{
 HEADERS += \
     commonConstants.h \
     basicMath.h \
+    furtherMathFunctions.h \
     statistics.h \
     physics.h \
     gammaFunction.h
 
 SOURCES += \
     basicMath.cpp \
+    furtherMathFunctions.cpp \
     statistics.cpp \
     physics.cpp \
     gammaFunction.cpp

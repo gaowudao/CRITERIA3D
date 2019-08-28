@@ -89,6 +89,7 @@
         soil::Crit3DSoil mySoil;
         soil::Crit3DTextureClass soilTexture[13];
         soil::Crit3DLayer* layer;
+        soil::Crit3DFittingOptions fittingOptions;
         int nrLayers;
         double layerThickness;                  /*!<  [m]  */
         double maxSimulationDepth;              /*!<  [m]  */

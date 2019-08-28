@@ -117,11 +117,11 @@ CriteriaModelOutput::CriteriaModelOutput()
 bool CriteriaModel::setSoil(QString soilCode, QString *myError)
 {
     // load Soil
-    if (! loadSoil(&dbSoil, soilCode, &mySoil, this->soilTexture, myError))
+    if (! loadSoil(&dbSoil, soilCode, &mySoil, soilTexture, &fittingOptions, myError))
         return false;
 
     // nr of layers (check on last layer)
-    double temp = this->mySoil.totalDepth / this->layerThickness;
+    double temp = mySoil.totalDepth / this->layerThickness;
     this->nrLayers = int(floor(temp)) + 1;
     if ((temp - floor(temp)) > 0.5)
     {

@@ -23,7 +23,7 @@ win32:{
     TARGET = soilWidget
 }
 
-INCLUDEPATH += ../mathFunctions ../specialMathFunctions ../soil ../utilities
+INCLUDEPATH += ../mathFunctions ../soil ../utilities
 unix:{
     INCLUDEPATH += /usr/include/qwt/
 }
