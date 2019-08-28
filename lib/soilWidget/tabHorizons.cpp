@@ -163,7 +163,12 @@ void TabHorizons::checkDepths()
             }
         }
 
-        if (mySoil->horizon[horizonNum].dbData.upperDepth > mySoil->horizon[horizonNum].dbData.lowerDepth)
+        if (mySoil->horizon[horizonNum].dbData.upperDepth == NODATA || mySoil->horizon[horizonNum].dbData.lowerDepth == NODATA)
+        {
+            tableDb->item(horizonNum,0)->setBackgroundColor(Qt::red);
+            tableDb->item(horizonNum,1)->setBackgroundColor(Qt::red);
+        }
+        else if (mySoil->horizon[horizonNum].dbData.upperDepth > mySoil->horizon[horizonNum].dbData.lowerDepth)
         {
             tableDb->item(horizonNum,0)->setBackgroundColor(Qt::red);
             tableDb->item(horizonNum,1)->setBackgroundColor(Qt::red);
@@ -246,7 +251,8 @@ void TabHorizons::setInvalidTableModelRow(int horizonNum)
 void TabHorizons::checkMissingItem(int horizonNum)
 {
     QString NODATAString = "-9999";
-    for (int j = 0; j < tableDb->columnCount(); j++)
+    // except for lower/upper depths
+    for (int j = 2; j < tableDb->columnCount(); j++)
     {
         if (tableDb->item(horizonNum,j)->text().contains(NODATAString) || tableDb->item(horizonNum,j)->text().isEmpty())
         {
@@ -680,7 +686,14 @@ void TabHorizons::addRowClicked()
     newHor->dbData.kSat = NODATA;
 
     mySoil->addHorizon(numRow,newHor);
+    // check all Depths
     checkDepths();
+    // check new values and assign background color
+    checkMissingItem(numRow);
+    if (checkHorizonData(numRow))
+    {
+        checkComputedValues(numRow);
+    }
     tableDb->blockSignals(false);
     soilCodeChanged = true;
 
