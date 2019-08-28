@@ -7,7 +7,9 @@
     #ifndef SOILTABLE_H
         #include "soilTable.h"
     #endif
-    #include "barHorizons.h"
+    #ifndef BARHORIZON_H
+        #include "barHorizons.h"
+    #endif
     #include <QtWidgets>
 
     class TabHorizons : public QWidget

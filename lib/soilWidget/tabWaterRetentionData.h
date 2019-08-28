@@ -4,6 +4,9 @@
     #ifndef SOIL_H
         #include "soil.h"
     #endif
+    #ifndef BARHORIZON_H
+        #include "barHorizons.h"
+    #endif
 
     #include <QtWidgets>
 
@@ -28,12 +31,16 @@
 
     private:
         QTableWidget* tableWaterRetention;
+        QVBoxLayout* linesLayout;
+        QList<BarHorizons*> lineList;
         QPushButton* addRow;
         QPushButton* deleteRow;
         soil::Crit3DSoil* mySoil;
         bool soilCodeChanged;
         QVector<int> horizonChanged;
         bool fillData;
+    private slots:
+        void widgetClicked(int index);
 
     };
 

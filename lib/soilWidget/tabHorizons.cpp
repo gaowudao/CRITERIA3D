@@ -865,5 +865,4 @@ void TabHorizons::widgetClicked(int index)
         clearSelections();
     }
 
-
 }
