@@ -419,8 +419,8 @@ namespace soil
     double SeFromTheta(double theta, Crit3DHorizon* horizon)
     {
         // check range
-        if (theta >= horizon->vanGenuchten.thetaS) return 1.;
-        if (theta <= horizon->vanGenuchten.thetaR) return 0.;
+        if (theta >= horizon->vanGenuchten.thetaS) return 1;
+        if (theta <= horizon->vanGenuchten.thetaR) return 0;
 
         return (theta - horizon->vanGenuchten.thetaR) / (horizon->vanGenuchten.thetaS - horizon->vanGenuchten.thetaR);
     }
@@ -428,6 +428,7 @@ namespace soil
 
     /*!
      * \brief Compute water potential from volumetric water content
+     * \brief using modified Van Genuchten model
      * \param theta: volumetric water content   [m^3 m-3]
      * \param horizon: pointer to Crit3DHorizon class
      * \return water potential                  [kPa]
@@ -444,6 +445,7 @@ namespace soil
 
     /*!
      * \brief Compute degree of stauration from signed water potential
+     * \brief using modified Van Genuchten model
      * \param signPsi water potential       [kPa]
      * \param horizon
      * \return degree of saturation         [-]
@@ -479,8 +481,8 @@ namespace soil
 
 
     /*!
-     * \brief Compute hydraulic conductivity
-     * \brief Mualem equation for modified Van Genuchten curve
+     * \brief Compute hydraulic conductivity from degree of saturation
+     * \brief using Mualem equation for modified Van Genuchten model
      * \param Se: degree of saturation      [-]
      * \param horizon: pointer to Crit3DHorizon class
      * \return hydraulic conductivity       [cm day^-1]
@@ -514,10 +516,10 @@ namespace soil
 
 
     /*!
-     * \brief getWaterContentFromPsi
-     * \param psi [kPa]
-     * \param layer pointer to Crit3DLayer class
-     * \return water content at water potential psi [mm]
+     * \brief get water content corresponding to a specific water potential
+     * \param psi: water potential  [kPa]
+     * \param layer: pointer to Crit3DLayer class
+     * \return water content        [mm]
      */
     double getWaterContentFromPsi(double psi, Crit3DLayer* layer)
     {
@@ -527,10 +529,10 @@ namespace soil
 
 
     /*!
-     * \brief getWaterContentFromAW
-     * \param availableWater [-] (0: wilting point, 1: field capacity)
-     * \param layer pointer to Crit3DLayer class
-     * \return  water content at specific available water [mm]
+     * \brief get water content corresponding to a specific available water
+     * \param availableWater    [-] (0: wilting point, 1: field capacity)
+     * \param layer: pointer to Crit3DLayer class
+     * \return  water content   [mm]
      */
     double getWaterContentFromAW(double availableWater, Crit3DLayer* layer)
     {
@@ -546,22 +548,22 @@ namespace soil
 
 
     /*!
-     * \brief getVolumetricWaterContent
-     * \param layer pointer to Crit3DLayer class
-     * \return current volumetric water content of layer [-]
+     * \brief get current volumetric water content
+     * \param layer: pointer to Crit3DLayer class
+     * \return volumetric water content [-]
      */
     double getVolumetricWaterContent(Crit3DLayer* layer)
     {
-        // layer->thickness in [m]
+        // unit of layer->thickness is [m]
         double theta = layer->waterContent / (layer->thickness * layer->soilFraction * 1000);
         return theta;
     }
 
 
     /*!
-     * \brief getWaterPotential
-     * \param layer pointer to Crit3DLayer class
-     * \return current water potential of layer [kPa]
+     * \brief get current water potential
+     * \param layer: pointer to Crit3DLayer class
+     * \return water potential [kPa]
      */
     double getWaterPotential(Crit3DLayer* layer)
     {
@@ -571,10 +573,9 @@ namespace soil
 
 
     /*!
-     * \brief getWaterConductivity
-     * \param layer pointer to Crit3DLayer class
-     * \return current hydraulic conductivity of layer
-     *  unit is the same of horizon->waterConductivity.kSat - usually [cm day^-1]
+     * \brief get current water conductivity
+     * \param layer: pointer to Crit3DLayer class
+     * \return hydraulic conductivity   [cm day^-1]
      */
     double getWaterConductivity(Crit3DLayer* layer)
     {
