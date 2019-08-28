@@ -22,7 +22,7 @@ TabWaterRetentionCurve::TabWaterRetentionCurve()
 
     myPlot = new QwtPlot;
     myPlot->setAxisScaleEngine(QwtPlot::xBottom, new QwtLogScaleEngine(10));
-    myPlot->setAxisTitle(QwtPlot::yLeft,QString("Water content [%1]").arg(QString("m3 m-3")));
+    myPlot->setAxisTitle(QwtPlot::yLeft,QString("Volumetric water content [%1]").arg(QString("m3 m-3")));
     myPlot->setAxisTitle(QwtPlot::xBottom,QString("Water potential [%1]").arg(QString("kPa")));
     myPlot->setAxisScale(QwtPlot::xBottom,XMIN, XMAX);
     myPlot->setAxisScale(QwtPlot::yLeft,YMIN, YMAX);

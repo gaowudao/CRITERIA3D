@@ -205,7 +205,9 @@
 
         double SeFromTheta(double theta, Crit3DHorizon* horizon);
         double psiFromTheta(double theta, Crit3DHorizon* horizon);
+        double degreeOfSaturationFromSignPsi(double signPsi, Crit3DHorizon* horizon);
         double thetaFromSignPsi(double signPsi, Crit3DHorizon* horizon);
+        double waterConductivityFromSignPsi(double psi, Crit3DHorizon* horizon);
 
         double waterConductivity(double Se, Crit3DHorizon* horizon);
 
