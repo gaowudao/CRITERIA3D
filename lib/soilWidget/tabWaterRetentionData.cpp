@@ -119,7 +119,12 @@ void TabWaterRetentionData::addRowClicked()
 {
 
     int numRow;
-    if (!tableWaterRetention->selectedItems().isEmpty())
+    if (tableWaterRetention->selectedItems().isEmpty())
+    {
+        QMessageBox::critical(nullptr, "Warning", "Select the row of the horizon before the one you want to add");
+        return;
+    }
+    else
     {
         if (tableWaterRetention->selectedItems().size() != tableWaterRetention->columnCount())
         {
@@ -128,15 +133,9 @@ void TabWaterRetentionData::addRowClicked()
         }
         numRow = tableWaterRetention->selectedItems().at(0)->row()+1;
     }
-    else
-    {
-        numRow = tableWaterRetention->rowCount();
-        tableWaterRetention->scrollToBottom();
-    }
-
     tableWaterRetention->insertRow(numRow);
 
-    // fill default row (copy the previous row
+    // fill default row (copy the previous row)
     tableWaterRetention->setSortingEnabled(false);
     if (numRow == 0)
     {

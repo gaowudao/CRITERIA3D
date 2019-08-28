@@ -129,6 +129,7 @@ void TabHorizons::insertSoilHorizons(soil::Crit3DSoil *soil, soil::Crit3DTexture
     connect(tableDb, &QTableWidget::cellChanged, [=](int row, int column){ this->cellChanged(row, column); });
     connect(tableDb, &QTableWidget::cellClicked, [=](int row, int column){ this->cellClickedDb(row, column); });
     connect(tableModel, &QTableWidget::cellClicked, [=](int row, int column){ this->cellClickedModel(row, column); });
+    cellClickedDb(0,0);
 
 
 }
@@ -629,7 +630,13 @@ void TabHorizons::addRowClicked()
 {
     tableDb->blockSignals(true);
     int numRow;
-    if (!tableDb->selectedItems().isEmpty())
+
+    if (tableDb->selectedItems().isEmpty())
+    {
+        QMessageBox::critical(nullptr, "Warning", "Select the row of the horizon before the one you want to add");
+        return;
+    }
+    else
     {
         if (tableDb->selectedItems().size() != tableDb->columnCount())
         {
@@ -637,10 +644,6 @@ void TabHorizons::addRowClicked()
             return;
         }
         numRow = tableDb->selectedItems().at(0)->row()+1;
-    }
-    else
-    {
-        numRow = tableDb->rowCount();
     }
 
     tableDb->insertRow(numRow);
@@ -654,8 +657,6 @@ void TabHorizons::addRowClicked()
     {
         tableModel->setItem(numRow, j, new QTableWidgetItem());
     }
-    tableDb->scrollToBottom();
-    tableModel->scrollToBottom();
     deleteRow->setEnabled(true);
 
     setInvalidTableModelRow(numRow);
