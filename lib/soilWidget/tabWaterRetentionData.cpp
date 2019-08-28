@@ -117,26 +117,34 @@ void TabWaterRetentionData::tableVerticalHeaderClick(int index)
 
 void TabWaterRetentionData::addRowClicked()
 {
-
+    tableWaterRetention->setSortingEnabled(false);
+    tableWaterRetention->blockSignals(true);
     int numRow;
-    if (tableWaterRetention->selectedItems().isEmpty())
+    if (tableWaterRetention->rowCount() != 0)
     {
-        QMessageBox::critical(nullptr, "Warning", "Select the row of the horizon before the one you want to add");
-        return;
-    }
-    else
-    {
-        if (tableWaterRetention->selectedItems().size() != tableWaterRetention->columnCount())
+        if (tableWaterRetention->selectedItems().isEmpty())
         {
             QMessageBox::critical(nullptr, "Warning", "Select the row of the horizon before the one you want to add");
             return;
         }
-        numRow = tableWaterRetention->selectedItems().at(0)->row()+1;
+        else
+        {
+            if (tableWaterRetention->selectedItems().size() != tableWaterRetention->columnCount())
+            {
+                QMessageBox::critical(nullptr, "Warning", "Select the row of the horizon before the one you want to add");
+                return;
+            }
+            numRow = tableWaterRetention->selectedItems().at(0)->row()+1;
+        }
     }
+    else
+    {
+        numRow = 0;
+    }
+
     tableWaterRetention->insertRow(numRow);
 
     // fill default row (copy the previous row)
-    tableWaterRetention->setSortingEnabled(false);
     if (numRow == 0)
     {
         tableWaterRetention->setItem(numRow, 0, new QTableWidgetItem(QString::number(1)));
@@ -149,7 +157,6 @@ void TabWaterRetentionData::addRowClicked()
         tableWaterRetention->setItem(numRow, 1, new QTableWidgetItem(tableWaterRetention->item(numRow-1,1)->text()));
         tableWaterRetention->setItem(numRow, 2, new QTableWidgetItem(tableWaterRetention->item(numRow-1,2)->text()));
     }
-    tableWaterRetention->setSortingEnabled(true);
     tableWaterRetention->selectRow(numRow);
     if (!horizonChanged.contains(tableWaterRetention->item(numRow,0)->text().toInt()))
     {
@@ -157,6 +164,9 @@ void TabWaterRetentionData::addRowClicked()
     }
     deleteRow->setEnabled(true);
     soilCodeChanged = true;
+
+    tableWaterRetention->blockSignals(false);
+    tableWaterRetention->setSortingEnabled(true);
 
 }
 

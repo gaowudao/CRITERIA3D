@@ -631,19 +631,26 @@ void TabHorizons::addRowClicked()
     tableDb->blockSignals(true);
     int numRow;
 
-    if (tableDb->selectedItems().isEmpty())
+    if (tableDb->rowCount() != 0)
     {
-        QMessageBox::critical(nullptr, "Warning", "Select the row of the horizon before the one you want to add");
-        return;
-    }
-    else
-    {
-        if (tableDb->selectedItems().size() != tableDb->columnCount())
+        if (tableDb->selectedItems().isEmpty())
         {
             QMessageBox::critical(nullptr, "Warning", "Select the row of the horizon before the one you want to add");
             return;
         }
-        numRow = tableDb->selectedItems().at(0)->row()+1;
+        else
+        {
+            if (tableDb->selectedItems().size() != tableDb->columnCount())
+            {
+                QMessageBox::critical(nullptr, "Warning", "Select the row of the horizon before the one you want to add");
+                return;
+            }
+            numRow = tableDb->selectedItems().at(0)->row()+1;
+        }
+    }
+    else
+    {
+        numRow = 0;
     }
 
     tableDb->insertRow(numRow);
