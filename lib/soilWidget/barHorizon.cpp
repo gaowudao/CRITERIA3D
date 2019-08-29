@@ -7,6 +7,12 @@ BarHorizon::BarHorizon(QWidget *parent)
     selected = false;
     this->setFrameStyle(QFrame::NoFrame);
     labelNumber = new QLabel;
+
+    // font size
+    QFont font = labelNumber->font();
+    font.setPointSize(8);
+    labelNumber->setFont(font);
+
     QHBoxLayout *layoutNumber = new QHBoxLayout;
     layoutNumber->setAlignment(Qt::AlignCenter);
     layoutNumber->addWidget(labelNumber);
