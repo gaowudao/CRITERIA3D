@@ -9,8 +9,8 @@ TabHorizons::TabHorizons()
     linesLayout = new QVBoxLayout;
     linesLayout->setAlignment(Qt::AlignHCenter);
     QGroupBox *linesGroup = new QGroupBox(tr(""));
-    linesGroup->setMinimumWidth(70);
-    linesGroup->setTitle("Depth");
+    linesGroup->setMinimumWidth(90);
+    linesGroup->setTitle("Depth [cm]");
     QLabel* dbTableLabel = new QLabel("Soil parameters from DB:");
     dbTableLabel->setStyleSheet("font: 11pt;");
     QLabel* modelTableLabel = new QLabel("Soil parameters estimated by model:");
@@ -80,6 +80,7 @@ void TabHorizons::insertSoilHorizons(soil::Crit3DSoil *soil, soil::Crit3DTexture
     {
         return;
     }
+
     resetAll();
     insertSoilElement = true;
     //disable events otherwise setBackgroundColor call again cellChanged event

@@ -10,8 +10,8 @@ TabWaterRetentionData::TabWaterRetentionData()
     linesLayout->setAlignment(Qt::AlignHCenter);
     QVBoxLayout* tableLayout = new QVBoxLayout;
     QGroupBox *linesGroup = new QGroupBox(tr(""));
-    linesGroup->setMinimumWidth(70);
-    linesGroup->setTitle("Depth");
+    linesGroup->setMinimumWidth(90);
+    linesGroup->setTitle("Depth [cm]");
     tableWaterRetention = new QTableWidget();
     tableWaterRetention->setColumnCount(3);
     QStringList tableHeader;

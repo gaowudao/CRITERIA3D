@@ -21,8 +21,8 @@ TabWaterRetentionCurve::TabWaterRetentionCurve()
     linesLayout = new QVBoxLayout;
     linesLayout->setAlignment(Qt::AlignHCenter);
     QGroupBox *linesGroup = new QGroupBox(tr(""));
-    linesGroup->setMinimumWidth(70);
-    linesGroup->setTitle("Depth");
+    linesGroup->setMinimumWidth(90);
+    linesGroup->setTitle("Depth [cm]");
 
     myPlot = new QwtPlot;
     myPlot->setAxisScaleEngine(QwtPlot::xBottom, new QwtLogScaleEngine(10));
