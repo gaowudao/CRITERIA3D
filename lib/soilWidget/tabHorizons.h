@@ -42,8 +42,7 @@
     private:
         Crit3DSoilTable* tableDb;
         Crit3DSoilTable* tableModel;
-        QVBoxLayout* linesLayout;
-        QList<BarHorizons*> lineList;
+        BarHorizonsList barHorizons;
         QPushButton* addRow;
         QPushButton* deleteRow;
         soil::Crit3DSoil* mySoil;
@@ -60,4 +59,4 @@
 
     };
 
-#endif // HORIZONSTAB_H
+#endif // TABHORIZONS_H

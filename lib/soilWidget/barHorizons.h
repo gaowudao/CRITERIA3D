@@ -5,8 +5,10 @@
     #include <QFrame>
     #include <QPainter>
     #include <QLabel>
+    #include <QGroupBox>
+    #include <QLayout>
+    #include "soil.h"
 
-    //class BarHorizons : public QWidget
     class BarHorizons : public QFrame
     {
         Q_OBJECT
@@ -33,5 +35,21 @@
            void clicked(int index);
 
     };
+
+
+    class BarHorizonsList
+    {
+    public:
+        QGroupBox* groupBox;
+        QList<BarHorizons*> list;
+        QVBoxLayout* layout;
+
+        BarHorizonsList();
+
+        void clear();
+        void selectItem(int index);
+        void draw(int totHeight, soil::Crit3DSoil *soil);
+    };
+
 
 #endif // BARHORIZON_H

@@ -1,6 +1,6 @@
 #include "barHorizons.h"
-#include <qdebug.h>
-#include <QLayout>
+#include "soil.h"
+//#include <qdebug.h>
 
 BarHorizons::BarHorizons(QWidget *parent)
 {
@@ -149,5 +149,61 @@ void BarHorizons::setIndex(int value)
 {
     index = value;
     labelNumber->setText(QString::number( (value+1) ));
+}
+
+
+BarHorizonsList::BarHorizonsList()
+{
+    groupBox = new QGroupBox();
+    groupBox->setMinimumWidth(90);
+    groupBox->setTitle("Depth [cm]");
+
+    layout = new QVBoxLayout;
+    layout->setAlignment(Qt::AlignHCenter);
+    groupBox->setLayout(layout);
+}
+
+
+void BarHorizonsList::draw(int totHeight, soil::Crit3DSoil *soil)
+{
+    for (unsigned int i = 0; i < soil->nrHorizons; i++)
+    {
+        int length = int(totHeight * (soil->horizon[i].lowerDepth - soil->horizon[i].upperDepth) / soil->totalDepth);
+        BarHorizons* newBar = new BarHorizons();
+        newBar->setIndex(signed(i));
+        newBar->setFixedWidth(25);
+        newBar->setFixedHeight(length);
+        newBar->setClass(soil->horizon[i].texture.classUSDA);
+        layout->addWidget(newBar);
+        list.push_back(newBar);
+    }
+}
+
+
+void BarHorizonsList::clear()
+{
+    if (!list.isEmpty())
+    {
+        qDeleteAll(list);
+        list.clear();
+    }
+}
+
+
+void BarHorizonsList::selectItem(int index)
+{
+    for (int i = 0; i < list.size(); i++)
+    {
+        if (i != index)
+        {
+            list[i]->restoreFrame();
+            list[i]->setSelected(false);
+        }
+        else
+        {
+            list[i]->setSelected(true);
+            list[i]->setSelectedFrame();
+        }
+    }
 }
 

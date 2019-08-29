@@ -300,6 +300,7 @@ void Crit3DSoilWidget::on_actionChooseSoil(QString soilCode)
     // re load textural triangle to clean previous circle
     pic.load(picPath);
     labelPic->setPixmap(pic);
+
     // soilListComboBox has been cleared
     if (soilCode.isEmpty())
     {
