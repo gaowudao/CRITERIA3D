@@ -41,10 +41,13 @@
     {
     private:
         QVBoxLayout* barLayout;
+        QVBoxLayout* depthLayout;
+        QHBoxLayout* mainLayout;
 
     public:
         QGroupBox* groupBox;
         QList<BarHorizon*> barList;
+        QList<QLabel*> labelList;
 
         BarHorizonList();
 

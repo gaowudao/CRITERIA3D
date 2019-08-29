@@ -1,6 +1,6 @@
 #include "barHorizon.h"
 #include "soil.h"
-//#include <qdebug.h>
+#include <qdebug.h>
 
 BarHorizon::BarHorizon(QWidget *parent)
 {
@@ -164,9 +164,16 @@ BarHorizonList::BarHorizonList()
     groupBox->setMinimumWidth(90);
     groupBox->setTitle("Depth [cm]");
 
+    depthLayout = new QVBoxLayout;
+    //depthLayout->setAlignment(Qt::AlignLeft);
+
     barLayout = new QVBoxLayout;
     barLayout->setAlignment(Qt::AlignHCenter);
-    groupBox->setLayout(barLayout);
+
+    mainLayout = new QHBoxLayout;
+    mainLayout->addLayout(depthLayout);
+    mainLayout->addLayout(barLayout);
+    groupBox->setLayout(mainLayout);
 }
 
 
@@ -184,6 +191,31 @@ void BarHorizonList::draw(soil::Crit3DSoil *soil)
         newBar->setClass(soil->horizon[i].texture.classUSDA);
         barLayout->addWidget(newBar);
         barList.push_back(newBar);
+
+        QLabel *startLabel = new QLabel();
+        QLabel *endLabel = new QLabel();
+        // font size
+        QFont font = startLabel->font();
+        font.setPointSize(6);
+        startLabel->setFont(font);
+        endLabel->setFont(font);
+        startLabel->setText(QString::number( (soil->horizon[i].upperDepth*100) ));
+        endLabel->setText(QString::number( (soil->horizon[i].lowerDepth*100) ));
+        if (i == 0)
+        {
+            startLabel->setGeometry(0, 0, 10, 10);
+            endLabel->setGeometry(0, startLabel->y() + 10, 10, 10);
+        }
+        else
+        {
+            startLabel->setGeometry(0, labelList.last()->y() - 10, 10, 10);
+            endLabel->setGeometry(0, startLabel->y() + 10, 10, 10);
+        }
+
+        depthLayout->addWidget(startLabel);
+        depthLayout->addWidget(endLabel);
+        labelList.push_back(startLabel);
+        labelList.push_back(endLabel);
     }
 }
 
@@ -194,6 +226,8 @@ void BarHorizonList::clear()
     {
         qDeleteAll(barList);
         barList.clear();
+        qDeleteAll(labelList);
+        labelList.clear();
     }
 }
 
