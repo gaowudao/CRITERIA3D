@@ -44,12 +44,13 @@
 
     public:
         QGroupBox* groupBox;
-        QList<BarHorizon*> list;
+        QList<BarHorizon*> barList;
 
         BarHorizonList();
 
         void clear();
         void selectItem(int index);
+        void deselectAll(int index);
         void draw(soil::Crit3DSoil *soil);
 
     };

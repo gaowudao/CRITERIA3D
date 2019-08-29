@@ -139,9 +139,9 @@ void TabHorizons::insertSoilHorizons(soil::Crit3DSoil *soil, soil::Crit3DTexture
     connect(tableDb, &QTableWidget::cellClicked, [=](int row, int column){ this->cellClickedDb(row, column); });
     connect(tableModel, &QTableWidget::cellClicked, [=](int row, int column){ this->cellClickedModel(row, column); });
 
-    for (int i=0; i < barHorizons.list.size(); i++)
+    for (int i=0; i < barHorizons.barList.size(); i++)
     {
-        connect(barHorizons.list[i], SIGNAL(clicked(int)), this, SLOT(widgetClicked(int)));
+        connect(barHorizons.barList[i], SIGNAL(clicked(int)), this, SLOT(widgetClicked(int)));
     }
 
     cellClickedDb(0,0);
@@ -791,17 +791,8 @@ void TabHorizons::setInsertSoilElement(bool value)
 void TabHorizons::widgetClicked(int index)
 {
     // check selection state
-    if (barHorizons.list[index]->getSelected())
+    if (barHorizons.barList[index]->getSelected())
     {
-        // clear previous selection
-        for(int i = 0; i < barHorizons.list.size(); i++)
-        {
-            if (i != index)
-            {
-                barHorizons.list[i]->restoreFrame();
-                barHorizons.list[i]->setSelected(false);
-            }
-        }
         tableDbVerticalHeaderClick(index);
     }
     else

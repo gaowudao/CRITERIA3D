@@ -183,34 +183,47 @@ void BarHorizonList::draw(soil::Crit3DSoil *soil)
         newBar->setFixedHeight(length);
         newBar->setClass(soil->horizon[i].texture.classUSDA);
         barLayout->addWidget(newBar);
-        list.push_back(newBar);
+        barList.push_back(newBar);
     }
 }
 
 
 void BarHorizonList::clear()
 {
-    if (!list.isEmpty())
+    if (!barList.isEmpty())
     {
-        qDeleteAll(list);
-        list.clear();
+        qDeleteAll(barList);
+        barList.clear();
     }
 }
 
 
 void BarHorizonList::selectItem(int index)
 {
-    for (int i = 0; i < list.size(); i++)
+    for (int i = 0; i < barList.size(); i++)
     {
         if (i != index)
         {
-            list[i]->restoreFrame();
-            list[i]->setSelected(false);
+            barList[i]->restoreFrame();
+            barList[i]->setSelected(false);
         }
         else
         {
-            list[i]->setSelected(true);
-            list[i]->setSelectedFrame();
+            barList[i]->setSelected(true);
+            barList[i]->setSelectedFrame();
+        }
+    }
+}
+
+
+void BarHorizonList::deselectAll(int index)
+{
+    for(int i = 0; i < barList.size(); i++)
+    {
+        if (i != index)
+        {
+            barList[i]->restoreFrame();
+            barList[i]->setSelected(false);
         }
     }
 }

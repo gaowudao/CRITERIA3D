@@ -143,9 +143,9 @@ void TabHydraulicConductivityCurve::insertElements(soil::Crit3DSoil *soil)
     //pick->setStateMachine(new QwtPickerClickPointMachine());
     //connect(pick, SIGNAL(clicked(int)), this, SLOT(curveClicked(int)));
 
-    for (int i=0; i < barHorizons.list.size(); i++)
+    for (int i=0; i < barHorizons.barList.size(); i++)
     {
-        connect(barHorizons.list[i], SIGNAL(clicked(int)), this, SLOT(widgetClicked(int)));
+        connect(barHorizons.barList[i], SIGNAL(clicked(int)), this, SLOT(widgetClicked(int)));
     }
 
     myPlot->replot();
@@ -156,17 +156,10 @@ void TabHydraulicConductivityCurve::widgetClicked(int index)
 {
     // check selection state
 
-    if (barHorizons.list[index]->getSelected())
+    if (barHorizons.barList[index]->getSelected())
     {
-        // clear previous selection
-        for(int i = 0; i < barHorizons.list.size(); i++)
-        {
-            if (i != index)
-            {
-                barHorizons.list[i]->restoreFrame();
-                barHorizons.list[i]->setSelected(false);
-            }
-        }
+        barHorizons.deselectAll(index);
+
         // select the right curve
         //pick->setSelectedCurveIndex(index);
         //pick->highlightCurve(true);

@@ -110,9 +110,9 @@ void TabWaterRetentionData::insertData(soil::Crit3DSoil *soil)
     connect(tableWaterRetention, &QTableWidget::cellClicked, [=](int row, int column){ this->cellClicked(row, column); });
     connect(tableWaterRetention, &QTableWidget::cellChanged, [=](int row, int column){ this->cellChanged(row, column); });
 
-    for (int i=0; i < barHorizons.list.size(); i++)
+    for (int i=0; i < barHorizons.barList.size(); i++)
     {
-        connect(barHorizons.list[i], SIGNAL(clicked(int)), this, SLOT(widgetClicked(int)));
+        connect(barHorizons.barList[i], SIGNAL(clicked(int)), this, SLOT(widgetClicked(int)));
     }
 
 }
@@ -382,17 +382,10 @@ void TabWaterRetentionData::setFillData(bool value)
 void TabWaterRetentionData::widgetClicked(int index)
 {
     // check selection state
-    if (barHorizons.list[index]->getSelected())
+    if (barHorizons.barList[index]->getSelected())
     {
         // clear previous selection
-        for(int i = 0; i < barHorizons.list.size(); i++)
-        {
-            if (i != index)
-            {
-                barHorizons.list[i]->restoreFrame();
-                barHorizons.list[i]->setSelected(false);
-            }
-        }
+        barHorizons.deselectAll(index);
     }
     else
     {
