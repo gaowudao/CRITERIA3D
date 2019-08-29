@@ -17,11 +17,6 @@ TabWaterRetentionCurve::TabWaterRetentionCurve()
     pick = nullptr;
     QHBoxLayout *mainLayout = new QHBoxLayout;
     QVBoxLayout *plotLayout = new QVBoxLayout;
-    linesLayout = new QVBoxLayout;
-    linesLayout->setAlignment(Qt::AlignHCenter);
-    QGroupBox *linesGroup = new QGroupBox(tr(""));
-    linesGroup->setMinimumWidth(90);
-    linesGroup->setTitle("Depth [cm]");
 
     myPlot = new QwtPlot;
     myPlot->setAxisScaleEngine(QwtPlot::xBottom, new QwtLogScaleEngine(10));
@@ -49,8 +44,8 @@ TabWaterRetentionCurve::TabWaterRetentionCurve()
     grid->setMajorPen( Qt::darkGray, 0, Qt::SolidLine );
     grid->setMinorPen( Qt::gray, 0 , Qt::DotLine );
     grid->attach(myPlot);
-    linesGroup->setLayout(linesLayout);
-    mainLayout->addWidget(linesGroup);
+
+    mainLayout->addWidget(barHorizons.groupBox);
     plotLayout->addWidget(myPlot);
     mainLayout->addLayout(plotLayout);
 
@@ -61,11 +56,10 @@ TabWaterRetentionCurve::TabWaterRetentionCurve()
 void TabWaterRetentionCurve::resetAll()
 {
     // delete all Widgets
-    if (!lineList.isEmpty())
-    {
-        qDeleteAll(lineList);
-        lineList.clear();
+    barHorizons.clear();
 
+    if (!curveList.isEmpty())
+    {
         qDeleteAll(curveList);
         curveList.clear();
     }
@@ -103,23 +97,12 @@ void TabWaterRetentionCurve::insertElements(soil::Crit3DSoil *soil)
     myPlot->setAxisScale(QwtPlot::xBottom, XMIN, XMAX);
     myPlot->setAxisScale(QwtPlot::yLeft, YMIN, YMAX);
 
-    QRect layoutSize = linesLayout->geometry();
-
-    int totHeight = 0;
-
-    // if layoutSize has no size (case tab in use)
-    if (layoutSize.height() == 0)
-    {
-        totHeight = this->height() - (this->height() * 5 / 100);
-    }
-    else
-    {
-        totHeight = layoutSize.height();
-    }
-
     if (soil == nullptr) return;
 
     resetAll();
+
+    barHorizons.draw(soil);
+
     fillElement = true;
     mySoil = soil;
     QVector<double> xVector;
@@ -131,16 +114,6 @@ void TabWaterRetentionCurve::insertElements(soil::Crit3DSoil *soil)
 
     for (unsigned int i = 0; i < mySoil->nrHorizons; i++)
     {
-        // insertVerticalLines
-        int length = int((mySoil->horizon[i].lowerDepth*100 - mySoil->horizon[i].upperDepth*100) * totHeight / (mySoil->totalDepth*100));
-        BarHorizons* line = new BarHorizons();
-        line->setIndex(signed(i));
-        line->setFixedWidth(25);
-        line->setFixedHeight(length);
-        line->setClass(mySoil->horizon[i].texture.classUSDA);
-        linesLayout->addWidget(line);
-        lineList.push_back(line);
-
         // insert Curves
         QwtPlotCurve *curve = new QwtPlotCurve;
         xVector.clear();
@@ -198,11 +171,11 @@ void TabWaterRetentionCurve::insertElements(soil::Crit3DSoil *soil)
     pick->setStateMachine(new QwtPickerClickPointMachine());
     connect(pick, SIGNAL(clicked(int)), this, SLOT(curveClicked(int)));
 
-    for (int i=0; i<lineList.size(); i++)
+    for (int i=0; i < barHorizons.list.size(); i++)
     {
-        connect(lineList[i], SIGNAL(clicked(int)), this, SLOT(widgetClicked(int)));
+        connect(barHorizons.list[i], SIGNAL(clicked(int)), this, SLOT(widgetClicked(int)));
     }
-    linesLayout->update();
+    barHorizons.layout->update();
     myPlot->replot();
 }
 
@@ -210,15 +183,15 @@ void TabWaterRetentionCurve::insertElements(soil::Crit3DSoil *soil)
 void TabWaterRetentionCurve::widgetClicked(int index)
 {
     // check selection state
-    if (lineList[index]->getSelected())
+    if (barHorizons.list[index]->getSelected())
     {
         // clear previous selection
-        for(int i = 0; i < lineList.size(); i++)
+        for(int i = 0; i < barHorizons.list.size(); i++)
         {
             if (i != index)
             {
-                lineList[i]->restoreFrame();
-                lineList[i]->setSelected(false);
+                barHorizons.list[i]->restoreFrame();
+                barHorizons.list[i]->setSelected(false);
             }
         }
         // select the right curve
@@ -237,19 +210,7 @@ void TabWaterRetentionCurve::widgetClicked(int index)
 void TabWaterRetentionCurve::curveClicked(int index)
 {
 
-    for(int i = 0; i < lineList.size(); i++)
-    {
-        if (i == index)
-        {
-            lineList[i]->setSelectedFrame();
-            lineList[i]->setSelected(true);
-        }
-        else
-        {
-            lineList[i]->restoreFrame();
-            lineList[i]->setSelected(false);
-        }
-    }
+    barHorizons.selectItem(index);
     emit horizonSelected(index);
 
 }

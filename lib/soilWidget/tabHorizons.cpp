@@ -138,14 +138,17 @@ void TabHorizons::insertSoilHorizons(soil::Crit3DSoil *soil, soil::Crit3DTexture
     connect(tableDb, &QTableWidget::cellChanged, [=](int row, int column){ this->cellChanged(row, column); });
     connect(tableDb, &QTableWidget::cellClicked, [=](int row, int column){ this->cellClickedDb(row, column); });
     connect(tableModel, &QTableWidget::cellClicked, [=](int row, int column){ this->cellClickedModel(row, column); });
-    for (int i=0; i<barHorizons.list.size(); i++)
+
+    for (int i=0; i < barHorizons.list.size(); i++)
     {
         connect(barHorizons.list[i], SIGNAL(clicked(int)), this, SLOT(widgetClicked(int)));
     }
+    barHorizons.layout->update();
+
     cellClickedDb(0,0);
 
-
 }
+
 
 void TabHorizons::checkDepths()
 {

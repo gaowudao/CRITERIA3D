@@ -9,11 +9,11 @@
     #include <QLayout>
     #include "soil.h"
 
-    class BarHorizons : public QFrame
+    class BarHorizon : public QFrame
     {
         Q_OBJECT
     public:
-        BarHorizons(QWidget *parent = nullptr);
+        BarHorizon(QWidget *parent = nullptr);
         void setClass(int classUSDA);
         int getIndex() const;
         void setIndex(int value);
@@ -37,14 +37,14 @@
     };
 
 
-    class BarHorizonsList
+    class BarHorizonList
     {
     public:
         QGroupBox* groupBox;
-        QList<BarHorizons*> list;
+        QList<BarHorizon*> list;
         QVBoxLayout* layout;
 
-        BarHorizonsList();
+        BarHorizonList();
 
         void clear();
         void selectItem(int index);

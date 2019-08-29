@@ -5,7 +5,7 @@
         #include "soil.h"
     #endif
     #ifndef BARHORIZON_H
-        #include "barHorizons.h"
+        #include "barHorizon.h"
     #endif
 
     #include <QtWidgets>
@@ -31,7 +31,7 @@
 
     private:
         QTableWidget* tableWaterRetention;
-        BarHorizonsList barHorizons;
+        BarHorizonList barHorizons;
         QPushButton* addRow;
         QPushButton* deleteRow;
         soil::Crit3DSoil* mySoil;

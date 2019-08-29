@@ -109,11 +109,12 @@ void TabWaterRetentionData::insertData(soil::Crit3DSoil *soil)
     tableWaterRetention->blockSignals(false);
     connect(tableWaterRetention, &QTableWidget::cellClicked, [=](int row, int column){ this->cellClicked(row, column); });
     connect(tableWaterRetention, &QTableWidget::cellChanged, [=](int row, int column){ this->cellChanged(row, column); });
+
     for (int i=0; i < barHorizons.list.size(); i++)
     {
         connect(barHorizons.list[i], SIGNAL(clicked(int)), this, SLOT(widgetClicked(int)));
     }
-
+    barHorizons.layout->update();
 }
 
 void TabWaterRetentionData::tableVerticalHeaderClick(int index)

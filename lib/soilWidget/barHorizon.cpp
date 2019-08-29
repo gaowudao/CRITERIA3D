@@ -1,8 +1,8 @@
-#include "barHorizons.h"
+#include "barHorizon.h"
 #include "soil.h"
 //#include <qdebug.h>
 
-BarHorizons::BarHorizons(QWidget *parent)
+BarHorizon::BarHorizon(QWidget *parent)
 {
     selected = false;
     this->setFrameStyle(QFrame::NoFrame);
@@ -13,7 +13,7 @@ BarHorizons::BarHorizons(QWidget *parent)
     setLayout(layoutNumber);
 }
 
-void BarHorizons::setClass(int classUSDA)
+void BarHorizon::setClass(int classUSDA)
 {
 
     this->classUSDA = classUSDA;
@@ -100,7 +100,7 @@ void BarHorizons::setClass(int classUSDA)
 
 }
 
-void BarHorizons::mousePressEvent(QMouseEvent* event)
+void BarHorizon::mousePressEvent(QMouseEvent* event)
 {
 
     // select the element
@@ -119,40 +119,40 @@ void BarHorizons::mousePressEvent(QMouseEvent* event)
 
 }
 
-void BarHorizons::setSelected(bool value)
+void BarHorizon::setSelected(bool value)
 {
     selected = value;
 }
 
-void BarHorizons::setSelectedFrame()
+void BarHorizon::setSelectedFrame()
 {
     this->setFrameStyle(QFrame::Box);
     this->setLineWidth(2);
 }
 
-void BarHorizons::restoreFrame()
+void BarHorizon::restoreFrame()
 {
     this->setFrameStyle(QFrame::NoFrame);
 }
 
-bool BarHorizons::getSelected() const
+bool BarHorizon::getSelected() const
 {
     return selected;
 }
 
-int BarHorizons::getIndex() const
+int BarHorizon::getIndex() const
 {
     return index;
 }
 
-void BarHorizons::setIndex(int value)
+void BarHorizon::setIndex(int value)
 {
     index = value;
     labelNumber->setText(QString::number( (value+1) ));
 }
 
 
-BarHorizonsList::BarHorizonsList()
+BarHorizonList::BarHorizonList()
 {
     groupBox = new QGroupBox();
     groupBox->setMinimumWidth(90);
@@ -164,14 +164,14 @@ BarHorizonsList::BarHorizonsList()
 }
 
 
-void BarHorizonsList::draw(soil::Crit3DSoil *soil)
+void BarHorizonList::draw(soil::Crit3DSoil *soil)
 {
     int totHeight = int(groupBox->height() * 0.9);
 
     for (unsigned int i = 0; i < soil->nrHorizons; i++)
     {
         int length = int(totHeight * (soil->horizon[i].lowerDepth - soil->horizon[i].upperDepth) / soil->totalDepth);
-        BarHorizons* newBar = new BarHorizons();
+        BarHorizon* newBar = new BarHorizon();
         newBar->setIndex(signed(i));
         newBar->setFixedWidth(25);
         newBar->setFixedHeight(length);
@@ -182,7 +182,7 @@ void BarHorizonsList::draw(soil::Crit3DSoil *soil)
 }
 
 
-void BarHorizonsList::clear()
+void BarHorizonList::clear()
 {
     if (!list.isEmpty())
     {
@@ -192,7 +192,7 @@ void BarHorizonsList::clear()
 }
 
 
-void BarHorizonsList::selectItem(int index)
+void BarHorizonList::selectItem(int index)
 {
     for (int i = 0; i < list.size(); i++)
     {

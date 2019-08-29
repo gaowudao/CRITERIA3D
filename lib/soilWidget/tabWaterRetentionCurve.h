@@ -6,7 +6,7 @@
     #include <qwt_plot_curve.h>
     #include <qwt_plot.h>
     #include "soil.h"
-    #include "barHorizons.h"
+    #include "barHorizon.h"
     #include "curvePicker.h"
 
 
@@ -21,10 +21,10 @@
         void setFillElement(bool value);
 
     private:
+        BarHorizonList barHorizons;
+
         soil::Crit3DSoil* mySoil;
-        QVBoxLayout* linesLayout;
         QwtPlot *myPlot;
-        QList<BarHorizons*> lineList;
         QList<QwtPlotCurve*> curveList;
         QMap< int, QwtPlotCurve* > curveMarkerMap;
         Crit3DCurvePicker *pick;

@@ -29,6 +29,7 @@ unix:{
 }
 
 SOURCES += \
+    barHorizon.cpp \
     curvePicker.cpp \
     soilTable.cpp \
     soilWidget.cpp \
@@ -39,10 +40,10 @@ SOURCES += \
     tabHydraulicConductivityCurve.cpp \
     tableDelegate.cpp \
     tableDelegateWaterRetention.cpp \
-    curvePanner.cpp \
-    barHorizons.cpp
+    curvePanner.cpp
 
 HEADERS += \
+    barHorizon.h \
     curvePicker.h \
     soilTable.h \
     soilWidget.h \
@@ -53,8 +54,7 @@ HEADERS += \
     tabHydraulicConductivityCurve.h \
     tableDelegate.h \
     tableDelegateWaterRetention.h \
-    curvePanner.h \
-    barHorizons.h
+    curvePanner.h
 
 unix {
     target.path = /usr/lib

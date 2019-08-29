@@ -5,7 +5,7 @@
     #include <qwt_plot_curve.h>
     #include <qwt_plot.h>
     #include "soil.h"
-    #include "barHorizons.h"
+    #include "barHorizon.h"
     #include "curvePicker.h"
 
     class TabHydraulicConductivityCurve: public QWidget
@@ -19,10 +19,9 @@
         void setFillElement(bool value);
 
     private:
+        BarHorizonList barHorizons;
         soil::Crit3DSoil* mySoil;
-        QVBoxLayout* linesLayout;
         QwtPlot *myPlot;
-        QList<BarHorizons*> lineList;
         QList<QwtPlotCurve*> curveList;
         Crit3DCurvePicker *pick;
         bool fillElement;
