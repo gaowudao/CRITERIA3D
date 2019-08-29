@@ -143,7 +143,6 @@ void TabHorizons::insertSoilHorizons(soil::Crit3DSoil *soil, soil::Crit3DTexture
     {
         connect(barHorizons.list[i], SIGNAL(clicked(int)), this, SLOT(widgetClicked(int)));
     }
-    barHorizons.layout->update();
 
     cellClickedDb(0,0);
 

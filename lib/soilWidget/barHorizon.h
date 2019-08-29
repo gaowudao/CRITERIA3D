@@ -39,16 +39,19 @@
 
     class BarHorizonList
     {
+    private:
+        QVBoxLayout* barLayout;
+
     public:
         QGroupBox* groupBox;
         QList<BarHorizon*> list;
-        QVBoxLayout* layout;
 
         BarHorizonList();
 
         void clear();
         void selectItem(int index);
         void draw(soil::Crit3DSoil *soil);
+
     };
 
 

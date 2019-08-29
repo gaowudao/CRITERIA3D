@@ -164,9 +164,9 @@ BarHorizonList::BarHorizonList()
     groupBox->setMinimumWidth(90);
     groupBox->setTitle("Depth [cm]");
 
-    layout = new QVBoxLayout;
-    layout->setAlignment(Qt::AlignHCenter);
-    groupBox->setLayout(layout);
+    barLayout = new QVBoxLayout;
+    barLayout->setAlignment(Qt::AlignHCenter);
+    groupBox->setLayout(barLayout);
 }
 
 
@@ -182,7 +182,7 @@ void BarHorizonList::draw(soil::Crit3DSoil *soil)
         newBar->setFixedWidth(28);
         newBar->setFixedHeight(length);
         newBar->setClass(soil->horizon[i].texture.classUSDA);
-        layout->addWidget(newBar);
+        barLayout->addWidget(newBar);
         list.push_back(newBar);
     }
 }

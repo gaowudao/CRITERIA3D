@@ -147,7 +147,6 @@ void TabHydraulicConductivityCurve::insertElements(soil::Crit3DSoil *soil)
     {
         connect(barHorizons.list[i], SIGNAL(clicked(int)), this, SLOT(widgetClicked(int)));
     }
-    barHorizons.layout->update();
 
     myPlot->replot();
 }
