@@ -179,7 +179,7 @@ void BarHorizonList::draw(soil::Crit3DSoil *soil)
         int length = int(totHeight * (soil->horizon[i].lowerDepth - soil->horizon[i].upperDepth) / soil->totalDepth);
         BarHorizon* newBar = new BarHorizon();
         newBar->setIndex(signed(i));
-        newBar->setFixedWidth(25);
+        newBar->setFixedWidth(28);
         newBar->setFixedHeight(length);
         newBar->setClass(soil->horizon[i].texture.classUSDA);
         layout->addWidget(newBar);
