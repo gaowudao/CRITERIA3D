@@ -164,8 +164,10 @@ BarHorizonsList::BarHorizonsList()
 }
 
 
-void BarHorizonsList::draw(int totHeight, soil::Crit3DSoil *soil)
+void BarHorizonsList::draw(soil::Crit3DSoil *soil)
 {
+    int totHeight = int(groupBox->height() * 0.9);
+
     for (unsigned int i = 0; i < soil->nrHorizons; i++)
     {
         int length = int(totHeight * (soil->horizon[i].lowerDepth - soil->horizon[i].upperDepth) / soil->totalDepth);

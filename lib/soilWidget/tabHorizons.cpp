@@ -62,8 +62,7 @@ void TabHorizons::insertSoilHorizons(soil::Crit3DSoil *soil, soil::Crit3DTexture
 
     resetAll();
 
-    int totHeight = int(this->height() * 0.85);
-    barHorizons.draw(totHeight, soil);
+    barHorizons.draw(soil);
 
     insertSoilElement = true;
     //disable events otherwise setBackgroundColor call again cellChanged event

@@ -48,7 +48,7 @@
 
         void clear();
         void selectItem(int index);
-        void draw(int totHeight, soil::Crit3DSoil *soil);
+        void draw(soil::Crit3DSoil *soil);
     };
 
 

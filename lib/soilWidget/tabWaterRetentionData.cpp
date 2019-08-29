@@ -61,8 +61,7 @@ void TabWaterRetentionData::insertData(soil::Crit3DSoil *soil)
     resetAll();
     fillData = true;
 
-    int totHeight = int(this->height() * 0.85);
-    barHorizons.draw(totHeight, soil);
+    barHorizons.draw(soil);
 
     tableWaterRetention->blockSignals(true);
     tableWaterRetention->clearSelection();
