@@ -135,7 +135,7 @@ void TabWaterRetentionCurve::insertElements(soil::Crit3DSoil *soil)
         int length = int((mySoil->horizon[i].lowerDepth*100 - mySoil->horizon[i].upperDepth*100) * totHeight / (mySoil->totalDepth*100));
         BarHorizons* line = new BarHorizons();
         line->setIndex(signed(i));
-        line->setFixedWidth(23);
+        line->setFixedWidth(25);
         line->setFixedHeight(length);
         line->setClass(mySoil->horizon[i].texture.classUSDA);
         linesLayout->addWidget(line);
