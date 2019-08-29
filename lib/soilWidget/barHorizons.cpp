@@ -148,6 +148,6 @@ int BarHorizons::getIndex() const
 void BarHorizons::setIndex(int value)
 {
     index = value;
-    labelNumber->setText(QString::number(value));
+    labelNumber->setText(QString::number( (value+1) ));
 }
 
