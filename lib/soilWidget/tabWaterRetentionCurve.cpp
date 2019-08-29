@@ -11,7 +11,6 @@
 #include <qwt_event_pattern.h>
 #include <qwt_picker_machine.h>
 #include <qwt_symbol.h>
-#include <QWidget>
 
 TabWaterRetentionCurve::TabWaterRetentionCurve()
 {
