@@ -31,8 +31,7 @@
 
     private:
         QTableWidget* tableWaterRetention;
-        QVBoxLayout* linesLayout;
-        QList<BarHorizons*> lineList;
+        BarHorizonsList barHorizons;
         QPushButton* addRow;
         QPushButton* deleteRow;
         soil::Crit3DSoil* mySoil;
