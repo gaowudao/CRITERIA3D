@@ -198,7 +198,7 @@ void BarHorizonList::draw(soil::Crit3DSoil *soil)
         font.setPointSize(8);
         depthLabel->setFont(font);
         depthLabel->setText(QString::number( (soil->horizon[i].upperDepth*100) ));
-        depthLabel->setFixedWidth(18);
+        depthLabel->setFixedWidth(20);
         depthLabel->setFixedHeight(10);
 
         depthLayout->addWidget(depthLabel);
@@ -211,7 +211,7 @@ void BarHorizonList::draw(soil::Crit3DSoil *soil)
             // font size
             lastLabel->setFont(font);
             lastLabel->setText(QString::number( (soil->horizon[i].lowerDepth*100) ));
-            lastLabel->setFixedWidth(18);
+            lastLabel->setFixedWidth(20);
             lastLabel->setFixedHeight(10);
 
             depthLayout->addWidget(lastLabel);
