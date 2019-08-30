@@ -69,8 +69,8 @@
             QLabel *labelPic;
 
             // USDA textural triangle size inside picture pic
-            constexpr static const double widthTriangle = 271.0;
-            constexpr static const double heightTriangle = 236.0;
+            constexpr static const double widthTriangle = 362.0;
+            constexpr static const double heightTriangle = 314.0;
 
             void setFittingMenu();
 
