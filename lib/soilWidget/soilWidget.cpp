@@ -43,6 +43,7 @@
 #include <QMenuBar>
 #include <QAction>
 #include <QMessageBox>
+#include <QFileInfo>
 #include <QDebug> //debug
 
 
@@ -60,7 +61,14 @@ Crit3DSoilWidget::Crit3DSoilWidget()
     QVBoxLayout *texturalLayout = new QVBoxLayout();
     QGridLayout *infoLayout = new QGridLayout();
 
+    // check triangle pic
     picPath = "../../DOC/img/textural_soil.png";
+    QFileInfo triangleFile(picPath);
+    if (! triangleFile.exists())
+    {
+        picPath = "./textural_soil.png";
+    }
+
     pic.load(picPath);
     labelPic = new QLabel();
     labelPic->setPixmap(pic);
