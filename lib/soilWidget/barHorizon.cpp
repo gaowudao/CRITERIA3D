@@ -165,10 +165,10 @@ BarHorizonList::BarHorizonList()
     groupBox->setTitle("Depth [cm]");
 
     depthLayout = new QVBoxLayout;
-    //depthLayout->setAlignment(Qt::AlignLeft);
+    depthLayout->setAlignment(Qt::AlignTop);
 
     barLayout = new QVBoxLayout;
-    barLayout->setAlignment(Qt::AlignHCenter);
+    barLayout->setAlignment(Qt::AlignTop | Qt::AlignHCenter);
 
     mainLayout = new QHBoxLayout;
     mainLayout->addLayout(depthLayout);
@@ -190,7 +190,7 @@ void BarHorizonList::draw(soil::Crit3DSoil *soil)
         newBar->setFixedHeight(length);
         newBar->setClass(soil->horizon[i].texture.classUSDA);
         barLayout->addWidget(newBar);
-        barList.push_back(newBar);
+        barList.push_back(newBar); 
 
         QLabel *startLabel = new QLabel();
         QLabel *endLabel = new QLabel();
@@ -201,19 +201,14 @@ void BarHorizonList::draw(soil::Crit3DSoil *soil)
         endLabel->setFont(font);
         startLabel->setText(QString::number( (soil->horizon[i].upperDepth*100) ));
         endLabel->setText(QString::number( (soil->horizon[i].lowerDepth*100) ));
-        if (i == 0)
-        {
-            startLabel->setGeometry(0, 0, 10, 10);
-            endLabel->setGeometry(0, startLabel->y() + 10, 10, 10);
-        }
-        else
-        {
-            startLabel->setGeometry(0, labelList.last()->y() - 10, 10, 10);
-            endLabel->setGeometry(0, startLabel->y() + 10, 10, 10);
-        }
-
+        startLabel->setFixedWidth(18);
+        startLabel->setFixedHeight(10);
+        endLabel->setFixedWidth(18);
+        endLabel->setFixedHeight(10);
         depthLayout->addWidget(startLabel);
+        depthLayout->addSpacing(length-28);
         depthLayout->addWidget(endLabel);
+        depthLayout->addSpacing(2);
         labelList.push_back(startLabel);
         labelList.push_back(endLabel);
     }
@@ -228,6 +223,15 @@ void BarHorizonList::clear()
         barList.clear();
         qDeleteAll(labelList);
         labelList.clear();
+    }
+    if ( depthLayout != nullptr )
+    {
+        QLayoutItem* item;
+        while ( ( item = depthLayout->takeAt( 0 ) ) != nullptr )
+        {
+            delete item->widget();
+            delete item;
+        }
     }
 }
 
