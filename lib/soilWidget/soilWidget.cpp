@@ -53,8 +53,7 @@ Crit3DSoilWidget::Crit3DSoilWidget()
     fittingOptions = new soil::Crit3DFittingOptions();
 
     this->setWindowTitle(QStringLiteral("Soil"));
-    this->adjustSize();
-    //this->resize(1240, 700);
+    this->resize(1240, 700);
 
     // layout
     QVBoxLayout *mainLayout = new QVBoxLayout();
