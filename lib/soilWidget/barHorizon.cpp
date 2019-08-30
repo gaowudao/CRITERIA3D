@@ -220,8 +220,6 @@ void BarHorizonList::draw(soil::Crit3DSoil *soil)
             labelList.push_back(lastLabel);
         }
 
-
-
     }
 }
 
