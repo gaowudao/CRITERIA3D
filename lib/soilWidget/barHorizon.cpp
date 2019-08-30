@@ -192,11 +192,12 @@ void BarHorizonList::draw(soil::Crit3DSoil *soil)
         barLayout->addWidget(newBar);
         barList.push_back(newBar); 
 
+        /*
         QLabel *startLabel = new QLabel();
         QLabel *endLabel = new QLabel();
         // font size
         QFont font = startLabel->font();
-        font.setPointSize(6);
+        font.setPointSize(7);
         startLabel->setFont(font);
         endLabel->setFont(font);
         startLabel->setText(QString::number( (soil->horizon[i].upperDepth*100) ));
@@ -211,6 +212,37 @@ void BarHorizonList::draw(soil::Crit3DSoil *soil)
         depthLayout->addSpacing(2);
         labelList.push_back(startLabel);
         labelList.push_back(endLabel);
+        */
+        QLabel *depthLabel = new QLabel();
+        // font size
+        QFont font = depthLabel->font();
+        font.setPointSize(7);
+        depthLabel->setFont(font);
+        depthLabel->setText(QString::number( (soil->horizon[i].upperDepth*100) ));
+        depthLabel->setFixedWidth(18);
+        depthLabel->setFixedHeight(10);
+
+        depthLayout->addWidget(depthLabel);
+        depthLayout->addSpacing(length-13);
+        labelList.push_back(depthLabel);
+
+        if (i == soil->nrHorizons -1)
+        {
+            QLabel *lastLabel = new QLabel();
+            // font size
+            QFont font = lastLabel->font();
+            font.setPointSize(7);
+            lastLabel->setFont(font);
+            lastLabel->setText(QString::number( (soil->horizon[i].lowerDepth*100) ));
+            lastLabel->setFixedWidth(18);
+            lastLabel->setFixedHeight(10);
+
+            depthLayout->addWidget(lastLabel);
+            labelList.push_back(lastLabel);
+        }
+
+
+
     }
 }
 
