@@ -231,7 +231,7 @@ void BarHorizonList::draw(soil::Crit3DSoil *soil)
             QLabel *lastLabel = new QLabel();
             // font size
             QFont font = lastLabel->font();
-            font.setPointSize(7);
+            font.setPointSize(8);
             lastLabel->setFont(font);
             lastLabel->setText(QString::number( (soil->horizon[i].lowerDepth*100) ));
             lastLabel->setFixedWidth(18);

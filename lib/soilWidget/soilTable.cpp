@@ -16,14 +16,14 @@ Crit3DSoilTable::Crit3DSoilTable(tableType type) : type(type)
     if (type == dbTable)
     {
         this->setColumnCount(10);
-        tableHeader << "Upper depth [cm]" << "Lower depth [cm]" << "Sand [%]" << "Silt  [%]" << "Clay [%]" << "Coarse frag. [%]" << "Org. matter [%]"
-                        << "Bulk density [g/cm3]" << "K Sat [cm/d]" << "Theta S [-]";
+        tableHeader << "Upper depth [cm]" << "Lower depth [cm]" << "Sand [%]" << "Silt  [%]" << "Clay [%]" << "Coarse [%]" << "O.M. [%]"
+                        << "B.D. [g/cm3]" << "K Sat [cm/d]" << "Theta S [-]";
     }
     else if (type == modelTable)
     {
         this->setColumnCount(11);
-        tableHeader << "USDA Texture" << "Coarse frag. [%]" << "Org. matter [%]"
-                        << "Bulk density [g/cm3]" << "K Sat [cm/d]" << "Theta S [-]" << "Theta R [-]" << "Air entry [KPa]"
+        tableHeader << "USDA Texture" << "Coarse [%]" << "O.M. [%]"
+                        << "B.D. [g/cm3]" << "K Sat [cm/d]" << "ThetaS [-]" << "ThetaR [-]" << "Air entry [KPa]"
                         << "alpha [KPa^-1]" << "  n  [-] " << " m   [-] ";
     }
 
