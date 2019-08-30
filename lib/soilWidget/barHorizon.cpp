@@ -192,31 +192,10 @@ void BarHorizonList::draw(soil::Crit3DSoil *soil)
         barLayout->addWidget(newBar);
         barList.push_back(newBar); 
 
-        /*
-        QLabel *startLabel = new QLabel();
-        QLabel *endLabel = new QLabel();
-        // font size
-        QFont font = startLabel->font();
-        font.setPointSize(7);
-        startLabel->setFont(font);
-        endLabel->setFont(font);
-        startLabel->setText(QString::number( (soil->horizon[i].upperDepth*100) ));
-        endLabel->setText(QString::number( (soil->horizon[i].lowerDepth*100) ));
-        startLabel->setFixedWidth(18);
-        startLabel->setFixedHeight(10);
-        endLabel->setFixedWidth(18);
-        endLabel->setFixedHeight(10);
-        depthLayout->addWidget(startLabel);
-        depthLayout->addSpacing(length-28);
-        depthLayout->addWidget(endLabel);
-        depthLayout->addSpacing(2);
-        labelList.push_back(startLabel);
-        labelList.push_back(endLabel);
-        */
         QLabel *depthLabel = new QLabel();
         // font size
         QFont font = depthLabel->font();
-        font.setPointSize(7);
+        font.setPointSize(8);
         depthLabel->setFont(font);
         depthLabel->setText(QString::number( (soil->horizon[i].upperDepth*100) ));
         depthLabel->setFixedWidth(18);
@@ -230,8 +209,6 @@ void BarHorizonList::draw(soil::Crit3DSoil *soil)
         {
             QLabel *lastLabel = new QLabel();
             // font size
-            QFont font = lastLabel->font();
-            font.setPointSize(7);
             lastLabel->setFont(font);
             lastLabel->setText(QString::number( (soil->horizon[i].lowerDepth*100) ));
             lastLabel->setFixedWidth(18);
