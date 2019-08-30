@@ -4,7 +4,8 @@
 #include <math.h>
 
 
-Crit3DCurvePanner::Crit3DCurvePanner(QwtPlot *plot) : QwtPlotPanner (plot->canvas()), qwtPlot(plot)
+Crit3DCurvePanner::Crit3DCurvePanner(QwtPlot *plot, double dxMin, double dxMax, double dyMin, double dyMax) : QwtPlotPanner (plot->canvas()),
+    qwtPlot(plot), dxMin(dxMin), dxMax(dxMax), dyMin(dyMin), dyMax(dyMax)
 {
 
 }
@@ -44,28 +45,28 @@ void Crit3DCurvePanner::moveCanvas(int dx, int dy)
         if (axis == QwtPlot::xBottom)
         {
             range = log10(d2) - log10(d1);
-            if(d1 < DXMIN)
+            if(d1 < dxMin)
             {
-                d1 = DXMIN;
+                d1 = dxMin;
                 d2 = pow(10, (range + log10(d1)));
             }
-            if(d2 > DXMAX)
+            if(d2 > dxMax)
             {
-                d2 = DXMAX;
+                d2 = dxMax;
                 d1 = pow(10, (log10(d2) - range));
             }
         }
         if (axis == QwtPlot::yLeft)
         {
             double range = d2 - d1;
-            if(d1 < DYMIN)
+            if(d1 < dyMin)
             {
-                d1 = DYMIN;
+                d1 = dyMin;
                 d2 = range + d1;
             }
-            if(d2 > DYMAX)
+            if(d2 > dyMax)
             {
-                d2 = DYMAX;
+                d2 = dyMax;
                 d1 = d2 - range;
             }
         }

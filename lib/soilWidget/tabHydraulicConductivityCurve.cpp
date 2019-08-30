@@ -22,12 +22,12 @@ TabHydraulicConductivityCurve::TabHydraulicConductivityCurve()
     myPlot->setAxisScaleEngine(QwtPlot::yLeft, new QwtLogScaleEngine(10));
     myPlot->setAxisTitle(QwtPlot::yLeft,QString("Water conductivity [%1]").arg(QString("cm day-1")));
     myPlot->setAxisTitle(QwtPlot::xBottom,QString("Water potential [%1]").arg(QString("kPa")));
-    myPlot->setAxisScale(QwtPlot::xBottom,XMIN, XMAX);
-    myPlot->setAxisScale(QwtPlot::yLeft,YMIN, YMAX);
+    myPlot->setAxisScale(QwtPlot::xBottom,xMin, xMax);
+    myPlot->setAxisScale(QwtPlot::yLeft,yMin, yMax);
 
     // Left Button for panning
-    Crit3DCurvePanner* panner = new Crit3DCurvePanner(myPlot);
-    panner->setMouseButton(Qt::LeftButton);
+    //Crit3DCurvePanner* panner = new Crit3DCurvePanner(myPlot, dxMin, dxMax, yMin, yMax);
+    //panner->setMouseButton(Qt::LeftButton);
     QwtPlotZoomer* zoomer = new QwtPlotZoomer( QwtPlot::xBottom, QwtPlot::yLeft, myPlot->canvas()  );
     zoomer->setRubberBandPen( QColor( Qt::black ) );
     zoomer->setTrackerPen( QColor( Qt::red ) );
@@ -89,8 +89,8 @@ void TabHydraulicConductivityCurve::setFillElement(bool value)
 void TabHydraulicConductivityCurve::insertElements(soil::Crit3DSoil *soil)
 {
     // rescale
-    myPlot->setAxisScale(QwtPlot::xBottom, XMIN, XMAX);
-    myPlot->setAxisScale(QwtPlot::yLeft, YMIN, YMAX);
+    myPlot->setAxisScale(QwtPlot::xBottom, xMin, xMax);
+    myPlot->setAxisScale(QwtPlot::yLeft, yMin, yMax);
 
     if (soil == nullptr) return;
 
@@ -114,8 +114,8 @@ void TabHydraulicConductivityCurve::insertElements(soil::Crit3DSoil *soil)
         xVector.clear();
         yVector.clear();
         double factor = 1.2;
-        x = DXMIN;
-        while (x < DXMAX*factor)
+        x = dxMin;
+        while (x < dxMax*factor)
         {
             double y = soil::waterConductivityFromSignPsi(-x, &mySoil->horizon[i]);
             if (y != NODATA)
@@ -137,7 +137,7 @@ void TabHydraulicConductivityCurve::insertElements(soil::Crit3DSoil *soil)
     maxThetaSat = ceil(maxThetaSat * 10) * 0.1;
 
     // rescale to maxThetaSat
-    myPlot->setAxisScale(QwtPlot::yLeft, YMIN, std::max(YMAX, maxThetaSat));
+    myPlot->setAxisScale(QwtPlot::yLeft, yMin, std::max(yMax, maxThetaSat));
 
     //pick = new Crit3DCurvePicker(myPlot, curveList);
     //pick->setStateMachine(new QwtPickerClickPointMachine());

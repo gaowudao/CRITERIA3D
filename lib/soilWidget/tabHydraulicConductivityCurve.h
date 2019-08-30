@@ -26,6 +26,14 @@
         Crit3DCurvePicker *pick;
         bool fillElement;
 
+        double dxMin = 0.001;
+        double dxMax = 1000000;
+
+        double xMin = (dxMin * 100);
+        double xMax = (dxMax / 100);
+        double yMin = pow(10, -12);
+        double yMax = 1000;
+
     private slots:
         void widgetClicked(int index);
         void curveClicked(int index);
