@@ -193,6 +193,7 @@ Crit3DSoilWidget::Crit3DSoilWidget()
     connect(&soilListComboBox, &QComboBox::currentTextChanged, this, &Crit3DSoilWidget::on_actionChooseSoil);
     connect(horizonsTab, SIGNAL(horizonSelected(int)), this, SLOT(setInfoTextural(int)));
     connect(wrCurveTab, SIGNAL(horizonSelected(int)), this, SLOT(setInfoTextural(int)));
+    connect(hydraConducCurveTab, SIGNAL(horizonSelected(int)), this, SLOT(setInfoTextural(int)));
     connect(tabWidget, &QTabWidget::currentChanged, [=](int index){ this->tabChanged(index); });
 
     fileMenu->addAction(openSoilDB);
@@ -350,6 +351,7 @@ void Crit3DSoilWidget::on_actionChooseSoil(QString soilCode)
     horizonsTab->resetAll();
     wrDataTab->resetAll();
     wrCurveTab->resetAll();
+    hydraConducCurveTab->resetAll();
 
     mySoil.cleanSoil();
 
@@ -509,6 +511,7 @@ void Crit3DSoilWidget::on_actionRestoreData()
     horizonsTab->setInsertSoilElement(false);
     wrDataTab->setFillData(false);
     wrCurveTab->setFillElement(false);
+    hydraConducCurveTab->setFillElement(false);
 
     tabChanged(tabWidget->currentIndex());
 }
@@ -635,7 +638,7 @@ void Crit3DSoilWidget::tabChanged(int index)
             deleteHorizon->setEnabled(true);
         }
     }
-    if (index == 1) // tab water retention data
+    else if (index == 1) // tab water retention data
     {
         if (!wrDataTab->getFillData())
         {
@@ -650,6 +653,14 @@ void Crit3DSoilWidget::tabChanged(int index)
         if (!wrCurveTab->getFillElement())
         {
             wrCurveTab->insertElements(&mySoil);
+        }
+
+    }
+    else if (index == 3) // tab water retention curve
+    {
+        if (!hydraConducCurveTab->getFillElement())
+        {
+            hydraConducCurveTab->insertElements(&mySoil);
         }
 
     }
