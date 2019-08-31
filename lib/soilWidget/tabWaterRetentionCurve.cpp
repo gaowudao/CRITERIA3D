@@ -27,7 +27,7 @@ TabWaterRetentionCurve::TabWaterRetentionCurve()
     myPlot->setAxisScale(QwtPlot::yLeft,yMin, yMax);
 
     // Left Button for panning
-    Crit3DCurvePanner* panner = new Crit3DCurvePanner(myPlot, dxMin, dxMax, dyMin, dyMax);
+    Crit3DCurvePanner* panner = new Crit3DCurvePanner(myPlot, xlog, dxMin, dxMax, dyMin, dyMax);
     panner->setMouseButton(Qt::LeftButton);
     QwtPlotZoomer* zoomer = new QwtPlotZoomer( QwtPlot::xBottom, QwtPlot::yLeft, myPlot->canvas()  );
     zoomer->setRubberBandPen( QColor( Qt::black ) );
@@ -96,7 +96,6 @@ void TabWaterRetentionCurve::insertElements(soil::Crit3DSoil *soil)
 {
     // rescale
     myPlot->setAxisScale(QwtPlot::xBottom, xMin, xMax);
-    myPlot->setAxisScale(QwtPlot::yLeft, yMin, yMax);
 
     if (soil == nullptr) return;
 

@@ -26,8 +26,8 @@ TabHydraulicConductivityCurve::TabHydraulicConductivityCurve()
     myPlot->setAxisScale(QwtPlot::yLeft,yMin, yMax);
 
     // Left Button for panning
-    //Crit3DCurvePanner* panner = new Crit3DCurvePanner(myPlot, dxMin, dxMax, yMin, yMax);
-    //panner->setMouseButton(Qt::LeftButton);
+    Crit3DCurvePanner* panner = new Crit3DCurvePanner(myPlot, xlogylog, dxMin, dxMax, yMin, yMax);
+    panner->setMouseButton(Qt::LeftButton);
     QwtPlotZoomer* zoomer = new QwtPlotZoomer( QwtPlot::xBottom, QwtPlot::yLeft, myPlot->canvas()  );
     zoomer->setRubberBandPen( QColor( Qt::black ) );
     zoomer->setTrackerPen( QColor( Qt::red ) );
@@ -89,7 +89,6 @@ void TabHydraulicConductivityCurve::insertElements(soil::Crit3DSoil *soil)
 {
     // rescale
     myPlot->setAxisScale(QwtPlot::xBottom, xMin, xMax);
-    myPlot->setAxisScale(QwtPlot::yLeft, yMin, yMax);
 
     if (soil == nullptr) return;
 
