@@ -13,7 +13,7 @@
 
 TabHydraulicConductivityCurve::TabHydraulicConductivityCurve()
 {
-    //pick = nullptr;
+    pick = nullptr;
     QHBoxLayout *mainLayout = new QHBoxLayout;
     QVBoxLayout *plotLayout = new QVBoxLayout;
 
@@ -64,13 +64,12 @@ void TabHydraulicConductivityCurve::resetAll()
         curveList.clear();
     }
 
-    /*
     if (pick != nullptr)
     {
         delete pick;
         pick = nullptr;
     }
-    */
+
     myPlot->detachItems( QwtPlotItem::Rtti_PlotCurve );
     fillElement = false;
 
@@ -102,8 +101,6 @@ void TabHydraulicConductivityCurve::insertElements(soil::Crit3DSoil *soil)
     mySoil = soil;
     QVector<double> xVector;
     QVector<double> yVector;
-    QVector<double> xMarkers;
-    QVector<double> yMarkers;
     double x;
     double maxThetaSat = 0;
 
@@ -139,9 +136,9 @@ void TabHydraulicConductivityCurve::insertElements(soil::Crit3DSoil *soil)
     // rescale to maxThetaSat
     myPlot->setAxisScale(QwtPlot::yLeft, yMin, std::max(yMax, maxThetaSat));
 
-    //pick = new Crit3DCurvePicker(myPlot, curveList);
-    //pick->setStateMachine(new QwtPickerClickPointMachine());
-    //connect(pick, SIGNAL(clicked(int)), this, SLOT(curveClicked(int)));
+    pick = new Crit3DCurvePicker(myPlot, curveList);
+    pick->setStateMachine(new QwtPickerClickPointMachine());
+    connect(pick, SIGNAL(clicked(int)), this, SLOT(curveClicked(int)));
 
     for (int i=0; i < barHorizons.barList.size(); i++)
     {
@@ -161,13 +158,13 @@ void TabHydraulicConductivityCurve::widgetClicked(int index)
         barHorizons.deselectAll(index);
 
         // select the right curve
-        //pick->setSelectedCurveIndex(index);
-        //pick->highlightCurve(true);
+        pick->setSelectedCurveIndex(index);
+        pick->highlightCurve(true);
     }
     else
     {
-        //pick->highlightCurve(false);
-        //pick->setSelectedCurveIndex(-1);
+        pick->highlightCurve(false);
+        pick->setSelectedCurveIndex(-1);
     }
     emit horizonSelected(index);
 

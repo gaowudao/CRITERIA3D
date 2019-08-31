@@ -11,6 +11,14 @@ Crit3DCurvePicker::Crit3DCurvePicker(QwtPlot *plot, QList<QwtPlotCurve *> allCur
     connect( this, SIGNAL( selected( const QPointF ) ), this, SLOT( slotSelected( const QPointF ) ) );
 }
 
+Crit3DCurvePicker::Crit3DCurvePicker(QwtPlot *plot, QList<QwtPlotCurve *> allCurveList) :
+    QwtPlotPicker(QwtPlot::xBottom, QwtPlot::yLeft, CrossRubberBand, QwtPicker::AlwaysOn, plot->canvas()),
+    qwtPlot(plot),
+    allCurveList(allCurveList)
+{
+    connect( this, SIGNAL( selected( const QPointF ) ), this, SLOT( slotSelected( const QPointF ) ) );
+}
+
 
 void Crit3DCurvePicker::slotSelected( const QPointF &pos)
 {

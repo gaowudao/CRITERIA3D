@@ -12,6 +12,7 @@
         Q_OBJECT
     public:
         Crit3DCurvePicker(QwtPlot *plot, QList<QwtPlotCurve*> allCurveList, QMap< int, QwtPlotCurve* > allCurveMarkerMap);
+        Crit3DCurvePicker(QwtPlot *plot, QList<QwtPlotCurve*> allCurveList);
 
         Crit3DCurvePicker( int xAxis = QwtPlot::xBottom,
                   int yAxis = QwtPlot::yLeft,
