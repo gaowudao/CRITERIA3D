@@ -146,6 +146,7 @@ bool interpolationRaster(std::vector <Crit3DInterpolationDataPoint> &myPoints, C
     if (! myGrid->initializeGrid(raster))
         return false;
 
+
     FormInfo myInfo;
     int infoStep;
     QString infoStr;

@@ -1462,7 +1462,7 @@ bool Project::interpolationDem(meteoVariable myVar, const Crit3DTime& myTime, gi
     }
 
     // Proxy vars regression and detrend
-    if (showInfo)
+    if (showInfo && modality == MODE_GUI)
     {
         FormInfo myInfo;
         myInfo.start("Preparing interpolation...", 0);
@@ -1476,7 +1476,7 @@ bool Project::interpolationDem(meteoVariable myVar, const Crit3DTime& myTime, gi
     }
 
     // Interpolate
-    if (! interpolationRaster(interpolationPoints, &interpolationSettings, myRaster, DEM, myVar, showInfo))
+    if (! interpolationRaster(interpolationPoints, &interpolationSettings, myRaster, DEM, myVar, showInfo && modality == MODE_GUI))
     {
         logError("Interpolation: error in function interpolationRaster");
         return false;

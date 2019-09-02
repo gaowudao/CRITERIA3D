@@ -1362,7 +1362,10 @@ bool PragaProject::interpolationMeteoGridPeriod(QDate dateIni, QDate dateFin, QL
     QString myError;
     int myHour;
     QDate myDate = dateIni;
-    gis::Crit3DRasterGrid* myGrid = new gis::Crit3DRasterGrid(DEM);
+    gis::Crit3DRasterGrid* myGrid = new gis::Crit3DRasterGrid();
+
+    myGrid->initializeGrid(*DEM.header);
+
     unsigned currentYear = unsigned(NODATA);
 
     logInfo("Loading meteo points data...");

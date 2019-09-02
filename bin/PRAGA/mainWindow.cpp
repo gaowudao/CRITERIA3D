@@ -944,10 +944,12 @@ void MainWindow::drawMeteoGrid()
     meteoGridLegend->colorScale = myProject.meteoGridDbHandler->meteoGrid()->dataMeteoGrid.colorScale;
     ui->meteoGridOpacitySlider->setEnabled(true);
 
-    myProject.setCurrentDate(myProject.meteoGridDbHandler->lastDate());
-    this->updateDateTime();
-
-    if (myProject.loadGridDataAtStart) myProject.loadMeteoGridData(myProject.getCurrentDate(), myProject.getCurrentDate(), true);
+    if (myProject.loadGridDataAtStart)
+    {
+        myProject.setCurrentDate(myProject.meteoGridDbHandler->lastDate());
+        updateDateTime();
+        myProject.loadMeteoGridData(myProject.getCurrentDate(), myProject.getCurrentDate(), true);
+    }
 
     meteoGridObj->redrawRequested();
 
@@ -1228,17 +1230,6 @@ void MainWindow::on_actionClose_meteo_grid_triggered()
 void MainWindow::on_actionInterpolation_to_DEM_triggered()
 {
     interpolateDemGUI();
-}
-
-
-void MainWindow::on_actionInterpolation_to_Grid_triggered()
-{
-    FormInfo myInfo;
-    myInfo.start("Interpolation Grid...", 0);
-
-    interpolateGridGUI();
-
-    myInfo.close();
 }
 
 void MainWindow::on_actionCompute_elaboration_triggered()
@@ -2048,6 +2039,15 @@ bool KeyboardFilter::eventFilter(QObject* obj, QEvent* event)
     }
 }
 
+void MainWindow::on_actionInterpolationCurrentTime_triggered()
+{
+    FormInfo myInfo;
+    myInfo.start("Interpolation Grid...", 0);
+
+    interpolateGridGUI();
+
+    myInfo.close();
+}
 
 void MainWindow::on_actionSaveGridCurrentData_triggered()
 {
@@ -2097,3 +2097,4 @@ void MainWindow::on_actionInterpolateSaveGridPeriod_triggered()
     myVariables.push_back(myVar);
     myProject.interpolationMeteoGridPeriod(myFirstTime.date(), myLastTime.date(), myVariables);
 }
+

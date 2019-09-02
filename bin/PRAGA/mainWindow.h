@@ -90,11 +90,12 @@
         void on_dateEdit_dateChanged(const QDate &date);
 
         void on_actionInterpolation_to_DEM_triggered();
-        void on_actionInterpolation_to_Grid_triggered();
+        void on_actionInterpolationCurrentTime_triggered();
         void on_actionInterpolationSettings_triggered();
         void on_actionWriteTAD_triggered();
         void on_actionLoadTAD_triggered();
         void on_actionSaveGridCurrentData_triggered();
+        void on_actionInterpolateSaveGridPeriod_triggered();
 
         void on_actionCompute_elaboration_triggered();
         void on_actionCompute_anomaly_triggered();
@@ -113,8 +114,6 @@
             void on_actionOpen_NetCDF_data_triggered();
             void on_actionExtract_NetCDF_series_triggered();
         #endif
-
-            void on_actionInterpolateSaveGridPeriod_triggered();
 
     protected:
         /*!

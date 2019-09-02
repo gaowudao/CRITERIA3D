@@ -2989,7 +2989,7 @@
      <property name="title">
       <string>Interpolation to meteo grid</string>
      </property>
-     <addaction name="actionCurrent_time"/>
+     <addaction name="actionInterpolationCurrentTime"/>
      <addaction name="actionSaveGridCurrentData"/>
      <addaction name="actionInterpolateSaveGridPeriod"/>
     </widget>
@@ -3452,7 +3452,7 @@
     <string>Settings...</string>
    </property>
   </action>
-  <action name="actionCurrent_time">
+  <action name="actionInterpolationCurrentTime">
    <property name="text">
     <string>Current time</string>
    </property>
