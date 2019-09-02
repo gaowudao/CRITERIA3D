@@ -31,7 +31,7 @@ public:
     Crit3DProxyGridSeries(QString name_);
 
     void initialize();
-    void addGridToSeries(QString name_, unsigned year_);
+    void addGridToSeries(QString name_, int year_);
     std::vector<QString> getGridName() const;
     std::vector<int> getGridYear() const;
     QString getProxyName() const;

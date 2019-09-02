@@ -1246,7 +1246,8 @@ bool Project::loadProxyGrids()
 {
     std::string* myError = new std::string();
     Crit3DProxy *myProxy;
-    gis::Crit3DRasterGrid *myGrid;
+    gis::Crit3DRasterGrid *myGrid = nullptr;
+    gis::Crit3DRasterGrid *myResampledGrid = nullptr;
     std::string gridName;
 
     for (int i=0; i < interpolationSettings.getProxyNr(); i++)
@@ -1261,9 +1262,11 @@ bool Project::loadProxyGrids()
             if (! myGrid->isLoaded && gridName != "")
             {
                 myGrid = new gis::Crit3DRasterGrid();
+                myResampledGrid = new gis::Crit3DRasterGrid();
                 if (gis::readEsriGrid(gridName, myGrid, myError))
                 {
-                    myProxy->setGrid(myGrid);
+                    gis::resampleGrid(*myGrid, myResampledGrid, *DEM.header, aggrAverage, 0);
+                    myProxy->setGrid(myResampledGrid);
                 }
                 else
                 {

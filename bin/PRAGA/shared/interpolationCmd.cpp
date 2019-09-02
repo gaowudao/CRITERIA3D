@@ -39,7 +39,7 @@ Crit3DProxyGridSeries::Crit3DProxyGridSeries(QString name_)
     proxyName = name_;
 }
 
-void Crit3DProxyGridSeries::addGridToSeries(QString name_, unsigned year_)
+void Crit3DProxyGridSeries::addGridToSeries(QString name_, int year_)
 {
     gridName.push_back(name_);
     gridYear.push_back(year_);
@@ -54,9 +54,12 @@ bool interpolateProxyGridSeries(Crit3DProxyGridSeries mySeries, QDate myDate, co
 
     if (gridOut == nullptr) return false;
 
+    gis::Crit3DRasterGrid tmpGrid;
+
     if (nrGrids == 1)
     {
-        gis::readEsriGrid(gridNames[0].toStdString(), gridOut, &myError);
+        gis::readEsriGrid(gridNames[0].toStdString(), &tmpGrid, &myError);
+        gis::resampleGrid(tmpGrid, gridOut, *gridBase.header, aggrAverage, 0);
         return true;
     }
 
@@ -86,15 +89,13 @@ bool interpolateProxyGridSeries(Crit3DProxyGridSeries mySeries, QDate myDate, co
     firstGrid.setMapTime(getCrit3DTime(QDate(gridYears[first],1,1), 0));
     secondGrid.setMapTime(getCrit3DTime(QDate(gridYears[second],1,1), 0));
 
-    gis::Crit3DRasterGrid tmpGrid;
-
     // use first as reference if different resolution when resampling
     if (! gis::compareGrids(firstGrid, secondGrid))
     {
         tmpGrid = secondGrid;
         secondGrid.clear();
         gis::resampleGrid(tmpGrid, &secondGrid, *firstGrid.header, aggrAverage, 0);
-        tmpGrid.clear();
+        tmpGrid.initializeGrid();
     }
 
     float myMin = MINVALUE(firstGrid.minimum, secondGrid.minimum);
