@@ -51,12 +51,13 @@ bool interpolateProxyGridSeries(Crit3DProxyGridSeries mySeries, QDate myDate, co
     std::vector <QString> gridNames = mySeries.getGridName();
     std::vector <int> gridYears = mySeries.getGridYear();
     size_t nrGrids = gridNames.size();
-    gridOut = new gis::Crit3DRasterGrid();
+
+    if (gridOut == nullptr) return false;
 
     if (nrGrids == 1)
     {
         gis::readEsriGrid(gridNames[0].toStdString(), gridOut, &myError);
-        return false;
+        return true;
     }
 
     unsigned first, second;
@@ -103,6 +104,8 @@ bool interpolateProxyGridSeries(Crit3DProxyGridSeries mySeries, QDate myDate, co
 
     gis::resampleGrid(tmpGrid, gridOut, *gridBase.header, aggrAverage, 0);
 
+    gridOut->setMapTime(tmpGrid.getMapTime());
+
     firstGrid.clear();
     secondGrid.clear();
     tmpGrid.clear();
@@ -113,6 +116,7 @@ bool interpolateProxyGridSeries(Crit3DProxyGridSeries mySeries, QDate myDate, co
 bool checkProxyGridSeries(Crit3DInterpolationSettings* mySettings, const gis::Crit3DRasterGrid& gridBase, std::vector <Crit3DProxyGridSeries> mySeries, QDate myDate)
 {
     unsigned i,j;
+    gis::Crit3DRasterGrid* gridOut;
 
     for (i=0; i < mySettings->getProxyNr(); i++)
     {
@@ -122,9 +126,9 @@ bool checkProxyGridSeries(Crit3DInterpolationSettings* mySettings, const gis::Cr
             {
                 if (mySeries[j].getGridName().size() > 0)
                 {
-                    gis::Crit3DRasterGrid gridOut;
-                    interpolateProxyGridSeries(mySeries[j], myDate, gridBase, &gridOut);
-                    mySettings->getProxy(i)->setGrid(&gridOut);
+                    gridOut = new gis::Crit3DRasterGrid();
+                    interpolateProxyGridSeries(mySeries[j], myDate, gridBase, gridOut);
+                    mySettings->getProxy(i)->setGrid(gridOut);
                     return true;
                 }
 

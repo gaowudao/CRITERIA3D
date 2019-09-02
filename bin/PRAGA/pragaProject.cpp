@@ -1369,7 +1369,6 @@ bool PragaProject::interpolationMeteoGridPeriod(QDate dateIni, QDate dateFin, QL
     if (! loadMeteoPointsData(dateIni, dateFin, false))
         return false;
 
-    /*
     while (myDate <= dateFin)
     {
         // check proxy grid series
@@ -1377,7 +1376,7 @@ bool PragaProject::interpolationMeteoGridPeriod(QDate dateIni, QDate dateFin, QL
         {
             logInfo("Interpolating proxy grid series...");
             if (checkProxyGridSeries(&interpolationSettings, DEM, proxyGridSeries, myDate))
-                if (! updateProxy()) return false;
+                if (! readProxyValues()) return false;
         }
 
         for (myHour = 1; myHour <= 24; myHour++)
@@ -1396,7 +1395,6 @@ bool PragaProject::interpolationMeteoGridPeriod(QDate dateIni, QDate dateFin, QL
     meteoGridDbHandler->saveGridData(&myError, QDateTime(dateIni, QTime(0,0,0)), QDateTime(dateFin.addDays(1), QTime(0,0,0)), variables);
 
     //restore original proxy grids
-    */
 
     return true;
 
