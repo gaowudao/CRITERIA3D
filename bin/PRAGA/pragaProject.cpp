@@ -1730,7 +1730,7 @@ bool PragaProject::interpolationMeteoGrid(meteoVariable myVar, frequencyType myF
 {
     if (meteoGridDbHandler != nullptr)
     {
-        if (!interpolationDem(myVar, myTime, myRaster, showInfo))
+        if (!interpolationDemMain(myVar, myTime, myRaster, showInfo))
         {
             return false;
         }
