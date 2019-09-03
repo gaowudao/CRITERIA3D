@@ -28,10 +28,9 @@ win32:{
 INCLUDEPATH += ../mathFunctions
 
 
+
 SOURCES += \
-    furtherMathFunctions.cpp \
     eispack.cpp
 
 HEADERS += \
-    furtherMathFunctions.h \
     eispack.h
