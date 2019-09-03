@@ -114,15 +114,14 @@
 
             void fillMeteoPoint(int row, int col, std::string code, std::string name, int height, bool active);
 
-            bool fillMeteoPointDailyValue(int row, int col, int numberOfDays, int initialize, Crit3DDate date, meteoVariable variable, float value);
+            bool fillMeteoPointDailyValue(unsigned row, unsigned col, int numberOfDays, bool initialize, Crit3DDate date, meteoVariable variable, float value);
+            bool fillMeteoPointHourlyValue(unsigned row, unsigned col, int numberOfDays, bool initialize, Crit3DDate date, int  hour, int minute, meteoVariable variable, float value);
+            void fillMeteoPointCurrentDailyValue(unsigned row, unsigned col, Crit3DDate date, meteoVariable variable);
+            void fillMeteoPointCurrentHourlyValue(unsigned row, unsigned col, Crit3DDate date, int hour, int minute, meteoVariable variable);
+            void fillCurrentDailyValue(Crit3DDate date, meteoVariable variable);
+            void fillCurrentHourlyValue(Crit3DDate date, int hour, int minute, meteoVariable variable);
 
-            bool fillMeteoPointCurrentDailyValue(Crit3DDate date, meteoVariable variable);
-
-            bool fillMeteoPointHourlyValue(int row, int col, int numberOfDays, int initialize, Crit3DDate date, int  hour, int minute, meteoVariable variable, float value);
-
-            bool fillMeteoPointCurrentHourlyValue(Crit3DDate date, int hour, int minute, meteoVariable variable);
-
-            bool findMeteoPointFromId(int* row, int* col, std::string code);
+            bool findMeteoPointFromId(unsigned *row, unsigned *col, std::string code);
 
             bool getMeteoPointActiveId(int row, int col, std::string *id);
 

@@ -1075,9 +1075,9 @@ bool Crit3DMeteoGridDbHandler::loadGridDailyData(QString *myError, QString meteo
     int varCode;
     float value;
 
-    int row;
-    int col;
-    int initialize = 1;
+    unsigned row;
+    unsigned col;
+    bool initialize = true;
 
     int numberOfDays = first.daysTo(last) + 1;
 
@@ -1118,7 +1118,7 @@ bool Crit3DMeteoGridDbHandler::loadGridDailyData(QString *myError, QString meteo
 
             if (_meteoGrid->fillMeteoPointDailyValue(row, col, numberOfDays, initialize, Crit3DDate(date.day(), date.month(), date.year()), variable, value))
             {
-                initialize = 0;
+                initialize = false;
             }
 
         }
@@ -1137,9 +1137,9 @@ bool Crit3DMeteoGridDbHandler::loadGridDailyDataFixedFields(QString *myError, QS
     int varCode;
     float value;
 
-    int row;
-    int col;
-    int initialize = 1;
+    unsigned row;
+    unsigned col;
+    bool initialize = true;
 
     int numberOfDays = first.daysTo(last) + 1;
 
@@ -1199,9 +1199,9 @@ bool Crit3DMeteoGridDbHandler::loadGridHourlyData(QString *myError, QString mete
     int varCode;
     float value;
 
-    int row;
-    int col;
-    int initialize = 1;
+    unsigned row;
+    unsigned col;
+    bool initialize = true;
 
     int numberOfDays = first.date().daysTo(last.date());
 
@@ -1241,7 +1241,7 @@ bool Crit3DMeteoGridDbHandler::loadGridHourlyData(QString *myError, QString mete
 
             if ( _meteoGrid->fillMeteoPointHourlyValue(row, col, numberOfDays, initialize, Crit3DDate(date.date().day(), date.date().month(), date.date().year()), date.time().hour(), date.time().minute(), variable, value) )
             {
-                initialize = 0;
+                initialize = false;
             }
 
         }
@@ -1262,9 +1262,9 @@ bool Crit3DMeteoGridDbHandler::loadGridHourlyDataFixedFields(QString *myError, Q
     int varCode;
     float value;
 
-    int row;
-    int col;
-    int initialize = 1;
+    unsigned row;
+    unsigned col;
+    bool initialize = true;
 
     int numberOfDays = first.date().daysTo(last.date());
 
@@ -1301,7 +1301,7 @@ bool Crit3DMeteoGridDbHandler::loadGridHourlyDataFixedFields(QString *myError, Q
 
                 if ( _meteoGrid->fillMeteoPointHourlyValue(row, col, numberOfDays, initialize, Crit3DDate(date.date().day(), date.date().month(), date.date().year()), date.time().hour(), date.time().minute(), variable, value) )
                 {
-                    initialize = 0;
+                    initialize = false;
                 }
 
             }
@@ -1323,9 +1323,9 @@ std::vector<float> Crit3DMeteoGridDbHandler::loadGridDailyVar(QString *myError, 
     std::vector<float> dailyVarList;
 
     float value;
-    int row;
-    int col;
-    int firstRow = 1;
+    unsigned row;
+    unsigned col;
+    bool firstRow = true;
 
     int varCode = getDailyVarCode(variable);
 
@@ -1365,7 +1365,7 @@ std::vector<float> Crit3DMeteoGridDbHandler::loadGridDailyVar(QString *myError, 
                 }
                 dailyVarList.push_back(value);
                 previousDate = *firstDateDB;
-                firstRow = 0;
+                firstRow = false;
             }
             else
             {
@@ -1493,9 +1493,9 @@ std::vector<float> Crit3DMeteoGridDbHandler::loadGridHourlyVar(QString *myError,
     std::vector<float> hourlyVarList;
 
     float value;
-    int row;
-    int col;
-    int firstRow = 1;
+    unsigned row;
+    unsigned col;
+    bool firstRow = true;
 
     int varCode = getHourlyVarCode(variable);
 
@@ -1538,7 +1538,7 @@ std::vector<float> Crit3DMeteoGridDbHandler::loadGridHourlyVar(QString *myError,
                 }
                 hourlyVarList.push_back(value);
                 previousDateTime = *firstDateDB;
-                firstRow = 0;
+                firstRow = false;
             }
             else
             {

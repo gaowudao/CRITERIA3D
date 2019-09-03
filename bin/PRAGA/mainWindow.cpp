@@ -601,7 +601,6 @@ void MainWindow::interpolateGridGUI()
     {
         setCurrentRaster(&(myProject.meteoGridDbHandler->meteoGrid()->dataMeteoGrid));
         ui->labelRasterScale->setText(QString::fromStdString(getVariableString(myProject.getCurrentVariable())));
-
     }
     else
          myProject.logError();
@@ -1016,11 +1015,11 @@ void MainWindow::redrawMeteoGrid(visualizationType showType)
 
         if (frequency == daily)
         {
-            myProject.meteoGridDbHandler->meteoGrid()->fillMeteoPointCurrentDailyValue(time.date, variable);
+            myProject.meteoGridDbHandler->meteoGrid()->fillCurrentDailyValue(time.date, variable);
         }
         else if (frequency == hourly)
         {
-            myProject.meteoGridDbHandler->meteoGrid()->fillMeteoPointCurrentHourlyValue(time.date, time.getHour(), time.getMinutes(), variable);
+            myProject.meteoGridDbHandler->meteoGrid()->fillCurrentHourlyValue(time.date, time.getHour(), time.getMinutes(), variable);
         }
         else
             return;
