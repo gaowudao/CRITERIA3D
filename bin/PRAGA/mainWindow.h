@@ -167,9 +167,9 @@
         void resetMeteoPoints();
         void addMeteoPoints();
         void drawMeteoPoints();
-        void redrawMeteoPoints(visualizationType showType, bool updateColorSCale);
+        void redrawMeteoPoints(visualizationType showType, bool updateColorScale);
         void drawMeteoGrid();
-        void redrawMeteoGrid(visualizationType showType);
+        void redrawMeteoGrid(visualizationType showType, bool showInterpolationResult);
         void drawProject();
         void redrawTitle();
 

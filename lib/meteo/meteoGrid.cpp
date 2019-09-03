@@ -658,7 +658,7 @@ void Crit3DMeteoGrid::aggregateMeteoGrid(meteoVariable myVar, frequencyType freq
                     double x = _meteoPoints[row][col]->aggregationPoints[i].utm.x;
                     double y = _meteoPoints[row][col]->aggregationPoints[i].utm.y;
                     float interpolatedValue = gis::getValueFromXY(*dataRaster, x, y);
-                    if (isEqual(interpolatedValue, dataRaster->header->flag))
+                    if (isEqual(interpolatedValue, dataRaster->header->flag) == false)
                     {
                         _meteoPoints[row][col]->aggregationPoints[i].z = double(interpolatedValue);
                         validValues = validValues + 1;

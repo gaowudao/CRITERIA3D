@@ -599,8 +599,9 @@ void MainWindow::interpolateGridGUI()
 {
     if (myProject.interpolationMeteoGrid(myProject.getCurrentVariable(), myProject.getFrequency(), myProject.getCurrentTime(), &(myProject.dataRaster), true))
     {
-        setCurrentRaster(&(myProject.meteoGridDbHandler->meteoGrid()->dataMeteoGrid));
-        ui->labelRasterScale->setText(QString::fromStdString(getVariableString(myProject.getCurrentVariable())));
+        //setCurrentRaster(&(myProject.meteoGridDbHandler->meteoGrid()->dataMeteoGrid));
+        //ui->labelRasterScale->setText(QString::fromStdString(getVariableString(myProject.getCurrentVariable())));
+        redrawMeteoGrid(showCurrentVariable, true);
     }
     else
          myProject.logError();
@@ -682,7 +683,7 @@ void MainWindow::on_dateChanged()
     }
 
     redrawMeteoPoints(currentPointsVisualization, true);
-    redrawMeteoGrid(currentGridVisualization);
+    redrawMeteoGrid(currentGridVisualization, false);
 }
 
 
@@ -695,7 +696,7 @@ void MainWindow::on_timeEdit_timeChanged(const QTime &time)
     }
 
     redrawMeteoPoints(currentPointsVisualization, true);
-    redrawMeteoGrid(currentGridVisualization);
+    redrawMeteoGrid(currentGridVisualization, false);
 }
 
 
@@ -803,7 +804,7 @@ void MainWindow::drawMeteoPoints()
     updateDateTime();
 }
 
-void MainWindow::redrawMeteoPoints(visualizationType showType, bool updateColorSCale)
+void MainWindow::redrawMeteoPoints(visualizationType showType, bool updateColorScale)
 {
     currentPointsVisualization = showType;
     ui->groupBoxElab->hide();
@@ -818,99 +819,106 @@ void MainWindow::redrawMeteoPoints(visualizationType showType, bool updateColorS
 
     switch(currentPointsVisualization)
     {
-    case notShown:
-    {
-        meteoPointsLegend->setVisible(false);
-        this->ui->actionShowPointsHide->setChecked(true);
-        break;
-    }
-    case showLocation:
-    {
-        this->ui->actionShowPointsLocation->setChecked(true);
-        for (int i = 0; i < myProject.nrMeteoPoints; i++)
+        case notShown:
         {
-                myProject.meteoPoints[i].currentValue = NODATA;
-                pointList[i]->setFillColor(QColor(Qt::white));
-                pointList[i]->setRadius(5);
-                pointList[i]->setToolTip(&(myProject.meteoPoints[i]));
-                pointList[i]->setVisible(true);
+            meteoPointsLegend->setVisible(false);
+            this->ui->actionShowPointsHide->setChecked(true);
+            break;
         }
 
-        myProject.meteoPointsColorScale->setRange(NODATA, NODATA);
-        meteoPointsLegend->update();
-        break;
-    }
-    case showCurrentVariable:
-    {
-        this->ui->actionShowPointsCurrent->setChecked(true);
-        // quality control
-        checkData(myProject.quality, myProject.getCurrentVariable(),
-                  myProject.meteoPoints, myProject.nrMeteoPoints, myProject.getCurrentTime(),
-                  &myProject.qualityInterpolationSettings, &(myProject.climateParameters), myProject.checkSpatialQuality);
-
-        if (updateColorSCale)
+        case showLocation:
         {
-            float minimum, maximum;
-            myProject.getMeteoPointsRange(&minimum, &maximum);
-
-            myProject.meteoPointsColorScale->setRange(minimum, maximum);
-        }
-
-        roundColorScale(myProject.meteoPointsColorScale, 4, true);
-        setColorScale(myProject.getCurrentVariable(), myProject.meteoPointsColorScale);
-
-        Crit3DColor *myColor;
-        for (int i = 0; i < myProject.nrMeteoPoints; i++)
-        {
-            if (int(myProject.meteoPoints[i].currentValue) != NODATA)
+            this->ui->actionShowPointsLocation->setChecked(true);
+            for (int i = 0; i < myProject.nrMeteoPoints; i++)
             {
-                if (myProject.meteoPoints[i].quality == quality::accepted)
-                {
+                    myProject.meteoPoints[i].currentValue = NODATA;
+                    pointList[i]->setFillColor(QColor(Qt::white));
                     pointList[i]->setRadius(5);
-                    myColor = myProject.meteoPointsColorScale->getColor(myProject.meteoPoints[i].currentValue);
-                    pointList[i]->setFillColor(QColor(myColor->red, myColor->green, myColor->blue));
-                    pointList[i]->setOpacity(1.0);
-                }
-                else
-                {
-                    // Wrong data
-                    pointList[i]->setRadius(10);
-                    pointList[i]->setFillColor(QColor(Qt::black));
-                    pointList[i]->setOpacity(0.5);
-                }
-
-                pointList[i]->setToolTip(&(myProject.meteoPoints[i]));
-                pointList[i]->setVisible(true);
+                    pointList[i]->setToolTip(&(myProject.meteoPoints[i]));
+                    pointList[i]->setVisible(true);
             }
+
+            myProject.meteoPointsColorScale->setRange(NODATA, NODATA);
+            meteoPointsLegend->update();
+            break;
         }
 
-        meteoPointsLegend->update();
-        break;
-    }
-    case showElaboration:
-    {
-        this->ui->actionShowPointsElab->setChecked(true);
-        showElabResult(true, false, false, false, false, nullptr);
-        break;
-    }
-    case showAnomalyAbsolute:
-    {
-        this->ui->actionShowPointsAnomalyAbs->setChecked(true);
-        showElabResult(true, false, true, false, false, nullptr);
-        break;
-    }
-    case showAnomalyPercentage:
-    {
-        this->ui->actionShowPointsAnomalyPerc->setChecked(true);
-        showElabResult(true, false, true, true, false, nullptr);
-        break;
-    }
-    case showClimate:
-    {
-        this->ui->actionShowPointsClimate->setChecked(true);
-        showElabResult(true, false, false, false, true, myProject.climateIndex);
-        break;
-    }
+        case showCurrentVariable:
+        {
+            this->ui->actionShowPointsCurrent->setChecked(true);
+
+            // quality control
+            checkData(myProject.quality, myProject.getCurrentVariable(),
+                      myProject.meteoPoints, myProject.nrMeteoPoints, myProject.getCurrentTime(),
+                      &myProject.qualityInterpolationSettings, &(myProject.climateParameters), myProject.checkSpatialQuality);
+
+            if (updateColorScale)
+            {
+                float minimum, maximum;
+                myProject.getMeteoPointsRange(&minimum, &maximum);
+
+                myProject.meteoPointsColorScale->setRange(minimum, maximum);
+            }
+
+            roundColorScale(myProject.meteoPointsColorScale, 4, true);
+            setColorScale(myProject.getCurrentVariable(), myProject.meteoPointsColorScale);
+
+            Crit3DColor *myColor;
+            for (int i = 0; i < myProject.nrMeteoPoints; i++)
+            {
+                if (int(myProject.meteoPoints[i].currentValue) != NODATA)
+                {
+                    if (myProject.meteoPoints[i].quality == quality::accepted)
+                    {
+                        pointList[i]->setRadius(5);
+                        myColor = myProject.meteoPointsColorScale->getColor(myProject.meteoPoints[i].currentValue);
+                        pointList[i]->setFillColor(QColor(myColor->red, myColor->green, myColor->blue));
+                        pointList[i]->setOpacity(1.0);
+                    }
+                    else
+                    {
+                        // Wrong data
+                        pointList[i]->setRadius(10);
+                        pointList[i]->setFillColor(QColor(Qt::black));
+                        pointList[i]->setOpacity(0.5);
+                    }
+
+                    pointList[i]->setToolTip(&(myProject.meteoPoints[i]));
+                    pointList[i]->setVisible(true);
+                }
+            }
+
+            meteoPointsLegend->update();
+            break;
+        }
+
+        case showElaboration:
+        {
+            this->ui->actionShowPointsElab->setChecked(true);
+            showElabResult(true, false, false, false, false, nullptr);
+            break;
+        }
+
+        case showAnomalyAbsolute:
+        {
+            this->ui->actionShowPointsAnomalyAbs->setChecked(true);
+            showElabResult(true, false, true, false, false, nullptr);
+            break;
+        }
+
+        case showAnomalyPercentage:
+        {
+            this->ui->actionShowPointsAnomalyPerc->setChecked(true);
+            showElabResult(true, false, true, true, false, nullptr);
+            break;
+        }
+
+        case showClimate:
+        {
+            this->ui->actionShowPointsClimate->setChecked(true);
+            showElabResult(true, false, false, false, true, myProject.climateIndex);
+            break;
+        }
     }
 }
 
@@ -968,12 +976,12 @@ void MainWindow::drawMeteoGrid()
     this->ui->actionShowGridClimate->setEnabled(false);
 
     currentGridVisualization = showLocation;
-    redrawMeteoGrid(currentGridVisualization);
+    redrawMeteoGrid(currentGridVisualization, false);
 }
 
 
 
-void MainWindow::redrawMeteoGrid(visualizationType showType)
+void MainWindow::redrawMeteoGrid(visualizationType showType, bool showInterpolationResult)
 {
     currentGridVisualization = showType;
     ui->groupBoxElab->hide();
@@ -982,83 +990,89 @@ void MainWindow::redrawMeteoGrid(visualizationType showType)
 
     switch(currentGridVisualization)
     {
-    case notShown:
-    {
-        this->ui->actionShowGridHide->setChecked(true);
-        myProject.meteoGridDbHandler->meteoGrid()->fillMeteoRasterNoData();
-        meteoGridObj->setDrawBorders(false);
-        meteoGridLegend->setVisible(false);
-        break;
-    }
-    case showLocation:
-    {
-        this->ui->actionShowGridLocation->setChecked(true);
-        myProject.meteoGridDbHandler->meteoGrid()->fillMeteoRasterNoData();
-        meteoGridObj->setDrawBorders(true);
-        break;
-    }
-    case showCurrentVariable:
-    {
-        this->ui->actionShowGridCurrent->setChecked(true);
-        frequencyType frequency = myProject.getFrequency();
-        meteoVariable variable = myProject.getCurrentVariable();
-        meteoGridObj->setDrawBorders(false);
-
-        if (myProject.getCurrentVariable() == noMeteoVar)
+        case notShown:
         {
+            this->ui->actionShowGridHide->setChecked(true);
+            myProject.meteoGridDbHandler->meteoGrid()->fillMeteoRasterNoData();
+            meteoGridObj->setDrawBorders(false);
             meteoGridLegend->setVisible(false);
-            ui->labelMeteoGridScale->setText("");
-            return;
+            break;
         }
 
-        Crit3DTime time = myProject.getCurrentTime();
-
-        if (frequency == daily)
+        case showLocation:
         {
-            myProject.meteoGridDbHandler->meteoGrid()->fillCurrentDailyValue(time.date, variable);
+            this->ui->actionShowGridLocation->setChecked(true);
+            myProject.meteoGridDbHandler->meteoGrid()->fillMeteoRasterNoData();
+            meteoGridObj->setDrawBorders(true);
+            break;
         }
-        else if (frequency == hourly)
+
+        case showCurrentVariable:
         {
-            myProject.meteoGridDbHandler->meteoGrid()->fillCurrentHourlyValue(time.date, time.getHour(), time.getMinutes(), variable);
+            this->ui->actionShowGridCurrent->setChecked(true);
+
+            meteoGridObj->setDrawBorders(false);
+            meteoVariable variable = myProject.getCurrentVariable();
+
+            if (! showInterpolationResult)
+            {
+                frequencyType frequency = myProject.getFrequency();
+
+
+                if (myProject.getCurrentVariable() == noMeteoVar)
+                {
+                    meteoGridLegend->setVisible(false);
+                    ui->labelMeteoGridScale->setText("");
+                    return;
+                }
+
+                Crit3DTime time = myProject.getCurrentTime();
+
+                if (frequency == daily)
+                    myProject.meteoGridDbHandler->meteoGrid()->fillCurrentDailyValue(time.date, variable);
+                else if (frequency == hourly)
+                    myProject.meteoGridDbHandler->meteoGrid()->fillCurrentHourlyValue(time.date, time.getHour(), time.getMinutes(), variable);
+                else
+                    return;
+
+                myProject.meteoGridDbHandler->meteoGrid()->fillMeteoRaster();
+            }
+
+            meteoGridLegend->setVisible(true);
+
+            setColorScale(variable, myProject.meteoGridDbHandler->meteoGrid()->dataMeteoGrid.colorScale);
+            ui->labelMeteoGridScale->setText(QString::fromStdString(getVariableString(myProject.getCurrentVariable())));
+
+            meteoGridLegend->update();
+            break;
         }
-        else
-            return;
 
-        myProject.meteoGridDbHandler->meteoGrid()->fillMeteoRaster();
-        meteoGridLegend->setVisible(true);
-
-        setColorScale(variable, myProject.meteoGridDbHandler->meteoGrid()->dataMeteoGrid.colorScale);
-        ui->labelMeteoGridScale->setText(QString::fromStdString(getVariableString(myProject.getCurrentVariable())));
-
-        meteoGridLegend->update();
-        break;
-    }
-    case showElaboration:
-    {
-        this->ui->actionShowGridElab->setChecked(true);
-        showElabResult(true, true, false, false, false, nullptr);
-        break;
-    }
-    case showAnomalyAbsolute:
-    {
-        this->ui->actionShowGridAnomalyAbs->setChecked(true);
-        showElabResult(true, true, true, false, false, nullptr);
-        break;
-    }
-    case showAnomalyPercentage:
-    {
-        this->ui->actionShowGridAnomalyPerc->setChecked(true);
-        showElabResult(true, true, true, true, false, nullptr);
-        break;
-    }
-    case showClimate:
-    {
-        this->ui->actionShowGridClimate->setChecked(true);
-        showElabResult(true, true, false, false, true, myProject.climateIndex);
-        break;
+        case showElaboration:
+        {
+            this->ui->actionShowGridElab->setChecked(true);
+            showElabResult(true, true, false, false, false, nullptr);
+            break;
+        }
+        case showAnomalyAbsolute:
+        {
+            this->ui->actionShowGridAnomalyAbs->setChecked(true);
+            showElabResult(true, true, true, false, false, nullptr);
+            break;
+        }
+        case showAnomalyPercentage:
+        {
+            this->ui->actionShowGridAnomalyPerc->setChecked(true);
+            showElabResult(true, true, true, true, false, nullptr);
+            break;
+        }
+        case showClimate:
+        {
+            this->ui->actionShowGridClimate->setChecked(true);
+            showElabResult(true, true, false, false, true, myProject.climateIndex);
+            break;
+        }
     }
 
-    }
     meteoGridObj->updateCenter();
     meteoGridObj->redrawRequested();
 }
@@ -1125,7 +1139,7 @@ void MainWindow::on_variableButton_clicked()
         this->ui->actionShowPointsCurrent->setEnabled(true);
         this->ui->actionShowGridCurrent->setEnabled(true);
         redrawMeteoPoints(showCurrentVariable, true);
-        redrawMeteoGrid(showCurrentVariable);
+        redrawMeteoGrid(showCurrentVariable, false);
     }
 }
 
@@ -1143,7 +1157,7 @@ void MainWindow::on_frequencyButton_clicked()
            this->ui->actionShowPointsCurrent->setEnabled(true);
            this->ui->actionShowGridCurrent->setEnabled(true);
            redrawMeteoPoints(showCurrentVariable, true);
-           redrawMeteoGrid(showCurrentVariable);
+           redrawMeteoGrid(showCurrentVariable, false);
        }
    }
 }
@@ -1260,7 +1274,7 @@ void MainWindow::on_actionCompute_elaboration_triggered()
             if (isMeteoGrid)
             {
                 this->ui->actionShowGridElab->setEnabled(true);
-                redrawMeteoGrid(showElaboration);
+                redrawMeteoGrid(showElaboration, false);
             }
             else
             {
@@ -1315,7 +1329,7 @@ void MainWindow::on_actionCompute_anomaly_triggered()
             if (isMeteoGrid)
             {
                 this->ui->menuShowGridAnomaly->setEnabled(true);
-                redrawMeteoGrid(showAnomalyAbsolute);
+                redrawMeteoGrid(showAnomalyAbsolute, false);
             }
             else
             {
@@ -1399,7 +1413,7 @@ void MainWindow::on_actionClimate_fields_triggered()
                 if (isMeteoGrid)
                 {
                     this->ui->actionShowGridClimate->setEnabled(true);
-                    redrawMeteoGrid(showClimate);
+                    redrawMeteoGrid(showClimate, false);
                 }
                 else
                 {
@@ -1702,7 +1716,7 @@ void MainWindow::on_meteoPoints_clicked()
 
 void MainWindow::on_grid_clicked()
 {
-    redrawMeteoGrid(currentGridVisualization);
+    redrawMeteoGrid(currentGridVisualization, false);
 }
 
 void MainWindow::on_actionShowPointsHide_triggered()
@@ -1743,51 +1757,48 @@ void MainWindow::on_actionShowPointsClimate_triggered()
 
 void MainWindow::on_actionShowGridHide_triggered()
 {
-    redrawMeteoGrid(notShown);
+    redrawMeteoGrid(notShown, false);
 }
 
 void MainWindow::on_actionShowGridLocation_triggered()
 {
-    redrawMeteoGrid(showLocation);
+    redrawMeteoGrid(showLocation, false);
 }
 
 void MainWindow::on_actionShowGridCurrent_triggered()
 {
-    redrawMeteoGrid(showCurrentVariable);
+    redrawMeteoGrid(showCurrentVariable, false);
 }
 
 void MainWindow::on_actionShowGridElab_triggered()
 {
-    redrawMeteoGrid(showElaboration);
+    redrawMeteoGrid(showElaboration, false);
 }
 
 void MainWindow::on_actionShowGridAnomalyAbs_triggered()
 {
-    redrawMeteoGrid(showAnomalyAbsolute);
+    redrawMeteoGrid(showAnomalyAbsolute, false);
 }
 
 void MainWindow::on_actionShowGridAnomalyPerc_triggered()
 {
-    redrawMeteoGrid(showAnomalyPercentage);
+    redrawMeteoGrid(showAnomalyPercentage, false);
 }
 
 void MainWindow::on_actionShowGridClimate_triggered()
 {
-    redrawMeteoGrid(showClimate);
+    redrawMeteoGrid(showClimate, false);
 }
-
 
 void MainWindow::on_actionMapTerrain_triggered()
 {
     this->setMapSource(OSMTileSource::Terrain);
 }
 
-
 void MainWindow::on_actionMapOpenStreetMap_triggered()
 {
     this->setMapSource(OSMTileSource::OSMTiles);
 }
-
 
 void MainWindow::on_actionMapESRISatellite_triggered()
 {
