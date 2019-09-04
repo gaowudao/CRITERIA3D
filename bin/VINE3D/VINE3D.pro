@@ -89,8 +89,8 @@ SOURCES += \
     waterBalance.cpp \
     vine3DProject.cpp \
     mainWindow.cpp \
-    ../CRITERIA3D/shared/meteoMaps.cpp \
-    ../CRITERIA3D/shared/project3D.cpp
+    ../CRITERIA3D/shared/project3D.cpp \
+    ../PRAGA/shared/meteoMaps.cpp
 
 HEADERS  += \
     ../PRAGA/shared/dialogRadiation.h \
@@ -115,8 +115,8 @@ HEADERS  += \
     waterBalance.h \
     vine3DProject.h \
     mainWindow.h \
-    ../CRITERIA3D/shared/meteoMaps.h \
-    ../CRITERIA3D/shared/project3D.h
+    ../CRITERIA3D/shared/project3D.h \
+    ../PRAGA/shared/meteoMaps.h
 
 FORMS    += \
     ../PRAGA/shared/formInfo.ui \

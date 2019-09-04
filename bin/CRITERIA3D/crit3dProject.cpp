@@ -39,6 +39,8 @@ Crit3DProject::Crit3DProject() : Project3D()
 {
     isParametersLoaded = false;
     isCriteria3DInitialized = false;
+
+    meteoMaps = nullptr;
 }
 
 
@@ -60,7 +62,7 @@ bool Crit3DProject::loadCriteria3DProject(QString myFileName)
         return false;
 
     // initialize meteo maps
-    meteoMaps = new Crit3DMeteoMaps(DEM);
+    meteoMaps = new Crit3DHourlyMeteoMaps(DEM);
 
     if (projectName != "")
     {
@@ -214,6 +216,7 @@ void Crit3DProject::clearCriteria3DProject()
 {
     clearWaterBalance3D();
     cropIndexMap.clear();
+    delete meteoMaps;
 
     isCriteria3DInitialized = false;
 }

@@ -48,8 +48,6 @@ void Project3D::initializeProject3D()
     nrLayers = 0;
     nrNodes = 0;
     nrLateralLink = 8;
-
-    meteoMaps = nullptr;
 }
 
 
@@ -81,8 +79,6 @@ void Project3D::clearProject3D()
         soilList[i].cleanSoil();
     }
     soilList.clear();
-
-    delete meteoMaps;
 
     initializeProject3D();
 

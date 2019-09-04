@@ -51,9 +51,6 @@
         // sink/source
         std::vector <double> waterSinkSource;   // [m^3/sec]
 
-        // meteo maps (move to Project ?)
-        Crit3DMeteoMaps* meteoMaps;
-
 
         Project3D();
 

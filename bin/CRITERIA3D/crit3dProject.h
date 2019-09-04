@@ -22,9 +22,11 @@
 
 
     public:
+        // meteo maps
+        Crit3DHourlyMeteoMaps* meteoMaps;
+
         // same header of DEM
         gis::Crit3DRasterGrid soilMap;
-
         gis::Crit3DRasterGrid cropIndexMap;
 
         bool isParametersLoaded;

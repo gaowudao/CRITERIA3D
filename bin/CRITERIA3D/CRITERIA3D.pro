@@ -83,12 +83,12 @@ SOURCES += mainwindow.cpp \
     ../PRAGA/shared/colorLegend.cpp \
     ../PRAGA/shared/project.cpp \
     ../PRAGA/shared/formInfo.cpp \
-    shared/meteoMaps.cpp \
     shared/project3D.cpp \
     waterBalance3D.cpp \
     viewer3d.cpp \
     crit3dProject.cpp \
     main.cpp\
+    ../PRAGA/shared/meteoMaps.cpp
 
 
 HEADERS += mainwindow.h \
@@ -103,11 +103,11 @@ HEADERS += mainwindow.h \
     ../PRAGA/shared/colorLegend.h \
     ../PRAGA/shared/project.h \
     ../PRAGA/shared/formInfo.h \
-    shared/meteoMaps.h \
     shared/project3D.h \
     waterBalance3D.h \
     viewer3d.h \
-    crit3dProject.h
+    crit3dProject.h \
+    ../PRAGA/shared/meteoMaps.h
 
 
 FORMS += mainwindow.ui \
