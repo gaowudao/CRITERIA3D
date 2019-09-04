@@ -1689,7 +1689,6 @@ bool Crit3DMeteoGridDbHandler::saveCellGridDailyData(QString *myError, QString m
 
                 int varCode = getDailyVarCode(meteoVar);
 
-                //        statement = QString("REPLACE INTO `%1` VALUES ('%2','%3',%4)").arg(tableD).arg(date.toString("yyyy-MM-dd")).arg(varCode).arg(valueS);
                 statement += QString(" ('%1','%2',%3),").arg(date.toString("yyyy-MM-dd")).arg(varCode).arg(valueS);
             }
         }
@@ -1841,7 +1840,7 @@ bool Crit3DMeteoGridDbHandler::saveCellCurrentGridDailyFF(QString *myError, QStr
     return true;
 }
 
-bool Crit3DMeteoGridDbHandler::saveGridData(QString *myError, QDateTime firstDate, QDateTime lastDate, QList<meteoVariable> meteoVariableList)
+bool Crit3DMeteoGridDbHandler::saveGridData(QString *myError, QDateTime firstTime, QDateTime lastTime, QList<meteoVariable> meteoVariableList)
 {
     std::string id;
 
@@ -1853,13 +1852,13 @@ bool Crit3DMeteoGridDbHandler::saveGridData(QString *myError, QDateTime firstDat
             {
                 if (! gridStructure().isFixedFields())
                 {
-                    saveCellGridDailyData(myError, QString::fromStdString(id), row, col, firstDate.date(), lastDate.date(), meteoVariableList);
-                    saveCellGridDailyData(myError, QString::fromStdString(id), row, col, firstDate.date(), lastDate.date(), meteoVariableList);
+                    saveCellGridDailyData(myError, QString::fromStdString(id), row, col, firstTime.date(), lastTime.date(), meteoVariableList);
+                    saveCellGridHourlyData(myError, QString::fromStdString(id), row, col, firstTime, lastTime, meteoVariableList);
                 }
                 else
                 {
-                    saveCellGridDailyDataFF(myError, QString::fromStdString(id), row, col, firstDate.date(), lastDate.date());
-                    saveCellGridHourlyDataFF(myError, QString::fromStdString(id), row, col, firstDate, lastDate);
+                    saveCellGridDailyDataFF(myError, QString::fromStdString(id), row, col, firstTime.date(), lastTime.date());
+                    saveCellGridHourlyDataFF(myError, QString::fromStdString(id), row, col, firstTime, lastTime);
                 }
             }
         }

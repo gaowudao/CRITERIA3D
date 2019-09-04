@@ -93,6 +93,7 @@ SOURCES += main.cpp\
     mainWindow.cpp \
     saveClimaLayout.cpp \
     shared/dialogProject.cpp \
+    shared/meteoMaps.cpp \
     shared/stationMarker.cpp \
     shared/rubberBand.cpp \
     shared/formInfo.cpp \
@@ -120,6 +121,7 @@ HEADERS  += mainWindow.h \
     dialogPragaProject.h \
     saveClimaLayout.h \
     shared/dialogProject.h \
+    shared/meteoMaps.h \
     shared/stationMarker.h \
     shared/rubberBand.h \
     shared/formInfo.h \

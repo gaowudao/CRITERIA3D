@@ -1388,6 +1388,9 @@ bool PragaProject::interpolationMeteoGridPeriod(QDate dateIni, QDate dateFin, QL
             {
                 if (! interpolationDemMain(myVar, getCrit3DTime(myDate, myHour), myGrid, false))
                     return false;
+                else {
+                    meteoGridDbHandler->meteoGrid()->aggregateMeteoGrid(myVar, hourly, getCrit3DDate(myDate), myHour, 0, &DEM, myGrid, interpolationSettings.getMeteoGridAggrMethod());
+                }
             }
         }
 
@@ -1428,61 +1431,11 @@ bool PragaProject::interpolationMeteoGridPeriod(QDate dateIni, QDate dateFin, QL
         myYearUrban = Definitions.NO_DATA
 
         'log file
-        myHandleFile = FreeFile
-        myFileName = Environment.Praga_Path & Definitions.PATH_LOG & "InterpolationERG5v2_" & format(Now, "YYYYMMDDHHMM") & ".txt"
-        Open myFileName For Output As myHandleFile
         Print #myHandleFile, "Interpolation started at " & format(Now, "YYYY-MM-DD HH:MM:SS") & vbCrLf
         Print #myHandleFile, "From " & format(myStartDate, "YYYY-MM-DD") & " to "; format(myEndDate, "YYYY-MM-DD")
         Print #myHandleFile, "Interpolation method: "; Interpolation.GetInterpolationMethod
-        Print #myHandleFile, "Active proxies: " & _
-            IIf(Interpolation.GetUseOrography, "orography", "") & _
-            IIf(Interpolation.GetUseInversion, " (with inversions)", "") & _
-            IIf(Interpolation.GetUseOrogIndex, ", orog index", "") & _
-            IIf(Interpolation.GetUseSeaDist, ", sea distance", "") & _
-            IIf(Interpolation.GetUseUrban, ", urban fraction", "") & _
-            IIf(Interpolation.GetUseAspect, ", aspect", "")
-        Print #myHandleFile, "tad:" & IIf(Interpolation.GetUseTAD, "active", "not active")
-        Print #myHandleFile, "JRC method: " & IIf(Interpolation.GetUseJRC, "active (threshold: " & format(Interpolation.getJRCThreshold, "0.000"), "not active")
-        Print #myHandleFile, "dew point method: " & IIf(Interpolation.GetUseDewPoint, "active", "not active")
-        Print #myHandleFile, "Min R2: " & format(Interpolation.GetSigPearsson, "0.000")
-        Print #myHandleFile, "Aggregation method: " & Interpolation.getAggregationMethod
-        Print #myHandleFile, "Optimal detrending: "; IIf(Interpolation.getUseBestDetrending, "active", "not active")
-        Print #myHandleFile, "Lapse rate classes: " & IIf(Interpolation.getUseLapseRatePrimaryStations, "active", "not active")
-        Print #myHandleFile, "RADIATION"
-        Print #myHandleFile, "computeRealData: " & IIf(Radiation.GetComputeRealData, "active", "not active")
-        Print #myHandleFile, "use total transmissivity: " & IIf(Radiation.GetTransmissivityUsetotal, "active", "not active")
-        Print #myHandleFile, "algorithm: " & Radiation.GetAlgorithmName
-        Print #myHandleFile, "transmissivity model: " & Radiation.GetTransmissivityModelName
-        Print #myHandleFile, "transmissivity period: " & Radiation.GetTransmissivityComputationPeriodName
-        Print #myHandleFile, "clear sky transmissivity mode: " & Radiation.GetClearSkyTransmissivityModeName
-        Print #myHandleFile, "clear sky transmissivity: " & Radiation.GetClearSkyTransmissivity
-        Print #myHandleFile, "computeShadowing: " & IIf(Radiation.GetComputeShadowing, "active", "not active")
-        Print #myHandleFile, "shadow factor: " & Radiation.GetShadowFactor
-        Print #myHandleFile, "tilt mode: " & Radiation.GetTiltModeName
-        Print #myHandleFile, "Linke mode: " & Radiation.GetLinkeModeName
-        Print #myHandleFile, "land use (Linke): " & Radiation.GetLandUse
 
         For myDate = myStartDate To myEndDate
-
-            If Interpolation.GetUseUrban Then
-                If myYearUrban <> Year(myDate) And _
-                    UBound(Interpolation.UrbanFractionMapSeries) > 0 _
-                    And Interpolation.GetUseUrban Then
-
-                        myYearUrban = Year(myDate)
-
-                        PragaShell.SetInfoOnlyText "Computing urban fraction for year " & myYearUrban
-
-                        UrbanFractionFromSeries myYearUrban
-                End If
-            End If
-
-            passaggioDati.setCurrentDay myDate
-            DBPointsManagement.InitializePointsData passaggioDati.currentDay
-
-            PragaShell.SetInfoOnlyText "Loading hourly data - " & format(myDate, "DD/MM/YYYY")
-            Print #myHandleFile, vbCrLf & format(myDate, "DD/MM/YYYY")
-            Print #myHandleFile, "HOURLY VARIABLES"
 
             If DBPointsManagement.loadPointHourly_Date(myDate, True, Definitions.INFO_NOT_VISUALIZE) Then
 
