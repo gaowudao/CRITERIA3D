@@ -166,7 +166,10 @@ bool Vine3DProject::loadVine3DProject(QString myFileName)
         return false;
 
     logInfo("Initialize DEM and project maps...");
-    meteoMaps = new Crit3DMeteoMaps(DEM);
+
+    vine3DMapsH = new Vine3DHourlyMaps(DEM);
+    vine3DMapsD = new Crit3DDailyMeteoMaps(DEM);
+
     statePlantMaps = new Crit3DStatePlantMaps(DEM);
 
     if (! openDBConnection()) return (false);
@@ -1503,8 +1506,8 @@ bool Vine3DProject::runModels(QDateTime dateTime1, QDateTime dateTime2, bool sav
             //load daily map (for desease)
             if (! loadDailyMeteoMap(this, dailyAirTemperatureAvg, myDate, myArea)) return false;
             if (! loadDailyMeteoMap(this, dailyAirRelHumidityAvg, myDate, myArea)) return false;
-            if (! loadDailyMeteoMap(this, precipitation, myDate, myArea))  return false;
-            if (! loadDailyMeteoMap(this, leafWetness, myDate, myArea)) return false;
+            if (! loadDailyMeteoMap(this, dailyPrecipitation, myDate, myArea))  return false;
+            if (! loadDailyMeteoMap(this, dailyLeafWetness, myDate, myArea)) return false;
             updateThermalSum(this, myDate);
 
             //powdery mildew
@@ -1646,11 +1649,11 @@ bool Vine3DProject::saveStateAndOutput(QDate myDate, QString myArea, bool saveDi
     return(true);
 }
 
-int Vine3DProject::getModelCaseIndex(long row, long col)
+int Vine3DProject::getModelCaseIndex(unsigned row, unsigned col)
 {
-    if (gis::isOutOfGridRowCol(row, col, modelCaseIndexMap)) return NODATA;
+    if (gis::isOutOfGridRowCol(int(row), int(col), modelCaseIndexMap)) return NODATA;
 
-    int caseIndex = modelCaseIndexMap.value[row][col];
+    int caseIndex = int(modelCaseIndexMap.value[row][col]);
     if (caseIndex == int(modelCaseIndexMap.header->flag))
     {
         //DEFAULT
@@ -1660,7 +1663,7 @@ int Vine3DProject::getModelCaseIndex(long row, long col)
     return caseIndex;
 }
 
-bool Vine3DProject::isVineyard(long row, long col)
+bool Vine3DProject::isVineyard(unsigned row, unsigned col)
 {
     int caseIndex = getModelCaseIndex(row, col);
     return (modelCases[caseIndex].landuse == landuse_vineyard);
@@ -1741,3 +1744,23 @@ bool Vine3DProject::getFieldBookIndex(int firstIndex, QDate myDate, int fieldInd
     }
     return false;
 }
+
+Vine3DHourlyMaps::Vine3DHourlyMaps(const gis::Crit3DRasterGrid& DEM) : Crit3DHourlyMeteoMaps (DEM)
+{
+    mapHourlyIrrigation->initializeGrid(DEM);
+}
+
+void Vine3DHourlyMaps::cleanVine3DHourlyMaps()
+{
+    clean();
+    mapHourlyIrrigation->emptyGrid();
+}
+
+
+Vine3DHourlyMaps::~Vine3DHourlyMaps()
+{
+    mapHourlyIrrigation->clear();
+}
+
+
+

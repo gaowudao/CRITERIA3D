@@ -15,11 +15,26 @@
 
 class Crit3DDailyMeteoMaps
 {
+private:
+    bool isInitialized;
+
 public:
     gis::Crit3DRasterGrid* mapDailyTAvg;
     gis::Crit3DRasterGrid* mapDailyTMin;
     gis::Crit3DRasterGrid* mapDailyTMax;
     gis::Crit3DRasterGrid* mapDailyPrec;
+    gis::Crit3DRasterGrid* mapDailyRHAvg;
+    gis::Crit3DRasterGrid* mapDailyRHMin;
+    gis::Crit3DRasterGrid* mapDailyRHMax;
+    gis::Crit3DRasterGrid* mapDailyLeafW;
+
+    Crit3DDailyMeteoMaps(const gis::Crit3DRasterGrid& DEM);
+    ~Crit3DDailyMeteoMaps();
+
+    void clean();
+    gis::Crit3DRasterGrid* getMapFromVar(meteoVariable myVar);
+    bool getIsInitialized() const;
+    void setIsInitialized(bool value);
 };
 
 class Crit3DHourlyMeteoMaps
@@ -48,6 +63,8 @@ public:
     bool computeET0Map(gis::Crit3DRasterGrid* DEM, Crit3DRadiationMaps *radMaps);
     bool computeRelativeHumidityMap(const gis::Crit3DRasterGrid& dewTemperatureMap);
     bool computeLeafWetnessMap(gis::Crit3DRasterGrid* myDEM);
+    bool getIsInitialized() const;
+    void setIsInitialized(bool value);
 };
 
 

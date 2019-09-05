@@ -1,6 +1,7 @@
 #include <QDateTime>
 #include <QFile>
 
+#include "basicMath.h"
 #include "gis.h"
 #include "meteoPoint.h"
 #include "crit3dDate.h"
@@ -274,63 +275,62 @@ bool setStatePlantfromMap(long row, long col , Vine3DProject* myProject)
 {
     //growth
     myProject->statePlant.stateGrowth.fruitBiomassIndex = double(myProject->statePlantMaps->fruitBiomassIndexMap->value[row][col]);
-    myProject->statePlant.stateGrowth.isHarvested = myProject->statePlantMaps->isHarvestedMap->value[row][col] ;
-    myProject->statePlant.stateGrowth.fruitBiomass = myProject->statePlantMaps->fruitBiomassMap->value[row][col] ;
-    myProject->statePlant.stateGrowth.cumulatedBiomass = myProject->statePlantMaps->cumulatedBiomassMap->value[row][col] ;
-    myProject->statePlant.stateGrowth.meanTemperatureLastMonth = myProject->statePlantMaps->meanTemperatureLastMonthMap->value[row][col];
-    myProject->statePlant.stateGrowth.shootLeafNumber = myProject->statePlantMaps->shootLeafNumberMap->value[row][col];
+    myProject->statePlant.stateGrowth.isHarvested = int(myProject->statePlantMaps->isHarvestedMap->value[row][col]);
+    myProject->statePlant.stateGrowth.fruitBiomass = double(myProject->statePlantMaps->fruitBiomassMap->value[row][col]);
+    myProject->statePlant.stateGrowth.cumulatedBiomass = double(myProject->statePlantMaps->cumulatedBiomassMap->value[row][col]);
+    myProject->statePlant.stateGrowth.meanTemperatureLastMonth = double(myProject->statePlantMaps->meanTemperatureLastMonthMap->value[row][col]);
+    myProject->statePlant.stateGrowth.shootLeafNumber = double(myProject->statePlantMaps->shootLeafNumberMap->value[row][col]);
     //pheno
-    myProject->statePlant.statePheno.chillingState = myProject->statePlantMaps->chillingStateMap->value[row][col];
-    myProject->statePlant.statePheno.forceStateBudBurst = myProject->statePlantMaps->forceStateBudBurstMap->value[row][col];
-    myProject->statePlant.statePheno.forceStateVegetativeSeason = myProject->statePlantMaps->forceStateVegetativeSeasonMap->value[row][col];
-    myProject->statePlant.statePheno.degreeDaysFromFirstMarch = myProject->statePlantMaps->degreeDaysFromFirstMarchMap->value[row][col];
+    myProject->statePlant.statePheno.chillingState = double(myProject->statePlantMaps->chillingStateMap->value[row][col]);
+    myProject->statePlant.statePheno.forceStateBudBurst = double(myProject->statePlantMaps->forceStateBudBurstMap->value[row][col]);
+    myProject->statePlant.statePheno.forceStateVegetativeSeason = double(myProject->statePlantMaps->forceStateVegetativeSeasonMap->value[row][col]);
+    myProject->statePlant.statePheno.degreeDaysFromFirstMarch = double(myProject->statePlantMaps->degreeDaysFromFirstMarchMap->value[row][col]);
 
-    if (myProject->statePlantMaps->degreeDaysAtFruitSetMap->value[row][col] == myProject->statePlantMaps->degreeDaysAtFruitSetMap->header->flag)
+    if (isEqual(myProject->statePlantMaps->degreeDaysAtFruitSetMap->value[row][col], myProject->statePlantMaps->degreeDaysAtFruitSetMap->header->flag))
         myProject->statePlant.statePheno.degreeDaysAtFruitSet = NODATA;
     else
-        myProject->statePlant.statePheno.degreeDaysAtFruitSet = myProject->statePlantMaps->degreeDaysAtFruitSetMap->value[row][col];
+        myProject->statePlant.statePheno.degreeDaysAtFruitSet = double(myProject->statePlantMaps->degreeDaysAtFruitSetMap->value[row][col]);
 
-    myProject->statePlant.statePheno.daysAfterBloom = myProject->statePlantMaps->daysAfterBloomMap->value[row][col];
-    myProject->statePlant.statePheno.stage = myProject->statePlantMaps->stageMap->value[row][col];
-    myProject->statePlant.statePheno.cumulatedRadiationFromFruitsetToVeraison = myProject->statePlantMaps->cumulatedRadiationFromFruitsetToVeraisonMap->value[row][col];
+    myProject->statePlant.statePheno.daysAfterBloom = double(myProject->statePlantMaps->daysAfterBloomMap->value[row][col]);
+    myProject->statePlant.statePheno.stage = double(myProject->statePlantMaps->stageMap->value[row][col]);
+    myProject->statePlant.statePheno.cumulatedRadiationFromFruitsetToVeraison = double(myProject->statePlantMaps->cumulatedRadiationFromFruitsetToVeraisonMap->value[row][col]);
 
-    myProject->statePlant.stateGrowth.leafAreaIndex = myProject->statePlantMaps->leafAreaIndexMap->value[row][col];
+    myProject->statePlant.stateGrowth.leafAreaIndex = double(myProject->statePlantMaps->leafAreaIndexMap->value[row][col]);
     return true;
 }
 
 bool getStatePlantToMap(long row,long col, Vine3DProject* myProject, TstatePlant* statePlant)
 {
-    //myProject->statePlantMaps->pHBerryMap->value[row][col] = statePlant->stateGrowth.pHBerry ;
-    myProject->statePlantMaps->fruitBiomassIndexMap->value[row][col] = statePlant->stateGrowth.fruitBiomassIndex;
-    myProject->statePlantMaps->isHarvestedMap->value[row][col] = statePlant->stateGrowth.isHarvested;
-    myProject->statePlantMaps->fruitBiomassMap->value[row][col] = statePlant->stateGrowth.fruitBiomass ;
-    myProject->statePlantMaps->cumulatedBiomassMap->value[row][col] = statePlant->stateGrowth.cumulatedBiomass ;
+    myProject->statePlantMaps->fruitBiomassIndexMap->value[row][col] = float(statePlant->stateGrowth.fruitBiomassIndex);
+    myProject->statePlantMaps->isHarvestedMap->value[row][col] = float(statePlant->stateGrowth.isHarvested);
+    myProject->statePlantMaps->fruitBiomassMap->value[row][col] = float(statePlant->stateGrowth.fruitBiomass);
+    myProject->statePlantMaps->cumulatedBiomassMap->value[row][col] = float(statePlant->stateGrowth.cumulatedBiomass);
 
-    myProject->statePlantMaps->meanTemperatureLastMonthMap->value[row][col] = statePlant->stateGrowth.meanTemperatureLastMonth;
-    myProject->statePlantMaps->shootLeafNumberMap->value[row][col] = statePlant->stateGrowth.shootLeafNumber;
+    myProject->statePlantMaps->meanTemperatureLastMonthMap->value[row][col] = float(statePlant->stateGrowth.meanTemperatureLastMonth);
+    myProject->statePlantMaps->shootLeafNumberMap->value[row][col] = float(statePlant->stateGrowth.shootLeafNumber);
     //pheno
-    myProject->statePlantMaps->chillingStateMap->value[row][col]= statePlant->statePheno.chillingState;
-    myProject->statePlantMaps->forceStateBudBurstMap->value[row][col]= statePlant->statePheno.forceStateBudBurst;
-    myProject->statePlantMaps->forceStateVegetativeSeasonMap->value[row][col]= statePlant->statePheno.forceStateVegetativeSeason;
-    myProject->statePlantMaps->daysAfterBloomMap->value[row][col]= statePlant->statePheno.daysAfterBloom;
-    myProject->statePlantMaps->stageMap->value[row][col]= statePlant->statePheno.stage;
+    myProject->statePlantMaps->chillingStateMap->value[row][col] = float(statePlant->statePheno.chillingState);
+    myProject->statePlantMaps->forceStateBudBurstMap->value[row][col] = float(statePlant->statePheno.forceStateBudBurst);
+    myProject->statePlantMaps->forceStateVegetativeSeasonMap->value[row][col] = float(statePlant->statePheno.forceStateVegetativeSeason);
+    myProject->statePlantMaps->daysAfterBloomMap->value[row][col] = float(statePlant->statePheno.daysAfterBloom);
+    myProject->statePlantMaps->stageMap->value[row][col] = float(statePlant->statePheno.stage);
 
-    myProject->statePlantMaps->leafAreaIndexMap->value[row][col] = myProject->statePlant.stateGrowth.leafAreaIndex;
-    myProject->statePlantMaps->cumulatedRadiationFromFruitsetToVeraisonMap->value[row][col] = myProject->statePlant.statePheno.cumulatedRadiationFromFruitsetToVeraison;
+    myProject->statePlantMaps->leafAreaIndexMap->value[row][col] = float(myProject->statePlant.stateGrowth.leafAreaIndex);
+    myProject->statePlantMaps->cumulatedRadiationFromFruitsetToVeraisonMap->value[row][col] = float(myProject->statePlant.statePheno.cumulatedRadiationFromFruitsetToVeraison);
 
-    myProject->outputPlantMaps->tartaricAcidMap->value[row][col] = statePlant->stateGrowth.tartaricAcid;
-    myProject->outputPlantMaps->brixBerryMap->value[row][col] = myProject->statePlant.outputPlant.brixBerry;
-    myProject->outputPlantMaps->brixMaximumMap->value[row][col]= myProject->statePlant.outputPlant.brixMaximum;
-    myProject->outputPlantMaps->daysFromFloweringMap->value[row][col]= myProject->statePlant.statePheno.daysAfterBloom;
+    myProject->outputPlantMaps->tartaricAcidMap->value[row][col] = float(statePlant->stateGrowth.tartaricAcid);
+    myProject->outputPlantMaps->brixBerryMap->value[row][col] = float(myProject->statePlant.outputPlant.brixBerry);
+    myProject->outputPlantMaps->brixMaximumMap->value[row][col] = float(myProject->statePlant.outputPlant.brixMaximum);
+    myProject->outputPlantMaps->daysFromFloweringMap->value[row][col] = float(myProject->statePlant.statePheno.daysAfterBloom);
     if (myProject->statePlantMaps->stageMap->value[row][col] >= veraison)
-        myProject->outputPlantMaps->wineYieldMap->value[row][col] = myProject->statePlantMaps->fruitBiomassMap->value[row][col] *240.0;
+        myProject->outputPlantMaps->wineYieldMap->value[row][col] = float(myProject->statePlantMaps->fruitBiomassMap->value[row][col] * 240.0);
     else
-        myProject->outputPlantMaps->wineYieldMap->value[row][col] = myProject->outputPlantMaps->wineYieldMap->header->flag;
+        myProject->outputPlantMaps->wineYieldMap->value[row][col] = float(myProject->outputPlantMaps->wineYieldMap->header->flag);
 
     //delta brix
-    myProject->outputPlantMaps->deltaBrixMap->value[row][col] = myProject->outputPlantMaps->deltaBrixMap->header->flag;
-    if ((myProject->outputPlantMaps->brixMaximumMap->value[row][col] != myProject->outputPlantMaps->brixMaximumMap->header->flag) &&
-        (myProject->outputPlantMaps->brixBerryMap->value[row][col] != myProject->outputPlantMaps->brixBerryMap->header->flag))
+    myProject->outputPlantMaps->deltaBrixMap->value[row][col] = float(myProject->outputPlantMaps->deltaBrixMap->header->flag);
+    if (! isEqual(myProject->outputPlantMaps->brixMaximumMap->value[row][col], myProject->outputPlantMaps->brixMaximumMap->header->flag) &&
+        ! isEqual(myProject->outputPlantMaps->brixBerryMap->value[row][col], myProject->outputPlantMaps->brixBerryMap->header->flag))
         myProject->outputPlantMaps->deltaBrixMap->value[row][col] = MAXVALUE(myProject->outputPlantMaps->brixMaximumMap->value[row][col] - myProject->outputPlantMaps->brixBerryMap->value[row][col],0);
 
     return(true);
@@ -441,7 +441,7 @@ bool updateThermalSum(Vine3DProject* myProject, QDate myDate)
                 phenoPhase = myProject->statePlantMaps->stageMap->value[row][col];
                 isFruitSet = (phenoPhase >= fruitSet);
 
-                airTemp = myProject->meteoMaps->avgDailyTemperatureMap->value[row][col];
+                airTemp = myProject->vine3DMapsD->mapDailyTAvg->value[row][col];
                 degreeDays = myProject->statePlantMaps->degreeDaysFromFirstMarchMap->value[row][col];
 
                 // thermal sum at fruit set

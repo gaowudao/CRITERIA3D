@@ -49,10 +49,10 @@ bool computePowderyMildew(Vine3DProject* myProject)
                         powdery.state.totalSporulatingColonies = myProject->statePlantMaps->powderySporulatingColoniesMap->value[row][col];
 
                         // read meteo
-                        powdery.input.tavg = myProject->meteoMaps->avgDailyTemperatureMap->value[row][col];
-                        powdery.input.relativeHumidity = myProject->meteoMaps->airRelHumidityMap->value[row][col];
-                        powdery.input.rain = myProject->meteoMaps->precipitationMap->value[row][col];
-                        powdery.input.leafWetness = myProject->meteoMaps->leafWetnessMap->value[row][col];
+                        powdery.input.tavg = myProject->vine3DMapsD->mapDailyTAvg->value[row][col];
+                        powdery.input.relativeHumidity = myProject->vine3DMapsD->mapDailyRHAvg->value[row][col];
+                        powdery.input.rain = myProject->vine3DMapsD->mapDailyPrec->value[row][col];
+                        powdery.input.leafWetness = int(myProject->vine3DMapsD->mapDailyLeafW->value[row][col]);
 
                         powderyMildew(&powdery, isBudBurst);
 
@@ -81,7 +81,7 @@ bool computePowderyMildew(Vine3DProject* myProject)
 }
 
 
-bool computeDownyMildew(Vine3DProject* myProject, QDate firstDate, QDate lastDate, int lastHour, QString myArea)
+bool computeDownyMildew(Vine3DProject* myProject, QDate firstDate, QDate lastDate, unsigned lastHour, QString myArea)
 {
     using namespace std;
 
@@ -96,8 +96,8 @@ bool computeDownyMildew(Vine3DProject* myProject, QDate firstDate, QDate lastDat
         lastHour = 23;
     }
 
-    int lastDoy = firstJanuary.daysTo(lastDate) + 1;
-    int firstDoy = firstJanuary.daysTo(firstDate) + 1;
+    unsigned lastDoy = unsigned(firstJanuary.daysTo(lastDate) + 1);
+    unsigned firstDoy = unsigned(firstJanuary.daysTo(firstDate) + 1);
 
     //check vegetative season
     if ((lastDoy < VEGETATIVESTART) || (firstDoy >= VEGETATIVEEND))
@@ -115,14 +115,14 @@ bool computeDownyMildew(Vine3DProject* myProject, QDate firstDate, QDate lastDat
         lastHour = 23;
     }
     lastDate = firstJanuary.addDays(lastDoy - 1);
-    long nrHours = (lastDoy -1)* 24 + lastHour;
-    int nrSavingDays = lastDoy - firstDoy + 1;
+    unsigned nrHours = (lastDoy -1)* 24 + lastHour;
+    unsigned nrSavingDays = lastDoy - firstDoy + 1;
 
     QDateTime firstTime, lastTime;
     firstTime.setDate(firstJanuary);
     firstTime.setTime(QTime(1, 0, 0, 0));
     lastTime.setDate(lastDate);
-    lastTime.setTime(QTime(lastHour, 0, 0, 0));
+    lastTime.setTime(QTime(int(lastHour), 0, 0, 0));
 
     if (!myProject->loadObsDataFilled(firstTime, lastTime))
     {
@@ -130,7 +130,7 @@ bool computeDownyMildew(Vine3DProject* myProject, QDate firstDate, QDate lastDat
         return false;
     }
 
-    int rowPoint[MAXPOINTS], colPoint[MAXPOINTS];
+    unsigned rowPoint[MAXPOINTS], colPoint[MAXPOINTS];
 
     vector<TdownyMildewInput> input;
     vector<gis::Crit3DRasterGrid*> infectionMap;
@@ -138,7 +138,7 @@ bool computeDownyMildew(Vine3DProject* myProject, QDate firstDate, QDate lastDat
 
     TdownyMildew downyMildewCore;
 
-    long n, nrPoints, row, col;
+    unsigned n, nrPoints, row, col;
     int doy;
     QString dailyPath, variableMissing;
     float sumOilSpots;
@@ -171,10 +171,10 @@ bool computeDownyMildew(Vine3DProject* myProject, QDate firstDate, QDate lastDat
         }
 
         col++;
-        if (col == myProject->DEM.header->nrCols)
+        if (col == unsigned(myProject->DEM.header->nrCols))
         {
             row++;
-            if (row == myProject->DEM.header->nrRows) isLastCell = true;
+            if (row == unsigned(myProject->DEM.header->nrRows)) isLastCell = true;
             col = 0;
         }
 
@@ -187,7 +187,7 @@ bool computeDownyMildew(Vine3DProject* myProject, QDate firstDate, QDate lastDat
 
             myProject->logInfo("Interpolating hourly data. Group " + QString::number(groupId) + ". Nr points: " + QString::number(nrPoints));
             myTime = getCrit3DTime(firstTime);
-            for (long h = 0; h < nrHours; h++)
+            for (unsigned h = 0; h < nrHours; h++)
             {
                 if ((myTime.date.day == 1) && (myTime.getHour() == 1))
                     myProject->logInfo("Compute hourly data - month: " + QString::number(myTime.date.month));
@@ -211,16 +211,16 @@ bool computeDownyMildew(Vine3DProject* myProject, QDate firstDate, QDate lastDat
                     break;
                 }
 
-                myProject->meteoMaps->computeLeafWetnessMap(&(myProject->DEM));
+                myProject->vine3DMapsH->computeLeafWetnessMap(&(myProject->DEM));
 
                 for (n = 0; n < nrPoints; n++)
                 {
                     row = rowPoint[n];
                     col = colPoint[n];
-                    input[n*nrHours+h].tair = myProject->meteoMaps->airTemperatureMap->value[row][col];
-                    input[n*nrHours+h].relativeHumidity = myProject->meteoMaps->airRelHumidityMap->value[row][col];
-                    input[n*nrHours+h].rain = myProject->meteoMaps->precipitationMap->value[row][col];
-                    input[n*nrHours+h].leafWetness = myProject->meteoMaps->leafWetnessMap->value[row][col];
+                    input[n*nrHours+h].tair = myProject->vine3DMapsH->mapHourlyT->value[row][col];
+                    input[n*nrHours+h].relativeHumidity = myProject->vine3DMapsH->mapHourlyRelHum->value[row][col];
+                    input[n*nrHours+h].rain = myProject->vine3DMapsH->mapHourlyPrec->value[row][col];
+                    input[n*nrHours+h].leafWetness = int(myProject->vine3DMapsH->mapHourlyLeafW->value[row][col]);
                 }
                 myTime = myTime.addSeconds(3600);
             }
@@ -238,7 +238,7 @@ bool computeDownyMildew(Vine3DProject* myProject, QDate firstDate, QDate lastDat
                     downyMildewCore.input = input[n*nrHours];
                     downyMildew(&downyMildewCore, true);
 
-                    for (long h = 1; h < nrHours; h++)
+                    for (unsigned h = 1; h < nrHours; h++)
                     {
                         downyMildewCore.input = input[n*nrHours + h];
                         downyMildew(&downyMildewCore, false);

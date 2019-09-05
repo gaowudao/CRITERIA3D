@@ -37,6 +37,17 @@
     };
 
 
+    class Vine3DHourlyMaps : public Crit3DHourlyMeteoMaps
+    {
+    public:
+        gis::Crit3DRasterGrid* mapHourlyIrrigation;
+
+        Vine3DHourlyMaps(const gis::Crit3DRasterGrid& DEM);
+        ~Vine3DHourlyMaps();
+
+        void cleanVine3DHourlyMaps();
+    };
+
     class Vine3DProject : public Project3D
     {
 
@@ -55,7 +66,6 @@
 
         QString idArea;
         QString dailyOutputPath;
-        QString demFileName;
         QString fieldMapName;
 
         gis::Crit3DRasterGrid modelCaseIndexMap;
@@ -75,9 +85,10 @@
         int* aggrVarCodes;
         int nrAggrVar;
 
-        bool isProjectLoaded;
-
         Crit3DQuality qualityParameters;
+
+        Vine3DHourlyMaps* vine3DMapsH;
+        Crit3DDailyMeteoMaps* vine3DMapsD;
 
         Crit3DWaterBalanceMaps* outputWaterBalanceMaps;
         Crit3DStatePlantMaps* statePlantMaps;
@@ -140,9 +151,9 @@
 
         float getTimeStep();
 
-        int getModelCaseIndex(long row, long col);
+        int getModelCaseIndex(unsigned row, unsigned col);
 
-        bool isVineyard(long row, long col);
+        bool isVineyard(unsigned row, unsigned col);
 
         int getVine3DSoilIndex(long row, long col);
 

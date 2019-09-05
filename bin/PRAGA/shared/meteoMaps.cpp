@@ -2,6 +2,98 @@
 #include "meteoMaps.h"
 
 
+bool Crit3DDailyMeteoMaps::getIsInitialized() const
+{
+    return isInitialized;
+}
+
+void Crit3DDailyMeteoMaps::setIsInitialized(bool value)
+{
+    isInitialized = value;
+}
+
+Crit3DDailyMeteoMaps::Crit3DDailyMeteoMaps(const gis::Crit3DRasterGrid& DEM)
+{
+    mapDailyTAvg = new gis::Crit3DRasterGrid;
+    mapDailyTMax = new gis::Crit3DRasterGrid;
+    mapDailyTMin = new gis::Crit3DRasterGrid;
+    mapDailyPrec = new gis::Crit3DRasterGrid;
+    mapDailyRHAvg = new gis::Crit3DRasterGrid;
+    mapDailyRHMin = new gis::Crit3DRasterGrid;
+    mapDailyRHMax = new gis::Crit3DRasterGrid;
+    mapDailyLeafW = new gis::Crit3DRasterGrid;
+
+    mapDailyTAvg->initializeGrid(DEM);
+    mapDailyTMax->initializeGrid(DEM);
+    mapDailyTMin->initializeGrid(DEM);
+    mapDailyPrec->initializeGrid(DEM);
+    mapDailyRHAvg->initializeGrid(DEM);
+    mapDailyRHMin->initializeGrid(DEM);
+    mapDailyRHMax->initializeGrid(DEM);
+    mapDailyLeafW->initializeGrid(DEM);
+
+    isInitialized = true;
+}
+
+void Crit3DDailyMeteoMaps::clean()
+{
+    mapDailyTAvg->emptyGrid();
+    mapDailyTMax->emptyGrid();
+    mapDailyTMin->emptyGrid();
+    mapDailyPrec->emptyGrid();
+    mapDailyRHAvg->emptyGrid();
+    mapDailyRHMin->emptyGrid();
+    mapDailyRHMax->emptyGrid();
+    mapDailyLeafW->emptyGrid();
+}
+
+Crit3DDailyMeteoMaps::~Crit3DDailyMeteoMaps()
+{
+    if (isInitialized)
+    {
+        mapDailyTAvg->clear();
+        mapDailyTMax->clear();
+        mapDailyTMin->clear();
+        mapDailyPrec->clear();
+        mapDailyRHAvg->clear();
+        mapDailyRHMin->clear();
+        mapDailyRHMax->clear();
+        mapDailyLeafW->clear();
+    }
+}
+
+bool Crit3DHourlyMeteoMaps::getIsInitialized() const
+{
+    return isInitialized;
+}
+
+void Crit3DHourlyMeteoMaps::setIsInitialized(bool value)
+{
+    isInitialized = value;
+}
+
+gis::Crit3DRasterGrid* Crit3DDailyMeteoMaps::getMapFromVar(meteoVariable myVar)
+{
+    if (myVar == dailyAirTemperatureAvg)
+        return mapDailyTAvg;
+    else if (myVar == dailyAirTemperatureMax)
+        return mapDailyTMax;
+    else if (myVar == dailyAirTemperatureMin)
+        return mapDailyTMin;
+    else if (myVar == dailyPrecipitation)
+        return mapDailyPrec;
+    else if (myVar == dailyAirRelHumidityAvg)
+        return mapDailyRHAvg;
+    else if (myVar == dailyAirRelHumidityMax)
+        return mapDailyRHMax;
+    else if (myVar == dailyAirRelHumidityMin)
+        return mapDailyRHMin;
+    else if (myVar == dailyLeafWetness)
+        return mapDailyLeafW;
+    else
+        return nullptr;
+}
+
 Crit3DHourlyMeteoMaps::Crit3DHourlyMeteoMaps(const gis::Crit3DRasterGrid& DEM)
 {
     mapHourlyT = new gis::Crit3DRasterGrid;
@@ -13,20 +105,14 @@ Crit3DHourlyMeteoMaps::Crit3DHourlyMeteoMaps(const gis::Crit3DRasterGrid& DEM)
     mapHourlyTdew = new gis::Crit3DRasterGrid;
     mapHourlyWindDir = new gis::Crit3DRasterGrid;
 
-    //irrigationMap = new gis::Crit3DRasterGrid;
-    //avgDailyTemperatureMap = new gis::Crit3DRasterGrid;
-
     mapHourlyT->initializeGrid(DEM);
     mapHourlyPrec->initializeGrid(DEM);
     mapHourlyRelHum->initializeGrid(DEM);
     mapHourlyWindInt->initializeGrid(DEM);
-    //avgDailyTemperatureMap->initializeGrid(DEM);
     mapHourlyLeafW->initializeGrid(DEM);
     mapHourlyET0->initializeGrid(DEM);
     mapHourlyTdew->initializeGrid(DEM);
     mapHourlyWindDir->initializeGrid(DEM);
-
-    //irrigationMap->initializeGrid(DEM);
 
     isInitialized = true;
     isComputed = false;

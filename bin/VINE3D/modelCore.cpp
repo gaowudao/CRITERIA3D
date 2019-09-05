@@ -51,15 +51,16 @@ bool assignIrrigation(Vine3DProject* myProject, Crit3DTime myTime)
     int hour = myTime.getHour();
     int idBook;
     QDate myDate = getQDate(myTime.date);
+    int row, col;
 
-    for (long row = 0; row < myProject->DEM.header->nrRows ; row++)
-        for (long col = 0; col < myProject->DEM.header->nrCols; col++)
+    for (row = 0; row < myProject->DEM.header->nrRows ; row++)
+        for (col = 0; col < myProject->DEM.header->nrCols; col++)
             if (int(myProject->DEM.value[row][col]) != int(myProject->DEM.header->flag))
             {
                 //initialize
-                myProject->meteoMaps->irrigationMap->value[row][col] = 0.0;
+                myProject->vine3DMapsH->mapHourlyIrrigation->value[row][col] = 0.0;
 
-                fieldIndex = myProject->getModelCaseIndex(row, col);
+                fieldIndex = myProject->getModelCaseIndex(unsigned(row), unsigned(col));
                 if (fieldIndex > 0)
                 {
                     idBook = 0;
@@ -72,7 +73,7 @@ bool assignIrrigation(Vine3DProject* myProject, Crit3DTime myTime)
                             {
                                 irrigationRate = myProject->modelCases[fieldIndex].maxIrrigationRate;
                                 rate = irrigationRate / myProject->meteoSettings->getHourlyIntervals();
-                                myProject->meteoMaps->irrigationMap->value[row][col] = rate;
+                                myProject->vine3DMapsH->mapHourlyIrrigation->value[row][col] = rate;
                             }
                         }
                         idBook++;
@@ -116,7 +117,7 @@ bool modelDailyCycle(bool isInitialState, Crit3DDate myDate, int nrHours,
 
         // meteo interpolation
         myProject->logInfo("Interpolate meteo data");
-        myProject->meteoMaps->clean();
+        myProject->vine3DMapsH->clean();
         interpolateAndSaveHourlyMeteo(myProject, airTemperature, myCurrentTime, myOutputPath, saveOutput, myArea);
         interpolateAndSaveHourlyMeteo(myProject, precipitation, myCurrentTime, myOutputPath, saveOutput, myArea);
         interpolateAndSaveHourlyMeteo(myProject, airRelHumidity, myCurrentTime, myOutputPath, saveOutput, myArea);
@@ -124,14 +125,14 @@ bool modelDailyCycle(bool isInitialState, Crit3DDate myDate, int nrHours,
         interpolateAndSaveHourlyMeteo(myProject, globalIrradiance, myCurrentTime, myOutputPath, saveOutput, myArea);
 
         // ET0
-        myProject->meteoMaps->computeET0Map(&(myProject->DEM), myProject->radiationMaps);
+        myProject->vine3DMapsH->computeET0Map(&(myProject->DEM), myProject->radiationMaps);
         if (saveOutput)
         {
             saveMeteoHourlyOutput(myProject, referenceEvapotranspiration, myOutputPath, myCurrentTime, myArea);
         }
 
         // Leaf Wetness
-        myProject->meteoMaps->computeLeafWetnessMap(&(myProject->DEM));
+        myProject->vine3DMapsH->computeLeafWetnessMap(&(myProject->DEM));
         if (saveOutput)
         {
             saveMeteoHourlyOutput(myProject, leafWetness, myOutputPath, myCurrentTime, myArea);
@@ -151,17 +152,17 @@ bool modelDailyCycle(bool isInitialState, Crit3DDate myDate, int nrHours,
             {
                 if (int(myProject->DEM.value[row][col]) != int(myProject->DEM.header->flag))
                 {
-                    modelCaseIndex = myProject->getModelCaseIndex(row,col);
+                    modelCaseIndex = myProject->getModelCaseIndex(unsigned(row), unsigned(col));
                     isNewModelCase = (int(myProject->statePlantMaps->fruitBiomassMap->value[row][col])
                                   == int(myProject->statePlantMaps->fruitBiomassMap->header->flag));
 
                     if (! myProject->grapevine.setWeather(
-                                double(myProject->meteoMaps->avgDailyTemperatureMap->value[row][col]),
-                                double(myProject->meteoMaps->airTemperatureMap->value[row][col]),
+                                double(myProject->vine3DMapsD->mapDailyTAvg->value[row][col]),
+                                double(myProject->vine3DMapsH->mapHourlyT->value[row][col]),
                                 double(myProject->radiationMaps->globalRadiationMap->value[row][col]),
-                                double(myProject->meteoMaps->precipitationMap->value[row][col]),
-                                double(myProject->meteoMaps->airRelHumidityMap->value[row][col]),
-                                double(myProject->meteoMaps->windIntensityMap->value[row][col]),
+                                double(myProject->vine3DMapsH->mapHourlyPrec->value[row][col]),
+                                double(myProject->vine3DMapsH->mapHourlyRelHum->value[row][col]),
+                                double(myProject->vine3DMapsH->mapHourlyWindInt->value[row][col]),
                                 PRESS)) {
                         myProject->errorString = grapevineError(myCurrentTime, row, col, "Weather data missing");
                         return(false);
