@@ -280,9 +280,8 @@ bool interpolationProjectDemMain(Vine3DProject* myProject, meteoVariable myVar, 
 
             if (vine3DInterpolationDem(myProject, airDewTemperature, myCrit3DTime, isLoadData))
             {
-                // Dew Temp is saved on dataRaster
                 myResult = computeHumidityMap(*(myProject->vine3DMapsH->mapHourlyT),
-                                              myProject->dataRaster,
+                                              *(myProject->vine3DMapsH->mapHourlyTdew),
                                               myProject->vine3DMapsH->mapHourlyRelHum);
             }
         }
