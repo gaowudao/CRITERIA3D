@@ -11,11 +11,18 @@
     #include "project.h"
 #endif
 
+#ifndef METEOMAPS_H
+    #include "meteoMaps.h"
+#endif
+
     class PragaProject : public Project
     {
     private:
 
     public:
+
+        Crit3DDailyMeteoMaps* pragaDailyMaps;
+        Crit3DHourlyMeteoMaps* pragaHourlyMaps;
 
         aggregationMethod grdAggrMethod;
 

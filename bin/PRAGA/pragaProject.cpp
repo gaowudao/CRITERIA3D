@@ -31,6 +31,9 @@ void PragaProject::initializePragaProject()
 void PragaProject::clearPragaProject()
 {
     if (isProjectLoaded) clearProject();
+    delete clima;
+    delete pragaDailyMaps;
+    delete pragaHourlyMaps;
 }
 
 void PragaProject::createPragaProject(QString path_, QString name_, QString description_)
@@ -61,6 +64,12 @@ bool PragaProject::loadPragaProject(QString myFileName)
 
     if (! loadPragaSettings())
         return false;
+
+    if (DEM.isLoaded)
+    {
+        pragaDailyMaps = new Crit3DDailyMeteoMaps(DEM);
+        pragaHourlyMaps = new Crit3DHourlyMeteoMaps(DEM);
+    }
 
     isProjectLoaded = true;
 

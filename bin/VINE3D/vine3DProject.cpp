@@ -77,6 +77,9 @@ void Vine3DProject::clearVine3DProject()
         modelCaseIndexMap.clear();
 
         clearProject3D();
+
+        delete vine3DMapsH;
+        delete vine3DMapsD;
     }
 }
 
