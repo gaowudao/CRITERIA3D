@@ -16,10 +16,10 @@
 class Crit3DDailyMeteoMaps
 {
 public:
-    gis::Crit3DRasterGrid* avgTemperatureMap;
-    gis::Crit3DRasterGrid* minTemperatureMap;
-    gis::Crit3DRasterGrid* maxTemperatureMap;
-    gis::Crit3DRasterGrid* precipitationMap;
+    gis::Crit3DRasterGrid* mapDailyTAvg;
+    gis::Crit3DRasterGrid* mapDailyTMin;
+    gis::Crit3DRasterGrid* mapDailyTMax;
+    gis::Crit3DRasterGrid* mapDailyPrec;
 };
 
 class Crit3DHourlyMeteoMaps
@@ -28,14 +28,14 @@ private:
     bool isInitialized;
 
 public:
-    gis::Crit3DRasterGrid* airTemperatureMap;
-    gis::Crit3DRasterGrid* airDewTemperatureMap;
-    gis::Crit3DRasterGrid* precipitationMap;
-    gis::Crit3DRasterGrid* airRelHumidityMap;
-    gis::Crit3DRasterGrid* windIntensityMap;
-    gis::Crit3DRasterGrid* windDirectionMap;
-    gis::Crit3DRasterGrid* ET0Map;
-    gis::Crit3DRasterGrid* leafWetnessMap;
+    gis::Crit3DRasterGrid* mapHourlyT;
+    gis::Crit3DRasterGrid* mapHourlyTdew;
+    gis::Crit3DRasterGrid* mapHourlyPrec;
+    gis::Crit3DRasterGrid* mapHourlyRelHum;
+    gis::Crit3DRasterGrid* mapHourlyWindInt;
+    gis::Crit3DRasterGrid* mapHourlyWindDir;
+    gis::Crit3DRasterGrid* mapHourlyET0;
+    gis::Crit3DRasterGrid* mapHourlyLeafW;
 
     bool isComputed;
 

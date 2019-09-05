@@ -23,7 +23,7 @@
 
     public:
         // meteo maps
-        Crit3DHourlyMeteoMaps* meteoMaps;
+        Crit3DHourlyMeteoMaps* hourlyMeteoMaps;
 
         // same header of DEM
         gis::Crit3DRasterGrid soilMap;

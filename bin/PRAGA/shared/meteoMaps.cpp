@@ -4,22 +4,28 @@
 
 Crit3DHourlyMeteoMaps::Crit3DHourlyMeteoMaps(const gis::Crit3DRasterGrid& DEM)
 {
-    airTemperatureMap = new gis::Crit3DRasterGrid;
-    precipitationMap = new gis::Crit3DRasterGrid;
-    airRelHumidityMap = new gis::Crit3DRasterGrid;
-    windIntensityMap = new gis::Crit3DRasterGrid;
-    leafWetnessMap = new gis::Crit3DRasterGrid;
-    ET0Map = new gis::Crit3DRasterGrid;
+    mapHourlyT = new gis::Crit3DRasterGrid;
+    mapHourlyPrec = new gis::Crit3DRasterGrid;
+    mapHourlyRelHum = new gis::Crit3DRasterGrid;
+    mapHourlyWindInt = new gis::Crit3DRasterGrid;
+    mapHourlyLeafW = new gis::Crit3DRasterGrid;
+    mapHourlyET0 = new gis::Crit3DRasterGrid;
+    mapHourlyTdew = new gis::Crit3DRasterGrid;
+    mapHourlyWindDir = new gis::Crit3DRasterGrid;
+
     //irrigationMap = new gis::Crit3DRasterGrid;
     //avgDailyTemperatureMap = new gis::Crit3DRasterGrid;
 
-    airTemperatureMap->initializeGrid(DEM);
-    precipitationMap->initializeGrid(DEM);
-    airRelHumidityMap->initializeGrid(DEM);
-    windIntensityMap->initializeGrid(DEM);
+    mapHourlyT->initializeGrid(DEM);
+    mapHourlyPrec->initializeGrid(DEM);
+    mapHourlyRelHum->initializeGrid(DEM);
+    mapHourlyWindInt->initializeGrid(DEM);
     //avgDailyTemperatureMap->initializeGrid(DEM);
-    leafWetnessMap->initializeGrid(DEM);
-    ET0Map->initializeGrid(DEM);
+    mapHourlyLeafW->initializeGrid(DEM);
+    mapHourlyET0->initializeGrid(DEM);
+    mapHourlyTdew->initializeGrid(DEM);
+    mapHourlyWindDir->initializeGrid(DEM);
+
     //irrigationMap->initializeGrid(DEM);
 
     isInitialized = true;
@@ -29,12 +35,14 @@ Crit3DHourlyMeteoMaps::Crit3DHourlyMeteoMaps(const gis::Crit3DRasterGrid& DEM)
 
 void Crit3DHourlyMeteoMaps::clean()
 {
-    airTemperatureMap->emptyGrid();
-    precipitationMap->emptyGrid();
-    airRelHumidityMap->emptyGrid();
-    leafWetnessMap->emptyGrid();
-    ET0Map->emptyGrid();
-    windIntensityMap->emptyGrid();
+    mapHourlyT->emptyGrid();
+    mapHourlyPrec->emptyGrid();
+    mapHourlyRelHum->emptyGrid();
+    mapHourlyWindInt->emptyGrid();
+    mapHourlyET0->emptyGrid();
+    mapHourlyWindInt->emptyGrid();
+    mapHourlyWindDir->emptyGrid();
+    mapHourlyLeafW->emptyGrid();
     //irrigationMap->emptyGrid();
 
     isComputed = false;
@@ -45,12 +53,14 @@ Crit3DHourlyMeteoMaps::~Crit3DHourlyMeteoMaps()
 {
     if (isInitialized)
     {
-        airTemperatureMap->clear();
-        precipitationMap->clear();
-        airRelHumidityMap->clear();
-        windIntensityMap->clear();
-        leafWetnessMap->clear();
-        ET0Map->clear();
+        mapHourlyT->clear();
+        mapHourlyPrec->clear();
+        mapHourlyRelHum->clear();
+        mapHourlyWindInt->clear();
+        mapHourlyLeafW->clear();
+        mapHourlyWindInt->clear();
+        mapHourlyWindDir->clear();
+        mapHourlyET0->clear();
         //irrigationMap->clear();
         //avgDailyTemperatureMap->clear();
     }
@@ -60,21 +70,23 @@ Crit3DHourlyMeteoMaps::~Crit3DHourlyMeteoMaps()
 gis::Crit3DRasterGrid* Crit3DHourlyMeteoMaps::getMapFromVar(meteoVariable myVar)
 {
     if (myVar == airTemperature)
-        return airTemperatureMap;
+        return mapHourlyT;
     else if (myVar == precipitation)
-        return precipitationMap;
+        return mapHourlyPrec;
     else if (myVar == airRelHumidity)
-        return airRelHumidityMap;
+        return mapHourlyRelHum;
     else if (myVar == windIntensity)
-        return windIntensityMap;
+        return mapHourlyWindInt;
     else if (myVar == referenceEvapotranspiration)
-        return ET0Map;
+        return mapHourlyET0;
     else if (myVar == leafWetness)
-        return leafWetnessMap;
+        return mapHourlyLeafW;
     //else if (myVar == dailyAirTemperatureAvg)
         //return avgDailyTemperatureMap;
-    else if (myVar == dailyAirRelHumidityAvg)
-        return airRelHumidityMap;
+    else if (myVar == windDirection)
+        return mapHourlyWindDir;
+    else if (myVar == airDewTemperature)
+        return mapHourlyTdew;
     else
         return nullptr;
 }
@@ -85,10 +97,10 @@ bool Crit3DHourlyMeteoMaps::computeET0Map(gis::Crit3DRasterGrid* myDEM, Crit3DRa
     float globalRadiation, transmissivity, clearSkyTransmissivity;
     float temperature, relHumidity, windSpeed, height;
 
-    for (long row = 0; row < this->ET0Map->header->nrRows; row++)
-        for (long col = 0; col < this->ET0Map->header->nrCols; col++)
+    for (long row = 0; row < this->mapHourlyET0->header->nrRows; row++)
+        for (long col = 0; col < this->mapHourlyET0->header->nrCols; col++)
         {
-            this->ET0Map->value[row][col] = this->ET0Map->header->flag;
+            this->mapHourlyET0->value[row][col] = this->mapHourlyET0->header->flag;
 
             height = myDEM->value[row][col];
             if (int(height) != int(myDEM->header->flag))
@@ -96,23 +108,23 @@ bool Crit3DHourlyMeteoMaps::computeET0Map(gis::Crit3DRasterGrid* myDEM, Crit3DRa
                 clearSkyTransmissivity = CLEAR_SKY_TRANSMISSIVITY_DEFAULT;
                 globalRadiation = radMaps->globalRadiationMap->value[row][col];
                 transmissivity = radMaps->transmissivityMap->value[row][col];
-                temperature = this->airTemperatureMap->value[row][col];
-                relHumidity = this->airRelHumidityMap->value[row][col];
-                windSpeed = this->windIntensityMap->value[row][col];
+                temperature = this->mapHourlyT->value[row][col];
+                relHumidity = this->mapHourlyRelHum->value[row][col];
+                windSpeed = this->mapHourlyWindInt->value[row][col];
 
                 if (! isEqual(globalRadiation, radMaps->globalRadiationMap->header->flag)
                         && ! isEqual(transmissivity, radMaps->transmissivityMap->header->flag)
-                        && ! isEqual(temperature, airTemperatureMap->header->flag)
-                        && ! isEqual(relHumidity, airRelHumidityMap->header->flag)
-                        && ! isEqual(windSpeed, windIntensityMap->header->flag))
+                        && ! isEqual(temperature, mapHourlyT->header->flag)
+                        && ! isEqual(relHumidity, mapHourlyRelHum->header->flag)
+                        && ! isEqual(windSpeed, mapHourlyWindInt->header->flag))
                 {
-                    this->ET0Map->value[row][col] = float(ET0_Penman_hourly(double(height), double(transmissivity / clearSkyTransmissivity),
+                    this->mapHourlyET0->value[row][col] = float(ET0_Penman_hourly(double(height), double(transmissivity / clearSkyTransmissivity),
                                       double(globalRadiation), double(temperature), double(relHumidity), double(windSpeed)));
                 }
             }
         }
 
-    return gis::updateMinMaxRasterGrid(this->ET0Map);
+    return gis::updateMinMaxRasterGrid(this->mapHourlyET0);
 }
 
 
@@ -120,19 +132,19 @@ bool Crit3DHourlyMeteoMaps::computeLeafWetnessMap(gis::Crit3DRasterGrid* myDEM)
 {
     float relHumidity, precipitation, leafWetness;
 
-    for (long row = 0; row < leafWetnessMap->header->nrRows; row++)
-        for (long col = 0; col < leafWetnessMap->header->nrCols; col++)
+    for (long row = 0; row < mapHourlyLeafW->header->nrRows; row++)
+        for (long col = 0; col < mapHourlyLeafW->header->nrCols; col++)
         {
             //initialize
-            leafWetnessMap->value[row][col] = leafWetnessMap->header->flag;
+            mapHourlyLeafW->value[row][col] = mapHourlyLeafW->header->flag;
 
             if (! isEqual(myDEM->value[row][col], myDEM->header->flag))
             {
-                relHumidity = airRelHumidityMap->value[row][col];
-                precipitation = precipitationMap->value[row][col];
+                relHumidity = mapHourlyRelHum->value[row][col];
+                precipitation = mapHourlyPrec->value[row][col];
 
-                if (! isEqual(relHumidity, airRelHumidityMap->header->flag)
-                        && ! isEqual(precipitation, precipitationMap->header->flag))
+                if (! isEqual(relHumidity, mapHourlyRelHum->header->flag)
+                        && ! isEqual(precipitation, mapHourlyPrec->header->flag))
                 {
                     leafWetness = 0;
                     if (precipitation > 0 || relHumidity > 92)
@@ -141,12 +153,12 @@ bool Crit3DHourlyMeteoMaps::computeLeafWetnessMap(gis::Crit3DRasterGrid* myDEM)
                     }
                     //TODO: ora precedente prec > 2mm ?
 
-                    leafWetnessMap->value[row][col] = leafWetness;
+                    mapHourlyLeafW->value[row][col] = leafWetness;
                 }
             }
         }
 
-    return gis::updateMinMaxRasterGrid(leafWetnessMap);
+    return gis::updateMinMaxRasterGrid(mapHourlyLeafW);
 }
 
 
@@ -154,26 +166,26 @@ bool Crit3DHourlyMeteoMaps::computeLeafWetnessMap(gis::Crit3DRasterGrid* myDEM)
 bool Crit3DHourlyMeteoMaps::computeRelativeHumidityMap(const gis::Crit3DRasterGrid& dewTemperatureMap)
 {
     float airT, dewT;
-    airRelHumidityMap->emptyGrid();
+    mapHourlyRelHum->emptyGrid();
 
-    if (! dewTemperatureMap.header->isEqualTo(*(airTemperatureMap->header)))
+    if (! dewTemperatureMap.header->isEqualTo(*(mapHourlyTdew->header)))
         return false;
 
-    for (long row = 0; row < airRelHumidityMap->header->nrRows ; row++)
+    for (long row = 0; row < mapHourlyRelHum->header->nrRows ; row++)
     {
-        for (long col = 0; col < airRelHumidityMap->header->nrCols; col++)
+        for (long col = 0; col < mapHourlyRelHum->header->nrCols; col++)
         {
-            airT = airTemperatureMap->value[row][col];
+            airT = mapHourlyT->value[row][col];
             dewT = dewTemperatureMap.value[row][col];
-            if (! isEqual(airT, airTemperatureMap->header->flag)
+            if (! isEqual(airT, mapHourlyT->header->flag)
                  && ! isEqual(dewT, dewTemperatureMap.header->flag))
             {
-                    airRelHumidityMap->value[row][col] = relHumFromTdew(dewT, airT);
+                    mapHourlyRelHum->value[row][col] = relHumFromTdew(dewT, airT);
             }
         }
     }
 
-    return gis::updateMinMaxRasterGrid(airRelHumidityMap);
+    return gis::updateMinMaxRasterGrid(mapHourlyRelHum);
 }
 
 

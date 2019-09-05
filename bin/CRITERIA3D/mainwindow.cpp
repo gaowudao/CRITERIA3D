@@ -19,6 +19,7 @@
 #include "tileSources/OSMTileSource.h"
 #include "tileSources/CompositeTileSource.h"
 
+#include "basicMath.h"
 #include "formInfo.h"
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
@@ -385,7 +386,7 @@ void MainWindow::on_actionLoad_DEM_triggered()
 
     if (! myProject.loadDEM(fileName)) return;
 
-    myProject.meteoMaps = new Crit3DHourlyMeteoMaps(myProject.DEM);
+    myProject.hourlyMeteoMaps = new Crit3DHourlyMeteoMaps(myProject.DEM);
 
     this->renderDEM();
 }
@@ -789,8 +790,8 @@ void MainWindow::on_actionProjectSettings_triggered()
 {
     DialogSettings* mySettingsDialog = new DialogSettings(&myProject);
     mySettingsDialog->exec();
-    if (startCenter->latitude() != myProject.gisSettings.startLocation.latitude
-            || startCenter->longitude() != myProject.gisSettings.startLocation.longitude)
+    if (! isEqual(startCenter->latitude(), myProject.gisSettings.startLocation.latitude)
+            || ! isEqual(startCenter->longitude(), myProject.gisSettings.startLocation.longitude))
     {
         startCenter->setLatitude(myProject.gisSettings.startLocation.latitude);
         startCenter->setLongitude(myProject.gisSettings.startLocation.longitude);
@@ -978,36 +979,36 @@ void MainWindow::on_actionView_Global_radiation_triggered()
 
 void MainWindow::on_actionView_ET0_triggered()
 {
-    if (this->checkMapVariable(myProject.meteoMaps->isComputed))
-        setMapVariable(referenceEvapotranspiration, myProject.meteoMaps->ET0Map);
+    if (this->checkMapVariable(myProject.hourlyMeteoMaps->isComputed))
+        setMapVariable(referenceEvapotranspiration, myProject.hourlyMeteoMaps->mapHourlyET0);
 }
 
 
 void MainWindow::on_actionView_Air_temperature_triggered()
 {
-    if (this->checkMapVariable(myProject.meteoMaps->isComputed))
-        setMapVariable(airTemperature, myProject.meteoMaps->airTemperatureMap);
+    if (this->checkMapVariable(myProject.hourlyMeteoMaps->isComputed))
+        setMapVariable(airTemperature, myProject.hourlyMeteoMaps->mapHourlyT);
 }
 
 
 void MainWindow::on_actionView_Precipitation_triggered()
 {
-    if (this->checkMapVariable(myProject.meteoMaps->isComputed))
-        setMapVariable(precipitation, myProject.meteoMaps->precipitationMap);
+    if (this->checkMapVariable(myProject.hourlyMeteoMaps->isComputed))
+        setMapVariable(precipitation, myProject.hourlyMeteoMaps->mapHourlyPrec);
 }
 
 
 void MainWindow::on_actionView_Air_relative_humidity_triggered()
 {
-    if (this->checkMapVariable(myProject.meteoMaps->isComputed))
-        setMapVariable(airRelHumidity, myProject.meteoMaps->airRelHumidityMap);
+    if (this->checkMapVariable(myProject.hourlyMeteoMaps->isComputed))
+        setMapVariable(airRelHumidity, myProject.hourlyMeteoMaps->mapHourlyRelHum);
 }
 
 
 void MainWindow::on_actionView_Wind_intensity_triggered()
 {
-    if (this->checkMapVariable(myProject.meteoMaps->isComputed))
-        setMapVariable(windIntensity, myProject.meteoMaps->windIntensityMap);
+    if (this->checkMapVariable(myProject.hourlyMeteoMaps->isComputed))
+        setMapVariable(windIntensity, myProject.hourlyMeteoMaps->mapHourlyWindInt);
 }
 
 

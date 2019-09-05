@@ -27,6 +27,7 @@
 #include <math.h>
 
 #include "commonConstants.h"
+#include "basicMath.h"
 #include "waterBalance3D.h"
 #include "soilFluxes3D.h"
 #include "crit3dProject.h"
@@ -108,7 +109,7 @@ bool setWaterSinkSource(Crit3DProject* myProject, double* totalPrecipitation,
 {
     long surfaceIndex;
     unsigned int layerIndex;
-    double prec, totalWater;
+    float prec, totalWater;
     double transp, flow, realEvap;
     int myResult;
     QString myError;
@@ -128,8 +129,8 @@ bool setWaterSinkSource(Crit3DProject* myProject, double* totalPrecipitation,
             if (surfaceIndex != long(myProject->indexMap[0].header->flag))
             {
                 totalWater = 0.0;
-                prec = myProject->meteoMaps->precipitationMap->value[row][col];
-                if (prec != myProject->meteoMaps->precipitationMap->header->flag) totalWater += prec;
+                prec = myProject->hourlyMeteoMaps->mapHourlyPrec->value[row][col];
+                if (! isEqual(prec, myProject->hourlyMeteoMaps->mapHourlyPrec->header->flag)) totalWater += prec;
 
                 //float irr = myProject->meteoMaps->irrigationMap->value[row][col];
                 //if (irr != myProject->meteoMaps->irrigationMap->header->flag) totalWater += irr;
