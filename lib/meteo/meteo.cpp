@@ -650,6 +650,25 @@ frequencyType getVarFrequency(meteoVariable myVar)
         return hourly;
 }
 
+meteoVariable getMeteoVar(std::string varString)
+{
+    meteoVariable meteoVar;
+
+    try {
+      meteoVar = MapDailyMeteoVar.at(varString);
+    }
+    catch (const std::out_of_range& ) {
+        try {
+            meteoVar = MapHourlyMeteoVar.at(varString);
+        }
+        catch (const std::out_of_range& ) {
+            meteoVar = noMeteoVar;
+        }
+    }
+
+    return (meteoVar);
+}
+
 bool checkLapseRateCode(lapseRateCodeType myType, bool useLapseRateCode, bool useSupplemental)
 {
     if (useSupplemental)

@@ -313,7 +313,7 @@ void PragaProject::saveClimateResult(bool isMeteoGrid, QString climaSelected, in
 {
 
     FormInfo myInfo;
-    int infoStep;
+    int infoStep = 0;
     QString infoStr;
 
     QSqlDatabase db;

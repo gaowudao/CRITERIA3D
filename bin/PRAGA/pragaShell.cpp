@@ -47,6 +47,11 @@ bool PragaProject::executePragaCommand(QStringList argumentList, bool* isCommand
         *isCommandFound = true;
         return cmdOpenPragaProject(this, argumentList);
     }
+    else if (command == "GRIDDING" || command == "INTERPOLATIONGRIDPERIOD")
+    {
+        *isCommandFound = true;
+        return cmdInterpolationGridPeriod(this, argumentList);
+    }
     else
     {
         // other specific Praga commands
@@ -67,6 +72,36 @@ bool cmdOpenPragaProject(PragaProject* myProject, QStringList argumentList)
     QString projectName = myProject->getCompleteFileName(argumentList.at(1), PATH_PROJECT);
 
     if (! myProject->loadPragaProject(projectName))
+        return false;
+
+    return true;
+}
+
+bool cmdInterpolationGridPeriod(PragaProject* myProject, QStringList argumentList)
+{
+    if (argumentList.size() < 2)
+    {
+        myProject->logError("Missing parameters for gridding");
+        return false;
+    }
+
+    QDate dateIni = QDate::currentDate(), dateFin = QDate::currentDate();
+    bool saveRasters = false;
+    QList <meteoVariable> variables;
+    meteoVariable meteoVar;
+
+    for (int i = 0; i < argumentList.size(); i++)
+    {
+        if (argumentList.at(i).left(3) == "-v:")
+        {
+            meteoVar = getMeteoVar(argumentList.at(i).right(argumentList.at(i).length()-3).toStdString());
+            if (meteoVar != noMeteoVar) variables << meteoVar;
+        }
+    }
+
+    QString projectName = myProject->getCompleteFileName(argumentList.at(1), PATH_PROJECT);
+
+    if (! myProject->interpolationMeteoGridPeriod(dateIni, dateFin, variables, saveRasters))
         return false;
 
     return true;

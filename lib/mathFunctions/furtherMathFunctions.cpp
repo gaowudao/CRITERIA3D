@@ -255,23 +255,23 @@ namespace integration
 
     double trapezoidalRule(double (*func)(double) , double a , double b , int n)
     {
-        float x , tnm , sum , del ;
+        double x , tnm , sum , del ;
         static double sumInfinitesimal ;
         int it , j ;
 
         if (n == 1)
         {
-            return (sumInfinitesimal=(float)(0.5*(b-a)* ((*func) (a) +(*func)(b)))) ;
+            return (sumInfinitesimal=0.5*(b-a)* ((*func) (a) +(*func)(b)));
         }
         else
         {
             for (it = 1 , j = 1 ; j < n-1 ; j++ ) it <<= 1 ;
-            tnm = (double)(it) ;
+            tnm = it;
             del = (b-a) / tnm ;
-            x = (float)(a + 0.5 * del) ;
+            x = a + 0.5 * del;
             for(sum = 0.0 , j=1 ; j <= it ; j++ , x += del) sum += (*func)(x) ;
             //s = (float)(0.5 * (s + (b-a)*sum/tnm)) ;
-            return (sumInfinitesimal= (double)(0.5 * (sumInfinitesimal + (b-a)*sum/tnm))) ;
+            return (sumInfinitesimal= 0.5 * (sumInfinitesimal + (b-a)*sum/tnm));
         }
     }
 
