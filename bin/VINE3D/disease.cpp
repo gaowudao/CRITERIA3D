@@ -211,7 +211,7 @@ bool computeDownyMildew(Vine3DProject* myProject, QDate firstDate, QDate lastDat
                     break;
                 }
 
-                myProject->vine3DMapsH->computeLeafWetnessMap(&(myProject->DEM));
+                myProject->vine3DMapsH->computeLeafWetnessMap();
 
                 for (n = 0; n < nrPoints; n++)
                 {

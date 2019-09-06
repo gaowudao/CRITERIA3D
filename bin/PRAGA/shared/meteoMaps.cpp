@@ -214,7 +214,7 @@ bool Crit3DHourlyMeteoMaps::computeET0Map(gis::Crit3DRasterGrid* myDEM, Crit3DRa
 }
 
 
-bool Crit3DHourlyMeteoMaps::computeLeafWetnessMap(gis::Crit3DRasterGrid* myDEM)
+bool Crit3DHourlyMeteoMaps::computeLeafWetnessMap()
 {
     float relHumidity, precipitation, leafWetness;
 
@@ -224,23 +224,20 @@ bool Crit3DHourlyMeteoMaps::computeLeafWetnessMap(gis::Crit3DRasterGrid* myDEM)
             //initialize
             mapHourlyLeafW->value[row][col] = mapHourlyLeafW->header->flag;
 
-            if (! isEqual(myDEM->value[row][col], myDEM->header->flag))
+            relHumidity = mapHourlyRelHum->value[row][col];
+            precipitation = mapHourlyPrec->value[row][col];
+
+            if (! isEqual(relHumidity, mapHourlyRelHum->header->flag)
+                    && ! isEqual(precipitation, mapHourlyPrec->header->flag))
             {
-                relHumidity = mapHourlyRelHum->value[row][col];
-                precipitation = mapHourlyPrec->value[row][col];
-
-                if (! isEqual(relHumidity, mapHourlyRelHum->header->flag)
-                        && ! isEqual(precipitation, mapHourlyPrec->header->flag))
+                leafWetness = 0;
+                if (precipitation > 0 || relHumidity > 92)
                 {
-                    leafWetness = 0;
-                    if (precipitation > 0 || relHumidity > 92)
-                    {
-                        leafWetness = 1;
-                    }
-                    //TODO: ora precedente prec > 2mm ?
-
-                    mapHourlyLeafW->value[row][col] = leafWetness;
+                    leafWetness = 1;
                 }
+                //TODO: ora precedente prec > 2mm ?
+
+                mapHourlyLeafW->value[row][col] = leafWetness;
             }
         }
 

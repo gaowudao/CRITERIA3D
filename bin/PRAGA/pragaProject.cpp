@@ -1417,14 +1417,19 @@ bool PragaProject::interpolationMeteoGridPeriod(QDate dateIni, QDate dateFin, QL
         {
             foreach (meteoVariable myVar, variables)
             {
-                if (myVar == airRelHumidity && interpolationSettings.getUseDewPoint())
-                {
+                if (myVar == airRelHumidity && interpolationSettings.getUseDewPoint()) {
                     if (! interpolationDemMain(airDewTemperature, getCrit3DTime(myDate, myHour), pragaHourlyMaps->mapHourlyTdew, false)) return false;
-                    pragaHourlyMaps->computeRelativeHumidityMap(*pragaHourlyMaps->mapHourlyTdew);
+                    pragaHourlyMaps->computeRelativeHumidityMap();
                 }
-
-                if (! interpolationDemMain(myVar, getCrit3DTime(myDate, myHour), myGrid, false))
-                    return false;
+                else if (myVar == leafWetness) {
+                    pragaHourlyMaps->computeLeafWetnessMap() ;
+                }
+                else if (myVar == referenceEvapotranspiration) {
+                    pragaHourlyMaps->computeET0Map(&DEM, radiationMaps);
+                }
+                else {
+                    if (! interpolationDemMain(myVar, getCrit3DTime(myDate, myHour), myGrid, false)) return false;
+                }
 
                 setHourlyMapVar(pragaHourlyMaps, *myGrid, myVar);
 

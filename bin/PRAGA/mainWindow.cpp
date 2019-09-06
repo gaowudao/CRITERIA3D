@@ -781,22 +781,20 @@ void MainWindow::on_timeEdit_timeChanged(const QTime &time)
 
 void MainWindow::drawMeteoPoints()
 {
-    this->resetMeteoPoints();
-
+    resetMeteoPoints();
     if (! myProject.meteoPointsLoaded || myProject.nrMeteoPoints == 0) return;
-
-    this->addMeteoPoints();
+    addMeteoPoints();
 
     myProject.loadMeteoPointsData (myProject.getCurrentDate(), myProject.getCurrentDate(), true);
 
-    this->ui->meteoPoints->setEnabled(true);
-    this->ui->meteoPoints->setChecked(true);
+    ui->meteoPoints->setEnabled(true);
+    ui->meteoPoints->setChecked(true);
     showPointsGroup->setEnabled(true);
-    this->ui->actionShowPointsCurrent->setEnabled(false);
-    this->ui->actionShowPointsElab->setEnabled(false);
-    this->ui->actionShowPointsClimate->setEnabled(false);
+    ui->actionShowPointsCurrent->setEnabled(false);
+    ui->actionShowPointsElab->setEnabled(false);
+    ui->actionShowPointsClimate->setEnabled(false);
 
-    this->ui->grid->setChecked(false);
+    ui->grid->setChecked(false);
 
     currentPointsVisualization = showLocation;
     redrawMeteoPoints(currentPointsVisualization, true);

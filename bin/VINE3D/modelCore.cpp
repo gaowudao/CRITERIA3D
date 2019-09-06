@@ -132,7 +132,7 @@ bool modelDailyCycle(bool isInitialState, Crit3DDate myDate, int nrHours,
         }
 
         // Leaf Wetness
-        myProject->vine3DMapsH->computeLeafWetnessMap(&(myProject->DEM));
+        myProject->vine3DMapsH->computeLeafWetnessMap();
         if (saveOutput)
         {
             saveMeteoHourlyOutput(myProject, leafWetness, myOutputPath, myCurrentTime, myArea);
