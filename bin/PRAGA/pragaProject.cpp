@@ -1340,27 +1340,16 @@ void PragaProject::savePragaParameters()
     parameters->endGroup();
 }
 
-void setHourlyMapVar(Crit3DHourlyMeteoMaps* hourlyMaps, gis::Crit3DRasterGrid myGrid, meteoVariable myVar)
+QString getMapFileOutName(meteoVariable myVar, QDate myDate, int myHour)
 {
-    if (myVar == airTemperature)
-        *(hourlyMaps->mapHourlyT) = myGrid;
-    else if (myVar == precipitation)
-        *(hourlyMaps->mapHourlyPrec) = myGrid;
-    else if (myVar == airRelHumidity)
-        *(hourlyMaps->mapHourlyRelHum) = myGrid;
-    else if (myVar == airDewTemperature)
-        *(hourlyMaps->mapHourlyTdew) = myGrid;
-    else if (myVar == windIntensity)
-        *(hourlyMaps->mapHourlyWindInt) = myGrid;
-    else if (myVar == windDirection)
-        *(hourlyMaps->mapHourlyWindDir) = myGrid;
-    else if (myVar == referenceEvapotranspiration)
-        *(hourlyMaps->mapHourlyET0) = myGrid;
-    else if (myVar == leafWetness)
-        *(hourlyMaps->mapHourlyLeafW) = myGrid;
+    QString name = QString::fromStdString(MapDailyMeteoVarToString.at(myVar));
+    name += "_" + myDate.toString(Qt::ISODate);
+    name += "_" + QString::number(myHour);
+
+    return name;
 }
 
-bool PragaProject::interpolationMeteoGridPeriod(QDate dateIni, QDate dateFin, QList <meteoVariable> variables)
+bool PragaProject::interpolationMeteoGridPeriod(QDate dateIni, QDate dateFin, QList <meteoVariable> variables, bool saveRasters)
 {
     // check meteo point
     if (! meteoPointsLoaded || nrMeteoPoints == 0)
@@ -1390,6 +1379,7 @@ bool PragaProject::interpolationMeteoGridPeriod(QDate dateIni, QDate dateFin, QL
     //order variables for derived computation
 
     std::string id;
+    std::string errString;
     QString myError;
     int myHour;
     QDate myDate = dateIni;
@@ -1417,24 +1407,29 @@ bool PragaProject::interpolationMeteoGridPeriod(QDate dateIni, QDate dateFin, QL
         {
             foreach (meteoVariable myVar, variables)
             {
-                if (myVar == airRelHumidity && interpolationSettings.getUseDewPoint()) {
-                    if (! interpolationDemMain(airDewTemperature, getCrit3DTime(myDate, myHour), pragaHourlyMaps->mapHourlyTdew, false)) return false;
-                    pragaHourlyMaps->computeRelativeHumidityMap();
-                }
-                else if (myVar == leafWetness) {
-                    pragaHourlyMaps->computeLeafWetnessMap() ;
-                }
-                else if (myVar == referenceEvapotranspiration) {
-                    pragaHourlyMaps->computeET0Map(&DEM, radiationMaps);
-                }
-                else {
-                    if (! interpolationDemMain(myVar, getCrit3DTime(myDate, myHour), myGrid, false)) return false;
-                }
+                if (getVarFrequency(myVar) == hourly)
+                {
+                    if (myVar == airRelHumidity && interpolationSettings.getUseDewPoint()) {
+                        if (! interpolationDemMain(airDewTemperature, getCrit3DTime(myDate, myHour), pragaHourlyMaps->mapHourlyTdew, false)) return false;
+                        pragaHourlyMaps->computeRelativeHumidityMap();
+                    }
+                    else if (myVar == leafWetness) {
+                        pragaHourlyMaps->computeLeafWetnessMap() ;
+                    }
+                    else if (myVar == referenceEvapotranspiration) {
+                        pragaHourlyMaps->computeET0Map(&DEM, radiationMaps);
+                    }
+                    else {
+                        if (! interpolationDemMain(myVar, getCrit3DTime(myDate, myHour), pragaHourlyMaps->getMapFromVar(myVar), false)) return false;
+                    }
 
-                setHourlyMapVar(pragaHourlyMaps, *myGrid, myVar);
+                    // scalar/vector wind???
 
-                meteoGridDbHandler->meteoGrid()->aggregateMeteoGrid(myVar, hourly, getCrit3DDate(myDate), myHour, 0, &DEM, myGrid, interpolationSettings.getMeteoGridAggrMethod());
+                    //save raster
+                    if (saveRasters) gis::writeEsriGrid(getProjectPath().toStdString() + PATH_METEOGRID + getMapFileOutName(myVar, myDate, myHour).toStdString(), pragaHourlyMaps->getMapFromVar(myVar), &errString);
 
+                    meteoGridDbHandler->meteoGrid()->aggregateMeteoGrid(myVar, hourly, getCrit3DDate(myDate), myHour, 0, &DEM, myGrid, interpolationSettings.getMeteoGridAggrMethod());
+                }
             }
         }
 

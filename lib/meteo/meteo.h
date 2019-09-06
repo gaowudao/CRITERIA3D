@@ -203,7 +203,7 @@
 
     bool setColorScale(meteoVariable variable, Crit3DColorScale *colorScale);
 
-    frequencyType getFrequency(meteoVariable myVar);
+    frequencyType getVarFrequency(meteoVariable myVar);
 
     std::string getVariableString(meteoVariable myVar);
 

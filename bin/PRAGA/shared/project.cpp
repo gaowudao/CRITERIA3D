@@ -677,16 +677,6 @@ QString Project::getProjectPath()
     return this->projectPath;
 }
 
-void Project::setFrequency(frequencyType frequency)
-{
-    this->currentFrequency = frequency;
-}
-
-frequencyType Project::getFrequency()
-{
-    return this->currentFrequency;
-}
-
 void Project::setCurrentVariable(meteoVariable variable)
 {
     this->currentVariable = variable;
@@ -1712,11 +1702,21 @@ bool Project::searchDefaultPath(QString* path)
     return true;
 }
 
+frequencyType Project::getCurrentFrequency() const
+{
+    return currentFrequency;
+}
+
+void Project::setCurrentFrequency(const frequencyType &value)
+{
+    currentFrequency = value;
+}
+
 void Project::saveProjectSettings()
 {
     projectSettings->beginGroup("location");
-        projectSettings->setValue("lat", gisSettings.startLocation.latitude);
-        projectSettings->setValue("lon", gisSettings.startLocation.longitude);
+    projectSettings->setValue("lat", gisSettings.startLocation.latitude);
+    projectSettings->setValue("lon", gisSettings.startLocation.longitude);
         projectSettings->setValue("utm_zone", gisSettings.utmZone);
         projectSettings->setValue("time_zone", gisSettings.timeZone);
         projectSettings->setValue("is_utc", gisSettings.isUTC);

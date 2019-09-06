@@ -160,7 +160,7 @@ frequencyType chooseFrequency()
 
 meteoVariable chooseMeteoVariable(Project* myProject)
 {
-    if (myProject->getFrequency() == noFrequency)
+    if (myProject->getCurrentFrequency() == noFrequency)
     {
         QMessageBox::information(nullptr, "No frequency", "Choose frequency before");
         return noMeteoVar;
@@ -185,7 +185,7 @@ meteoVariable chooseMeteoVariable(Project* myProject)
     QRadioButton Wind("Average wind intensity (m s-1)");
     QRadioButton DewT("Air dew temperature (°C)");
 
-    if (myProject->getFrequency() == daily)
+    if (myProject->getCurrentFrequency() == daily)
     {
         layoutVariable.addWidget(&Tmin);
         layoutVariable.addWidget(&Tavg);
@@ -197,7 +197,7 @@ meteoVariable chooseMeteoVariable(Project* myProject)
         layoutVariable.addWidget(&Rad);
         layoutVariable.addWidget(&Wind);
     }
-    else if (myProject->getFrequency() == hourly)
+    else if (myProject->getCurrentFrequency() == hourly)
     {
         Tavg.setText("Average temperature (°C)");
         Prec.setText("Precipitation (mm)");
@@ -228,7 +228,7 @@ meteoVariable chooseMeteoVariable(Project* myProject)
     if (myDialog.result() != QDialog::Accepted)
         return noMeteoVar;
 
-   if (myProject->getFrequency() == daily)
+   if (myProject->getCurrentFrequency() == daily)
    {
        if (Tmin.isChecked())
            return (dailyAirTemperatureMin);
@@ -249,7 +249,7 @@ meteoVariable chooseMeteoVariable(Project* myProject)
        else if (Wind.isChecked())
            return (dailyWindIntensityAvg);
    }
-   else if (myProject->getFrequency() == hourly)
+   else if (myProject->getCurrentFrequency() == hourly)
    {
        if (Tavg.isChecked())
            return (airTemperature);

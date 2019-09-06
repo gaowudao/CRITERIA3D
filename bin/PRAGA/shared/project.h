@@ -131,12 +131,10 @@
         bool addProxyGridSeries(QString name_, std::vector <QString> gridNames, std::vector <unsigned> gridYears);
         void setCurrentDate(QDate myDate);
         void setCurrentHour(int myHour);
-        void setFrequency(frequencyType frequency);
         void setCurrentVariable(meteoVariable variable);
         int getCurrentHour();
         QDate getCurrentDate();
         Crit3DTime getCurrentTime();
-        frequencyType getFrequency();
         meteoVariable getCurrentVariable();
 
         void setApplicationPath(QString myPath);
@@ -184,6 +182,8 @@
         bool interpolationDemMain(meteoVariable myVar, const Crit3DTime& myTime, gis::Crit3DRasterGrid *myRaster, bool showInfo);
         bool interpolationDem(meteoVariable myVar, const Crit3DTime& myTime, gis::Crit3DRasterGrid *myRaster, bool showInfo);
         bool interpolateDemRadiation(const Crit3DTime& myTime, gis::Crit3DRasterGrid *myRaster, bool showInfo);
+        frequencyType getCurrentFrequency() const;
+        void setCurrentFrequency(const frequencyType &value);
     };
 
 

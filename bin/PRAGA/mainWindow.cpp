@@ -597,7 +597,7 @@ void MainWindow::interpolateDemGUI()
 
 void MainWindow::interpolateGridGUI()
 {
-    if (myProject.interpolationMeteoGrid(myProject.getCurrentVariable(), myProject.getFrequency(), myProject.getCurrentTime(), &(myProject.dataRaster), true))
+    if (myProject.interpolationMeteoGrid(myProject.getCurrentVariable(), myProject.getCurrentFrequency(), myProject.getCurrentTime(), &(myProject.dataRaster), true))
     {
         //setCurrentRaster(&(myProject.meteoGridDbHandler->meteoGrid()->dataMeteoGrid));
         //ui->labelRasterScale->setText(QString::fromStdString(getVariableString(myProject.getCurrentVariable())));
@@ -610,13 +610,13 @@ void MainWindow::interpolateGridGUI()
 void MainWindow::updateVariable()
 {
     // FREQUENCY
-    if (myProject.getFrequency() == noFrequency)
+    if (myProject.getCurrentFrequency() == noFrequency)
     {
         this->ui->labelFrequency->setText("None");
     }
     else
     {
-        if (myProject.getFrequency() == daily)
+        if (myProject.getCurrentFrequency() == daily)
         {
             this->ui->labelFrequency->setText("Daily");
 
@@ -634,7 +634,7 @@ void MainWindow::updateVariable()
                 myProject.setCurrentVariable(dailyAirRelHumidityAvg);
         }
 
-        else if (myProject.getFrequency() == hourly)
+        else if (myProject.getCurrentFrequency() == hourly)
         {
             this->ui->labelFrequency->setText("Hourly");
 
@@ -962,7 +962,7 @@ void MainWindow::drawMeteoGrid()
     this->ui->grid->setEnabled(true);
     this->ui->grid->setChecked(true);
     showGridGroup->setEnabled(true);
-    if (myProject.getCurrentVariable() != noMeteoVar && myProject.getFrequency() != noFrequency)
+    if (myProject.getCurrentVariable() != noMeteoVar && myProject.getCurrentFrequency() != noFrequency)
     {
         this->ui->actionShowGridCurrent->setEnabled(true);
     }
@@ -1014,7 +1014,7 @@ void MainWindow::redrawMeteoGrid(visualizationType showType, bool showInterpolat
 
             if (! showInterpolationResult)
             {
-                frequencyType frequency = myProject.getFrequency();
+                frequencyType frequency = myProject.getCurrentFrequency();
 
 
                 if (myProject.getCurrentVariable() == noMeteoVar)
@@ -1132,7 +1132,7 @@ void MainWindow::on_variableButton_clicked()
     myProject.setCurrentVariable(myVar);
     this->updateVariable();
 
-    if (myProject.getFrequency() != noFrequency)
+    if (myProject.getCurrentFrequency() != noFrequency)
     {
         this->ui->actionShowPointsCurrent->setEnabled(true);
         this->ui->actionShowGridCurrent->setEnabled(true);
@@ -1147,7 +1147,7 @@ void MainWindow::on_frequencyButton_clicked()
 
    if (myFrequency != noFrequency)
    {
-       myProject.setFrequency(myFrequency);
+       myProject.setCurrentFrequency(myFrequency);
        this->updateVariable();
 
        if (myProject.getCurrentVariable() != noMeteoVar)
@@ -2061,7 +2061,7 @@ void MainWindow::on_actionSaveGridCurrentData_triggered()
 {
     if (myProject.meteoGridDbHandler != nullptr)
     {
-        myProject.saveGrid(myProject.getCurrentVariable(), myProject.getFrequency(), myProject.getCurrentTime(), true);
+        myProject.saveGrid(myProject.getCurrentVariable(), myProject.getCurrentFrequency(), myProject.getCurrentTime(), true);
     }
 }
 
@@ -2103,6 +2103,6 @@ void MainWindow::on_actionInterpolateSaveGridPeriod_triggered()
 
     QList <meteoVariable> myVariables;
     myVariables.push_back(myVar);
-    myProject.interpolationMeteoGridPeriod(myFirstTime.date(), myLastTime.date(), myVariables);
+    myProject.interpolationMeteoGridPeriod(myFirstTime.date(), myLastTime.date(), myVariables, false);
 }
 
