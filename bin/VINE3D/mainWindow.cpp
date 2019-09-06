@@ -600,15 +600,16 @@ void MainWindow::on_rasterScaleButton_clicked()
 
 void MainWindow::on_variableButton_clicked()
 {
-    if (chooseMeteoVariable(&myProject))
-    {
-        this->updateVariable();
+    meteoVariable myVar = chooseMeteoVariable(&myProject);
+    if (myVar == noMeteoVar) return;
 
-        if (myProject.getFrequency() != noFrequency)
-        {
-            this->ui->actionShowPointsVariable->setEnabled(true);
-            redrawMeteoPoints(showCurrentVariable, true);
-        }
+    myProject.setCurrentVariable(myVar);
+    this->updateVariable();
+
+    if (myProject.getFrequency() != noFrequency)
+    {
+        this->ui->actionShowPointsVariable->setEnabled(true);
+        redrawMeteoPoints(showCurrentVariable, true);
     }
 }
 
