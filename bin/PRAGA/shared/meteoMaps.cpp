@@ -249,22 +249,19 @@ bool Crit3DHourlyMeteoMaps::computeLeafWetnessMap(gis::Crit3DRasterGrid* myDEM)
 
 
 
-bool Crit3DHourlyMeteoMaps::computeRelativeHumidityMap(const gis::Crit3DRasterGrid& dewTemperatureMap)
+bool Crit3DHourlyMeteoMaps::computeRelativeHumidityMap()
 {
     float airT, dewT;
     mapHourlyRelHum->emptyGrid();
-
-    if (! dewTemperatureMap.header->isEqualTo(*(mapHourlyTdew->header)))
-        return false;
 
     for (long row = 0; row < mapHourlyRelHum->header->nrRows ; row++)
     {
         for (long col = 0; col < mapHourlyRelHum->header->nrCols; col++)
         {
             airT = mapHourlyT->value[row][col];
-            dewT = dewTemperatureMap.value[row][col];
+            dewT = mapHourlyTdew->value[row][col];
             if (! isEqual(airT, mapHourlyT->header->flag)
-                 && ! isEqual(dewT, dewTemperatureMap.header->flag))
+                 && ! isEqual(dewT, mapHourlyTdew->header->flag))
             {
                     mapHourlyRelHum->value[row][col] = relHumFromTdew(dewT, airT);
             }
