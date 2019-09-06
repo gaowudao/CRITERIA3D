@@ -295,13 +295,11 @@ void MainWindow::addMeteoPoints()
     }
 }
 
-
 void MainWindow::drawMeteoPoints()
 {
-    this->resetMeteoPoints();
-    this->addMeteoPoints();
-
-    this->updateDateTime();
+    resetMeteoPoints();
+    if (! myProject.meteoPointsLoaded || myProject.nrMeteoPoints == 0) return;
+    addMeteoPoints();
 
     myProject.loadMeteoPointsData (myProject.getCurrentDate(), myProject.getCurrentDate(), true);
 
@@ -309,6 +307,8 @@ void MainWindow::drawMeteoPoints()
 
     currentPointsVisualization = showLocation;
     redrawMeteoPoints(currentPointsVisualization, true);
+
+    updateDateTime();
 }
 
 
@@ -543,7 +543,6 @@ void MainWindow::updateDateTime()
     int myHour = myProject.getCurrentHour();
     this->ui->dateEdit->setDate(myProject.getCurrentDate());
     this->ui->timeEdit->setTime(QTime(myHour,0,0));
-
 }
 
 
@@ -673,20 +672,13 @@ void MainWindow::redrawMeteoPoints(visualizationType myType, bool updateColorSCa
 
 bool MainWindow::loadMeteoPointsDB(QString dbName)
 {
-    this->resetMeteoPoints();
-
-    if (!myProject.loadMeteoPointsDB(dbName))
-    {
-        return false;
-    }
-
-    this->addMeteoPoints();
-
-    myProject.loadMeteoPointsData(myProject.getCurrentDate(), myProject.getCurrentDate(), true);
-
-    this->showPointsGroup->setEnabled(true);
-
-    return true;
+    if (myProject.loadMeteoPointsDB(dbName))
+        {
+            drawMeteoPoints();
+            return true;
+        }
+        else
+            return false;
 }
 
 
@@ -1158,14 +1150,7 @@ void MainWindow::contextMenuRequested(QPoint localPos, QPoint globalPos)
 void MainWindow::on_actionLoad_meteo_points_DB_triggered()
 {
     QString dbName = QFileDialog::getOpenFileName(this, tr("Open meteo points DB"), "", tr("DB files (*.db)"));
-
-    if (dbName != "")
-    {
-        this->loadMeteoPointsDB(dbName);
-    }
-
-    currentPointsVisualization = showLocation;
-    redrawMeteoPoints(currentPointsVisualization, true);
+    if (dbName != "") this->loadMeteoPointsDB(dbName);
 }
 
 

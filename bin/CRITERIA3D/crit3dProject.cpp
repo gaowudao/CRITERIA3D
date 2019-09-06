@@ -275,7 +275,7 @@ bool Crit3DProject::computeAllMeteoMaps(const Crit3DTime& myTime, bool showInfo)
     FormInfo myInfo;
     if (showInfo)
     {
-        myInfo.start("Compute air temperature...", 6);
+        myInfo.start("Computing air temperature...", 6);
     }
 
     if (! interpolationDemMain(airTemperature, myTime, this->hourlyMeteoMaps->mapHourlyT, false))
@@ -283,7 +283,7 @@ bool Crit3DProject::computeAllMeteoMaps(const Crit3DTime& myTime, bool showInfo)
 
     if (showInfo)
     {
-        myInfo.setText("Compute relative humidity...");
+        myInfo.setText("Computing air relative humidity...");
         myInfo.setValue(1);
     }
 
@@ -292,7 +292,7 @@ bool Crit3DProject::computeAllMeteoMaps(const Crit3DTime& myTime, bool showInfo)
 
     if (showInfo)
     {
-        myInfo.setText("Compute relative precipitation...");
+        myInfo.setText("Computing precipitation...");
         myInfo.setValue(2);
     }
 
@@ -301,7 +301,7 @@ bool Crit3DProject::computeAllMeteoMaps(const Crit3DTime& myTime, bool showInfo)
 
     if (showInfo)
     {
-        myInfo.setText("Compute wind intensity...");
+        myInfo.setText("Computing wind intensity...");
         myInfo.setValue(3);
     }
 
@@ -310,7 +310,7 @@ bool Crit3DProject::computeAllMeteoMaps(const Crit3DTime& myTime, bool showInfo)
 
     if (showInfo)
     {
-        myInfo.setText("Compute solar radiation...");
+        myInfo.setText("Computing global irradiance...");
         myInfo.setValue(4);
     }
 
@@ -319,7 +319,7 @@ bool Crit3DProject::computeAllMeteoMaps(const Crit3DTime& myTime, bool showInfo)
 
     if (showInfo)
     {
-        myInfo.setText("Compute ET0...");
+        myInfo.setText("Computing ET0...");
         myInfo.setValue(5);
     }
 
