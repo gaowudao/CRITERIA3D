@@ -1340,6 +1340,26 @@ void PragaProject::savePragaParameters()
     parameters->endGroup();
 }
 
+void setHourlyMapVar(Crit3DHourlyMeteoMaps* hourlyMaps, gis::Crit3DRasterGrid myGrid, meteoVariable myVar)
+{
+    if (myVar == airTemperature)
+        *(hourlyMaps->mapHourlyT) = myGrid;
+    else if (myVar == precipitation)
+        *(hourlyMaps->mapHourlyPrec) = myGrid;
+    else if (myVar == airRelHumidity)
+        *(hourlyMaps->mapHourlyRelHum) = myGrid;
+    else if (myVar == airDewTemperature)
+        *(hourlyMaps->mapHourlyTdew) = myGrid;
+    else if (myVar == windIntensity)
+        *(hourlyMaps->mapHourlyWindInt) = myGrid;
+    else if (myVar == windDirection)
+        *(hourlyMaps->mapHourlyWindDir) = myGrid;
+    else if (myVar == referenceEvapotranspiration)
+        *(hourlyMaps->mapHourlyET0) = myGrid;
+    else if (myVar == leafWetness)
+        *(hourlyMaps->mapHourlyLeafW) = myGrid;
+}
+
 bool PragaProject::interpolationMeteoGridPeriod(QDate dateIni, QDate dateFin, QList <meteoVariable> variables)
 {
     // check meteo point
@@ -1366,6 +1386,8 @@ bool PragaProject::interpolationMeteoGridPeriod(QDate dateIni, QDate dateFin, QL
     if (interpolationSettings.getUseTAD())
         if (! loadTopographicDistanceMaps())
             return false;
+
+    //order variables for derived computation
 
     std::string id;
     QString myError;
@@ -1397,9 +1419,11 @@ bool PragaProject::interpolationMeteoGridPeriod(QDate dateIni, QDate dateFin, QL
             {
                 if (! interpolationDemMain(myVar, getCrit3DTime(myDate, myHour), myGrid, false))
                     return false;
-                else {
-                    meteoGridDbHandler->meteoGrid()->aggregateMeteoGrid(myVar, hourly, getCrit3DDate(myDate), myHour, 0, &DEM, myGrid, interpolationSettings.getMeteoGridAggrMethod());
-                }
+
+                setHourlyMapVar(pragaHourlyMaps, *myGrid, myVar);
+
+                meteoGridDbHandler->meteoGrid()->aggregateMeteoGrid(myVar, hourly, getCrit3DDate(myDate), myHour, 0, &DEM, myGrid, interpolationSettings.getMeteoGridAggrMethod());
+
             }
         }
 
@@ -1414,24 +1438,6 @@ bool PragaProject::interpolationMeteoGridPeriod(QDate dateIni, QDate dateFin, QL
     return true;
 
     /*
-    Public Function InterpolationERG5v2(ByVal checkTables As Boolean, _
-        ByVal myStartDate As Date, ByVal myEndDate As Date, _
-        ByVal myOrogIndexMapName As String, myUrbanMapFileNames() As String, myUrbanMapYears() As Integer, _
-        ByVal writeVM As Boolean, ByVal saveRasters As Boolean, _
-        ByVal computeTemp As Boolean, ByVal computePrec As Boolean, _
-        ByVal computeRelHum As Boolean, ByVal computeRad As Boolean, _
-        ByVal computeWind As Boolean) As Boolean
-
-        Dim grdTemperature As GIS.grid, grdDewTemperature As GIS.grid
-        Dim grdHumidity As GIS.grid, grdPrecipitation As GIS.grid
-        Dim grdRadiation As GIS.grid, grdTransmissivity As GIS.grid
-        Dim grdWindX As GIS.grid, grdWindY As GIS.grid, grdWindInt As GIS.grid, grdWindDir As GIS.grid
-        Dim grdEtpPenman As GIS.grid, grdEtpHargreaves As GIS.grid, grdLeafWetness As GIS.grid, grdPrecPreviousHour As GIS.grid
-        Dim grdTmin As GIS.grid, grdTmax As GIS.grid, grdPrecDaily As GIS.grid, grdWindMax As GIS.grid
-        Dim myYearUrban As Integer
-        Dim myFilenamePre As String, myFilenamePost As String
-        Dim computeEtpPenman As Boolean, computeEtpHargreaves As Boolean
-        Dim computeLeafWetness As Boolean
 
         computeLeafWetness = (computePrec And computeRelHum)
         computeEtpPenman = (computeTemp And computeRelHum And computeWind And computeRad)
