@@ -79,15 +79,25 @@ void TabHorizons::insertSoilHorizons(soil::Crit3DSoil *soil, soil::Crit3DTexture
     for (int i = 0; i < row; i++)
     {
         tableDb->setItem(i, 0, new QTableWidgetItem( QString::number(mySoil->horizon[i].dbData.upperDepth, 'f', 0)));
+        tableDb->item(i,0)->setTextAlignment(Qt::AlignRight);
         tableDb->setItem(i, 1, new QTableWidgetItem( QString::number(mySoil->horizon[i].dbData.lowerDepth, 'f', 0)));
+        tableDb->item(i,1)->setTextAlignment(Qt::AlignRight);
         tableDb->setItem(i, 2, new QTableWidgetItem( QString::number(mySoil->horizon[i].dbData.sand, 'f', 1 )));
+        tableDb->item(i,2)->setTextAlignment(Qt::AlignRight);
         tableDb->setItem(i, 3, new QTableWidgetItem( QString::number(mySoil->horizon[i].dbData.silt, 'f', 1 )));
+        tableDb->item(i,3)->setTextAlignment(Qt::AlignRight);
         tableDb->setItem(i, 4, new QTableWidgetItem( QString::number(mySoil->horizon[i].dbData.clay , 'f', 1)));
+        tableDb->item(i,4)->setTextAlignment(Qt::AlignRight);
         tableDb->setItem(i, 5, new QTableWidgetItem( QString::number(mySoil->horizon[i].dbData.coarseFragments, 'f', 1 )));
+        tableDb->item(i,5)->setTextAlignment(Qt::AlignRight);
         tableDb->setItem(i, 6, new QTableWidgetItem( QString::number(mySoil->horizon[i].dbData.organicMatter, 'f', 1 )));
+        tableDb->item(i,6)->setTextAlignment(Qt::AlignRight);
         tableDb->setItem(i, 7, new QTableWidgetItem( QString::number(mySoil->horizon[i].dbData.bulkDensity, 'f', 3 )));
+        tableDb->item(i,7)->setTextAlignment(Qt::AlignRight);
         tableDb->setItem(i, 8, new QTableWidgetItem( QString::number(mySoil->horizon[i].dbData.kSat, 'f', 3 )));
+        tableDb->item(i,8)->setTextAlignment(Qt::AlignRight);
         tableDb->setItem(i, 9, new QTableWidgetItem( QString::number(mySoil->horizon[i].dbData.thetaSat, 'f', 3)));
+        tableDb->item(i,9)->setTextAlignment(Qt::AlignRight);
 
         tableModel->setItem(i, 0, new QTableWidgetItem( QString::fromStdString(mySoil->horizon[i].texture.classNameUSDA)));
         if (mySoil->horizon[i].coarseFragments != NODATA)
@@ -98,6 +108,7 @@ void TabHorizons::insertSoilHorizons(soil::Crit3DSoil *soil, soil::Crit3DTexture
         {
             tableModel->setItem(i, 1, new QTableWidgetItem( QString::number(mySoil->horizon[i].coarseFragments, 'f', 1 )));
         }
+        tableModel->item(i,1)->setTextAlignment(Qt::AlignRight);
 
         if (mySoil->horizon[i].organicMatter != NODATA)
         {
@@ -107,15 +118,24 @@ void TabHorizons::insertSoilHorizons(soil::Crit3DSoil *soil, soil::Crit3DTexture
         {
             tableModel->setItem(i, 2, new QTableWidgetItem( QString::number(mySoil->horizon[i].organicMatter, 'f', 1 )));
         }
+        tableModel->item(i,2)->setTextAlignment(Qt::AlignRight);
 
         tableModel->setItem(i, 3, new QTableWidgetItem( QString::number(mySoil->horizon[i].bulkDensity, 'f', 3 )));
+        tableModel->item(i,3)->setTextAlignment(Qt::AlignRight);
         tableModel->setItem(i, 4, new QTableWidgetItem( QString::number(mySoil->horizon[i].waterConductivity.kSat, 'f', 3 )));
+        tableModel->item(i,4)->setTextAlignment(Qt::AlignRight);
         tableModel->setItem(i, 5, new QTableWidgetItem( QString::number(mySoil->horizon[i].vanGenuchten.thetaS, 'f', 3 )));
+        tableModel->item(i,5)->setTextAlignment(Qt::AlignRight);
         tableModel->setItem(i, 6, new QTableWidgetItem( QString::number(mySoil->horizon[i].vanGenuchten.thetaR, 'f', 3 )));
+        tableModel->item(i,6)->setTextAlignment(Qt::AlignRight);
         tableModel->setItem(i, 7, new QTableWidgetItem( QString::number(mySoil->horizon[i].vanGenuchten.he, 'f', 3 )));
+        tableModel->item(i,7)->setTextAlignment(Qt::AlignRight);
         tableModel->setItem(i, 8, new QTableWidgetItem( QString::number(mySoil->horizon[i].vanGenuchten.alpha, 'f', 3 )));
+        tableModel->item(i,8)->setTextAlignment(Qt::AlignRight);
         tableModel->setItem(i, 9, new QTableWidgetItem( QString::number(mySoil->horizon[i].vanGenuchten.n, 'f', 3 )));
+        tableModel->item(i,9)->setTextAlignment(Qt::AlignRight);
         tableModel->setItem(i, 10, new QTableWidgetItem( QString::number(mySoil->horizon[i].vanGenuchten.m, 'f', 3 )));   
+        tableModel->item(i,10)->setTextAlignment(Qt::AlignRight);
     }
 
     // check all Depths
@@ -682,10 +702,15 @@ void TabHorizons::addRowClicked()
     for (int j=0; j<tableDb->columnCount(); j++)
     {
         tableDb->setItem(numRow, j, new QTableWidgetItem());
+        tableDb->item(numRow,j)->setTextAlignment(Qt::AlignRight);
     }
     for (int j=0; j<tableModel->columnCount(); j++)
     {
         tableModel->setItem(numRow, j, new QTableWidgetItem());
+        if (j>0)
+        {
+            tableModel->item(numRow,j)->setTextAlignment(Qt::AlignRight);
+        }
     }
     deleteRow->setEnabled(true);
 
