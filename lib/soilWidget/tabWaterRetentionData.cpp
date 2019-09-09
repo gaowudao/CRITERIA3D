@@ -1,5 +1,6 @@
 #include "tabWaterRetentionData.h"
 #include "tableDelegateWaterRetention.h"
+#include "tableWidgetItem.h"
 #include "commonConstants.h"
 
 
@@ -18,7 +19,7 @@ TabWaterRetentionData::TabWaterRetentionData()
     tableWaterRetention->setStyleSheet("QTableView::item:selected { color:black;  border: 3px solid black}");
     tableWaterRetention->setShowGrid(true);
     tableWaterRetention->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
-    int margin = 70; // now table is empty
+    int margin = 50; // now table is empty
     tableWaterRetention->setFixedWidth(tableWaterRetention->horizontalHeader()->length() + tableWaterRetention->verticalHeader()->width() + margin);
     tableWaterRetention->setItemDelegate(new TableDelegateWaterRetention(tableWaterRetention));
     tableWaterRetention->setSortingEnabled(true);
@@ -127,13 +128,13 @@ void TabWaterRetentionData::addRowClicked()
     // fill default row (copy the previous row)
     if (numRow == 0)
     {
-        tableWaterRetention->setItem(numRow, 0, new QTableWidgetItem(QString::number(1)));
-        tableWaterRetention->setItem(numRow, 1, new QTableWidgetItem(QString::number(0)));
+        tableWaterRetention->setItem(numRow, 0, new Crit3DTableWidgetItem(QString::number(1)));
+        tableWaterRetention->setItem(numRow, 1, new Crit3DTableWidgetItem(QString::number(0)));
     }
     else
     {
-        tableWaterRetention->setItem(numRow, 0, new QTableWidgetItem(tableWaterRetention->item(numRow-1,0)->text()));
-        tableWaterRetention->setItem(numRow, 1, new QTableWidgetItem(tableWaterRetention->item(numRow-1,1)->text()));
+        tableWaterRetention->setItem(numRow, 0, new Crit3DTableWidgetItem(tableWaterRetention->item(numRow-1,0)->text()));
+        tableWaterRetention->setItem(numRow, 1, new Crit3DTableWidgetItem(tableWaterRetention->item(numRow-1,1)->text()));
     }
     tableWaterRetention->item(numRow,0)->setTextAlignment(Qt::AlignRight);
     tableWaterRetention->item(numRow,1)->setTextAlignment(Qt::AlignRight);
@@ -357,35 +358,25 @@ void TabWaterRetentionData::widgetClicked(int index)
         row = row + mySoil->horizon[index].dbData.waterRetention.size();
     }
     tableWaterRetention->setRowCount(row);
-    qDebug() << "index: " << index;
-    qDebug() << "row: " << row;
-
     tableWaterRetention->setSortingEnabled(false);
     tableWaterRetention->blockSignals(true);
 
-    qDebug() << "j,water_potential,water_content,tableWaterRetention->item(pos,0),tableWaterRetention->item(pos,1),sorting";
     for (int j = 0; j < mySoil->horizon[index].dbData.waterRetention.size(); j++)
     {
 
         if (mySoil->horizon[index].dbData.waterRetention[j].water_potential < 1)
         {
-            tableWaterRetention->setItem(j, 0, new QTableWidgetItem( QString::number(mySoil->horizon[index].dbData.waterRetention[j].water_potential, 'f', 3)));
+            tableWaterRetention->setItem(j, 0, new Crit3DTableWidgetItem( QString::number(mySoil->horizon[index].dbData.waterRetention[j].water_potential, 'f', 3)));
         }
         else
         {
-            tableWaterRetention->setItem(j, 0, new QTableWidgetItem( QString::number(mySoil->horizon[index].dbData.waterRetention[j].water_potential, 'f', 1)));
+            tableWaterRetention->setItem(j, 0, new Crit3DTableWidgetItem( QString::number(mySoil->horizon[index].dbData.waterRetention[j].water_potential, 'f', 1)));
         }
         tableWaterRetention->item(j,0)->setTextAlignment(Qt::AlignRight);
 
-        tableWaterRetention->setItem(j, 1, new QTableWidgetItem( QString::number(mySoil->horizon[index].dbData.waterRetention[j].water_content, 'f', 3 )));
+        tableWaterRetention->setItem(j, 1, new Crit3DTableWidgetItem( QString::number(mySoil->horizon[index].dbData.waterRetention[j].water_content, 'f', 3 )));
         tableWaterRetention->item(j,1)->setTextAlignment(Qt::AlignRight);
 
-        qDebug() << j << ","
-                 << mySoil->horizon[index].dbData.waterRetention[j].water_potential << ","
-                 << mySoil->horizon[index].dbData.waterRetention[j].water_content << ","
-                 << tableWaterRetention->item(j,0)->text() << ","
-                 << tableWaterRetention->item(j,1)->text() << ","
-                 << tableWaterRetention->isSortingEnabled();
     }
     tableWaterRetention->setSortingEnabled(true);
     tableWaterRetention->sortByColumn(0, Qt::AscendingOrder);

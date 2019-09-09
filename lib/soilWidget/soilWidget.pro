@@ -54,7 +54,8 @@ HEADERS += \
     tabHydraulicConductivityCurve.h \
     tableDelegate.h \
     tableDelegateWaterRetention.h \
-    curvePanner.h
+    curvePanner.h \
+    tableWidgetItem.h
 
 unix {
     target.path = /usr/lib
