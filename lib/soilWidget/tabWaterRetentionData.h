@@ -20,6 +20,7 @@
         void addRowClicked();
         void removeRowClicked();
         void resetAll();
+        void resetTable();
         void cellClicked(int row, int column);
         void cellChanged(int row, int column);
         void updateSoil(soil::Crit3DSoil *soil);
@@ -40,6 +41,8 @@
         bool fillData;
     private slots:
         void widgetClicked(int index);
+    signals:
+        void horizonSelected(int nHorizon);
 
     };
 

@@ -8,9 +8,9 @@ TabWaterRetentionData::TabWaterRetentionData()
     QHBoxLayout* mainLayout = new QHBoxLayout;
     QVBoxLayout* tableLayout = new QVBoxLayout;
     tableWaterRetention = new QTableWidget();
-    tableWaterRetention->setColumnCount(3);
+    tableWaterRetention->setColumnCount(2);
     QStringList tableHeader;
-    tableHeader << "Nr. horizon" << "Water potential [kPa]" << "Water content [m3 m-3]";
+    tableHeader << "Water potential [kPa]" << "Water content [m3 m-3]";
     tableWaterRetention->setHorizontalHeaderLabels(tableHeader);
     tableWaterRetention->setSelectionBehavior(QAbstractItemView::SelectRows);
     tableWaterRetention->resizeColumnsToContents();
@@ -62,44 +62,9 @@ void TabWaterRetentionData::insertData(soil::Crit3DSoil *soil)
     fillData = true;
 
     barHorizons.draw(soil);
-
-    tableWaterRetention->blockSignals(true);
-    tableWaterRetention->clearSelection();
     deleteRow->setEnabled(false);
     mySoil = soil;
-    int row = 0;
-    for (int i = 0; i < mySoil->nrHorizons; i++)
-    {
-        if (mySoil->horizon[i].dbData.waterRetention.size() != 0)
-        {
-            row = row + mySoil->horizon[i].dbData.waterRetention.size();
-        }
-    }
 
-    tableWaterRetention->setRowCount(row);
-    int pos = 0;
-    tableWaterRetention->setSortingEnabled(false);
-    for (int i = 0; i < mySoil->nrHorizons; i++)
-    {
-        for (int j = 0; j < mySoil->horizon[i].dbData.waterRetention.size(); j++)
-        {
-            tableWaterRetention->setItem(pos, 0, new QTableWidgetItem( QString::number(i+1, 'f', 0)));
-            tableWaterRetention->item(pos,0)->setTextAlignment(Qt::AlignRight);
-            if (mySoil->horizon[i].dbData.waterRetention[j].water_potential < 1)
-            {
-                tableWaterRetention->setItem(pos, 1, new QTableWidgetItem( QString::number(mySoil->horizon[i].dbData.waterRetention[j].water_potential, 'f', 3)));
-            }
-            else
-            {
-                tableWaterRetention->setItem(pos, 1, new QTableWidgetItem( QString::number(mySoil->horizon[i].dbData.waterRetention[j].water_potential, 'f', 1)));
-            }
-            tableWaterRetention->item(pos,1)->setTextAlignment(Qt::AlignRight);
-            tableWaterRetention->setItem(pos, 2, new QTableWidgetItem( QString::number(mySoil->horizon[i].dbData.waterRetention[j].water_content, 'f', 3 )));
-            tableWaterRetention->item(pos,2)->setTextAlignment(Qt::AlignRight);
-            pos = pos + 1;
-        }
-    }
-    tableWaterRetention->setSortingEnabled(true);
     if (!mySoil->code.empty())
     {
         addRow->setEnabled(true);
@@ -108,7 +73,7 @@ void TabWaterRetentionData::insertData(soil::Crit3DSoil *soil)
     {
         addRow->setEnabled(false);
     }
-    tableWaterRetention->blockSignals(false);
+
     connect(tableWaterRetention, &QTableWidget::cellClicked, [=](int row, int column){ this->cellClicked(row, column); });
     connect(tableWaterRetention, &QTableWidget::cellChanged, [=](int row, int column){ this->cellChanged(row, column); });
 
@@ -116,6 +81,8 @@ void TabWaterRetentionData::insertData(soil::Crit3DSoil *soil)
     {
         connect(barHorizons.barList[i], SIGNAL(clicked(int)), this, SLOT(widgetClicked(int)));
     }
+    barHorizons.barList[0]->setSelected(true);
+    widgetClicked(0);
 
 }
 
@@ -162,17 +129,15 @@ void TabWaterRetentionData::addRowClicked()
     {
         tableWaterRetention->setItem(numRow, 0, new QTableWidgetItem(QString::number(1)));
         tableWaterRetention->setItem(numRow, 1, new QTableWidgetItem(QString::number(0)));
-        tableWaterRetention->setItem(numRow, 2, new QTableWidgetItem(QString::number(0)));
     }
     else
     {
         tableWaterRetention->setItem(numRow, 0, new QTableWidgetItem(tableWaterRetention->item(numRow-1,0)->text()));
         tableWaterRetention->setItem(numRow, 1, new QTableWidgetItem(tableWaterRetention->item(numRow-1,1)->text()));
-        tableWaterRetention->setItem(numRow, 2, new QTableWidgetItem(tableWaterRetention->item(numRow-1,2)->text()));
     }
     tableWaterRetention->item(numRow,0)->setTextAlignment(Qt::AlignRight);
     tableWaterRetention->item(numRow,1)->setTextAlignment(Qt::AlignRight);
-    tableWaterRetention->item(numRow,2)->setTextAlignment(Qt::AlignRight);
+
     tableWaterRetention->selectRow(numRow);
     if (!horizonChanged.contains(tableWaterRetention->item(numRow,0)->text().toInt()))
     {
@@ -226,6 +191,15 @@ void TabWaterRetentionData::resetAll()
     resetSoilCodeChanged();
 }
 
+void TabWaterRetentionData::resetTable()
+{
+    deleteRow->setEnabled(false);
+    addRow->setEnabled(false);
+    tableWaterRetention->clearContents();
+    tableWaterRetention->setRowCount(0);
+    tableWaterRetention->clearSelection();
+}
+
 void TabWaterRetentionData::cellClicked(int row, int column)
 {
 
@@ -233,7 +207,6 @@ void TabWaterRetentionData::cellClicked(int row, int column)
     tableWaterRetention->setSelectionBehavior(QAbstractItemView::SelectItems);
     tableWaterRetention->setItemSelected(tableWaterRetention->item(row,column), true);
     deleteRow->setEnabled(false);
-
 }
 
 void TabWaterRetentionData::cellChanged(int row, int column)
@@ -249,31 +222,6 @@ void TabWaterRetentionData::cellChanged(int row, int column)
     // set new value
     switch (column) {
         case 0:
-        {
-            if (data.toInt() <= 0 || round(data.toDouble()) > mySoil->nrHorizons)
-            { 
-                QMessageBox::critical(nullptr, "Error!", "Invalid horizon");
-                if (row == 0)
-                {
-                    tableWaterRetention->item(row, column)->setText(QString::number(1));
-                }
-                else
-                {
-                    tableWaterRetention->item(row, column)->setText(tableWaterRetention->item(row-1,column)->text());
-                }
-                return;
-            }
-            else
-            {
-                tableWaterRetention->item(row, column)->setText(QString::number(round(data.toDouble())));
-            }
-            if (!horizonChanged.contains(data.toInt()))
-            {
-                horizonChanged << data.toInt();
-            }
-            break;
-        }
-        case 1:
         {
         // water potential
             if (data.toDouble() < 0)
@@ -300,7 +248,7 @@ void TabWaterRetentionData::cellChanged(int row, int column)
             break;
         }
         // water content
-        case 2:
+        case 1:
         {
             if (data.toDouble() < 0 || data.toDouble() > 1)
             {
@@ -323,13 +271,14 @@ void TabWaterRetentionData::cellChanged(int row, int column)
         }
 
     }
-    tableWaterRetention->sortByColumn(1, Qt::AscendingOrder);
     tableWaterRetention->sortByColumn(0, Qt::AscendingOrder);
 
+    /*
     if (!horizonChanged.contains(tableWaterRetention->item(row,0)->text().toInt()))
     {
         horizonChanged << tableWaterRetention->item(row,0)->text().toInt();
     }
+    */
 
     tableWaterRetention->update();
     tableWaterRetention->blockSignals(false);
@@ -391,10 +340,57 @@ void TabWaterRetentionData::widgetClicked(int index)
     {
         // clear previous selection
         barHorizons.deselectAll(index);
+        //select the right
+        barHorizons.selectItem(index);
     }
     else
     {
-        tableWaterRetention->clearSelection();
+        resetTable();
+        return;
     }
+
+    resetTable();
+    int row = 0;
+
+    if (mySoil->horizon[index].dbData.waterRetention.size() != 0)
+    {
+        row = row + mySoil->horizon[index].dbData.waterRetention.size();
+    }
+    tableWaterRetention->setRowCount(row);
+    qDebug() << "index: " << index;
+    qDebug() << "row: " << row;
+
+    tableWaterRetention->setSortingEnabled(false);
+    tableWaterRetention->blockSignals(true);
+
+    qDebug() << "j,water_potential,water_content,tableWaterRetention->item(pos,0),tableWaterRetention->item(pos,1),sorting";
+    for (int j = 0; j < mySoil->horizon[index].dbData.waterRetention.size(); j++)
+    {
+
+        if (mySoil->horizon[index].dbData.waterRetention[j].water_potential < 1)
+        {
+            tableWaterRetention->setItem(j, 0, new QTableWidgetItem( QString::number(mySoil->horizon[index].dbData.waterRetention[j].water_potential, 'f', 3)));
+        }
+        else
+        {
+            tableWaterRetention->setItem(j, 0, new QTableWidgetItem( QString::number(mySoil->horizon[index].dbData.waterRetention[j].water_potential, 'f', 1)));
+        }
+        tableWaterRetention->item(j,0)->setTextAlignment(Qt::AlignRight);
+
+        tableWaterRetention->setItem(j, 1, new QTableWidgetItem( QString::number(mySoil->horizon[index].dbData.waterRetention[j].water_content, 'f', 3 )));
+        tableWaterRetention->item(j,1)->setTextAlignment(Qt::AlignRight);
+
+        qDebug() << j << ","
+                 << mySoil->horizon[index].dbData.waterRetention[j].water_potential << ","
+                 << mySoil->horizon[index].dbData.waterRetention[j].water_content << ","
+                 << tableWaterRetention->item(j,0)->text() << ","
+                 << tableWaterRetention->item(j,1)->text() << ","
+                 << tableWaterRetention->isSortingEnabled();
+    }
+    tableWaterRetention->setSortingEnabled(true);
+    tableWaterRetention->sortByColumn(0, Qt::AscendingOrder);
+    tableWaterRetention->blockSignals(false);
+
+    emit horizonSelected(index);
 
 }
