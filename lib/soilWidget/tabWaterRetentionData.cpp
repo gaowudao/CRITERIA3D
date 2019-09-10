@@ -149,7 +149,6 @@ void TabWaterRetentionData::addRowClicked()
 
     tableWaterRetention->blockSignals(false);
     tableWaterRetention->setSortingEnabled(true);
-    emit updateSignal();
 
 }
 
@@ -177,7 +176,7 @@ void TabWaterRetentionData::removeRowClicked()
     }
 
     tableWaterRetention->removeRow(row);
-    sort(mySoil->horizon[currentHorizon].dbData.waterRetention.begin(), mySoil->horizon[currentHorizon].dbData.waterRetention.end(), soil::sortWaterPotential);
+    mySoil->horizon[currentHorizon].dbData.waterRetention.erase(mySoil->horizon[currentHorizon].dbData.waterRetention.begin() + row);
     soilCodeChanged = true;
     emit updateSignal();
 }
@@ -284,6 +283,7 @@ void TabWaterRetentionData::cellChanged(int row, int column)
         horizonChanged << currentHorizon;
     }
     emit updateSignal();
+
 
 }
 

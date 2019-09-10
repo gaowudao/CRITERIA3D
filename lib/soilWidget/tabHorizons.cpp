@@ -169,8 +169,9 @@ void TabHorizons::insertSoilHorizons(soil::Crit3DSoil *soil, soil::Crit3DTexture
 }
 
 
-void TabHorizons::checkDepths()
+bool TabHorizons::checkDepths()
 {
+    bool depthsOk = true;
     // reset background color
     for (int horizonNum = 0; horizonNum<tableDb->rowCount(); horizonNum++)
     {
@@ -186,6 +187,7 @@ void TabHorizons::checkDepths()
             {
                 tableDb->item(horizonNum,0)->setBackgroundColor(Qt::red);
                 tableDb->item(horizonNum-1,1)->setBackgroundColor(Qt::red);
+                depthsOk = false;
             }
         }
 
@@ -196,6 +198,7 @@ void TabHorizons::checkDepths()
             {
                 tableDb->item(horizonNum,1)->setBackgroundColor(Qt::red);
                 tableDb->item(horizonNum+1,0)->setBackgroundColor(Qt::red);
+                depthsOk = false;
             }
         }
 
@@ -203,24 +206,29 @@ void TabHorizons::checkDepths()
         {
             tableDb->item(horizonNum,0)->setBackgroundColor(Qt::red);
             tableDb->item(horizonNum,1)->setBackgroundColor(Qt::red);
+            depthsOk = false;
         }
         else if (mySoil->horizon[horizonNum].dbData.upperDepth > mySoil->horizon[horizonNum].dbData.lowerDepth)
         {
             tableDb->item(horizonNum,0)->setBackgroundColor(Qt::red);
             tableDb->item(horizonNum,1)->setBackgroundColor(Qt::red);
+            depthsOk = false;
         }
         else
         {
             if (mySoil->horizon[horizonNum].dbData.upperDepth < 0)
             {
                 tableDb->item(horizonNum,0)->setBackgroundColor(Qt::red);
+                depthsOk = false;
             }
             if (mySoil->horizon[horizonNum].dbData.lowerDepth < 0)
             {
                 tableDb->item(horizonNum,1)->setBackgroundColor(Qt::red);
+                depthsOk = false;
             }
         }
     }
+    return depthsOk;
 }
 
 
@@ -656,18 +664,25 @@ void TabHorizons::cellChanged(int row, int column)
     }
 
     // check all Depths
-    checkDepths();
+    bool depthsOk = checkDepths();
+    qDebug() << "depthsOk " << depthsOk;
     // check new values and assign background color
     checkMissingItem(row);
-    if (checkHorizonData(row))
+    bool checkHorizon = checkHorizonData(row);
+    if (checkHorizon)
     {
         checkComputedValues(row);
     }
+    qDebug() << "checkHorizon " << checkHorizon;
 
     clearSelections();
     tableDb->blockSignals(false);
     soilCodeChanged = true;
-    emit updateSignal();
+    if (depthsOk == true && checkHorizon == true)
+    {
+        emit updateSignal();
+    }
+
 }
 
 void TabHorizons::addRowClicked()
@@ -778,10 +793,15 @@ void TabHorizons::removeRowClicked()
     tableDb->removeRow(row);
     tableModel->removeRow(row);
     mySoil->deleteHorizon(row);
-    checkDepths();
+    // check all Depths
+    bool depthsOk = checkDepths();
     tableDb->blockSignals(false);
     soilCodeChanged = true;
-    emit updateSignal();
+    if (depthsOk)
+    {
+        emit updateSignal();
+    }
+
 }
 
 bool TabHorizons::getSoilCodeChanged()
