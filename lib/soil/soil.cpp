@@ -845,5 +845,13 @@ namespace soil
         }
     }
 
+
+    // Compares two Crit3DWaterRetention according to water_potential
+    bool sortWaterPotential(soil::Crit3DWaterRetention first, soil::Crit3DWaterRetention second)
+    {
+        return (first.water_potential < second.water_potential);
+    }
 }
+
+
 

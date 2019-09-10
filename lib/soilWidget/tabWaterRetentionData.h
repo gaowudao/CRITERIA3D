@@ -39,6 +39,7 @@
         bool soilCodeChanged;
         QVector<int> horizonChanged;
         bool fillData;
+        int currentHorizon;
     private slots:
         void widgetClicked(int index);
     signals:

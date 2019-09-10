@@ -227,6 +227,7 @@
 
         bool fittingWaterRetentionCurve(Crit3DHorizon* horizon,
                         Crit3DFittingOptions* fittingOptions);
+        bool sortWaterPotential(soil::Crit3DWaterRetention first, soil::Crit3DWaterRetention second);
     }
 
 #endif // SOIL_H

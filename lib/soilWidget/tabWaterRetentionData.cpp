@@ -2,6 +2,7 @@
 #include "tableDelegateWaterRetention.h"
 #include "tableWidgetItem.h"
 #include "commonConstants.h"
+#include "soil.h"
 
 
 TabWaterRetentionData::TabWaterRetentionData()
@@ -65,15 +66,7 @@ void TabWaterRetentionData::insertData(soil::Crit3DSoil *soil)
     barHorizons.draw(soil);
     deleteRow->setEnabled(false);
     mySoil = soil;
-
-    if (!mySoil->code.empty())
-    {
-        addRow->setEnabled(true);
-    }
-    else
-    {
-        addRow->setEnabled(false);
-    }
+    addRow->setEnabled(true);
 
     connect(tableWaterRetention, &QTableWidget::cellClicked, [=](int row, int column){ this->cellClicked(row, column); });
     connect(tableWaterRetention, &QTableWidget::cellChanged, [=](int row, int column){ this->cellChanged(row, column); });
@@ -128,7 +121,7 @@ void TabWaterRetentionData::addRowClicked()
     // fill default row (copy the previous row)
     if (numRow == 0)
     {
-        tableWaterRetention->setItem(numRow, 0, new Crit3DTableWidgetItem(QString::number(1)));
+        tableWaterRetention->setItem(numRow, 0, new Crit3DTableWidgetItem(QString::number(0)));
         tableWaterRetention->setItem(numRow, 1, new Crit3DTableWidgetItem(QString::number(0)));
     }
     else
@@ -140,10 +133,13 @@ void TabWaterRetentionData::addRowClicked()
     tableWaterRetention->item(numRow,1)->setTextAlignment(Qt::AlignRight);
 
     tableWaterRetention->selectRow(numRow);
-    if (!horizonChanged.contains(tableWaterRetention->item(numRow,0)->text().toInt()))
-    {
-        horizonChanged << tableWaterRetention->item(numRow,0)->text().toInt();
-    }
+
+    soil::Crit3DWaterRetention newRow;
+    newRow.water_potential = tableWaterRetention->item(numRow,0)->text().toDouble();
+    newRow.water_content = tableWaterRetention->item(numRow,1)->text().toDouble();
+    auto itPos = mySoil->horizon[currentHorizon].dbData.waterRetention.begin() + numRow;
+    // Insert element
+    mySoil->horizon[currentHorizon].dbData.waterRetention.insert(itPos, newRow);
     deleteRow->setEnabled(true);
     soilCodeChanged = true;
 
@@ -184,7 +180,6 @@ void TabWaterRetentionData::resetAll()
     // delete all Widgets
     barHorizons.clear();
     deleteRow->setEnabled(false);
-    addRow->setEnabled(false);
     tableWaterRetention->clearContents();
     tableWaterRetention->setRowCount(0);
     tableWaterRetention->clearSelection();
@@ -195,7 +190,6 @@ void TabWaterRetentionData::resetAll()
 void TabWaterRetentionData::resetTable()
 {
     deleteRow->setEnabled(false);
-    addRow->setEnabled(false);
     tableWaterRetention->clearContents();
     tableWaterRetention->setRowCount(0);
     tableWaterRetention->clearSelection();
@@ -236,7 +230,6 @@ void TabWaterRetentionData::cellChanged(int row, int column)
                 {
                     tableWaterRetention->item(row, column)->setText(tableWaterRetention->item(row-1,column)->text());
                 }
-                return;
             }
             else if (data.toDouble() < 1)
             {
@@ -246,6 +239,7 @@ void TabWaterRetentionData::cellChanged(int row, int column)
             {
                 tableWaterRetention->item(row, column)->setText(QString::number(data.toDouble(), 'f', 1));
             }
+            mySoil->horizon[currentHorizon].dbData.waterRetention[row].water_potential = data.toDouble();
             break;
         }
         // water content
@@ -262,24 +256,18 @@ void TabWaterRetentionData::cellChanged(int row, int column)
                 {
                     tableWaterRetention->item(row, column)->setText(tableWaterRetention->item(row-1,column)->text());
                 }
-                return;
             }
             else
             {
                 tableWaterRetention->item(row, column)->setText(QString::number(data.toFloat(), 'f', 3));
             }
+            mySoil->horizon[currentHorizon].dbData.waterRetention[row].water_content = data.toDouble();
             break;
         }
 
     }
     tableWaterRetention->sortByColumn(0, Qt::AscendingOrder);
-
-    /*
-    if (!horizonChanged.contains(tableWaterRetention->item(row,0)->text().toInt()))
-    {
-        horizonChanged << tableWaterRetention->item(row,0)->text().toInt();
-    }
-    */
+    sort(mySoil->horizon[currentHorizon].dbData.waterRetention.begin(), mySoil->horizon[currentHorizon].dbData.waterRetention.end(), soil::sortWaterPotential);
 
     tableWaterRetention->update();
     tableWaterRetention->blockSignals(false);
@@ -343,15 +331,19 @@ void TabWaterRetentionData::widgetClicked(int index)
         barHorizons.deselectAll(index);
         //select the right
         barHorizons.selectItem(index);
+        addRow->setEnabled(true);
     }
     else
     {
         resetTable();
+        addRow->setEnabled(false);
+        currentHorizon = -1;
         return;
     }
 
     resetTable();
     int row = 0;
+    currentHorizon = index;
 
     if (mySoil->horizon[index].dbData.waterRetention.size() != 0)
     {
@@ -385,3 +377,4 @@ void TabWaterRetentionData::widgetClicked(int index)
     emit horizonSelected(index);
 
 }
+
