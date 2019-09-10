@@ -338,8 +338,6 @@ void Crit3DSoilWidget::on_actionChooseSoil(QString soilCode)
             }
             if (wrDataTab->getSoilCodeChanged() == true)
             {
-                // update Soil
-                wrDataTab->updateSoil(&mySoil);
                 QVector<int> horizonChanged = wrDataTab->getHorizonChanged();
                 // update water_retention DB table
                 for (int i = 0; i < horizonChanged.size(); i++)
@@ -495,13 +493,11 @@ void Crit3DSoilWidget::on_actionSave()
     }
     if (wrDataTab->getSoilCodeChanged() == true)
     {
-        // update Soil
-        wrDataTab->updateSoil(&mySoil);
         QVector<int> horizonChanged = wrDataTab->getHorizonChanged();
         // update water_retention DB table
         for (int i = 0; i < horizonChanged.size(); i++)
         {
-            if (!updateWaterRetentionData(&dbSoil, soilCodeChanged, &mySoil, horizonChanged[i], &error))
+            if (!updateWaterRetentionData(&dbSoil, soilCodeChanged, &mySoil, horizonChanged[i]+1, &error))
             {
                 QMessageBox::critical(nullptr, "Error!", error);
                 return;

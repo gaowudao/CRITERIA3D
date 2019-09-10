@@ -142,6 +142,10 @@ void TabWaterRetentionData::addRowClicked()
     mySoil->horizon[currentHorizon].dbData.waterRetention.insert(itPos, newRow);
     deleteRow->setEnabled(true);
     soilCodeChanged = true;
+    if (!horizonChanged.contains(currentHorizon))
+    {
+        horizonChanged << currentHorizon;
+    }
 
     tableWaterRetention->blockSignals(false);
     tableWaterRetention->setSortingEnabled(true);
@@ -166,12 +170,13 @@ void TabWaterRetentionData::removeRowClicked()
         QMessageBox::critical(nullptr, "Error!", "Select a horizon");
         return;
     }
-    if (!horizonChanged.contains(tableWaterRetention->item(row,0)->text().toInt()))
+    if (!horizonChanged.contains(currentHorizon))
     {
-        horizonChanged << tableWaterRetention->item(row,0)->text().toInt();
+        horizonChanged << currentHorizon;
     }
 
     tableWaterRetention->removeRow(row);
+    sort(mySoil->horizon[currentHorizon].dbData.waterRetention.begin(), mySoil->horizon[currentHorizon].dbData.waterRetention.end(), soil::sortWaterPotential);
     soilCodeChanged = true;
 }
 
@@ -272,28 +277,11 @@ void TabWaterRetentionData::cellChanged(int row, int column)
     tableWaterRetention->update();
     tableWaterRetention->blockSignals(false);
     soilCodeChanged = true;
-
-}
-
-void TabWaterRetentionData::updateSoil(soil::Crit3DSoil *soil)
-{
-    qSort(horizonChanged);
-    soil::Crit3DWaterRetention waterRetention;
-    for (int i = 0; i < horizonChanged.size(); i++)
+    if (!horizonChanged.contains(currentHorizon))
     {
-        //remove all prev points
-        soil->horizon[horizonChanged[i]-1].dbData.waterRetention.erase(soil->horizon[horizonChanged[i]-1].dbData.waterRetention.begin(), soil->horizon[horizonChanged[i]-1].dbData.waterRetention.end());
-        soil->horizon[horizonChanged[i]-1].dbData.waterRetention.clear();
-        for (int j = 0; j < tableWaterRetention->rowCount(); j++)
-        {
-            if (tableWaterRetention->item(j,0)->text().toInt() == horizonChanged[i])
-            {
-                waterRetention.water_potential = tableWaterRetention->item(j,1)->text().toDouble();  // [kPa]
-                waterRetention.water_content = tableWaterRetention->item(j,2)->text().toDouble();      // [m3 m-3]
-                soil->horizon[horizonChanged[i]-1].dbData.waterRetention.push_back(waterRetention);
-            }
-        }
+        horizonChanged << currentHorizon;
     }
+
 }
 
 bool TabWaterRetentionData::getSoilCodeChanged()

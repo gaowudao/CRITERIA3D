@@ -23,7 +23,6 @@
         void resetTable();
         void cellClicked(int row, int column);
         void cellChanged(int row, int column);
-        void updateSoil(soil::Crit3DSoil *soil);
         bool getSoilCodeChanged();
         void resetSoilCodeChanged();
         QVector<int> getHorizonChanged() const;
