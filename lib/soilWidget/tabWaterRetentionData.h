@@ -43,6 +43,7 @@
         void widgetClicked(int index);
     signals:
         void horizonSelected(int nHorizon);
+        void updateSignal();
 
     };
 

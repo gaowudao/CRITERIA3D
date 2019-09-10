@@ -55,6 +55,7 @@
 
     signals:
         void horizonSelected(int nHorizon);
+        void updateSignal();
 
 
     };

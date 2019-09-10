@@ -667,6 +667,7 @@ void TabHorizons::cellChanged(int row, int column)
     clearSelections();
     tableDb->blockSignals(false);
     soilCodeChanged = true;
+    emit updateSignal();
 }
 
 void TabHorizons::addRowClicked()
@@ -780,6 +781,7 @@ void TabHorizons::removeRowClicked()
     checkDepths();
     tableDb->blockSignals(false);
     soilCodeChanged = true;
+    emit updateSignal();
 }
 
 bool TabHorizons::getSoilCodeChanged()

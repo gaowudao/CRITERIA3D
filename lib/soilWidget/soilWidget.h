@@ -89,6 +89,7 @@
 
             private slots:
             void setInfoTextural(int);
+            void updateAll();
     };
 
 #endif // SOILWIDGET_H

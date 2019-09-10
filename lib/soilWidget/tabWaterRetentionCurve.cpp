@@ -65,16 +65,16 @@ void TabWaterRetentionCurve::resetAll()
         curveList.clear();
     }
 
-    if (pick != nullptr)
-    {
-        delete pick;
-        pick = nullptr;
-    }
-
     if (!curveMarkerMap.isEmpty())
     {
         qDeleteAll(curveMarkerMap);
         curveMarkerMap.clear();
+    }
+
+    if (pick != nullptr)
+    {
+        delete pick;
+        pick = nullptr;
     }
 
     myPlot->detachItems( QwtPlotItem::Rtti_PlotCurve );
