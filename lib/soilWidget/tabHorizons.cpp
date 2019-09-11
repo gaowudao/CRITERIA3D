@@ -59,7 +59,7 @@ void TabHorizons::insertSoilHorizons(soil::Crit3DSoil *soil, soil::Crit3DTexture
     {
         return;
     }
-
+    qDebug() << "insertSoilHorizons";
     resetAll();
 
     barHorizons.draw(soil);
@@ -154,7 +154,6 @@ void TabHorizons::insertSoilHorizons(soil::Crit3DSoil *soil, soil::Crit3DTexture
     addRow->setEnabled(true);
     deleteRow->setEnabled(false);
 
-    connect(tableDb, &QTableWidget::cellDoubleClicked, [=](int row, int column){ this->editItem(row, column); });
     connect(tableDb, &QTableWidget::cellChanged, [=](int row, int column){ this->cellChanged(row, column); });
     connect(tableDb, &QTableWidget::cellClicked, [=](int row, int column){ this->cellClickedDb(row, column); });
     connect(tableModel, &QTableWidget::cellClicked, [=](int row, int column){ this->cellClickedModel(row, column); });
@@ -353,11 +352,6 @@ void TabHorizons::clearSelections()
     tableModel->clearSelection();
     deleteRow->setEnabled(false);
     emit horizonSelected(-1);
-}
-
-void TabHorizons::editItem(int row, int column)
-{
-    tableDb->itemAt(row,column)->setFlags(Qt::ItemIsSelectable|Qt::ItemIsEnabled|Qt::ItemIsEditable);
 }
 
 void TabHorizons::cellClickedDb(int row, int column)
@@ -665,7 +659,7 @@ void TabHorizons::cellChanged(int row, int column)
 
     // check all Depths
     bool depthsOk = checkDepths();
-    qDebug() << "depthsOk " << depthsOk;
+
     // check new values and assign background color
     checkMissingItem(row);
     bool checkHorizon = checkHorizonData(row);
@@ -673,12 +667,10 @@ void TabHorizons::cellChanged(int row, int column)
     {
         checkComputedValues(row);
     }
-    qDebug() << "checkHorizon " << checkHorizon;
 
-    clearSelections();
     tableDb->blockSignals(false);
     soilCodeChanged = true;
-    if (depthsOk == true && checkHorizon == true)
+    if ( (depthsOk == true) && (checkHorizon == true))
     {
         emit updateSignal();
     }
@@ -687,6 +679,7 @@ void TabHorizons::cellChanged(int row, int column)
 
 void TabHorizons::addRowClicked()
 {
+
     tableDb->blockSignals(true);
     int numRow;
 

@@ -45,8 +45,8 @@ unix:{
     PRE_TARGETDEPS += ../../lib/mathFunctions/debug/libmathFunctions.a
 }
 
-    LIBS += -L../../lib/climate/debug -lclimate
     LIBS += -L../../lib/dbMeteoGrid/debug -ldbMeteoGrid
+    LIBS += -L../../lib/climate/debug -lclimate
     LIBS += -L../../lib/dbMeteoPoints/debug -ldbMeteoPoints
     LIBS += -L../../lib/utilities/debug -lutilities
     LIBS += -L../../lib/solarRadiation/debug -lsolarRadiation
