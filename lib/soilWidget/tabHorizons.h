@@ -32,8 +32,6 @@
         void cellClickedModel(int row, int column);
         void addRowClicked();
         void removeRowClicked();
-        bool getSoilCodeChanged();
-        void resetSoilCodeChanged();
         void resetAll();
         bool getInsertSoilElement() const;
         void setInsertSoilElement(bool value);
@@ -47,7 +45,6 @@
         soil::Crit3DSoil* mySoil;
         soil::Crit3DTextureClass* myTextureClassList;
         soil::Crit3DFittingOptions* myFittingOptions;
-        bool soilCodeChanged;
         bool insertSoilElement;
     private slots:
         void widgetClicked(int index);

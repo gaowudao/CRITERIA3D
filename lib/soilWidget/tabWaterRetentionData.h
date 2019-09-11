@@ -23,8 +23,7 @@
         void resetTable();
         void cellClicked(int row, int column);
         void cellChanged(int row, int column);
-        bool getSoilCodeChanged();
-        void resetSoilCodeChanged();
+        void resetHorizonChanged();
         QVector<int> getHorizonChanged() const;
         bool getFillData() const;
         void setFillData(bool value);
@@ -35,7 +34,6 @@
         QPushButton* addRow;
         QPushButton* deleteRow;
         soil::Crit3DSoil* mySoil;
-        bool soilCodeChanged;
         QVector<int> horizonChanged;
         bool fillData;
         int currentHorizon;

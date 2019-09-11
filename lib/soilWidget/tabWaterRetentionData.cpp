@@ -50,7 +50,6 @@ TabWaterRetentionData::TabWaterRetentionData()
     setLayout(mainLayout);
 
     fillData = false;
-    soilCodeChanged = false;
 }
 
 void TabWaterRetentionData::insertData(soil::Crit3DSoil *soil)
@@ -141,7 +140,7 @@ void TabWaterRetentionData::addRowClicked()
     // Insert element
     mySoil->horizon[currentHorizon].dbData.waterRetention.insert(itPos, newRow);
     deleteRow->setEnabled(true);
-    soilCodeChanged = true;
+
     if (!horizonChanged.contains(currentHorizon))
     {
         horizonChanged << currentHorizon;
@@ -177,7 +176,7 @@ void TabWaterRetentionData::removeRowClicked()
 
     tableWaterRetention->removeRow(row);
     mySoil->horizon[currentHorizon].dbData.waterRetention.erase(mySoil->horizon[currentHorizon].dbData.waterRetention.begin() + row);
-    soilCodeChanged = true;
+
     emit updateSignal();
 }
 
@@ -190,7 +189,6 @@ void TabWaterRetentionData::resetAll()
     tableWaterRetention->setRowCount(0);
     tableWaterRetention->clearSelection();
     fillData = false;
-    resetSoilCodeChanged();
 }
 
 void TabWaterRetentionData::resetTable()
@@ -277,7 +275,7 @@ void TabWaterRetentionData::cellChanged(int row, int column)
 
     tableWaterRetention->update();
     tableWaterRetention->blockSignals(false);
-    soilCodeChanged = true;
+
     if (!horizonChanged.contains(currentHorizon))
     {
         horizonChanged << currentHorizon;
@@ -287,14 +285,9 @@ void TabWaterRetentionData::cellChanged(int row, int column)
 
 }
 
-bool TabWaterRetentionData::getSoilCodeChanged()
-{
-    return soilCodeChanged;
-}
 
-void TabWaterRetentionData::resetSoilCodeChanged()
+void TabWaterRetentionData::resetHorizonChanged()
 {
-    soilCodeChanged = false;
     horizonChanged.clear();
 }
 

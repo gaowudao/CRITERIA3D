@@ -57,6 +57,7 @@ Crit3DSoilWidget::Crit3DSoilWidget()
 
     // layout
     QVBoxLayout *mainLayout = new QVBoxLayout();
+    QHBoxLayout *nameAndSaveLayout = new QHBoxLayout();
     QHBoxLayout *soilLayout = new QHBoxLayout();
     QVBoxLayout *texturalLayout = new QVBoxLayout();
     QGridLayout *infoLayout = new QGridLayout();
@@ -72,6 +73,21 @@ Crit3DSoilWidget::Crit3DSoilWidget()
     pic.load(picPath);
     labelPic = new QLabel();
     labelPic->setPixmap(pic);
+
+    // check save button pic
+    QString saveButtonPath = "../../DOC/img/saveButton.png";
+    QFileInfo savePath(saveButtonPath);
+    if (! savePath.exists())
+    {
+        saveButtonPath = "./saveButton.png";
+    }
+
+    QPixmap pixmap(saveButtonPath);
+    QPushButton *saveButton = new QPushButton();
+    QIcon ButtonIcon(pixmap);
+    saveButton->setIcon(ButtonIcon);
+    saveButton->setIconSize(pixmap.rect().size());
+    saveButton->setFixedSize(pixmap.rect().size());
 
     infoGroup = new QGroupBox(tr(""));
     infoGroup->setMaximumWidth(pic.width());
@@ -129,9 +145,13 @@ Crit3DSoilWidget::Crit3DSoilWidget()
     infoLayout->addWidget(potFCLegendLabel, 10 , 0);
     infoGroup->setLayout(infoLayout);
 
-    soilListComboBox.setFixedWidth(pic.size().width());
+    int space = 5;
+    soilListComboBox.setFixedWidth(pic.size().width() - pixmap.size().width() - space);
 
-    mainLayout->addWidget(&soilListComboBox);
+    nameAndSaveLayout->setAlignment(Qt::AlignLeft);
+    nameAndSaveLayout->addWidget(&soilListComboBox);
+    nameAndSaveLayout->addWidget(saveButton);
+    mainLayout->addLayout(nameAndSaveLayout);
     mainLayout->addLayout(soilLayout);
     mainLayout->setAlignment(Qt::AlignTop);
 
@@ -188,6 +208,7 @@ Crit3DSoilWidget::Crit3DSoilWidget()
 
     connect(openSoilDB, &QAction::triggered, this, &Crit3DSoilWidget::on_actionOpenSoilDB);
     connect(saveChanges, &QAction::triggered, this, &Crit3DSoilWidget::on_actionSave);
+    connect(saveButton, &QPushButton::clicked, this, &Crit3DSoilWidget::on_actionSave);
     connect(newSoil, &QAction::triggered, this, &Crit3DSoilWidget::on_actionNewSoil);
     connect(deleteSoil, &QAction::triggered, this, &Crit3DSoilWidget::on_actionDeleteSoil);
     connect(restoreData, &QAction::triggered, this, &Crit3DSoilWidget::on_actionRestoreData);
@@ -304,6 +325,8 @@ void Crit3DSoilWidget::on_actionOpenSoilDB()
         this->soilListComboBox.addItem(soilStringList[i]);
     }
     saveChanges->setEnabled(true);
+    changed = false;
+    wrDataTab->resetHorizonChanged();
 }
 
 
@@ -321,7 +344,7 @@ void Crit3DSoilWidget::on_actionChooseSoil(QString soilCode)
 
     QString error;
     // somethig has been modified, ask for saving
-    if (horizonsTab->getSoilCodeChanged() == true || wrDataTab->getSoilCodeChanged() == true)
+    if (changed)
     {
 
         QString soilCodeChanged = QString::fromStdString(mySoil.code);
@@ -331,29 +354,28 @@ void Crit3DSoilWidget::on_actionChooseSoil(QString soilCode)
 
         if (confirm == QMessageBox::Yes)
         {
-            if (horizonsTab->getSoilCodeChanged() == true)
+            if (!updateSoilData(&dbSoil, soilCodeChanged, &mySoil, &error))
             {
-                if (!updateSoilData(&dbSoil, soilCodeChanged, &mySoil, &error))
+                QMessageBox::critical(nullptr, "Error!", error);
+                return;
+            }
+
+            QVector<int> horizonChanged = wrDataTab->getHorizonChanged();
+            qDebug() << "horizonChanged size " << horizonChanged.size();
+            // update water_retention DB table
+            for (int i = 0; i < horizonChanged.size(); i++)
+            {
+                qDebug() << "horizonChanged[i] " << horizonChanged[i];
+                if (!updateWaterRetentionData(&dbSoil, soilCodeChanged, &mySoil, horizonChanged[i], &error))
                 {
                     QMessageBox::critical(nullptr, "Error!", error);
                     return;
                 }
-            }
-            if (wrDataTab->getSoilCodeChanged() == true)
-            {
-                QVector<int> horizonChanged = wrDataTab->getHorizonChanged();
-                // update water_retention DB table
-                for (int i = 0; i < horizonChanged.size(); i++)
-                {
-                    if (!updateWaterRetentionData(&dbSoil, soilCodeChanged, &mySoil, horizonChanged[i], &error))
-                    {
-                        QMessageBox::critical(nullptr, "Error!", error);
-                        return;
-                    }
-
-                }
 
             }
+            changed = false;
+            qDebug() << "resetHorizonChanged" ;
+            wrDataTab->resetHorizonChanged();
         }
     }
 
@@ -439,8 +461,6 @@ void Crit3DSoilWidget::on_actionDeleteSoil()
             if (deleteSoilData(&dbSoil, soilListComboBox.currentText(), &error))
             {
                 soilListComboBox.removeItem(soilListComboBox.currentIndex());
-                horizonsTab->resetSoilCodeChanged();
-                wrDataTab->resetSoilCodeChanged();
             }
         }
         else
@@ -494,37 +514,33 @@ void Crit3DSoilWidget::on_actionParameterRestriction()
 void Crit3DSoilWidget::on_actionSave()
 {
     QString error;
-    if (horizonsTab->getSoilCodeChanged() == false && wrDataTab->getSoilCodeChanged() == false)
+    if (!changed)
     {
         QMessageBox::critical(nullptr, "Warning", "The soil has already been updated");
         return;
     }
     QString soilCodeChanged = QString::fromStdString(mySoil.code);
-    if (horizonsTab->getSoilCodeChanged() == true)
+
+    if (!updateSoilData(&dbSoil, soilCodeChanged, &mySoil, &error))
     {
-        if (!updateSoilData(&dbSoil, soilCodeChanged, &mySoil, &error))
+        QMessageBox::critical(nullptr, "Error!", error);
+        return;
+    }
+
+    QVector<int> horizonChanged = wrDataTab->getHorizonChanged();
+    // update water_retention DB table
+    for (int i = 0; i < horizonChanged.size(); i++)
+    {
+        if (!updateWaterRetentionData(&dbSoil, soilCodeChanged, &mySoil, horizonChanged[i]+1, &error))
         {
             QMessageBox::critical(nullptr, "Error!", error);
             return;
         }
-        horizonsTab->resetSoilCodeChanged();
-    }
-    if (wrDataTab->getSoilCodeChanged() == true)
-    {
-        QVector<int> horizonChanged = wrDataTab->getHorizonChanged();
-        // update water_retention DB table
-        for (int i = 0; i < horizonChanged.size(); i++)
-        {
-            if (!updateWaterRetentionData(&dbSoil, soilCodeChanged, &mySoil, horizonChanged[i]+1, &error))
-            {
-                QMessageBox::critical(nullptr, "Error!", error);
-                return;
-            }
 
-        }
-        wrDataTab->resetSoilCodeChanged();
     }
     savedSoil = mySoil;
+    changed = false;
+    wrDataTab->resetHorizonChanged();
 }
 
 void Crit3DSoilWidget::on_actionRestoreData()
@@ -691,6 +707,7 @@ void Crit3DSoilWidget::tabChanged(int index)
 
 void Crit3DSoilWidget::updateAll()
 {
+    changed = true;
     horizonsTab->insertSoilHorizons(&mySoil, textureClassList, fittingOptions);
     wrDataTab->insertData(&mySoil);
     wrCurveTab->insertElements(&mySoil);

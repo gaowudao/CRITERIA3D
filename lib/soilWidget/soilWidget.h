@@ -67,7 +67,7 @@
             QString picPath;
             QPainter painter;
             QLabel *labelPic;
-
+            bool changed;
             // USDA textural triangle size inside picture pic
             constexpr static const double widthTriangle = 362.0;
             constexpr static const double heightTriangle = 314.0;

@@ -49,7 +49,6 @@ TabHorizons::TabHorizons()
 
     setLayout(mainLayout);
     insertSoilElement = false;
-    soilCodeChanged = false;
 }
 
 void TabHorizons::insertSoilHorizons(soil::Crit3DSoil *soil, soil::Crit3DTextureClass* textureClassList,
@@ -668,7 +667,6 @@ void TabHorizons::cellChanged(int row, int column)
     }
 
     tableDb->blockSignals(false);
-    soilCodeChanged = true;
 
     if ( (depthsOk == true) && (checkHorizon == true))
     {
@@ -763,7 +761,6 @@ void TabHorizons::addRowClicked()
         checkComputedValues(numRow);
     }
     tableDb->blockSignals(false);
-    soilCodeChanged = true;
 
 }
 
@@ -792,7 +789,7 @@ void TabHorizons::removeRowClicked()
     // check all Depths
     bool depthsOk = checkDepths();
     tableDb->blockSignals(false);
-    soilCodeChanged = true;
+
     if (depthsOk)
     {
         //update soil total depth
@@ -800,16 +797,6 @@ void TabHorizons::removeRowClicked()
         emit updateSignal();
     }
 
-}
-
-bool TabHorizons::getSoilCodeChanged()
-{
-    return soilCodeChanged;
-}
-
-void TabHorizons::resetSoilCodeChanged()
-{
-    soilCodeChanged = false;
 }
 
 void TabHorizons::resetAll()
@@ -820,7 +807,6 @@ void TabHorizons::resetAll()
     tableModel->setRowCount(0);
     insertSoilElement = false;
     clearSelections();
-    resetSoilCodeChanged();
 }
 
 bool TabHorizons::getInsertSoilElement() const
