@@ -27,7 +27,6 @@
         void setInvalidTableModelRow(int horizonNum);
         void clearSelections();
         void tableDbVerticalHeaderClick(int index);
-        void editItem(int row, int column);
         void cellChanged(int row, int column);
         void cellClickedDb(int row, int column);
         void cellClickedModel(int row, int column);
