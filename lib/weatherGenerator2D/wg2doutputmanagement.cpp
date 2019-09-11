@@ -36,7 +36,7 @@ void weatherGenerator2D::initializeOutputData(int* nrDays)
             outputWeatherData[iStation].maxT = (double*)calloc(length, sizeof(double));
             outputWeatherData[iStation].minT = (double*)calloc(length, sizeof(double));
         //}
-        //if (isPrecWG2D)
+        if (isPrecWG2D)
             outputWeatherData[iStation].precipitation = (double*)calloc(length, sizeof(double));
     }
     // = (double*)calloc(lengthOfRandomSeries, sizeof(double));
@@ -104,7 +104,7 @@ void weatherGenerator2D::getWeatherGeneratorOutput()
                     //printf("%.2f\n",outputWeatherData[iStation].precipitation[counter]);
                     (counterSeason[iSeason])++;
                 }
-                else outputWeatherData[iStation].precipitation[counter] = NODATA;
+                //else outputWeatherData[iStation].precipitation[counter] = NODATA;
                 counter++;
             }
         }
@@ -121,12 +121,16 @@ void weatherGenerator2D::getWeatherGeneratorOutput()
         {
             inputTMin[i]= (float)(outputWeatherData[iStation].minT[counter]);
             inputTMax[i]= (float)(outputWeatherData[iStation].maxT[counter]);
-            inputPrec[i]= (float)(outputWeatherData[iStation].precipitation[counter]);
+            if (isPrecWG2D)
+                inputPrec[i]= (float)(outputWeatherData[iStation].precipitation[counter]);
+            else inputPrec[i]= 0;
             if (isLeapYear(outputWeatherData[iStation].yearSimulated[counter]) && outputWeatherData[iStation].monthSimulated[counter] == 2 && outputWeatherData[iStation].daySimulated[counter] == 28)
             {
                 inputTMin[++i]= (float)(outputWeatherData[iStation].minT[counter]);
                 inputTMax[++i]= (float)(outputWeatherData[iStation].maxT[counter]);
+                if (isPrecWG2D)
                 inputPrec[++i]= (float)(outputWeatherData[iStation].precipitation[counter]);
+                else inputPrec[i]= 0;
             }
             counter++;
         }

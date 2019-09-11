@@ -1354,9 +1354,9 @@ void weatherGenerator2D::multisiteTemperatureGeneration()
             //if ((j+1)%365 == 62)
                 //pressEnterToContinue();
         }
-        for (int j=0;j<365;j++)
+        /*for (int j=0;j<365;j++)
             printf("%d %f %f\n",j+1,averageTmin[j%365],averageTmax[j%365]);
-        pressEnterToContinue();
+        pressEnterToContinue();*/
         free(ksi[0]);
         free(ksi[1]);
         free(eps[0]);
