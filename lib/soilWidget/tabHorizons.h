@@ -37,6 +37,7 @@
         void resetAll();
         bool getInsertSoilElement() const;
         void setInsertSoilElement(bool value);
+        void updateGUI(soil::Crit3DSoil *soil);
 
     private:
         Crit3DSoilTable* tableDb;

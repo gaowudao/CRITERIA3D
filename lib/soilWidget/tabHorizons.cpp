@@ -59,7 +59,6 @@ void TabHorizons::insertSoilHorizons(soil::Crit3DSoil *soil, soil::Crit3DTexture
     {
         return;
     }
-    qDebug() << "insertSoilHorizons";
     resetAll();
 
     barHorizons.draw(soil);
@@ -670,8 +669,12 @@ void TabHorizons::cellChanged(int row, int column)
 
     tableDb->blockSignals(false);
     soilCodeChanged = true;
+
     if ( (depthsOk == true) && (checkHorizon == true))
     {
+        //update soil total depth
+        mySoil->totalDepth = (tableDb->item(tableDb->rowCount()-1, 1)->text().toDouble())/100;
+        emit horizonSelected(row);
         emit updateSignal();
     }
 
@@ -792,6 +795,8 @@ void TabHorizons::removeRowClicked()
     soilCodeChanged = true;
     if (depthsOk)
     {
+        //update soil total depth
+        mySoil->totalDepth = (tableDb->item(tableDb->rowCount()-1, 1)->text().toDouble())/100;
         emit updateSignal();
     }
 
@@ -838,6 +843,23 @@ void TabHorizons::widgetClicked(int index)
     else
     {
         clearSelections();
+    }
+
+}
+
+void TabHorizons::updateGUI(soil::Crit3DSoil *soil)
+{
+    if (soil == nullptr)
+    {
+        return;
+    }
+    qDebug() << "updateGUI";
+    barHorizons.clear();
+    barHorizons.draw(soil);
+
+    for (int i=0; i < barHorizons.barList.size(); i++)
+    {
+        connect(barHorizons.barList[i], SIGNAL(clicked(int)), this, SLOT(widgetClicked(int)));
     }
 
 }

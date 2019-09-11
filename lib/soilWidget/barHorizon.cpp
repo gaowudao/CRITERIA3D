@@ -160,6 +160,7 @@ void BarHorizon::setIndex(int value)
 
 BarHorizonList::BarHorizonList()
 {
+
     groupBox = new QGroupBox();
     groupBox->setMinimumWidth(90);
     groupBox->setTitle("Depth [cm]");
@@ -174,11 +175,13 @@ BarHorizonList::BarHorizonList()
     mainLayout->addLayout(depthLayout);
     mainLayout->addLayout(barLayout);
     groupBox->setLayout(mainLayout);
+
 }
 
 
 void BarHorizonList::draw(soil::Crit3DSoil *soil)
 {
+
     int totHeight = int(groupBox->height() * 0.9);
 
     for (unsigned int i = 0; i < soil->nrHorizons; i++)
@@ -242,6 +245,27 @@ void BarHorizonList::clear()
             delete item;
         }
     }
+    if ( barLayout != nullptr )
+    {
+        QLayoutItem* item;
+        while ( ( item = barLayout->takeAt( 0 ) ) != nullptr )
+        {
+            delete item->widget();
+            delete item;
+        }
+    }
+
+    /*
+    if ( mainLayout != nullptr )
+    {
+        QLayoutItem* item;
+        while ( ( item = mainLayout->takeAt( 0 ) ) != nullptr )
+        {
+            delete item->widget();
+            delete item;
+        }
+    }
+    */
 }
 
 
