@@ -456,6 +456,11 @@ void Crit3DSoilWidget::on_actionUseWaterRetentionData()
     fittingOptions->useWaterRetentionData = this->useWaterRetentionData->isChecked();
     setFittingMenu();
 
+    std::string errorString;
+    for (unsigned int i = 0; i < mySoil.nrHorizons; i++)
+    {
+        soil::setHorizon(&(mySoil.horizon[i]), textureClassList, fittingOptions, &errorString);
+    }
     updateAll();
 }
 
@@ -464,6 +469,11 @@ void Crit3DSoilWidget::on_actionAirEntry()
 {
     fittingOptions->airEntryFixed = this->airEntryFixed->isChecked();
 
+    std::string errorString;
+    for (unsigned int i = 0; i < mySoil.nrHorizons; i++)
+    {
+        soil::setHorizon(&(mySoil.horizon[i]), textureClassList, fittingOptions, &errorString);
+    }
     updateAll();
 }
 
@@ -472,6 +482,11 @@ void Crit3DSoilWidget::on_actionParameterRestriction()
 {
     fittingOptions->mRestriction = this->parameterRestriction->isChecked();
 
+    std::string errorString;
+    for (unsigned int i = 0; i < mySoil.nrHorizons; i++)
+    {
+        soil::setHorizon(&(mySoil.horizon[i]), textureClassList, fittingOptions, &errorString);
+    }
     updateAll();
 }
 
@@ -677,7 +692,7 @@ void Crit3DSoilWidget::tabChanged(int index)
 void Crit3DSoilWidget::updateAll()
 {
 
-    horizonsTab->updateGUI(&mySoil);
+    horizonsTab->updateGUI(&mySoil, fittingOptions);
     wrDataTab->insertData(&mySoil);
     wrCurveTab->insertElements(&mySoil);
     hydraConducCurveTab->insertElements(&mySoil);

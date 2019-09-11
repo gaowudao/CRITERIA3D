@@ -847,13 +847,14 @@ void TabHorizons::widgetClicked(int index)
 
 }
 
-void TabHorizons::updateGUI(soil::Crit3DSoil *soil)
+void TabHorizons::updateGUI(soil::Crit3DSoil *soil, soil::Crit3DFittingOptions* fittingOptions)
 {
     if (soil == nullptr)
     {
         return;
     }
-    qDebug() << "updateGUI";
+    myFittingOptions = fittingOptions;
+
     barHorizons.clear();
     barHorizons.draw(soil);
 

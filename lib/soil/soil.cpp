@@ -722,7 +722,6 @@ namespace soil
         return true;
     }
 
-
     bool fittingWaterRetentionCurve(Crit3DHorizon* horizon, Crit3DFittingOptions* fittingOptions)
     {
         if (! fittingOptions->useWaterRetentionData || horizon->dbData.waterRetention.size() == 0)
