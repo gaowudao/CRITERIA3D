@@ -847,20 +847,3 @@ void TabHorizons::widgetClicked(int index)
 
 }
 
-void TabHorizons::updateGUI(soil::Crit3DSoil *soil, soil::Crit3DFittingOptions* fittingOptions)
-{
-    if (soil == nullptr)
-    {
-        return;
-    }
-    myFittingOptions = fittingOptions;
-
-    barHorizons.clear();
-    barHorizons.draw(soil);
-
-    for (int i=0; i < barHorizons.barList.size(); i++)
-    {
-        connect(barHorizons.barList[i], SIGNAL(clicked(int)), this, SLOT(widgetClicked(int)));
-    }
-
-}

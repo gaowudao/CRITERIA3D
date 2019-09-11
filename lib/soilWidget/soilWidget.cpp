@@ -691,11 +691,9 @@ void Crit3DSoilWidget::tabChanged(int index)
 
 void Crit3DSoilWidget::updateAll()
 {
-
-    horizonsTab->updateGUI(&mySoil, fittingOptions);
+    horizonsTab->insertSoilHorizons(&mySoil, textureClassList, fittingOptions);
     wrDataTab->insertData(&mySoil);
     wrCurveTab->insertElements(&mySoil);
     hydraConducCurveTab->insertElements(&mySoil);
-
 }
 
