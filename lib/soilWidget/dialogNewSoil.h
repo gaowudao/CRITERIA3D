@@ -14,6 +14,7 @@ private:
     QLineEdit *idSoilValue;
     QLineEdit *codeSoilValue;
     QLineEdit *nameSoilValue;
+    QLineEdit *infoSoilValue;
 };
 
 #endif // DIALOGNEWSOIL_H

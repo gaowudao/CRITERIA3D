@@ -438,6 +438,40 @@ bool updateWaterRetentionData(QSqlDatabase* dbSoil, QString soilCode, soil::Crit
         return true;
 }
 
+bool insertSoilData(QSqlDatabase* dbSoil, int soilID, QString soilCode, QString soilName, QString soilInfo, QString *error)
+{
+
+    QSqlQuery qry(*dbSoil);
+    if (soilID == NODATA)
+    {
+        *error = "soilID missing";
+        return false;
+    }
+    if (soilCode.isEmpty())
+    {
+        *error = "soilCode missing";
+        return false;
+    }
+    if (soilName.isEmpty())
+    {
+        *error = "soilName missing";
+        return false;
+    }
+
+    qry.prepare( "INSERT INTO soils (id_soil, soil_code, name, info) VALUES (:id_soil, :soil_code, :name, :info)" );
+    qry.bindValue(":id_soil", soilID);
+    qry.bindValue(":soil_code", soilCode);
+    qry.bindValue(":name", soilName);
+    qry.bindValue(":info", soilInfo);
+
+    if( !qry.exec() )
+    {
+        *error = qry.lastError().text();
+        return false;
+    }
+
+    return true;
+}
 
 bool deleteSoilData(QSqlDatabase* dbSoil, QString soilCode, QString *error)
 {

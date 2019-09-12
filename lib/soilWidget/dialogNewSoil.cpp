@@ -16,12 +16,17 @@ DialogNewSoil::DialogNewSoil()
     QLabel *nameSoilLabel = new QLabel(tr("Enter soil name: "));
     nameSoilValue = new QLineEdit();
 
+    QLabel *infoSoilLabel = new QLabel(tr("Enter additional info (optional): "));
+    infoSoilValue = new QLineEdit();
+
     layoutSoil->addWidget(idSoilLabel, 0 , 0);
     layoutSoil->addWidget(idSoilValue, 0 , 1);
     layoutSoil->addWidget(codeSoilLabel, 1 , 0);
     layoutSoil->addWidget(codeSoilValue, 1 , 1);
     layoutSoil->addWidget(nameSoilLabel, 2 , 0);
     layoutSoil->addWidget(nameSoilValue, 2 , 1);
+    layoutSoil->addWidget(infoSoilLabel, 3 , 0);
+    layoutSoil->addWidget(infoSoilValue, 3 , 1);
 
     QDialogButtonBox buttonBox(QDialogButtonBox::Ok | QDialogButtonBox::Cancel);
 
