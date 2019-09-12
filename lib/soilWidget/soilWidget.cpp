@@ -438,6 +438,11 @@ void Crit3DSoilWidget::on_actionChooseSoil(QString soilCode)
 
 void Crit3DSoilWidget::on_actionNewSoil()
 {
+    if (mySoil.code.empty())
+    {
+        // TO DO New Db;
+        return;
+    }
     DialogNewSoil dialog;
     QString error;
     if (dialog.result() != QDialog::Accepted)
@@ -453,6 +458,8 @@ void Crit3DSoilWidget::on_actionNewSoil()
         if (insertSoilData(&dbSoil, id, code, name, info, &error))
         {
             qDebug() << "OK";
+            this->soilListComboBox.addItem(code);
+            soilListComboBox.setCurrentText(code);
         }
         else
         {
