@@ -1030,8 +1030,7 @@ void MainWindow::redrawMeteoGrid(visualizationType showType, bool showInterpolat
                     myProject.meteoGridDbHandler->meteoGrid()->fillCurrentDailyValue(time.date, variable);
                 else if (frequency == hourly)
                     myProject.meteoGridDbHandler->meteoGrid()->fillCurrentHourlyValue(time.date, time.getHour(), time.getMinutes(), variable);
-                else
-                    return;
+                else                    return;
 
                 myProject.meteoGridDbHandler->meteoGrid()->fillMeteoRaster();
             }

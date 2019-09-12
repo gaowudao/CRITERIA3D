@@ -31,6 +31,7 @@
 #include "soilWidget.h"
 #include "soilDbTools.h"
 #include "commonConstants.h"
+#include "dialogNewSoil.h"
 
 #include <math.h>
 #include <QSqlDatabase>
@@ -437,7 +438,7 @@ void Crit3DSoilWidget::on_actionChooseSoil(QString soilCode)
 
 void Crit3DSoilWidget::on_actionNewSoil()
 {
-    //TO DO
+    DialogNewSoil dialog;
 }
 
 

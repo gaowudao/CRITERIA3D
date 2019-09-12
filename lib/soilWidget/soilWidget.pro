@@ -40,7 +40,8 @@ SOURCES += \
     tabHydraulicConductivityCurve.cpp \
     tableDelegate.cpp \
     tableDelegateWaterRetention.cpp \
-    curvePanner.cpp
+    curvePanner.cpp \
+    dialogNewSoil.cpp
 
 HEADERS += \
     barHorizon.h \
@@ -55,7 +56,8 @@ HEADERS += \
     tableDelegate.h \
     tableDelegateWaterRetention.h \
     curvePanner.h \
-    tableWidgetItem.h
+    tableWidgetItem.h \
+    dialogNewSoil.h
 
 unix {
     target.path = /usr/lib
