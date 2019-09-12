@@ -10,6 +10,11 @@ class DialogNewSoil : public QDialog
 
 public:
     DialogNewSoil();
+    int getIdSoilValue();
+    QString getCodeSoilValue();
+    QString getNameSoilValue();
+    QString getInfoSoilValue();
+
 private:
     QLineEdit *idSoilValue;
     QLineEdit *codeSoilValue;

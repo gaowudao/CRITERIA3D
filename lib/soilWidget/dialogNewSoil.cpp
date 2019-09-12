@@ -1,4 +1,5 @@
 #include "dialogNewSoil.h"
+#include <QIntValidator>
 
 DialogNewSoil::DialogNewSoil()
 {
@@ -9,6 +10,9 @@ DialogNewSoil::DialogNewSoil()
 
     QLabel *idSoilLabel = new QLabel(tr("Enter soil ID (for the soil map): "));
     idSoilValue = new QLineEdit();
+
+    QIntValidator* validator = new QIntValidator();
+    idSoilValue->setValidator(validator);
 
     QLabel *codeSoilLabel = new QLabel(tr("Enter soil code (string without spaces): "));
     codeSoilValue = new QLineEdit();
@@ -43,4 +47,24 @@ DialogNewSoil::DialogNewSoil()
 
     show();
     exec();
+}
+
+int DialogNewSoil::getIdSoilValue()
+{
+    return idSoilValue->text().toInt();
+}
+
+QString DialogNewSoil::getCodeSoilValue()
+{
+    return codeSoilValue->text();
+}
+
+QString DialogNewSoil::getNameSoilValue()
+{
+    return nameSoilValue->text();
+}
+
+QString DialogNewSoil::getInfoSoilValue()
+{
+    return infoSoilValue->text();
 }
