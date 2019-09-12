@@ -477,6 +477,11 @@ void Crit3DSoilWidget::on_actionUseWaterRetentionData()
     fittingOptions->useWaterRetentionData = this->useWaterRetentionData->isChecked();
     setFittingMenu();
 
+    // nothing open
+    if (mySoil.code.empty())
+    {
+        return;
+    }
     std::string errorString;
     for (unsigned int i = 0; i < mySoil.nrHorizons; i++)
     {
@@ -489,6 +494,12 @@ void Crit3DSoilWidget::on_actionUseWaterRetentionData()
 void Crit3DSoilWidget::on_actionAirEntry()
 {
     fittingOptions->airEntryFixed = this->airEntryFixed->isChecked();
+
+    // nothing open
+    if (mySoil.code.empty())
+    {
+        return;
+    }
 
     std::string errorString;
     for (unsigned int i = 0; i < mySoil.nrHorizons; i++)
@@ -503,6 +514,11 @@ void Crit3DSoilWidget::on_actionParameterRestriction()
 {
     fittingOptions->mRestriction = this->parameterRestriction->isChecked();
 
+    // nothing open
+    if (mySoil.code.empty())
+    {
+        return;
+    }
     std::string errorString;
     for (unsigned int i = 0; i < mySoil.nrHorizons; i++)
     {
