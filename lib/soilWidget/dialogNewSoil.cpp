@@ -11,8 +11,8 @@ DialogNewSoil::DialogNewSoil()
     QLabel *idSoilLabel = new QLabel(tr("Enter soil ID (for the soil map): "));
     idSoilValue = new QLineEdit();
 
-    QIntValidator* validator = new QIntValidator();
-    idSoilValue->setValidator(validator);
+    QIntValidator* validatorID = new QIntValidator();
+    idSoilValue->setValidator(validatorID);
 
     QLabel *codeSoilLabel = new QLabel(tr("Enter soil code (string without spaces): "));
     codeSoilValue = new QLineEdit();
@@ -67,4 +67,41 @@ QString DialogNewSoil::getNameSoilValue()
 QString DialogNewSoil::getInfoSoilValue()
 {
     return infoSoilValue->text();
+}
+
+void DialogNewSoil::done(bool res)
+{
+    if(res)  // ok was pressed
+    {
+        if (idSoilValue->text().isEmpty())
+        {
+            QMessageBox::information(nullptr, "Error!", "Enter soil ID");
+            return;
+        }
+        if (codeSoilValue->text().isEmpty())
+        {
+            QMessageBox::information(nullptr, "Error!", "Enter soil Code");
+            return;
+        }
+        if (nameSoilValue->text().isEmpty())
+        {
+            QMessageBox::information(nullptr, "Error!", "Enter soil Name");
+            return;
+        }
+        else
+        {
+            // remove whiteSpaces
+            QString code = codeSoilValue->text();
+            code = code.simplified();
+            code.replace(" ","");
+            codeSoilValue->setText(code);
+            QDialog::done(QDialog::Accepted);
+            return;
+        }
+    }
+    else    // cancel, close or exc was pressed
+    {
+        QDialog::done(QDialog::Rejected);
+        return;
+    }
 }

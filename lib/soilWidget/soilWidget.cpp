@@ -439,6 +439,26 @@ void Crit3DSoilWidget::on_actionChooseSoil(QString soilCode)
 void Crit3DSoilWidget::on_actionNewSoil()
 {
     DialogNewSoil dialog;
+    QString error;
+    if (dialog.result() != QDialog::Accepted)
+    {
+        return;
+    }
+    else
+    {
+        int id = dialog.getIdSoilValue();
+        QString code = dialog.getCodeSoilValue();
+        QString name = dialog.getNameSoilValue();
+        QString info = dialog.getInfoSoilValue();
+        if (insertSoilData(&dbSoil, id, code, name, info, &error))
+        {
+            qDebug() << "OK";
+        }
+        else
+        {
+            qDebug() << "Error: " << error;
+        }
+    }
 }
 
 

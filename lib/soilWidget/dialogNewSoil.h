@@ -14,6 +14,7 @@ public:
     QString getCodeSoilValue();
     QString getNameSoilValue();
     QString getInfoSoilValue();
+    void done(bool res);
 
 private:
     QLineEdit *idSoilValue;
