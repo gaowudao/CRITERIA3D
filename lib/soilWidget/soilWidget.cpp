@@ -226,7 +226,7 @@ Crit3DSoilWidget::Crit3DSoilWidget()
     connect(hydraConducCurveTab, SIGNAL(horizonSelected(int)), this, SLOT(setInfoTextural(int)));
 
     connect(horizonsTab, SIGNAL(updateSignal()), this, SLOT(updateAll()));
-    connect(wrDataTab, SIGNAL(updateSignal()), this, SLOT(updateAll()));
+    connect(wrDataTab, SIGNAL(updateSignal()), this, SLOT(updateAllByTabWR()));
     connect(tabWidget, &QTabWidget::currentChanged, [=](int index){ this->tabChanged(index); });
 
     fileMenu->addAction(openSoilDB);
@@ -796,6 +796,14 @@ void Crit3DSoilWidget::updateAll()
     changed = true;
     horizonsTab->insertSoilHorizons(&mySoil, textureClassList, fittingOptions);
     wrDataTab->insertData(&mySoil);
+    wrCurveTab->insertElements(&mySoil);
+    hydraConducCurveTab->insertElements(&mySoil);
+}
+
+void Crit3DSoilWidget::updateAllByTabWR()
+{
+    changed = true;
+    horizonsTab->insertSoilHorizons(&mySoil, textureClassList, fittingOptions);
     wrCurveTab->insertElements(&mySoil);
     hydraConducCurveTab->insertElements(&mySoil);
 }

@@ -16,7 +16,7 @@ TabWaterRetentionData::TabWaterRetentionData()
     tableWaterRetention->setHorizontalHeaderLabels(tableHeader);
     tableWaterRetention->setSelectionBehavior(QAbstractItemView::SelectRows);
     tableWaterRetention->resizeColumnsToContents();
-    tableWaterRetention->setSelectionMode(QAbstractItemView::SingleSelection);
+    tableWaterRetention->setSelectionMode(QAbstractItemView::ContiguousSelection);
     tableWaterRetention->setStyleSheet("QTableView::item:selected { color:black;  border: 3px solid black}");
     tableWaterRetention->setShowGrid(true);
     tableWaterRetention->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
@@ -82,7 +82,6 @@ void TabWaterRetentionData::insertData(soil::Crit3DSoil *soil)
 void TabWaterRetentionData::tableVerticalHeaderClick(int index)
 {
     tableWaterRetention->setSelectionBehavior(QAbstractItemView::SelectRows);
-
     tableWaterRetention->selectRow(index);
     tableWaterRetention->horizontalHeader()->setHighlightSections(false);
     deleteRow->setEnabled(true);
@@ -211,6 +210,7 @@ void TabWaterRetentionData::cellClicked(int row, int column)
 void TabWaterRetentionData::cellChanged(int row, int column)
 {
 
+    tableWaterRetention->setItemSelected(tableWaterRetention->item(row,column), true);
     if (tableWaterRetention->itemAt(row,column) == nullptr)
     {
         return;
@@ -270,18 +270,17 @@ void TabWaterRetentionData::cellChanged(int row, int column)
         }
 
     }
+
     tableWaterRetention->sortByColumn(0, Qt::AscendingOrder);
     sort(mySoil->horizon[currentHorizon].dbData.waterRetention.begin(), mySoil->horizon[currentHorizon].dbData.waterRetention.end(), soil::sortWaterPotential);
 
     tableWaterRetention->update();
     tableWaterRetention->blockSignals(false);
-
     if (!horizonChanged.contains(currentHorizon))
     {
         horizonChanged << currentHorizon;
     }
     emit updateSignal();
-
 
 }
 
