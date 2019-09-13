@@ -150,9 +150,12 @@ namespace soil
     {
         this->cleanSoil();
         this->code = soilCode;
-        this->nrHorizons = unsigned(nrHorizons);
-        this->horizon.resize(this->nrHorizons);
-        this->totalDepth = 0;
+        if (nrHorizons > 0)
+        {
+            this->nrHorizons = unsigned(nrHorizons);
+            this->horizon.resize(this->nrHorizons);
+            this->totalDepth = 0;
+        }
     }
 
     void Crit3DSoil::addHorizon(int nHorizon, Crit3DHorizon* newHorizon)

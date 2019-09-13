@@ -71,6 +71,7 @@ void TabHydraulicConductivityCurve::resetAll()
     }
 
     myPlot->detachItems( QwtPlotItem::Rtti_PlotCurve );
+    myPlot->replot();
     fillElement = false;
 
 }

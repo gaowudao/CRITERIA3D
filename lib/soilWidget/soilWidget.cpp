@@ -723,18 +723,33 @@ void Crit3DSoilWidget::tabChanged(int index)
     {
         if (!horizonsTab->getInsertSoilElement())
         {
-            horizonsTab->insertSoilHorizons(&mySoil, textureClassList, fittingOptions);
-            addHorizon->setEnabled(true);
-            deleteHorizon->setEnabled(true);
+            if (mySoil.nrHorizons > 0)
+            {
+                horizonsTab->insertSoilHorizons(&mySoil, textureClassList, fittingOptions);
+                addHorizon->setEnabled(true);
+                deleteHorizon->setEnabled(true);
+            }
+            else
+            {
+                horizonsTab->resetAll();
+            }
+
         }
     }
     else if (index == 1) // tab water retention data
     {
         if (!wrDataTab->getFillData())
         {
-            wrDataTab->insertData(&mySoil);
-            addHorizon->setEnabled(false);
-            deleteHorizon->setEnabled(false);
+            if (mySoil.nrHorizons > 0)
+            {
+                wrDataTab->insertData(&mySoil);
+                addHorizon->setEnabled(false);
+                deleteHorizon->setEnabled(false);
+            }
+            else
+            {
+                wrDataTab->resetAll();
+            }
         }
 
     }
@@ -742,7 +757,14 @@ void Crit3DSoilWidget::tabChanged(int index)
     {
         if (!wrCurveTab->getFillElement())
         {
-            wrCurveTab->insertElements(&mySoil);
+            if (mySoil.nrHorizons > 0)
+            {
+                wrCurveTab->insertElements(&mySoil);
+            }
+            else
+            {
+                wrCurveTab->resetAll();
+            }
         }
 
     }
@@ -750,7 +772,14 @@ void Crit3DSoilWidget::tabChanged(int index)
     {
         if (!hydraConducCurveTab->getFillElement())
         {
-            hydraConducCurveTab->insertElements(&mySoil);
+            if (mySoil.nrHorizons > 0)
+            {
+                hydraConducCurveTab->insertElements(&mySoil);
+            }
+            else
+            {
+                hydraConducCurveTab->resetAll();
+            }
         }
 
     }

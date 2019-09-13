@@ -187,6 +187,7 @@ bool loadSoilData(QSqlDatabase* dbSoil, QString soilCode, soil::Crit3DSoil* mySo
         else
         {
             *error = "Empty soil:" + soilCode;
+            mySoil->initialize(soilCode.toStdString(), 0);
         }
         return false;
     }

@@ -78,6 +78,7 @@ void TabWaterRetentionCurve::resetAll()
     }
 
     myPlot->detachItems( QwtPlotItem::Rtti_PlotCurve );
+    myPlot->replot();
     fillElement = false;
 
 }
@@ -96,8 +97,11 @@ void TabWaterRetentionCurve::insertElements(soil::Crit3DSoil *soil)
 {
     // rescale
     myPlot->setAxisScale(QwtPlot::xBottom, xMin, xMax);
-
-    if (soil == nullptr) return;
+    qDebug() << "insertElements";
+    if (soil == nullptr)
+    {
+        return;
+    }
 
     resetAll();
 
