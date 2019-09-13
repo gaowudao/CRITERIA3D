@@ -389,7 +389,14 @@ void Crit3DSoilWidget::on_actionChooseSoil(QString soilCode)
 
     if (! loadSoil(&dbSoil, soilCode, &mySoil, textureClassList, fittingOptions, &error))
     {
-        QMessageBox::critical(nullptr, "Error!", error);
+        if (error.contains("Empty"))
+        {
+            QMessageBox::information(nullptr, "Warning", error);
+        }
+        else
+        {
+            QMessageBox::critical(nullptr, "Error!", error);
+        }
         return;
     }
     savedSoil = mySoil;
@@ -440,7 +447,8 @@ void Crit3DSoilWidget::on_actionNewSoil()
 {
     if (mySoil.code.empty())
     {
-        // TO DO New Db;
+        QString msg = "Open a Db Soil";
+        QMessageBox::information(nullptr, "Warning", msg);
         return;
     }
     DialogNewSoil dialog;

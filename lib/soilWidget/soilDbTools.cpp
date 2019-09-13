@@ -181,9 +181,13 @@ bool loadSoilData(QSqlDatabase* dbSoil, QString soilCode, soil::Crit3DSoil* mySo
     if (! query.isValid())
     {
         if (query.lastError().number() > 0)
+        {
             *error = "dbSoil error: " + query.lastError().text();
+        }
         else
-            *error = "Missing soil:" + soilCode;
+        {
+            *error = "Empty soil:" + soilCode;
+        }
         return false;
     }
 
