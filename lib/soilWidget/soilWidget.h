@@ -86,6 +86,7 @@
             void on_actionDeleteHorizon();
             void on_actionRestoreData();
             void tabChanged(int index);
+            void cleanInfoGroup();
 
             private slots:
             void setInfoTextural(int);

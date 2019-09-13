@@ -330,6 +330,20 @@ void Crit3DSoilWidget::on_actionOpenSoilDB()
     wrDataTab->resetHorizonChanged();
 }
 
+void Crit3DSoilWidget::cleanInfoGroup()
+{
+    soilName = QString::fromStdString(mySoil.name);
+    satValue->clear();
+    fcValue->clear();
+    wpValue->clear();
+    awValue->clear();
+    potFCValue->clear();
+
+    infoGroup->setVisible(true);
+    infoGroup->setTitle(soilName);
+    soilCodeValue->setText(QString::fromStdString(mySoil.code));
+}
+
 
 void Crit3DSoilWidget::on_actionChooseSoil(QString soilCode)
 {
@@ -396,22 +410,13 @@ void Crit3DSoilWidget::on_actionChooseSoil(QString soilCode)
         else
         {
             QMessageBox::critical(nullptr, "Error!", error);
+            return;
         }
-        return;
+
     }
     savedSoil = mySoil;
-
-    soilName = QString::fromStdString(mySoil.name);
-    satValue->clear();
-    fcValue->clear();
-    wpValue->clear();
-    awValue->clear();
-    potFCValue->clear();
-
+    cleanInfoGroup();
     restoreData->setEnabled(true);
-    infoGroup->setVisible(true);
-    infoGroup->setTitle(soilName);
-    soilCodeValue->setText(QString::fromStdString(mySoil.code));
 
     // circle inside triangle
     for (unsigned int i = 0; i < mySoil.nrHorizons; i++)
@@ -465,7 +470,6 @@ void Crit3DSoilWidget::on_actionNewSoil()
         QString info = dialog.getInfoSoilValue();
         if (insertSoilData(&dbSoil, id, code, name, info, &error))
         {
-            qDebug() << "OK";
             this->soilListComboBox.addItem(code);
             soilListComboBox.setCurrentText(code);
         }
@@ -732,6 +736,7 @@ void Crit3DSoilWidget::tabChanged(int index)
             else
             {
                 horizonsTab->resetAll();
+                horizonsTab->addRowClicked();
             }
 
         }

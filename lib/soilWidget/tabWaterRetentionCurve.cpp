@@ -97,7 +97,6 @@ void TabWaterRetentionCurve::insertElements(soil::Crit3DSoil *soil)
 {
     // rescale
     myPlot->setAxisScale(QwtPlot::xBottom, xMin, xMax);
-    qDebug() << "insertElements";
     if (soil == nullptr)
     {
         return;
@@ -106,7 +105,6 @@ void TabWaterRetentionCurve::insertElements(soil::Crit3DSoil *soil)
     resetAll();
 
     barHorizons.draw(soil);
-
     fillElement = true;
     mySoil = soil;
     QVector<double> xVector;

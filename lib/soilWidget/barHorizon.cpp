@@ -1,5 +1,6 @@
 #include "barHorizon.h"
 #include "soil.h"
+#include "commonConstants.h"
 #include <qdebug.h>
 
 BarHorizon::BarHorizon(QWidget *parent)
@@ -186,7 +187,13 @@ void BarHorizonList::draw(soil::Crit3DSoil *soil)
 
     for (unsigned int i = 0; i < soil->nrHorizons; i++)
     {
-        int length = int(totHeight * (soil->horizon[i].lowerDepth - soil->horizon[i].upperDepth) / soil->totalDepth);
+
+        int length = 0;
+        if (soil->totalDepth != 0)
+        {
+            length = int(totHeight * (soil->horizon[i].lowerDepth - soil->horizon[i].upperDepth) / soil->totalDepth);
+        }
+
         BarHorizon* newBar = new BarHorizon();
         newBar->setIndex(signed(i));
         newBar->setFixedWidth(28);
@@ -200,7 +207,11 @@ void BarHorizonList::draw(soil::Crit3DSoil *soil)
         QFont font = depthLabel->font();
         font.setPointSize(8);
         depthLabel->setFont(font);
-        depthLabel->setText(QString::number( (soil->horizon[i].upperDepth*100) ));
+        if (soil->horizon[i].upperDepth != NODATA)
+        {
+            depthLabel->setText(QString::number( (soil->horizon[i].upperDepth*100) ));
+        }
+
         depthLabel->setFixedWidth(20);
         depthLabel->setFixedHeight(10);
 
@@ -215,7 +226,10 @@ void BarHorizonList::draw(soil::Crit3DSoil *soil)
             QFont font = lastLabel->font();
             font.setPointSize(8);
             lastLabel->setFont(font);
-            lastLabel->setText(QString::number( (soil->horizon[i].lowerDepth*100) ));
+            if (soil->horizon[i].lowerDepth != NODATA)
+            {
+                lastLabel->setText(QString::number( (soil->horizon[i].lowerDepth*100) ));
+            }
             lastLabel->setFixedWidth(20);
             lastLabel->setFixedHeight(10);
 
@@ -224,6 +238,7 @@ void BarHorizonList::draw(soil::Crit3DSoil *soil)
         }
 
     }
+
 }
 
 
@@ -254,18 +269,6 @@ void BarHorizonList::clear()
             delete item;
         }
     }
-
-    /*
-    if ( mainLayout != nullptr )
-    {
-        QLayoutItem* item;
-        while ( ( item = mainLayout->takeAt( 0 ) ) != nullptr )
-        {
-            delete item->widget();
-            delete item;
-        }
-    }
-    */
 }
 
 
