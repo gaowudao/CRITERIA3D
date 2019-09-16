@@ -41,7 +41,8 @@ SOURCES += \
     tableDelegate.cpp \
     tableDelegateWaterRetention.cpp \
     curvePanner.cpp \
-    dialogNewSoil.cpp
+    dialogNewSoil.cpp \
+    tableWaterRetention.cpp
 
 HEADERS += \
     barHorizon.h \
@@ -57,7 +58,8 @@ HEADERS += \
     tableDelegateWaterRetention.h \
     curvePanner.h \
     tableWidgetItem.h \
-    dialogNewSoil.h
+    dialogNewSoil.h \
+    tableWaterRetention.h
 
 unix {
     target.path = /usr/lib

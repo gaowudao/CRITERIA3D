@@ -1,5 +1,6 @@
 #include "tabWaterRetentionData.h"
 #include "tableDelegateWaterRetention.h"
+#include "tableWaterRetention.h"
 #include "tableWidgetItem.h"
 #include "commonConstants.h"
 #include "soil.h"
@@ -9,7 +10,7 @@ TabWaterRetentionData::TabWaterRetentionData()
 {
     QHBoxLayout* mainLayout = new QHBoxLayout;
     QVBoxLayout* tableLayout = new QVBoxLayout;
-    tableWaterRetention = new QTableWidget();
+    tableWaterRetention = new TableWaterRetention();
     tableWaterRetention->setColumnCount(2);
     QStringList tableHeader;
     tableHeader << "Water potential [kPa]" << "Water content [m3 m-3]";
