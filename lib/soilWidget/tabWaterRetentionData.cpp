@@ -148,6 +148,7 @@ void TabWaterRetentionData::addRowClicked()
 
     tableWaterRetention->blockSignals(false);
     tableWaterRetention->setSortingEnabled(true);
+    emit updateSignal();
 
 }
 
