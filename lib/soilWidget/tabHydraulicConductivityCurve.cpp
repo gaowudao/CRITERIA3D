@@ -160,13 +160,15 @@ void TabHydraulicConductivityCurve::widgetClicked(int index)
         // select the right curve
         pick->setSelectedCurveIndex(index);
         pick->highlightCurve(true);
+        emit horizonSelected(index);
     }
     else
     {
         pick->highlightCurve(false);
         pick->setSelectedCurveIndex(-1);
+        emit horizonSelected(-1);
     }
-    emit horizonSelected(index);
+
 
 }
 

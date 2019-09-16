@@ -321,6 +321,7 @@ void TabWaterRetentionData::widgetClicked(int index)
         resetTable();
         addRow->setEnabled(false);
         currentHorizon = -1;
+        emit horizonSelected(-1);
         return;
     }
 
