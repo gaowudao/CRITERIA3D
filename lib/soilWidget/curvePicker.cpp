@@ -44,13 +44,18 @@ void Crit3DCurvePicker::slotSelected( const QPointF &pos)
     }
 
     double tolerance;
-    if (pos.x() < 10000)
+
+    const QwtScaleMap map = qwtPlot->canvasMap(2);
+    const QwtScaleDiv *scaleDiv;
+    scaleDiv = &qwtPlot->axisScaleDiv(2);
+
+    if (pos.x() < scaleDiv->upperBound())
     {
         tolerance = pos.x()/10;
     }
     else
     {
-        tolerance = pos.x()/100;
+        tolerance = pos.x()/1000;
     }
     if ( curveFound && minDist < tolerance) // empiric tolerance
     {
