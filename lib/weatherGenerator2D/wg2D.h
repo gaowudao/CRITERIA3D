@@ -181,6 +181,7 @@
         TmultiOccurrenceTemperature* multiOccurrenceTemperature;
         double** maxTGenerated;
         double** minTGenerated;
+        double** occurrencePrecGenerated;
 
         ToutputWeatherData *outputWeatherData;
         //int contatoreGammaUguale = 0;

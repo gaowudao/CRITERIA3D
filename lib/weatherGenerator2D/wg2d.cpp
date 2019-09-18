@@ -262,6 +262,7 @@ void weatherGenerator2D::commonModuleCompute()
     // step 3 of precipitation WG2D
     weatherGenerator2D::precipitationMultisiteOccurrenceGeneration(); // generation of a sequence of dry/wet days after statistics and random numbers
     //printf("fine modulo comune\n");
+
 }
 
 void weatherGenerator2D::temperatureCompute()
@@ -278,6 +279,7 @@ void weatherGenerator2D::temperatureCompute()
     printf("modulo temperature fase 7/9\n");
     // step 4 of temperature WG2D
     weatherGenerator2D::multisiteTemperatureGeneration();
+    if (!isPrecWG2D) printf("step 8/9 e 9/9 saltati\n");
 }
 
 void weatherGenerator2D::precipitationCompute()

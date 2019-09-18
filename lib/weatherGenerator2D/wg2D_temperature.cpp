@@ -1168,14 +1168,17 @@ void weatherGenerator2D::initializeTemperaturesOutput(int length)
 {
     maxTGenerated = (double **) calloc(length, sizeof(double *));
     minTGenerated = (double **) calloc(length, sizeof(double *));
+    occurrencePrecGenerated = (double **) calloc(length, sizeof(double *));
     for (int i=0;i<length;i++)
     {
         maxTGenerated[i] = (double *) calloc(nrStations, sizeof(double));
         minTGenerated[i] = (double *) calloc(nrStations, sizeof(double));
+        occurrencePrecGenerated[i] = (double *) calloc(nrStations, sizeof(double));
         for(int j=0;j<nrStations;j++)
         {
             maxTGenerated[i][j] = NODATA;
             minTGenerated[i][j] = NODATA;
+            occurrencePrecGenerated[i][j] = NODATA;
         }
 
     }
@@ -1222,6 +1225,12 @@ void weatherGenerator2D::multisiteTemperatureGeneration()
             counter++;
         }
     }
+    //pressEnterToContinue();
+    /*for (int k=0; k<lengthOfRandomSeries; k++)
+    {
+      printf("k %d  %f\n",k,multiOccurrenceTemperature[k].occurrence_simulated[0]);
+    }
+    pressEnterToContinue(); */
     weatherGenerator2D::initializeTemperaturesOutput(lengthOfRandomSeries);
     double* X = (double*)calloc(lengthOfRandomSeries, sizeof(double));
     double** averageT = (double**)calloc(4, sizeof(double*));
@@ -1348,12 +1357,15 @@ void weatherGenerator2D::multisiteTemperatureGeneration()
         {
             maxTGenerated[j][i] = Xp[0][j];
             minTGenerated[j][i] = Xp[1][j];
+            occurrencePrecGenerated[j][i] = X[j];
+            //printf("%d %.1f  %.1f %.f\n",(j+1)%365,maxTGenerated[j][i],minTGenerated[j][i],occurrencePrecGenerated[j][i]);
             //printf("%d %.1f  %.1f %.f\n",(j+1)%365,maxTGenerated[j][i],minTGenerated[j][i],X[j]);
             averageTmax[j%365] += maxTGenerated[j][i]/parametersModel.yearOfSimulation;
             averageTmin[j%365] += minTGenerated[j][i]/parametersModel.yearOfSimulation;
             //if ((j+1)%365 == 62)
                 //pressEnterToContinue();
         }
+        //pressEnterToContinue();
         /*for (int j=0;j<365;j++)
             printf("%d %f %f\n",j+1,averageTmin[j%365],averageTmax[j%365]);
         pressEnterToContinue();*/
