@@ -106,7 +106,7 @@ void weatherGenerator2D::getWeatherGeneratorOutput()
                 }
                 else
                 {
-                    outputWeatherData[iStation].precipitation[counter] = occurrencePrecGenerated[counter][iStation];
+                    outputWeatherData[iStation].precipitation[counter] = occurrencePrecGenerated[counter][iStation] + 0.1;
                 }
                 counter++;
             }

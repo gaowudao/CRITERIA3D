@@ -11,10 +11,8 @@
 #include "eispack.h"
 #include "gammaFunction.h"
 
-
-void weatherGenerator2D::initializePrecipitationInternalArrays()
+void weatherGenerator2D::initializeBaseWeatherVariables()
 {
-
     month = (int *)calloc(12, sizeof(int));
     for (int i=0; i<12;i++) month[i] = NODATA;
     lengthMonth = (int *)calloc(12, sizeof(int));
@@ -58,11 +56,62 @@ void weatherGenerator2D::initializePrecipitationInternalArrays()
 
 
 
-    lengthSeason[0] = lengthMonth[11]+lengthMonth[0]+lengthMonth[1];
-    lengthSeason[1] = lengthMonth[2]+lengthMonth[3]+lengthMonth[4];
-    lengthSeason[2] = lengthMonth[5]+lengthMonth[6]+lengthMonth[7];
-    lengthSeason[3] = lengthMonth[8]+lengthMonth[9]+lengthMonth[10];
+    lengthSeason[0] = lengthMonth[11]+lengthMonth[0]+lengthMonth[1]; // DJF
+    lengthSeason[1] = lengthMonth[2]+lengthMonth[3]+lengthMonth[4];  // MAM
+    lengthSeason[2] = lengthMonth[5]+lengthMonth[6]+lengthMonth[7];  // JJA
+    lengthSeason[3] = lengthMonth[8]+lengthMonth[9]+lengthMonth[10]; // SON
+}
+void weatherGenerator2D::initializePrecipitationInternalArrays()
+{
+    /*
+    month = (int *)calloc(12, sizeof(int));
+    for (int i=0; i<12;i++) month[i] = NODATA;
+    lengthMonth = (int *)calloc(12, sizeof(int));
+    for (int i=0; i<12;i++) lengthMonth[i] = NODATA;
+    int monthNumber = 0 ;
+    lengthMonth[monthNumber] = 31;
+    month[monthNumber] = monthNumber + 1;
+    monthNumber++;
+    month[monthNumber] = monthNumber + 1;
+    lengthMonth[monthNumber] = 28;
+    monthNumber++;
+    month[monthNumber] = monthNumber + 1;
+    lengthMonth[monthNumber] = 31;
+    monthNumber++;
+    month[monthNumber] = monthNumber + 1;
+    lengthMonth[monthNumber] = 30;
+    monthNumber++;
+    month[monthNumber] = monthNumber + 1;
+    lengthMonth[monthNumber] = 31;
+    monthNumber++;
+    month[monthNumber] = monthNumber + 1;;
+    lengthMonth[monthNumber] = 30;
+    monthNumber++;
+    month[monthNumber] = monthNumber + 1;;
+    lengthMonth[monthNumber] = 31;
+    monthNumber++;
+    month[monthNumber] = monthNumber + 1;;
+    lengthMonth[monthNumber] = 31;
+    monthNumber++;
+    month[monthNumber] = monthNumber + 1;
+    lengthMonth[monthNumber] = 30;
+    monthNumber++;
+    month[monthNumber] = monthNumber + 1;
+    lengthMonth[monthNumber] = 31;
+    monthNumber++;
+    month[monthNumber] = monthNumber + 1;
+    lengthMonth[monthNumber] = 30;
+    monthNumber++;
+    month[monthNumber] = monthNumber + 1;
+    lengthMonth[monthNumber] = 31;
 
+
+
+    lengthSeason[0] = lengthMonth[11]+lengthMonth[0]+lengthMonth[1]; // DJF
+    lengthSeason[1] = lengthMonth[2]+lengthMonth[3]+lengthMonth[4];  // MAM
+    lengthSeason[2] = lengthMonth[5]+lengthMonth[6]+lengthMonth[7];  // JJA
+    lengthSeason[3] = lengthMonth[8]+lengthMonth[9]+lengthMonth[10]; // SON
+    */
 
 
     // create the seasonal correlation matrices

@@ -207,11 +207,11 @@ void weatherGenerator2D::initializeParameters(float thresholdPrecipitation, int 
     isPrecWG2D = computePrecWG2D;
     isTempWG2D = computeTempWG2D;
     // default parameters
-    if (thresholdPrecipitation == NODATA) parametersModel.precipitationThreshold = 1.; //1mm default
-    else parametersModel.precipitationThreshold = thresholdPrecipitation;
-    if (simulatedYears == NODATA) parametersModel.yearOfSimulation = 30;
+    if (fabs(double(thresholdPrecipitation) - NODATA) < EPSILON) parametersModel.precipitationThreshold = 1.; //1mm default
+    else parametersModel.precipitationThreshold = double(thresholdPrecipitation);
+    if (fabs(simulatedYears - NODATA) < EPSILON) parametersModel.yearOfSimulation = 30;
     else parametersModel.yearOfSimulation = simulatedYears;
-    if (distributionType == NODATA) parametersModel.distributionPrecipitation = 2; //Select a distribution to generate daily precipitation amount,1: Multi-exponential or 2: Multi-gamma
+    if (fabs(distributionType - NODATA) < EPSILON) parametersModel.distributionPrecipitation = 2; //Select a distribution to generate daily precipitation amount,1: Multi-exponential or 2: Multi-gamma
     else parametersModel.distributionPrecipitation = distributionType;
 }
 
@@ -250,8 +250,8 @@ void weatherGenerator2D::computeWeatherGenerator2D()
 void weatherGenerator2D::commonModuleCompute()
 {
     // step 0 of precipitation WG2D initialization of variables
-    weatherGenerator2D::initializePrecipitationInternalArrays();
-    weatherGenerator2D::initializePrecipitationOutputs(lengthSeason);
+        weatherGenerator2D::initializeBaseWeatherVariables();
+
     // step 1 of precipitation WG2D
     printf("modulo comune fase 1/9 \n");
     weatherGenerator2D::precipitationP00P10(); // it computes the monthly probabilities p00 and p10
@@ -268,30 +268,32 @@ void weatherGenerator2D::commonModuleCompute()
 void weatherGenerator2D::temperatureCompute()
 {
     // step 1 of temperature WG2D
-    printf("modulo temperature fase 4/9\n");
+    printf("module temperature step 4/9\n");
     weatherGenerator2D::computeTemperatureParameters();
-    printf("modulo temperature fase 5/9\n");
+    printf("module temperature step 5/9\n");
     // step 2 of temperature WG2D
     weatherGenerator2D::temperaturesCorrelationMatrices();
-    printf("modulo temperature fase 6/9\n");
+    printf("module temperature step 6/9\n");
     // step 3 of temperature WG2D
     weatherGenerator2D::multisiteRandomNumbersTemperature();
-    printf("modulo temperature fase 7/9\n");
+    printf("module temperature step 7/9\n");
     // step 4 of temperature WG2D
     weatherGenerator2D::multisiteTemperatureGeneration();
-    if (!isPrecWG2D) printf("step 8/9 e 9/9 saltati\n");
+    if (!isPrecWG2D) printf("step 8/9 & 9/9 not computed\n");
 }
 
 void weatherGenerator2D::precipitationCompute()
 {
 
+    weatherGenerator2D::initializePrecipitationInternalArrays();
+    weatherGenerator2D::initializePrecipitationOutputs(lengthSeason);
     // step 4 of precipitation WG2D
-    printf("modulo precipitazione fase 8/9 \n");
+    printf("module precipitation step 8/9 \n");
     weatherGenerator2D::precipitationMultiDistributionParameterization(); // seasonal amounts distribution
-    printf("modulo precipitazione fase 9/9\n");
+    printf("module precipitation step 9/9\n");
     // step 5 of precipitation WG2D
     weatherGenerator2D::precipitationMultisiteAmountsGeneration(); // generation of synthetic series
-    printf("fine modulo precipitazione\n");
+    printf("end precipitation module\n");
 }
 
 
@@ -632,7 +634,16 @@ void weatherGenerator2D::precipitationMultisiteOccurrenceGeneration()
     free(matrixOccurrence);
     free(normalizedTransitionProbability);
 
-
+    // free memory
+    for (int j=0;j<12;j++)
+    {
+        for (int i=0;i<nrStations;i++)
+        {
+            free(correlationMatrix[j].amount[i]);
+            free(correlationMatrix[j].occurrence[i]);
+        }
+    }
+    free(correlationMatrix);
 }
 
 void weatherGenerator2D::spatialIterationOccurrence(double ** M, double** K,double** occurrences, double** matrixOccurrence, double** normalizedMatrixRandom,double ** transitionNormal,int lengthSeries)

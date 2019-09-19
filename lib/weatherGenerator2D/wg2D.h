@@ -199,6 +199,7 @@
         void spatialIterationOccurrence(double ** M, double **K, double **occurrences, double** matrixOccurrence, double** normalizedMatrixRandom, double **transitionNormal, int lengthSeries);
         void precipitationMultiDistributionParameterization();
         void precipitationMultisiteAmountsGeneration();
+        void initializeBaseWeatherVariables();
         void initializeOccurrenceIndex();
         void initializePrecipitationOutputs(int lengthSeason[]);
         void initializePrecipitationInternalArrays();
