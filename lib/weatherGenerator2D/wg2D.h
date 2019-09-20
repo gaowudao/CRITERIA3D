@@ -148,7 +148,7 @@
         int nrDataWithout29February;
         int nrStations;
         TparametersModel parametersModel;
-        int *month,*lengthMonth,*beginMonth;
+        int *month,*lengthMonth;
         int lengthSeason[4];
         int numberObservedDJF,numberObservedMAM,numberObservedJJA,numberObservedSON;
         int numberObservedMax;
@@ -156,6 +156,8 @@
         TObsPrecDataD** obsPrecDataD;
         TprecOccurrence** precOccurence;
         TcorrelationMatrix *correlationMatrix;
+
+
         TrandomMatrix *randomMatrix;
         ToccurrenceIndexSeasonal* occurrenceIndexSeasonal;
         TsimulatedPrecipitationAmounts *simulatedPrecipitationAmounts;
@@ -188,7 +190,7 @@
         //int contatoreGammaUguale2 = 0;
         //int contatoreGammaDiverso = 0;
         //functions
-
+        void deallocateMemoryPointers();
         void commonModuleCompute();
         void precipitationCompute();
         void precipitation29February(int idStation);

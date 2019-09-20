@@ -145,6 +145,57 @@ int randomPseudo(int next)
     return (int) (sqrt(((next/65536) % 32768)*((next/65536) % 32768)));
 }
 
+void weatherGenerator2D::initializeBaseWeatherVariables()
+{
+    month = (int *)calloc(12, sizeof(int));
+    for (int i=0; i<12;i++) month[i] = NODATA;
+    lengthMonth = (int *)calloc(12, sizeof(int));
+    for (int i=0; i<12;i++) lengthMonth[i] = NODATA;
+    int monthNumber = 0 ;
+    lengthMonth[monthNumber] = 31;
+    month[monthNumber] = monthNumber + 1;
+    monthNumber++;
+    month[monthNumber] = monthNumber + 1;
+    lengthMonth[monthNumber] = 28;
+    monthNumber++;
+    month[monthNumber] = monthNumber + 1;
+    lengthMonth[monthNumber] = 31;
+    monthNumber++;
+    month[monthNumber] = monthNumber + 1;
+    lengthMonth[monthNumber] = 30;
+    monthNumber++;
+    month[monthNumber] = monthNumber + 1;
+    lengthMonth[monthNumber] = 31;
+    monthNumber++;
+    month[monthNumber] = monthNumber + 1;;
+    lengthMonth[monthNumber] = 30;
+    monthNumber++;
+    month[monthNumber] = monthNumber + 1;;
+    lengthMonth[monthNumber] = 31;
+    monthNumber++;
+    month[monthNumber] = monthNumber + 1;;
+    lengthMonth[monthNumber] = 31;
+    monthNumber++;
+    month[monthNumber] = monthNumber + 1;
+    lengthMonth[monthNumber] = 30;
+    monthNumber++;
+    month[monthNumber] = monthNumber + 1;
+    lengthMonth[monthNumber] = 31;
+    monthNumber++;
+    month[monthNumber] = monthNumber + 1;
+    lengthMonth[monthNumber] = 30;
+    monthNumber++;
+    month[monthNumber] = monthNumber + 1;
+    lengthMonth[monthNumber] = 31;
+
+
+
+    lengthSeason[0] = lengthMonth[11]+lengthMonth[0]+lengthMonth[1]; // DJF
+    lengthSeason[1] = lengthMonth[2]+lengthMonth[3]+lengthMonth[4];  // MAM
+    lengthSeason[2] = lengthMonth[5]+lengthMonth[6]+lengthMonth[7];  // JJA
+    lengthSeason[3] = lengthMonth[8]+lengthMonth[9]+lengthMonth[10]; // SON
+}
+
 
 bool weatherGenerator2D::initializeData(int lengthDataSeries, int stations)
 
@@ -199,6 +250,9 @@ bool weatherGenerator2D::initializeData(int lengthDataSeries, int stations)
 
     }
 
+    // step 0 of precipitation WG2D initialization of variables
+        weatherGenerator2D::initializeBaseWeatherVariables();
+
     return 0;
 }
 
@@ -245,12 +299,12 @@ void weatherGenerator2D::computeWeatherGenerator2D()
         weatherGenerator2D::precipitationCompute();
 
     weatherGenerator2D::getWeatherGeneratorOutput();
+    weatherGenerator2D::deallocateMemoryPointers();
     //pressEnterToContinue();
 }
 void weatherGenerator2D::commonModuleCompute()
 {
-    // step 0 of precipitation WG2D initialization of variables
-        weatherGenerator2D::initializeBaseWeatherVariables();
+
 
     // step 1 of precipitation WG2D
     printf("modulo comune fase 1/9 \n");
@@ -646,6 +700,8 @@ void weatherGenerator2D::precipitationMultisiteOccurrenceGeneration()
     free(correlationMatrix);
 }
 
+
+
 void weatherGenerator2D::spatialIterationOccurrence(double ** M, double** K,double** occurrences, double** matrixOccurrence, double** normalizedMatrixRandom,double ** transitionNormal,int lengthSeries)
 {
     // M and K matrices are also used as ancillary dummy matrices
@@ -889,4 +945,29 @@ int weatherGenerator2D::doyFromDate(int day,int month,int year)
     }
     doy += day;
     return doy;
+}
+
+void weatherGenerator2D::deallocateMemoryPointers()
+{
+    // deallocate randomMatrix
+    for (int i=0; i<12;i++)
+    {
+        for (int j=0; j<nrStations;j++)
+        {
+            free(randomMatrix[i].matrixOccurrences[j]);
+        }
+        free(randomMatrix[i].matrixOccurrences);
+    }
+    for (int i=0; i<nrStations;i++)
+    {
+        for (int j=0; j<nrStations;j++)
+        {
+            free(randomMatrix[i].matrixK[j]);
+            free(randomMatrix[i].matrixM[j]);
+        }
+        free(randomMatrix[i].matrixK);
+        free(randomMatrix[i].matrixM);
+    }
+    free(randomMatrix);
+
 }
