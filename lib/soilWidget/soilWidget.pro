@@ -4,7 +4,7 @@
 #   This project is part of CRITERIA-3D distribution
 #
 #   It requires QWT
-#   Set path of QWT_ROOT in windows system variables
+#   Set QWT_ROOT in windows system variables
 #
 #----------------------------------------------------
 
