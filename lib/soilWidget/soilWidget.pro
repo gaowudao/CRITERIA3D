@@ -3,6 +3,9 @@
 #   Soil Widget library
 #   This project is part of CRITERIA-3D distribution
 #
+#   It requires QWT
+#   Set QWT_ROOT in windows system variables
+#
 #----------------------------------------------------
 
 QT  += widgets sql

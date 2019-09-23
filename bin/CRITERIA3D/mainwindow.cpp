@@ -472,13 +472,13 @@ void MainWindow::interpolateDemGUI()
 void MainWindow::updateVariable()
 {
     // FREQUENCY
-    if (myProject.getFrequency() == noFrequency)
+    if (myProject.getCurrentFrequency() == noFrequency)
     {
         this->ui->labelFrequency->setText("None");
     }
     else
     {
-        if (myProject.getFrequency() == daily)
+        if (myProject.getCurrentFrequency() == daily)
         {
             this->ui->labelFrequency->setText("Daily");
 
@@ -502,7 +502,7 @@ void MainWindow::updateVariable()
                 myProject.setCurrentVariable(dailyWindIntensityAvg);
         }
 
-        else if (myProject.getFrequency() == hourly)
+        else if (myProject.getCurrentFrequency() == hourly)
         {
             this->ui->labelFrequency->setText("Hourly");
 
@@ -697,7 +697,7 @@ void MainWindow::on_frequencyButton_clicked()
 
    if (myFrequency != noFrequency)
    {
-       myProject.setFrequency(myFrequency);
+       myProject.setCurrentFrequency(myFrequency);
        this->updateVariable();
    }
 }
@@ -949,7 +949,7 @@ void MainWindow::setMapVariable(meteoVariable myVar, gis::Crit3DRasterGrid *myGr
     ui->opacitySliderRasterOutput->setVisible(true);
 
     myProject.setCurrentVariable(myVar);
-    myProject.setFrequency(getFrequency(myVar));
+    myProject.setCurrentFrequency(getVarFrequency(myVar));
     currentPointsVisualization = showCurrentVariable;
     updateVariable();
 }
@@ -1077,7 +1077,7 @@ void MainWindow::on_actionCompute_solar_radiation_triggered()
         return;
     }
 
-    myProject.setFrequency(hourly);
+    myProject.setCurrentFrequency(hourly);
     myProject.setCurrentVariable(globalIrradiance);
     this->currentPointsVisualization = showCurrentVariable;
     this->updateVariable();
