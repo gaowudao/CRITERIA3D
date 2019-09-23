@@ -30,7 +30,7 @@
         public:
             int horizonNr;
             double upperDepth, lowerDepth;      /*!<   [cm]         */
-            double sand, silt, clay;            /*!<   [%]          */
+            float sand, silt, clay;             /*!<   [%]          */
             double coarseFragments;             /*!<   [%]          */
             double organicMatter;               /*!<   [%]          */
             double bulkDensity;                 /*!<   [g cm^-3]    */

@@ -5,6 +5,8 @@
 
 BarHorizon::BarHorizon(QWidget *parent)
 {
+    Q_UNUSED(parent);
+
     selected = false;
     this->setFrameStyle(QFrame::NoFrame);
     labelNumber = new QLabel;
@@ -109,6 +111,7 @@ void BarHorizon::setClass(int classUSDA)
 
 void BarHorizon::mousePressEvent(QMouseEvent* event)
 {
+    Q_UNUSED(event);
 
     // select the element
     if (selected == false)
@@ -189,7 +192,7 @@ void BarHorizonList::draw(soil::Crit3DSoil *soil)
     {
 
         int length = 0;
-        if (soil->totalDepth != 0)
+        if (soil->totalDepth > 0)
         {
             length = int(totHeight * (soil->horizon[i].lowerDepth - soil->horizon[i].upperDepth) / soil->totalDepth);
         }

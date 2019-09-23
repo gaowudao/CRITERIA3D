@@ -45,14 +45,14 @@ float blackBodyShape(TfunctionInput fInput)
 {
     float b, y;
     b = fInput.par[0];
-    y = b*(float)(pow(fInput.x, 3)*(1. / (exp(b*fInput.x)-0.99)));
+    y = b * float(pow(fInput.x, 3)*(1. / (exp(b*fInput.x)-0.99)));
     return (y);
 }
 
 
 double twoParametersAndExponentialPolynomialFunctions(double x, double* par)
 {
-    return (double)(par[0]+par[1]*pow(x,par[2]));
+    return double(par[0]+par[1]*pow(x,par[2]));
 }
 
 double twoHarmonicsFourier(double x, double* par)
@@ -110,7 +110,7 @@ namespace integration
         for ( j=1 ; j <= 20 ; j++)
         {
             st = trapzdParametric(func,nrPar,par,a,b,j) ;
-            s = (float)((4.0*st-ost)/3.0) ;
+            s = float((4.0*st-ost)/3.0) ;
             for ( short k=1 ; k < 10 ; k++)
             {
                 old_s[k-1]=old_s[k];
@@ -166,9 +166,9 @@ namespace integration
         if (n == 1)
         {
             functionInput.x = a ;
-            s = (float)(0.5*(b-a)*((*func)(functionInput))) ;
+            s = float(0.5*(b-a)*((*func)(functionInput))) ;
             functionInput.x = b ;
-            s += (float)(0.5*(b-a)*((*func)(functionInput))) ;
+            s += float(0.5*(b-a)*((*func)(functionInput))) ;
             //return (s) ;
         }
         else
