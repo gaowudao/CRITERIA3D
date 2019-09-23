@@ -950,6 +950,7 @@ int weatherGenerator2D::doyFromDate(int day,int month,int year)
 void weatherGenerator2D::deallocateMemoryPointers()
 {
     // deallocate randomMatrix
+
     for (int i=0; i<12;i++)
     {
         for (int j=0; j<nrStations;j++)
@@ -970,4 +971,128 @@ void weatherGenerator2D::deallocateMemoryPointers()
     }
     free(randomMatrix);
 
+    for (int iStation=0; iStation<nrStations;iStation++)
+    {
+        /*for (int i=0; i<4;i++)
+        {
+            free(occurrenceIndexSeasonal[iStation].bin[i]);
+            free(occurrenceIndexSeasonal[iStation].binCenter[i]);
+            free(occurrenceIndexSeasonal[iStation].meanFit[i]);
+            free(occurrenceIndexSeasonal[iStation].meanP[i]);
+            free(occurrenceIndexSeasonal[iStation].stdDevFit[i]);
+            free(occurrenceIndexSeasonal[iStation].stdDevP[i]);
+            free(occurrenceIndexSeasonal[iStation].stdDevFit[i]);
+            free(occurrenceIndexSeasonal[iStation].parMultiexp[i]);
+        }*/
+    }
+    free(occurrenceIndexSeasonal);
+/*
+    for (int iSeason=0; iSeason<4;iSeason++)
+    {
+        for (int i=0; i<nrStations;i++)
+        {
+            free(simulatedPrecipitationAmounts[iSeason].matrixK[i]);
+            free(simulatedPrecipitationAmounts[iSeason].matrixM[i]);
+        }
+        for (int i=0; i<lengthSeason[iSeason]*parametersModel.yearOfSimulation;i++)
+        {
+            free(simulatedPrecipitationAmounts[iSeason].matrixAmounts[i]);
+        }
+    }
+    free(simulatedPrecipitationAmounts);
+
+    for (int i=0; i<nrStations;i++)
+    {
+        free(occurrenceMatrixSeasonDJF[i]);
+        free(occurrenceMatrixSeasonMAM[i]);
+        free(occurrenceMatrixSeasonJJA[i]);
+        free(occurrenceMatrixSeasonSON[i]);
+    }
+    occurrenceMatrixSeasonDJF;
+    occurrenceMatrixSeasonMAM;
+    occurrenceMatrixSeasonJJA;
+    occurrenceMatrixSeasonSON;
+
+    for (int i=0; i<nrStations;i++)
+    {
+        free(wDJF[i]);
+        free(wMAM[i]);
+        free(wJJA[i]);
+        free(wSON[i]);
+        free(wSeason[i]);
+    }
+    free(wDJF);
+    free(wMAM);
+    free(wJJA);
+    free(wSON);
+    free(wSeason);
+
+    for (int i=0; i<nrStations;i++)
+    {
+        free (temperatureCoefficients[i].maxTDry.stdDevEstimation);
+        free (temperatureCoefficients[i].maxTDry.averageEstimation);
+        free (temperatureCoefficients[i].minTDry.stdDevEstimation);
+        free (temperatureCoefficients[i].minTDry.averageEstimation);
+
+        free (temperatureCoefficients[i].maxTWet.stdDevEstimation);
+        free (temperatureCoefficients[i].maxTWet.averageEstimation);
+        free (temperatureCoefficients[i].minTWet.stdDevEstimation);
+        free (temperatureCoefficients[i].minTWet.averageEstimation);
+        for (int j=0; j<2;j++)
+        {
+            temperatureCoefficients[i].A[j];
+            temperatureCoefficients[i].B[j];
+        }
+    }
+    free(temperatureCoefficients);
+
+    free(dailyResidual);
+
+    for (int i=0; i<nrStations;i++)
+    {
+        free(correlationMatrixTemperature.maxT[i]);
+        free(correlationMatrixTemperature.minT[i]);
+    }
+
+    for (int i=0; i<365*parametersModel.yearOfSimulation;i++)
+    {
+        free(normRandomMaxT[i]);
+        free(normRandomMinT[i]);
+    }
+    free(normRandomMaxT);
+    free(normRandomMinT);
+
+    for (int i=0; i<365*parametersModel.yearOfSimulation;i++)
+    {
+        free(multiOccurrenceTemperature[i].occurrence_simulated);
+    }
+    free(multiOccurrenceTemperature);
+
+    for (int i=0; i<365*parametersModel.yearOfSimulation;i++)
+    {
+        free(maxTGenerated[i]);
+        free(minTGenerated[i]);
+    }
+    free(maxTGenerated);
+    free(minTGenerated);
+
+    for (int i=0; i<365*parametersModel.yearOfSimulation;i++)
+    {
+        free(occurrencePrecGenerated[i]);
+    }
+    free(occurrencePrecGenerated);
+
+    for (int i=0; i<nrStations;i++)
+    {
+        free(outputWeatherData[i].maxT);
+        free(outputWeatherData[i].minT);
+        free(outputWeatherData[i].daySimulated);
+        free(outputWeatherData[i].doySimulated);
+        free(outputWeatherData[i].precipitation);
+        free(outputWeatherData[i].yearSimulated);
+        free(outputWeatherData[i].monthSimulated);
+    }
+    free(outputWeatherData);
+    */
 }
+
