@@ -110,7 +110,7 @@ namespace integration
         for ( j=1 ; j <= 20 ; j++)
         {
             st = trapzdParametric(func,nrPar,par,a,b,j) ;
-            s = float((4.0*st-ost)/3.0) ;
+            s = float((4*st-ost)/3) ;
             for ( short k=1 ; k < 10 ; k++)
             {
                 old_s[k-1]=old_s[k];
@@ -118,9 +118,11 @@ namespace integration
             old_s[9] = s ;
             if (j == 5) s1 = s ;
             if (j > 5 )
+            {
                 if (fabs(s-os) < EPS*fabs(os) || (s == 0.0 && os == 0.0) ) return s ;
-                os = s ;
-                ost = st ;
+            }
+            os = s ;
+            ost = st ;
         }
         float average_s=0.0 , average_s2 = 0.0 , variance ;
         for ( short k=0 ; k < 10 ; k++)
@@ -227,7 +229,7 @@ namespace integration
         for ( j=1 ; j <= 20 ; j++)
         {
             sumTrapezoidal = trapezoidalRule(func,a,b,j) ;
-            sumInfenitesimal = (float)((4.0*sumTrapezoidal-old_sumTrapezoidal)/3.0) ;
+            sumInfenitesimal = float((4*sumTrapezoidal-old_sumTrapezoidal)/3) ;
             for ( short k=1 ; k < 10 ; k++)
             {
                 old_s[k-1]=old_s[k];
@@ -235,9 +237,12 @@ namespace integration
             old_s[9] = sumInfenitesimal ;
             if (j == 5) s1 = sumInfenitesimal ;
             if (j > 5 )
-                if (fabs(sumInfenitesimal-old_sumInfinitesimal) < EPS*fabs(old_sumInfinitesimal) || (sumInfenitesimal == 0.0 && old_sumInfinitesimal == 0.0) ) return sumInfenitesimal ;
-                old_sumInfinitesimal = sumInfenitesimal ;
-                old_sumTrapezoidal = sumTrapezoidal ;
+            {
+                if (fabs(sumInfenitesimal-old_sumInfinitesimal) < EPS*fabs(old_sumInfinitesimal)
+                    || (sumInfenitesimal == 0 && old_sumInfinitesimal == 0) ) return sumInfenitesimal;
+            }
+            old_sumInfinitesimal = sumInfenitesimal ;
+           old_sumTrapezoidal = sumTrapezoidal ;
         }
         float average_s=0.0 , average_s2 = 0.0 , variance ;
         for ( short k=0 ; k < 10 ; k++)
@@ -298,10 +303,13 @@ namespace integration
             }
             old_s[9] = sumInfenitesimal ;
             if (j == 5) s1 = sumInfenitesimal ;
-            if (j > 5 )
-                if (fabs(sumInfenitesimal-old_sumInfinitesimal) < EPS*fabs(old_sumInfinitesimal) || (sumInfenitesimal == 0.0 && old_sumInfinitesimal == 0.0) ) return sumInfenitesimal ;
-                old_sumInfinitesimal = sumInfenitesimal ;
-                old_sumTrapezoidal = sumTrapezoidal ;
+            if (j > 5)
+            {
+                if (fabs(sumInfenitesimal-old_sumInfinitesimal) < EPS*fabs(old_sumInfinitesimal)
+                    || (sumInfenitesimal == 0.0 && old_sumInfinitesimal == 0.0) ) return sumInfenitesimal ;
+            }
+            old_sumInfinitesimal = sumInfenitesimal;
+            old_sumTrapezoidal = sumTrapezoidal;
         }
         double average_s=0.0 , average_s2 = 0.0 , variance ;
         for ( short k=0 ; k < 10 ; k++)
