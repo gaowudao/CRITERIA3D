@@ -55,11 +55,15 @@ bool Crit3DProject::loadCriteria3DProject(QString myFileName)
     if (! loadProjectSettings(myFileName))
         return false;
 
+    if (! loadCriteria3DSettings())
+        return false;
+
     if (! loadProject())
         return false;
 
-    if (! loadCriteria3DSettings())
-        return false;
+    // soil map and data
+    if (soilMapFileName != "") loadSoilMap(soilMapFileName);
+    if (soilDbFileName != "") loadSoilDatabase(soilDbFileName);
 
     // initialize meteo maps
     hourlyMeteoMaps = new Crit3DHourlyMeteoMaps(DEM);
@@ -75,8 +79,12 @@ bool Crit3DProject::loadCriteria3DProject(QString myFileName)
 
 
 bool Crit3DProject::loadCriteria3DSettings()
-{          
-    // TODO
+{
+    projectSettings->beginGroup("project");
+        soilDbFileName = projectSettings->value("soil_db").toString();
+        soilMapFileName = projectSettings->value("soil_map").toString();
+    projectSettings->endGroup();
+
     return true;
 }
 
@@ -103,20 +111,27 @@ bool Crit3DProject::loadModelParameters(QString dbName)
 }
 
 
-bool Crit3DProject::loadSoilMap(QString myFileName)
+bool Crit3DProject::loadSoilMap(QString fileName)
 {
-    std::string myError;
-    std::string fileName = myFileName.left(myFileName.length()-4).toStdString();
-
-    logInfo("Read soil map...");
-
-    if (! gis::readEsriGrid(fileName, &soilMap, &myError))
+    if (fileName == "")
     {
-        logError("Load soil map failed: " + myFileName);
+        logError("Missing soil map filename");
         return false;
     }
 
-    logInfo("Soil map = " + myFileName);
+    soilDbFileName = fileName;
+    fileName = getCompleteFileName(fileName, PATH_GEO);
+
+    std::string myError;
+    std::string myFileName = fileName.left(fileName.length()-4).toStdString();
+
+    if (! gis::readEsriGrid(myFileName, &soilMap, &myError))
+    {
+        logError("Load soil map failed: " + fileName);
+        return false;
+    }
+
+    logInfo("Soil map = " + fileName);
     return true;
 }
 

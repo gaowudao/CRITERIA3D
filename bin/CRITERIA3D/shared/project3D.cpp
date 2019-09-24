@@ -36,7 +36,8 @@ Project3D::Project3D() : Project()
 
 void Project3D::initializeProject3D()
 {
-    dbSoilName = "";
+    soilDbFileName = "";
+    soilMapFileName = "";
 
     nrSoils = 0;
     soilDepth = 1.0;            // [m]
@@ -94,7 +95,7 @@ bool Project3D::loadSoilDatabase(QString fileName)
         return false;
     }
 
-    dbSoilName = fileName;
+    soilDbFileName = fileName;
     fileName = getCompleteFileName(fileName, PATH_SOIL);
 
     if (! loadAllSoils(fileName, &(soilList), texturalClassList, &fittingOptions, &errorString))

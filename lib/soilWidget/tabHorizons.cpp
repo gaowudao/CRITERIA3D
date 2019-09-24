@@ -63,7 +63,7 @@ void TabHorizons::insertSoilHorizons(soil::Crit3DSoil *soil, soil::Crit3DTexture
     barHorizons.draw(soil);
 
     insertSoilElement = true;
-    //disable events otherwise setBackgroundColor call again cellChanged event
+    //disable events otherwise setBackground call again cellChanged event
     tableDb->blockSignals(true);
     mySoil = soil;
     myTextureClassList = textureClassList;
@@ -172,8 +172,8 @@ bool TabHorizons::checkDepths()
     // reset background color
     for (int horizonNum = 0; horizonNum<tableDb->rowCount(); horizonNum++)
     {
-        tableDb->item(horizonNum,0)->setBackgroundColor(Qt::white);
-        tableDb->item(horizonNum,1)->setBackgroundColor(Qt::white);
+        tableDb->item(horizonNum,0)->setBackground(Qt::white);
+        tableDb->item(horizonNum,1)->setBackground(Qt::white);
     }
     for (int horizonNum = 0; horizonNum<tableDb->rowCount(); horizonNum++)
     {
@@ -182,8 +182,8 @@ bool TabHorizons::checkDepths()
         {
             if (mySoil->horizon[horizonNum].dbData.upperDepth != mySoil->horizon[horizonNum-1].dbData.lowerDepth)
             {
-                tableDb->item(horizonNum,0)->setBackgroundColor(Qt::red);
-                tableDb->item(horizonNum-1,1)->setBackgroundColor(Qt::red);
+                tableDb->item(horizonNum,0)->setBackground(Qt::red);
+                tableDb->item(horizonNum-1,1)->setBackground(Qt::red);
                 depthsOk = false;
             }
         }
@@ -193,34 +193,34 @@ bool TabHorizons::checkDepths()
         {
             if (mySoil->horizon[horizonNum].dbData.lowerDepth != mySoil->horizon[horizonNum+1].dbData.upperDepth)
             {
-                tableDb->item(horizonNum,1)->setBackgroundColor(Qt::red);
-                tableDb->item(horizonNum+1,0)->setBackgroundColor(Qt::red);
+                tableDb->item(horizonNum,1)->setBackground(Qt::red);
+                tableDb->item(horizonNum+1,0)->setBackground(Qt::red);
                 depthsOk = false;
             }
         }
 
         if (mySoil->horizon[horizonNum].dbData.upperDepth == NODATA || mySoil->horizon[horizonNum].dbData.lowerDepth == NODATA)
         {
-            tableDb->item(horizonNum,0)->setBackgroundColor(Qt::red);
-            tableDb->item(horizonNum,1)->setBackgroundColor(Qt::red);
+            tableDb->item(horizonNum,0)->setBackground(Qt::red);
+            tableDb->item(horizonNum,1)->setBackground(Qt::red);
             depthsOk = false;
         }
         else if (mySoil->horizon[horizonNum].dbData.upperDepth > mySoil->horizon[horizonNum].dbData.lowerDepth)
         {
-            tableDb->item(horizonNum,0)->setBackgroundColor(Qt::red);
-            tableDb->item(horizonNum,1)->setBackgroundColor(Qt::red);
+            tableDb->item(horizonNum,0)->setBackground(Qt::red);
+            tableDb->item(horizonNum,1)->setBackground(Qt::red);
             depthsOk = false;
         }
         else
         {
             if (mySoil->horizon[horizonNum].dbData.upperDepth < 0)
             {
-                tableDb->item(horizonNum,0)->setBackgroundColor(Qt::red);
+                tableDb->item(horizonNum,0)->setBackground(Qt::red);
                 depthsOk = false;
             }
             if (mySoil->horizon[horizonNum].dbData.lowerDepth < 0)
             {
-                tableDb->item(horizonNum,1)->setBackgroundColor(Qt::red);
+                tableDb->item(horizonNum,1)->setBackground(Qt::red);
                 depthsOk = false;
             }
         }
@@ -236,9 +236,9 @@ bool TabHorizons::checkHorizonData(int horizonNum)
 
     if (soil::getUSDATextureClass(dbData->sand, dbData->silt, dbData->clay) == NODATA)
     {
-        tableDb->item(horizonNum,2)->setBackgroundColor(Qt::red);
-        tableDb->item(horizonNum,3)->setBackgroundColor(Qt::red);
-        tableDb->item(horizonNum,4)->setBackgroundColor(Qt::red);
+        tableDb->item(horizonNum,2)->setBackground(Qt::red);
+        tableDb->item(horizonNum,3)->setBackground(Qt::red);
+        tableDb->item(horizonNum,4)->setBackground(Qt::red);
 
         setInvalidTableModelRow(horizonNum);
         goOn = false;
@@ -246,27 +246,27 @@ bool TabHorizons::checkHorizonData(int horizonNum)
 
     if (dbData->coarseFragments != NODATA && (dbData->coarseFragments < 0 || dbData->coarseFragments >= 100))
     {
-        tableDb->item(horizonNum,5)->setBackgroundColor(Qt::red);
+        tableDb->item(horizonNum,5)->setBackground(Qt::red);
     }
 
     if (dbData->organicMatter != NODATA && (dbData->organicMatter < 0 || dbData->organicMatter > 100))
     {
-        tableDb->item(horizonNum,6)->setBackgroundColor(Qt::red);
+        tableDb->item(horizonNum,6)->setBackground(Qt::red);
     }
 
     if (dbData->bulkDensity != NODATA && (dbData->bulkDensity <= 0 || dbData->bulkDensity > QUARTZ_DENSITY))
     {
-        tableDb->item(horizonNum,7)->setBackgroundColor(Qt::red);
+        tableDb->item(horizonNum,7)->setBackground(Qt::red);
     }
 
     if (dbData->kSat != NODATA && dbData->kSat <= 0)
     {
-        tableDb->item(horizonNum,8)->setBackgroundColor(Qt::red);
+        tableDb->item(horizonNum,8)->setBackground(Qt::red);
     }
 
     if (dbData->thetaSat != NODATA && (dbData->thetaSat <= 0 || dbData->thetaSat >= 1))
     {
-        tableDb->item(horizonNum,9)->setBackgroundColor(Qt::red);
+        tableDb->item(horizonNum,9)->setBackground(Qt::red);
     }
 
     return goOn;
@@ -276,17 +276,17 @@ bool TabHorizons::checkHorizonData(int horizonNum)
 void TabHorizons::setInvalidTableModelRow(int horizonNum)
 {
     tableModel->item(horizonNum,0)->setText("UNDEFINED");
-    tableModel->item(horizonNum,0)->setBackgroundColor(Qt::red);
-    tableModel->item(horizonNum,1)->setBackgroundColor(Qt::red);
-    tableModel->item(horizonNum,2)->setBackgroundColor(Qt::red);
-    tableModel->item(horizonNum,3)->setBackgroundColor(Qt::red);
-    tableModel->item(horizonNum,4)->setBackgroundColor(Qt::red);
-    tableModel->item(horizonNum,5)->setBackgroundColor(Qt::red);
-    tableModel->item(horizonNum,6)->setBackgroundColor(Qt::red);
-    tableModel->item(horizonNum,7)->setBackgroundColor(Qt::red);
-    tableModel->item(horizonNum,8)->setBackgroundColor(Qt::red);
-    tableModel->item(horizonNum,9)->setBackgroundColor(Qt::red);
-    tableModel->item(horizonNum,10)->setBackgroundColor(Qt::red);
+    tableModel->item(horizonNum,0)->setBackground(Qt::red);
+    tableModel->item(horizonNum,1)->setBackground(Qt::red);
+    tableModel->item(horizonNum,2)->setBackground(Qt::red);
+    tableModel->item(horizonNum,3)->setBackground(Qt::red);
+    tableModel->item(horizonNum,4)->setBackground(Qt::red);
+    tableModel->item(horizonNum,5)->setBackground(Qt::red);
+    tableModel->item(horizonNum,6)->setBackground(Qt::red);
+    tableModel->item(horizonNum,7)->setBackground(Qt::red);
+    tableModel->item(horizonNum,8)->setBackground(Qt::red);
+    tableModel->item(horizonNum,9)->setBackground(Qt::red);
+    tableModel->item(horizonNum,10)->setBackground(Qt::red);
 }
 
 void TabHorizons::checkMissingItem(int horizonNum)
@@ -297,7 +297,7 @@ void TabHorizons::checkMissingItem(int horizonNum)
     {
         if (tableDb->item(horizonNum,j)->text().contains(NODATAString) || tableDb->item(horizonNum,j)->text().isEmpty())
         {
-            tableDb->item(horizonNum,j)->setBackgroundColor(Qt::yellow);
+            tableDb->item(horizonNum,j)->setBackground(Qt::yellow);
             tableDb->item(horizonNum,j)->setText("");
         }
     }
@@ -306,7 +306,7 @@ void TabHorizons::checkMissingItem(int horizonNum)
     {
         if (tableModel->item(horizonNum,j)->text().contains(NODATAString) || tableModel->item(horizonNum,j)->text().isEmpty())
         {
-            tableModel->item(horizonNum,j)->setBackgroundColor(Qt::red);
+            tableModel->item(horizonNum,j)->setBackground(Qt::red);
             tableModel->item(horizonNum,j)->setText("");
         }
     }
@@ -319,27 +319,27 @@ void TabHorizons::checkComputedValues(int horizonNum)
 
     if (abs(horizon->dbData.coarseFragments - horizon->coarseFragments*100) > EPSILON)
     {
-        tableModel->item(horizonNum,1)->setBackgroundColor(Qt::yellow);
+        tableModel->item(horizonNum,1)->setBackground(Qt::yellow);
     }
 
     if (abs(horizon->dbData.organicMatter - horizon->organicMatter*100) > EPSILON)
     {
-        tableModel->item(horizonNum,2)->setBackgroundColor(Qt::yellow);
+        tableModel->item(horizonNum,2)->setBackground(Qt::yellow);
     }
 
     if (abs(horizon->dbData.bulkDensity - horizon->bulkDensity) > EPSILON)
     {
-        tableModel->item(horizonNum,3)->setBackgroundColor(Qt::yellow);
+        tableModel->item(horizonNum,3)->setBackground(Qt::yellow);
     }
 
     if (abs(horizon->dbData.kSat - horizon->waterConductivity.kSat) > EPSILON)
     {
-        tableModel->item(horizonNum,4)->setBackgroundColor(Qt::yellow);
+        tableModel->item(horizonNum,4)->setBackground(Qt::yellow);
     }
 
     if (abs(horizon->dbData.thetaSat - horizon->vanGenuchten.thetaS) > EPSILON)
     {
-        tableModel->item(horizonNum,5)->setBackgroundColor(Qt::yellow);
+        tableModel->item(horizonNum,5)->setBackground(Qt::yellow);
     }
 }
 
@@ -357,32 +357,32 @@ void TabHorizons::cellClickedDb(int row, int column)
     clearSelections();
     tableDb->setSelectionBehavior(QAbstractItemView::SelectItems);
     tableModel->setSelectionBehavior(QAbstractItemView::SelectItems);
-    tableDb->setItemSelected(tableDb->item(row,column), true);
+    tableDb->item(row, column)->setSelected(true);
 
     switch (column) {
         case 5:
         {
-            tableModel->setItemSelected(tableModel->item(row,1), true);
+            tableModel->item(row,1)->setSelected(true);
             break;
         }
         case 6:
         {
-            tableModel->setItemSelected(tableModel->item(row,2), true);
+            tableModel->item(row,2)->setSelected(true);
             break;
         }
         case 7:
         {
-            tableModel->setItemSelected(tableModel->item(row,3), true);
+            tableModel->item(row,3)->setSelected(true);
             break;
         }
         case 8:
         {
-            tableModel->setItemSelected(tableModel->item(row,4), true);
+            tableModel->item(row,4)->setSelected(true);
             break;
         }
         case 9:
         {
-            tableModel->setItemSelected(tableModel->item(row,5), true);
+            tableModel->item(row,5)->setSelected(true);
             break;
         }
     }
@@ -455,13 +455,13 @@ void TabHorizons::tableDbVerticalHeaderClick(int index)
 void TabHorizons::cellChanged(int row, int column)
 {
 
-    if (tableDb->itemAt(row,column) == nullptr || mySoil->nrHorizons < row)
+    if (tableDb->itemAt(row,column) == nullptr || mySoil->nrHorizons < unsigned(row))
     {
         qDebug() << "mySoil->horizon->dbData.horizonNr < row ";
         return;
     }
 
-    //disable events otherwise setBackgroundColor call again cellChanged event
+    //disable events otherwise setBackground call again cellChanged event
     tableDb->blockSignals(true);
     tableModel->selectRow(row);
     QString data = tableDb->item(row, column)->text();
@@ -647,12 +647,12 @@ void TabHorizons::cellChanged(int row, int column)
     // reset background color for the row changed
     for (int j = 0; j < tableDb->columnCount(); j++)
     {
-        tableDb->item(row,j)->setBackgroundColor(Qt::white);
+        tableDb->item(row,j)->setBackground(Qt::white);
     }
 
     for (int j = 0; j < tableModel->columnCount(); j++)
     {
-        tableModel->item(row,j)->setBackgroundColor(Qt::white);
+        tableModel->item(row,j)->setBackground(Qt::white);
     }
 
     // check all Depths

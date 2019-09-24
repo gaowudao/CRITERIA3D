@@ -21,7 +21,8 @@
     {
 
     public:
-        QString dbSoilName;
+        QString soilDbFileName;
+        QString soilMapFileName;
 
         unsigned long nrNodes;
         unsigned int nrLayers;

@@ -1012,7 +1012,7 @@
       <rect>
        <x>1</x>
        <y>80</y>
-       <width>239</width>
+       <width>241</width>
        <height>42</height>
       </rect>
      </property>
@@ -1089,7 +1089,7 @@
       <rect>
        <x>80</x>
        <y>150</y>
-       <width>91</width>
+       <width>111</width>
        <height>21</height>
       </rect>
      </property>
@@ -1431,7 +1431,7 @@
       <rect>
        <x>100</x>
        <y>250</y>
-       <width>161</width>
+       <width>141</width>
        <height>21</height>
       </rect>
      </property>
@@ -1488,7 +1488,7 @@
       <rect>
        <x>1</x>
        <y>280</y>
-       <width>239</width>
+       <width>241</width>
        <height>42</height>
       </rect>
      </property>
@@ -2038,7 +2038,7 @@
       <rect>
        <x>1</x>
        <y>80</y>
-       <width>239</width>
+       <width>241</width>
        <height>42</height>
       </rect>
      </property>
@@ -2118,7 +2118,7 @@
      <x>0</x>
      <y>0</y>
      <width>1280</width>
-     <height>21</height>
+     <height>26</height>
     </rect>
    </property>
    <property name="palette">

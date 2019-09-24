@@ -45,7 +45,7 @@
 extern Crit3DProject myProject;
 
 #define MAPBORDER 11
-#define TOOLSWIDTH 242
+#define TOOLSWIDTH 244
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -1100,7 +1100,7 @@ void MainWindow::openSoilWidget(QPoint localPos)
     }
     else {
         soilWidget = new Crit3DSoilWidget();
-        soilWidget->setDbSoil(myProject.dbSoilName, soilCode);
+        soilWidget->setDbSoil(myProject.soilDbFileName, soilCode);
         soilWidget->show();
     }
 }
