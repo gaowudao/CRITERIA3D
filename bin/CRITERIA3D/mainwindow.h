@@ -71,7 +71,6 @@
         void on_actionView_PointsCurrentVariable_triggered();
 
         void on_viewer3DClosed();
-        void on_dateChanged();
 
         void on_actionView_Transmissivity_triggered();
 

@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>1280</width>
-    <height>720</height>
+    <height>700</height>
    </rect>
   </property>
   <property name="palette">
@@ -504,9 +504,9 @@
     <property name="geometry">
      <rect>
       <x>0</x>
-      <y>10</y>
-      <width>261</width>
-      <height>321</height>
+      <y>0</y>
+      <width>241</width>
+      <height>331</height>
      </rect>
     </property>
     <property name="palette">
@@ -975,7 +975,7 @@
       <rect>
        <x>20</x>
        <y>30</y>
-       <width>221</width>
+       <width>201</width>
        <height>22</height>
       </rect>
      </property>
@@ -1012,7 +1012,7 @@
       <rect>
        <x>1</x>
        <y>80</y>
-       <width>258</width>
+       <width>239</width>
        <height>42</height>
       </rect>
      </property>
@@ -1088,7 +1088,7 @@
      <property name="geometry">
       <rect>
        <x>80</x>
-       <y>140</y>
+       <y>150</y>
        <width>91</width>
        <height>21</height>
       </rect>
@@ -1145,8 +1145,8 @@
      <property name="geometry">
       <rect>
        <x>20</x>
-       <y>170</y>
-       <width>121</width>
+       <y>180</y>
+       <width>111</width>
        <height>31</height>
       </rect>
      </property>
@@ -1278,9 +1278,9 @@
     <widget class="QTimeEdit" name="timeEdit">
      <property name="geometry">
       <rect>
-       <x>160</x>
-       <y>170</y>
-       <width>81</width>
+       <x>150</x>
+       <y>180</y>
+       <width>71</width>
        <height>31</height>
       </rect>
      </property>
@@ -1370,7 +1370,7 @@
      <property name="geometry">
       <rect>
        <x>20</x>
-       <y>210</y>
+       <y>220</y>
        <width>91</width>
        <height>23</height>
       </rect>
@@ -1390,7 +1390,7 @@
      <property name="geometry">
       <rect>
        <x>20</x>
-       <y>240</y>
+       <y>250</y>
        <width>71</width>
        <height>23</height>
       </rect>
@@ -1410,7 +1410,7 @@
      <property name="geometry">
       <rect>
        <x>120</x>
-       <y>210</y>
+       <y>220</y>
        <width>121</width>
        <height>21</height>
       </rect>
@@ -1430,7 +1430,7 @@
      <property name="geometry">
       <rect>
        <x>100</x>
-       <y>240</y>
+       <y>250</y>
        <width>161</width>
        <height>21</height>
       </rect>
@@ -1487,8 +1487,8 @@
      <property name="geometry">
       <rect>
        <x>1</x>
-       <y>270</y>
-       <width>258</width>
+       <y>280</y>
+       <width>239</width>
        <height>42</height>
       </rect>
      </property>
@@ -1509,8 +1509,8 @@
      </property>
      <property name="geometry">
       <rect>
-       <x>20</x>
-       <y>120</y>
+       <x>10</x>
+       <y>130</y>
        <width>221</width>
        <height>20</height>
       </rect>
@@ -1530,9 +1530,9 @@
     <property name="geometry">
      <rect>
       <x>0</x>
-      <y>350</y>
-      <width>261</width>
-      <height>191</height>
+      <y>340</y>
+      <width>241</width>
+      <height>301</height>
      </rect>
     </property>
     <property name="palette">
@@ -2001,7 +2001,7 @@
       <rect>
        <x>20</x>
        <y>30</y>
-       <width>221</width>
+       <width>201</width>
        <height>22</height>
       </rect>
      </property>
@@ -2037,8 +2037,8 @@
      <property name="geometry">
       <rect>
        <x>1</x>
-       <y>90</y>
-       <width>258</width>
+       <y>80</y>
+       <width>239</width>
        <height>42</height>
       </rect>
      </property>
@@ -2057,7 +2057,7 @@
      <property name="geometry">
       <rect>
        <x>20</x>
-       <y>60</y>
+       <y>50</y>
        <width>151</width>
        <height>21</height>
       </rect>
@@ -2118,7 +2118,7 @@
      <x>0</x>
      <y>0</y>
      <width>1280</width>
-     <height>26</height>
+     <height>21</height>
     </rect>
    </property>
    <property name="palette">
@@ -2912,11 +2912,6 @@
   <action name="actionClose_Project">
    <property name="text">
     <string>Close project</string>
-   </property>
-  </action>
-  <action name="actionNew_meteo_points_db">
-   <property name="text">
-    <string>Meteo points DB...</string>
    </property>
   </action>
   <action name="actionView_SoilMap">

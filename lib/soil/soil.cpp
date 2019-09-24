@@ -725,6 +725,7 @@ namespace soil
         return true;
     }
 
+
     bool fittingWaterRetentionCurve(Crit3DHorizon* horizon, Crit3DFittingOptions* fittingOptions)
     {
         if (! fittingOptions->useWaterRetentionData || horizon->dbData.waterRetention.size() == 0)
@@ -735,8 +736,18 @@ namespace soil
 
         if (fittingOptions->waterRetentionCurve != MODIFIEDVANGENUCHTEN)
         {
-            // TODO
+            // TODO other functions
             return false;
+        }
+
+        // values
+        unsigned int nrValues = unsigned(horizon->dbData.waterRetention.size());
+        double* x = new double[nrValues];
+        double* y = new double[nrValues];
+        for (unsigned int i = 0; i < nrValues; i++)
+        {
+            x[i] = horizon->dbData.waterRetention[i].water_potential;
+            y[i] = horizon->dbData.waterRetention[i].water_content;
         }
 
         int functionCode;
@@ -811,15 +822,6 @@ namespace soil
             pdelta[i] = (pmax[i]-pmin[i]) * 0.001;
         }
 
-        // values
-        unsigned int nrValues = unsigned(horizon->dbData.waterRetention.size());
-        double* x = new double[nrValues];
-        double* y = new double[nrValues];
-        for (unsigned int i = 0; i < nrValues; i++)
-        {
-            x[i] = horizon->dbData.waterRetention[i].water_potential;
-            y[i] = horizon->dbData.waterRetention[i].water_content;
-        }
 
         if ( interpolation::fittingMarquardt(pmin, pmax, param, signed(nrParameters), pdelta,
                                    nrIterations, EPSILON, functionCode, x, y, signed(nrValues)) )

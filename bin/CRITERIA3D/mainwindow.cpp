@@ -45,7 +45,7 @@
 extern Crit3DProject myProject;
 
 #define MAPBORDER 11
-#define TOOLSWIDTH 260
+#define TOOLSWIDTH 242
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -102,7 +102,7 @@ MainWindow::MainWindow(QWidget *parent) :
     this->updateVariable();
     this->updateDateTime();
 
-    connect(this->ui->dateEdit, SIGNAL(editingFinished()), this, SLOT(on_dateChanged()));
+    //connect(this->ui->dateEdit, SIGNAL(editingFinished()), this, SLOT(on_dateChanged()));
 
     this->setMouseTracking(true);
 }
@@ -112,14 +112,15 @@ void MainWindow::resizeEvent(QResizeEvent * event)
 {
     Q_UNUSED(event)
     const int INFOHEIGHT = 40;
+    int x1 = this->width() - TOOLSWIDTH - MAPBORDER;
 
-    ui->widgetMap->setGeometry(TOOLSWIDTH, 0, this->width()-TOOLSWIDTH, this->height() - INFOHEIGHT);
+    ui->widgetMap->setGeometry(0, 0, x1, this->height() - INFOHEIGHT);
     mapView->resize(ui->widgetMap->size());
 
-    ui->groupBoxInput->move(MAPBORDER/2, MAPBORDER);
+    ui->groupBoxInput->move(x1, 2);
     ui->groupBoxInput->resize(TOOLSWIDTH, ui->groupBoxInput->height());
 
-    ui->groupBoxOutput->move(MAPBORDER/2, ui->groupBoxInput->y() + ui->groupBoxInput->height() + MAPBORDER);
+    ui->groupBoxOutput->move(x1, ui->groupBoxInput->y() + ui->groupBoxInput->height() + MAPBORDER);
     ui->groupBoxOutput->resize(TOOLSWIDTH, ui->groupBoxOutput->height());
 }
 
@@ -546,18 +547,13 @@ void MainWindow::updateDateTime()
 }
 
 
-void MainWindow::on_dateChanged()
+void MainWindow::on_dateEdit_dateChanged(const QDate &date)
 {
-
-    QDate date = this->ui->dateEdit->date();
-
     if (date != myProject.getCurrentDate())
     {
-
         myProject.setCurrentDate(date);
         myProject.loadMeteoPointsData(date, date, true);
         myProject.loadMeteoGridData(date, date, true);
-
     }
 
     redrawMeteoPoints(currentPointsVisualization, true);
@@ -684,12 +680,11 @@ bool MainWindow::loadMeteoPointsDB(QString dbName)
 
 void MainWindow::on_variableButton_clicked()
 {
-    if (chooseMeteoVariable(&myProject))
-    {
-       this->currentPointsVisualization = showCurrentVariable;
-       this->updateVariable();
-    }
+    myProject.setCurrentVariable(chooseMeteoVariable(&myProject));
+    this->currentPointsVisualization = showCurrentVariable;
+    this->updateVariable();
 }
+
 
 void MainWindow::on_frequencyButton_clicked()
 {
@@ -742,13 +737,6 @@ void MainWindow::setCurrentRasterOutput(gis::Crit3DRasterGrid *myRaster)
     outputRasterColorLegend->colorScale = myRaster->colorScale;
 
     rasterObj->redrawRequested();
-}
-
-
-void MainWindow::on_dateEdit_dateChanged(const QDate &date)
-{
-    Q_UNUSED(date);
-    this->on_dateChanged();
 }
 
 

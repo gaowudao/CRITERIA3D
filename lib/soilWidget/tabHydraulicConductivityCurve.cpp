@@ -110,7 +110,7 @@ void TabHydraulicConductivityCurve::insertElements(soil::Crit3DSoil *soil)
         QwtPlotCurve *curve = new QwtPlotCurve;
         xVector.clear();
         yVector.clear();
-        double factor = 1.2;
+        double factor = 1.1;
         x = dxMin;
         while (x < dxMax*factor)
         {

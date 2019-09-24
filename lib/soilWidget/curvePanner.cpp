@@ -56,8 +56,8 @@ void Crit3DCurvePanner::moveCanvasXlog(int dx, int dy)
 
         const QwtScaleDiv *scaleDiv;
         scaleDiv = &qwtPlot->axisScaleDiv(axis);
-        const int i1 = map.transform(scaleDiv->lowerBound());
-        const int i2 = map.transform(scaleDiv->upperBound());
+        double i1 = map.transform(scaleDiv->lowerBound());
+        double i2 = map.transform(scaleDiv->upperBound());
 
         double d1, d2;
         if ( axis == QwtPlot::xBottom || axis == QwtPlot::xTop )
@@ -111,8 +111,8 @@ void Crit3DCurvePanner::moveCanvasXlogYlog(int dx, int dy)
 
         const QwtScaleDiv *scaleDiv;
         scaleDiv = &qwtPlot->axisScaleDiv(axis);
-        const int i1 = map.transform(scaleDiv->lowerBound());
-        const int i2 = map.transform(scaleDiv->upperBound());
+        double i1 = map.transform(scaleDiv->lowerBound());
+        double i2 = map.transform(scaleDiv->upperBound());
 
         double d1, d2;
         if ( axis == QwtPlot::xBottom || axis == QwtPlot::xTop )
