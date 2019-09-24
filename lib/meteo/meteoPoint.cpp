@@ -24,7 +24,6 @@
 */
 
 
-#include <stdlib.h>
 #include <math.h>
 
 #include "commonConstants.h"
@@ -87,24 +86,26 @@ void Crit3DMeteoPoint::initializeObsDataH(int myHourlyFraction, int numberOfDays
 
     nrObsDataDaysH = numberOfDays;
     hourlyFraction = myHourlyFraction;
-    int nrDayValues = hourlyFraction * 24 + 1;
-    obsDataH = (TObsDataH *) calloc(unsigned(numberOfDays), sizeof(TObsDataH));
     quality = quality::missing_data;
     residual = NODATA;
+
+    unsigned int nrDailyValues = unsigned(hourlyFraction * 24 + 1);
+    obsDataH = new TObsDataH[unsigned(numberOfDays)];
 
     for (int i = 0; i < numberOfDays; i++)
     {
         obsDataH[i].date = firstDate.addDays(i);
-        obsDataH[i].tAir = (float *) calloc(unsigned(nrDayValues), sizeof(float));
-        obsDataH[i].prec = (float *) calloc(unsigned(nrDayValues), sizeof(float));
-        obsDataH[i].rhAir = (float *) calloc(unsigned(nrDayValues), sizeof(float));
-        obsDataH[i].tDew = (float *) calloc(unsigned(nrDayValues), sizeof(float));
-        obsDataH[i].irradiance = (float *) calloc(unsigned(nrDayValues), sizeof(float));
-        obsDataH[i].et0 = (float *) calloc(unsigned(nrDayValues), sizeof(float));
-        obsDataH[i].windInt = (float *) calloc(unsigned(nrDayValues), sizeof(float));
-        obsDataH[i].leafW = (int *) calloc(unsigned(nrDayValues), sizeof(int));
-        obsDataH[i].transmissivity = (float *) calloc(unsigned(nrDayValues), sizeof(float));
-        for (int j = 0; j < nrDayValues; j++)
+        obsDataH[i].tAir = new float[nrDailyValues];
+        obsDataH[i].prec = new float[nrDailyValues];
+        obsDataH[i].rhAir = new float[nrDailyValues];
+        obsDataH[i].tDew = new float[nrDailyValues];
+        obsDataH[i].irradiance = new float[nrDailyValues];
+        obsDataH[i].et0 = new float[nrDailyValues];
+        obsDataH[i].windInt = new float[nrDailyValues];
+        obsDataH[i].leafW = new int[nrDailyValues];
+        obsDataH[i].transmissivity = new float[nrDailyValues];
+
+        for (unsigned int j = 0; j < nrDailyValues; j++)
         {
             obsDataH[i].tAir[j] = NODATA;
             obsDataH[i].prec[j] = NODATA;
@@ -117,15 +118,15 @@ void Crit3DMeteoPoint::initializeObsDataH(int myHourlyFraction, int numberOfDays
             obsDataH[i].transmissivity[j] = NODATA;
         }
     }
-
 }
+
 
 void Crit3DMeteoPoint::initializeObsDataD(int numberOfDays, const Crit3DDate& firstDate)
 {
     this->cleanObsDataD();
 
     nrObsDataDaysD = numberOfDays;
-    obsDataD = (TObsDataD *) calloc(unsigned(numberOfDays), sizeof(TObsDataD));
+    obsDataD = new TObsDataD[unsigned(numberOfDays)];
 
     quality = quality::missing_data;
     residual = NODATA;
@@ -154,12 +155,11 @@ void Crit3DMeteoPoint::initializeObsDataM(int numberOfMonths, int month, int yea
     this->cleanObsDataM();
 
     nrObsDataDaysM = numberOfMonths;
-    obsDataM = (TObsDataM *) calloc(unsigned(numberOfMonths), sizeof(TObsDataM));
+    obsDataM = new TObsDataM[unsigned(numberOfMonths)];
 
     quality = quality::missing_data;
     residual = NODATA;
     int addYear = -1;
-
 
     for (int i = month; i <= numberOfMonths; i++)
     {
@@ -186,7 +186,6 @@ void Crit3DMeteoPoint::initializeObsDataM(int numberOfMonths, int month, int yea
         obsDataM[i].prec = NODATA;
         obsDataM[i].et0 = NODATA;
         obsDataM[i].globRad = NODATA;
-
     }
 }
 

@@ -9,10 +9,6 @@
         #include "statistics.h"
     #endif
 
-    #ifndef _MAP_
-        #include <map>
-    #endif
-
     #ifndef VECTOR_H
         #include <vector>
     #endif

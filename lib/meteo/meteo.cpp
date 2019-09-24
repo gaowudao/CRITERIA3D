@@ -172,16 +172,17 @@ float computeTminHourlyWeight(int myHour)
         return (1 - (6 - myHour) / 12.f);
 }
 
+
 float Crit3DClimateParameters::getClimateLapseRate(meteoVariable myVar, Crit3DTime myTime)
 {
     Crit3DDate myDate = myTime.date;
     int myHour = myTime.getHour();
 
-    // improve!
+    // TODO improve!
     if (myDate == getNullDate() || myHour == NODATA)
-        return -0.006;
+        return -0.006f;
 
-    int indexMonth = myDate.month - 1;
+    unsigned int indexMonth = unsigned(myDate.month - 1);
 
     if (myVar == dailyAirTemperatureMin)
         return tminLapseRate[indexMonth];
@@ -210,9 +211,10 @@ float Crit3DClimateParameters::getClimateLapseRate(meteoVariable myVar, Crit3DTi
     }
 }
 
+
 float Crit3DClimateParameters::getClimateVar(meteoVariable myVar, Crit3DDate myDate, int myHour)
 {
-    int indexMonth = myDate.month - 1;
+    unsigned int indexMonth = unsigned(myDate.month - 1);
 
     if (myVar == dailyAirTemperatureMin)
         return tmin[indexMonth];
@@ -240,6 +242,7 @@ float Crit3DClimateParameters::getClimateVar(meteoVariable myVar, Crit3DDate myD
         return (myTmin * tminWeight + myTmax * (1 - tminWeight));
     }
 }
+
 
 float tDewFromRelHum(float rhAir, float airT)
 {
