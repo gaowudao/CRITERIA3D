@@ -986,8 +986,8 @@ void weatherGenerator2D::deallocateMemoryPointers()
         }*/
     }
     free(occurrenceIndexSeasonal);
-/*
-    for (int iSeason=0; iSeason<4;iSeason++)
+
+    /*for (int iSeason=0; iSeason<4;iSeason++)
     {
         for (int i=0; i<nrStations;i++)
         {
@@ -998,21 +998,21 @@ void weatherGenerator2D::deallocateMemoryPointers()
         {
             free(simulatedPrecipitationAmounts[iSeason].matrixAmounts[i]);
         }
-    }
+    }*/
     free(simulatedPrecipitationAmounts);
-
+/*
     for (int i=0; i<nrStations;i++)
     {
         free(occurrenceMatrixSeasonDJF[i]);
         free(occurrenceMatrixSeasonMAM[i]);
         free(occurrenceMatrixSeasonJJA[i]);
         free(occurrenceMatrixSeasonSON[i]);
-    }
-    occurrenceMatrixSeasonDJF;
-    occurrenceMatrixSeasonMAM;
-    occurrenceMatrixSeasonJJA;
-    occurrenceMatrixSeasonSON;
-
+    }*/
+    free(occurrenceMatrixSeasonDJF);
+    free(occurrenceMatrixSeasonMAM);
+    free(occurrenceMatrixSeasonJJA);
+    free(occurrenceMatrixSeasonSON);
+/*
     for (int i=0; i<nrStations;i++)
     {
         free(wDJF[i]);
@@ -1020,7 +1020,7 @@ void weatherGenerator2D::deallocateMemoryPointers()
         free(wJJA[i]);
         free(wSON[i]);
         free(wSeason[i]);
-    }
+    }*/
     free(wDJF);
     free(wMAM);
     free(wJJA);
@@ -1028,7 +1028,7 @@ void weatherGenerator2D::deallocateMemoryPointers()
     free(wSeason);
 
     for (int i=0; i<nrStations;i++)
-    {
+    {/*
         free (temperatureCoefficients[i].maxTDry.stdDevEstimation);
         free (temperatureCoefficients[i].maxTDry.averageEstimation);
         free (temperatureCoefficients[i].minTDry.stdDevEstimation);
@@ -1038,15 +1038,16 @@ void weatherGenerator2D::deallocateMemoryPointers()
         free (temperatureCoefficients[i].maxTWet.averageEstimation);
         free (temperatureCoefficients[i].minTWet.stdDevEstimation);
         free (temperatureCoefficients[i].minTWet.averageEstimation);
+        */
         for (int j=0; j<2;j++)
         {
-            temperatureCoefficients[i].A[j];
-            temperatureCoefficients[i].B[j];
+            free(temperatureCoefficients[i].A[j]);
+            free(temperatureCoefficients[i].B[j]);
         }
     }
     free(temperatureCoefficients);
 
-    free(dailyResidual);
+    //free(dailyResidual); //already deallocated
 
     for (int i=0; i<nrStations;i++)
     {
@@ -1061,12 +1062,12 @@ void weatherGenerator2D::deallocateMemoryPointers()
     }
     free(normRandomMaxT);
     free(normRandomMinT);
-
+/*
     for (int i=0; i<365*parametersModel.yearOfSimulation;i++)
     {
         free(multiOccurrenceTemperature[i].occurrence_simulated);
     }
-    free(multiOccurrenceTemperature);
+    free(multiOccurrenceTemperature); */ // already deallocated
 
     for (int i=0; i<365*parametersModel.yearOfSimulation;i++)
     {
@@ -1093,6 +1094,6 @@ void weatherGenerator2D::deallocateMemoryPointers()
         free(outputWeatherData[i].monthSimulated);
     }
     free(outputWeatherData);
-    */
+
 }
 
