@@ -69,7 +69,7 @@ void TabHorizons::insertSoilHorizons(soil::Crit3DSoil *soil, soil::Crit3DTexture
     myTextureClassList = textureClassList;
     myFittingOptions = fittingOptions;
 
-    int row = mySoil->nrHorizons;
+    int row = signed(mySoil->nrHorizons);
     tableDb->setRowCount(row);
     tableModel->setRowCount(row);
 
@@ -399,32 +399,32 @@ void TabHorizons::cellClickedModel(int row, int column)
     clearSelections();
     tableDb->setSelectionBehavior(QAbstractItemView::SelectItems);
     tableModel->setSelectionBehavior(QAbstractItemView::SelectItems);
-    tableModel->setItemSelected(tableModel->item(row,column), true);
+    tableModel->item(row, column)->setSelected(true);
 
     switch (column) {
         case 1:
         {
-            tableDb->setItemSelected(tableDb->item(row,5), true);
+            tableDb->item(row, 5)->setSelected(true);
             break;
         }
         case 2:
         {
-            tableDb->setItemSelected(tableDb->item(row,6), true);
+            tableDb->item(row, 6)->setSelected(true);
             break;
         }
         case 3:
         {
-            tableDb->setItemSelected(tableDb->item(row,7), true);
+            tableDb->item(row, 7)->setSelected(true);
             break;
         }
         case 4:
         {
-            tableDb->setItemSelected(tableDb->item(row,8), true);
+            tableDb->item(row, 8)->setSelected(true);
             break;
         }
         case 5:
         {
-            tableDb->setItemSelected(tableDb->item(row,9), true);
+            tableDb->item(row, 9)->setSelected(true);
             break;
         }
     }

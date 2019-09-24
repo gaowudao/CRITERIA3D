@@ -119,7 +119,7 @@ bool Crit3DProject::loadSoilMap(QString fileName)
         return false;
     }
 
-    soilDbFileName = fileName;
+    soilMapFileName = fileName;
     fileName = getCompleteFileName(fileName, PATH_GEO);
 
     std::string myError;

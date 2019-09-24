@@ -710,7 +710,7 @@ float computeShepard(vector <Crit3DInterpolationDataPoint> &myPoints, Crit3DInte
 
     unsigned int i;
     float radius;
-    int nrValid = 0;
+    unsigned int nrValid = 0;
 
     shepardValidPoints.clear();
     shepardNeighbourPoints.clear();
@@ -809,6 +809,7 @@ float computeShepard(vector <Crit3DInterpolationDataPoint> &myPoints, Crit3DInte
 
     return result;
 }
+
 
 float inverseDistanceWeighted(vector <Crit3DInterpolationDataPoint> &myPointList)
 {
