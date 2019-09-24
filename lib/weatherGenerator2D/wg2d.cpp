@@ -290,17 +290,21 @@ void weatherGenerator2D::setObservedData(TObsDataD** observations)
 
 void weatherGenerator2D::computeWeatherGenerator2D()
 {
-    weatherGenerator2D::commonModuleCompute();
+    //for(int iSimulations=0;iSimulations < 2;iSimulations++)
+    //{
+        weatherGenerator2D::commonModuleCompute();
 
-    if (isTempWG2D)
-        weatherGenerator2D::temperatureCompute();
+        if (isTempWG2D)
+            weatherGenerator2D::temperatureCompute();
 
-    if (isPrecWG2D)
-        weatherGenerator2D::precipitationCompute();
+        if (isPrecWG2D)
+            weatherGenerator2D::precipitationCompute();
 
-    weatherGenerator2D::getWeatherGeneratorOutput();
-    weatherGenerator2D::deallocateMemoryPointers();
+        weatherGenerator2D::getWeatherGeneratorOutput();
+        //weatherGenerator2D::deallocateMemoryPointers();
+    //}
     //pressEnterToContinue();
+
 }
 void weatherGenerator2D::commonModuleCompute()
 {
@@ -1028,17 +1032,17 @@ void weatherGenerator2D::deallocateMemoryPointers()
     free(wSeason);
 
     for (int i=0; i<nrStations;i++)
-    {/*
-        free (temperatureCoefficients[i].maxTDry.stdDevEstimation);
-        free (temperatureCoefficients[i].maxTDry.averageEstimation);
-        free (temperatureCoefficients[i].minTDry.stdDevEstimation);
-        free (temperatureCoefficients[i].minTDry.averageEstimation);
+    {
+        //free (temperatureCoefficients[i].maxTDry.stdDevEstimation);
+        //free (temperatureCoefficients[i].maxTDry.averageEstimation);
+        //free (temperatureCoefficients[i].minTDry.stdDevEstimation);
+        //free (temperatureCoefficients[i].minTDry.averageEstimation);
 
-        free (temperatureCoefficients[i].maxTWet.stdDevEstimation);
-        free (temperatureCoefficients[i].maxTWet.averageEstimation);
-        free (temperatureCoefficients[i].minTWet.stdDevEstimation);
-        free (temperatureCoefficients[i].minTWet.averageEstimation);
-        */
+        //free (temperatureCoefficients[i].maxTWet.stdDevEstimation);
+        //free (temperatureCoefficients[i].maxTWet.averageEstimation);
+        //free (temperatureCoefficients[i].minTWet.stdDevEstimation);
+        //free (temperatureCoefficients[i].minTWet.averageEstimation);
+
         for (int j=0; j<2;j++)
         {
             free(temperatureCoefficients[i].A[j]);
