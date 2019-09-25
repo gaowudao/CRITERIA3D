@@ -53,6 +53,11 @@ void weatherGenerator2D::getWeatherGeneratorOutput()
     TweatherGenClimate weatherGenClimate;
     QString outputFileName;
 
+    for (int i=1;i<=parametersModel.yearOfSimulation;i++)
+    {
+        if (isLeapYear(i)) nrDays++;
+    }
+
     float *inputTMin = nullptr;
     float *inputTMax = nullptr;
     float *inputPrec = nullptr;
@@ -65,6 +70,7 @@ void weatherGenerator2D::getWeatherGeneratorOutput()
     inputFirstDate.day = 1;
     inputFirstDate.month = 1;
     inputFirstDate.year = 1;
+
 
     for (int iStation=0;iStation<nrStations;iStation++)
     {
@@ -125,14 +131,15 @@ void weatherGenerator2D::getWeatherGeneratorOutput()
             inputTMin[i]= (float)(outputWeatherData[iStation].minT[counter]);
             inputTMax[i]= (float)(outputWeatherData[iStation].maxT[counter]);
             //if (isPrecWG2D)
-                inputPrec[i]= (float)(outputWeatherData[iStation].precipitation[counter]);
+            inputPrec[i]= (float)(outputWeatherData[iStation].precipitation[counter]);
             //else inputPrec[i]= 0;
             if (isLeapYear(outputWeatherData[iStation].yearSimulated[counter]) && outputWeatherData[iStation].monthSimulated[counter] == 2 && outputWeatherData[iStation].daySimulated[counter] == 28)
             {
-                inputTMin[++i]= (float)(outputWeatherData[iStation].minT[counter]);
-                inputTMax[++i]= (float)(outputWeatherData[iStation].maxT[counter]);
+                ++i;
+                inputTMin[i]= (float)(outputWeatherData[iStation].minT[counter]);
+                inputTMax[i]= (float)(outputWeatherData[iStation].maxT[counter]);
                 //if (isPrecWG2D)
-                    inputPrec[++i]= (float)(outputWeatherData[iStation].precipitation[counter]);
+                inputPrec[i]= (float)(outputWeatherData[iStation].precipitation[counter]);
                 //else inputPrec[i]= 0;
             }
             counter++;

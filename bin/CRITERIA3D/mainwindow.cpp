@@ -1053,8 +1053,8 @@ void MainWindow::openSoilWidget(QPoint localPos)
     else {
         soilWidget = new Crit3DSoilWidget();
         QString fileName = myProject.getCompleteFileName(myProject.soilDbFileName, PATH_SOIL);
-        soilWidget->setDbSoil(fileName, soilCode);
         soilWidget->show();
+        soilWidget->setDbSoil(fileName, soilCode);
     }
 }
 

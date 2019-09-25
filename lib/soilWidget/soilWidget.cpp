@@ -240,6 +240,8 @@ Crit3DSoilWidget::Crit3DSoilWidget()
     fittingMenu->addAction(useWaterRetentionData);
     fittingMenu->addAction(airEntryFixed);
     fittingMenu->addAction(parameterRestriction);
+
+    changed = false;
 }
 
 
