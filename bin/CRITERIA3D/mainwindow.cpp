@@ -86,24 +86,30 @@ MainWindow::MainWindow(QWidget *parent) :
 void MainWindow::resizeEvent(QResizeEvent * event)
 {
     Q_UNUSED(event)
+
     const int INFOHEIGHT = 40;
     int x1 = this->width() - TOOLSWIDTH - MAPBORDER;
-    int dy = ui->groupBoxInput->height() + ui->groupBoxOutput->height() + MAPBORDER;
+    int dy = ui->groupBoxMeteoPoints->height() + ui->groupBoxInput->height() + ui->groupBoxOutput->height() + MAPBORDER*2;
     int y1 = (this->height() - INFOHEIGHT - dy) / 2;
 
     ui->widgetMap->setGeometry(0, 0, x1, this->height() - INFOHEIGHT);
     mapView->resize(ui->widgetMap->size());
 
-    ui->groupBoxInput->move(x1, y1);
+    ui->groupBoxMeteoPoints->move(x1, y1);
+    ui->groupBoxMeteoPoints->resize(TOOLSWIDTH, ui->groupBoxMeteoPoints->height());
+
+    ui->groupBoxInput->move(x1, y1 + ui->groupBoxMeteoPoints->height() + MAPBORDER);
     ui->groupBoxInput->resize(TOOLSWIDTH, ui->groupBoxInput->height());
 
-    ui->groupBoxOutput->move(x1, y1 + ui->groupBoxInput->height() + MAPBORDER);
+    ui->groupBoxOutput->move(x1, ui->groupBoxInput->y() + ui->groupBoxInput->height() + MAPBORDER);
     ui->groupBoxOutput->resize(TOOLSWIDTH, ui->groupBoxOutput->height());
 }
 
 
 void MainWindow::mouseReleaseEvent(QMouseEvent *event)
 {
+    Q_UNUSED(event)
+
     this->rasterObj->updateCenter();
 }
 
