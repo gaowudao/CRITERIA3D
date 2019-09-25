@@ -53,7 +53,6 @@ MainWindow::MainWindow(QWidget *parent) :
 {
     ui->setupUi(this);
 
-    this->myRubberBand = nullptr;
     this->viewer3D = nullptr;
 
     // Set the MapGraphics Scene and View
@@ -130,65 +129,6 @@ void MainWindow::resizeEvent(QResizeEvent * event)
 void MainWindow::mouseReleaseEvent(QMouseEvent *event)
 {
     this->rasterObj->updateCenter();
-
-    if (myRubberBand != nullptr && myRubberBand->isVisible())
-    {
-        gis::Crit3DGeoPoint pointSelected;
-        QPointF lastCornerOffset = event->localPos();
-        QPointF firstCornerOffset = myRubberBand->getFirstCorner();
-        QPoint pixelTopLeft;
-        QPoint pixelBottomRight;
-
-        if (firstCornerOffset.y() > lastCornerOffset.y())
-        {
-            if (firstCornerOffset.x() > lastCornerOffset.x())
-            {
-                // bottom to left
-                pixelTopLeft = lastCornerOffset.toPoint();
-                pixelBottomRight = firstCornerOffset.toPoint();
-            }
-            else
-            {
-                // bottom to right
-                pixelTopLeft = QPoint(firstCornerOffset.toPoint().x(), lastCornerOffset.toPoint().y());
-                pixelBottomRight = QPoint(lastCornerOffset.toPoint().x(), firstCornerOffset.toPoint().y());
-            }
-        }
-        else
-        {
-            if (firstCornerOffset.x() > lastCornerOffset.x())
-            {
-                // top to left
-                pixelTopLeft = QPoint(lastCornerOffset.toPoint().x(), firstCornerOffset.toPoint().y());
-                pixelBottomRight = QPoint(firstCornerOffset.toPoint().x(), lastCornerOffset.toPoint().y());
-            }
-            else
-            {
-                // top to right
-                pixelTopLeft = firstCornerOffset.toPoint();
-                pixelBottomRight = lastCornerOffset.toPoint();
-            }
-        }
-
-        QPointF topLeft = this->mapView->mapToScene(getMapPoint(&pixelTopLeft));
-        QPointF bottomRight = this->mapView->mapToScene(getMapPoint(&pixelBottomRight));
-        QRectF rectF(topLeft, bottomRight);
-
-        foreach (StationMarker* marker, pointList)
-        {
-            if (rectF.contains(marker->longitude(), marker->latitude()))
-            {
-                if ( marker->color() ==  Qt::white )
-                {
-                    marker->setFillColor(QColor((Qt::red)));
-                    pointSelected.latitude = marker->latitude();
-                    pointSelected.longitude = marker->longitude();
-                    myProject.meteoPointsSelected << pointSelected;
-                }
-            }
-        }
-        myRubberBand->hide();
-    }
 }
 
 
@@ -223,11 +163,6 @@ void MainWindow::mouseMoveEvent(QMouseEvent * event)
 
     Position geoPoint = this->mapView->mapToScene(mapPoint);
     this->ui->statusBar->showMessage(QString::number(geoPoint.latitude()) + " " + QString::number(geoPoint.longitude()));
-
-    if (myRubberBand != nullptr && myRubberBand->isActive)
-    {
-        myRubberBand->setGeometry(QRect(myRubberBand->getOrigin(), mapPoint).normalized());
-    }
 }
 
 
@@ -235,22 +170,7 @@ void MainWindow::mousePressEvent(QMouseEvent *event)
 {
     if (event->button() == Qt::RightButton)
     {
-        if (myRubberBand != nullptr)
-        {
-            // rubber band
-            QPoint pos = event->pos();
-            QPoint mapPoint = getMapPoint(&pos);
-            QPointF firstCorner = event->localPos();
-            myRubberBand->setFirstCorner(firstCorner);
-            myRubberBand->setOrigin(mapPoint);
-            myRubberBand->setGeometry(QRect(mapPoint, QSize()));
-            myRubberBand->isActive = true;
-            myRubberBand->show();
-        }
-        else
-        {
-            contextMenuRequested(event->pos(), event->globalPos());
-        }
+        contextMenuRequested(event->pos(), event->globalPos());
 
         #ifdef NETCDF
         if (myProject.netCDF.isLoaded)
@@ -261,21 +181,6 @@ void MainWindow::mousePressEvent(QMouseEvent *event)
             exportNetCDFDataSeries(geoPoint);
         }
         #endif
-    }
-}
-
-
-void MainWindow::on_actionRectangle_Selection_triggered()
-{
-    if (myRubberBand != nullptr)
-    {
-        delete myRubberBand;
-        myRubberBand = nullptr;
-    }
-
-    if (ui->actionRectangle_Selection->isChecked())
-    {
-        myRubberBand = new RubberBand(QRubberBand::Rectangle, this->mapView);
     }
 }
 

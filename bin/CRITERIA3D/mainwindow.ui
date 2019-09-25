@@ -2639,8 +2639,6 @@
     <addaction name="menuMeteo_variables"/>
     <addaction name="actionView_3D"/>
     <addaction name="separator"/>
-    <addaction name="actionRectangle_Selection"/>
-    <addaction name="separator"/>
    </widget>
    <addaction name="menuFile"/>
    <addaction name="menuShow"/>
@@ -2684,14 +2682,6 @@
   <action name="actionLoad_meteo_points_DB">
    <property name="text">
     <string>Meteo points DB...</string>
-   </property>
-  </action>
-  <action name="actionRectangle_Selection">
-   <property name="checkable">
-    <bool>true</bool>
-   </property>
-   <property name="text">
-    <string>Rectangle Selection</string>
    </property>
   </action>
   <action name="actionVariableQualitySpatial">
