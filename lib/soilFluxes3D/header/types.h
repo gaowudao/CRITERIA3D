@@ -132,10 +132,8 @@
      extern TCrit3Dnode *myNode;
      extern TmatrixElement **A;
 	 extern Tculvert myCulvert;
-	 extern double Courant;
      extern double *b, *C, *X;
      extern double *invariantFlux;         //array accessorio per flussi avvettivi e latenti
-     extern double Courant;
 	 extern double Courant;
 
      extern Tbalance balanceCurrentTimeStep, balancePreviousTimeStep, balanceCurrentPeriod, balanceWholePeriod;

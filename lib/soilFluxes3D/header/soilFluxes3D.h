@@ -1,10 +1,8 @@
 #ifndef SOILFLUXES3D
 #define SOILFLUXES3D
 
-    //-------------------------------------------------
-    // uncomment to compile as win32 dll
+    /*----- uncomment to compile as win32 dll -----*/
     // #define BUILD_DLL 1
-    //-------------------------------------------------
 
     #ifdef BUILD_DLL
         #define DLL_EXPORT __declspec(dllexport)
