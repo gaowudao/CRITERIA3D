@@ -1,21 +1,5 @@
 #include "commonConstants.h"
 
-#include <QGridLayout>
-#include <QFileDialog>
-#include <QtDebug>
-#include <QMessageBox>
-#include <QDialogButtonBox>
-#include <QPushButton>
-#include <QListWidget>
-#include <QRadioButton>
-#include <QTextBrowser>
-#include <QLineEdit>
-#include <QLabel>
-
-#include <sstream>
-#include <iostream>
-#include <fstream>
-
 #include "tileSources/OSMTileSource.h"
 #include "tileSources/CompositeTileSource.h"
 
@@ -34,18 +18,12 @@
 #include "dialogSettings.h"
 #include "dialogRadiation.h"
 
-#include <Qt3DRender/QCamera>
-#include <Qt3DExtras/Qt3DWindow>
-#include <Qt3DExtras/QForwardRenderer>
-#include <Qt3DExtras/QFirstPersonCameraController>
-#include <Qt3DInput>
-
 #include "crit3dProject.h"
 
 extern Crit3DProject myProject;
 
 #define MAPBORDER 11
-#define TOOLSWIDTH 244
+#define TOOLSWIDTH 243
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -101,8 +79,6 @@ MainWindow::MainWindow(QWidget *parent) :
     this->updateVariable();
     this->updateDateTime();
 
-    //connect(this->ui->dateEdit, SIGNAL(editingFinished()), this, SLOT(on_dateChanged()));
-
     this->setMouseTracking(true);
 }
 
@@ -113,7 +89,7 @@ void MainWindow::resizeEvent(QResizeEvent * event)
     const int INFOHEIGHT = 40;
     int x1 = this->width() - TOOLSWIDTH - MAPBORDER;
     int dy = ui->groupBoxInput->height() + ui->groupBoxOutput->height() + MAPBORDER;
-    int y1 = (this->height() - dy) / 2;
+    int y1 = (this->height() - INFOHEIGHT - dy) / 2;
 
     ui->widgetMap->setGeometry(0, 0, x1, this->height() - INFOHEIGHT);
     mapView->resize(ui->widgetMap->size());
