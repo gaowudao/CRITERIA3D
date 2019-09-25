@@ -2142,7 +2142,7 @@
       <rect>
        <x>20</x>
        <y>30</y>
-       <width>111</width>
+       <width>101</width>
        <height>31</height>
       </rect>
      </property>
@@ -2467,7 +2467,7 @@
      <x>0</x>
      <y>0</y>
      <width>1280</width>
-     <height>26</height>
+     <height>21</height>
     </rect>
    </property>
    <property name="palette">
