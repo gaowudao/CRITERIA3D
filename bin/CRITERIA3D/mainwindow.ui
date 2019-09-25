@@ -485,8 +485,8 @@
    <widget class="QWidget" name="widgetMap" native="true">
     <property name="geometry">
      <rect>
-      <x>270</x>
-      <y>0</y>
+      <x>260</x>
+      <y>40</y>
       <width>751</width>
       <height>491</height>
      </rect>
@@ -504,9 +504,9 @@
     <property name="geometry">
      <rect>
       <x>0</x>
-      <y>0</y>
+      <y>90</y>
       <width>241</width>
-      <height>331</height>
+      <height>281</height>
      </rect>
     </property>
     <property name="palette">
@@ -1011,7 +1011,7 @@
      <property name="geometry">
       <rect>
        <x>1</x>
-       <y>80</y>
+       <y>70</y>
        <width>241</width>
        <height>42</height>
       </rect>
@@ -1088,7 +1088,7 @@
      <property name="geometry">
       <rect>
        <x>80</x>
-       <y>150</y>
+       <y>130</y>
        <width>111</width>
        <height>21</height>
       </rect>
@@ -1145,7 +1145,7 @@
      <property name="geometry">
       <rect>
        <x>20</x>
-       <y>180</y>
+       <y>160</y>
        <width>111</width>
        <height>31</height>
       </rect>
@@ -1279,7 +1279,7 @@
      <property name="geometry">
       <rect>
        <x>150</x>
-       <y>180</y>
+       <y>160</y>
        <width>71</width>
        <height>31</height>
       </rect>
@@ -1366,31 +1366,11 @@
       <string>HH:mm</string>
      </property>
     </widget>
-    <widget class="QPushButton" name="frequencyButton">
-     <property name="geometry">
-      <rect>
-       <x>20</x>
-       <y>220</y>
-       <width>91</width>
-       <height>23</height>
-      </rect>
-     </property>
-     <property name="font">
-      <font>
-       <pointsize>9</pointsize>
-       <weight>50</weight>
-       <bold>false</bold>
-      </font>
-     </property>
-     <property name="text">
-      <string>Frequency</string>
-     </property>
-    </widget>
     <widget class="QPushButton" name="variableButton">
      <property name="geometry">
       <rect>
        <x>20</x>
-       <y>250</y>
+       <y>200</y>
        <width>71</width>
        <height>23</height>
       </rect>
@@ -1406,32 +1386,12 @@
       <string>Variable</string>
      </property>
     </widget>
-    <widget class="QLabel" name="labelFrequency">
-     <property name="geometry">
-      <rect>
-       <x>120</x>
-       <y>220</y>
-       <width>121</width>
-       <height>21</height>
-      </rect>
-     </property>
-     <property name="font">
-      <font>
-       <pointsize>9</pointsize>
-       <weight>50</weight>
-       <bold>false</bold>
-      </font>
-     </property>
-     <property name="text">
-      <string>frequency</string>
-     </property>
-    </widget>
     <widget class="QLabel" name="labelVariable">
      <property name="geometry">
       <rect>
        <x>100</x>
-       <y>250</y>
-       <width>141</width>
+       <y>200</y>
+       <width>131</width>
        <height>21</height>
       </rect>
      </property>
@@ -1487,7 +1447,7 @@
      <property name="geometry">
       <rect>
        <x>1</x>
-       <y>280</y>
+       <y>230</y>
        <width>241</width>
        <height>42</height>
       </rect>
@@ -1510,7 +1470,7 @@
      <property name="geometry">
       <rect>
        <x>10</x>
-       <y>130</y>
+       <y>110</y>
        <width>221</width>
        <height>20</height>
       </rect>
@@ -1530,9 +1490,9 @@
     <property name="geometry">
      <rect>
       <x>0</x>
-      <y>340</y>
+      <y>390</y>
       <width>241</width>
-      <height>301</height>
+      <height>171</height>
      </rect>
     </property>
     <property name="palette">
@@ -2037,7 +1997,7 @@
      <property name="geometry">
       <rect>
        <x>1</x>
-       <y>80</y>
+       <y>70</y>
        <width>241</width>
        <height>42</height>
       </rect>
@@ -2118,7 +2078,7 @@
      <x>0</x>
      <y>0</y>
      <width>1280</width>
-     <height>26</height>
+     <height>21</height>
     </rect>
    </property>
    <property name="palette">

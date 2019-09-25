@@ -41,6 +41,7 @@ Crit3DProject::Crit3DProject() : Project3D()
     isCriteria3DInitialized = false;
 
     hourlyMeteoMaps = nullptr;
+    setCurrentFrequency(hourly);
 }
 
 
@@ -349,7 +350,7 @@ bool Crit3DProject::computeAllMeteoMaps(const Crit3DTime& myTime, bool showInfo)
 }
 
 
-bool Crit3DProject::initializeCriteria3D()
+bool Crit3DProject::initializeCriteria3DModel()
 {
     // check data
     if (! this->DEM.isLoaded)

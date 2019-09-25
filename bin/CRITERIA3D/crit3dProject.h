@@ -42,7 +42,7 @@
 
         bool loadSoilMap(QString fileName);
 
-        bool initializeCriteria3D();
+        bool initializeCriteria3DModel();
 
         bool setSoilIndexMap();
 

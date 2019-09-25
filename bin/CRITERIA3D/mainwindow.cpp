@@ -113,14 +113,16 @@ void MainWindow::resizeEvent(QResizeEvent * event)
     Q_UNUSED(event)
     const int INFOHEIGHT = 40;
     int x1 = this->width() - TOOLSWIDTH - MAPBORDER;
+    int dy = ui->groupBoxInput->height() + ui->groupBoxOutput->height() + MAPBORDER;
+    int y1 = (this->height() - dy) / 2;
 
     ui->widgetMap->setGeometry(0, 0, x1, this->height() - INFOHEIGHT);
     mapView->resize(ui->widgetMap->size());
 
-    ui->groupBoxInput->move(x1, 2);
+    ui->groupBoxInput->move(x1, y1);
     ui->groupBoxInput->resize(TOOLSWIDTH, ui->groupBoxInput->height());
 
-    ui->groupBoxOutput->move(x1, ui->groupBoxInput->y() + ui->groupBoxInput->height() + MAPBORDER);
+    ui->groupBoxOutput->move(x1, y1 + ui->groupBoxInput->height() + MAPBORDER);
     ui->groupBoxOutput->resize(TOOLSWIDTH, ui->groupBoxOutput->height());
 }
 
@@ -472,65 +474,28 @@ void MainWindow::interpolateDemGUI()
 
 void MainWindow::updateVariable()
 {
-    // FREQUENCY
-    if (myProject.getCurrentFrequency() == noFrequency)
-    {
-        this->ui->labelFrequency->setText("None");
-    }
-    else
-    {
-        if (myProject.getCurrentFrequency() == daily)
-        {
-            this->ui->labelFrequency->setText("Daily");
+    //check
+    if ((myProject.getCurrentVariable() == dailyAirTemperatureAvg)
+            || (myProject.getCurrentVariable() == dailyAirTemperatureMax)
+            || (myProject.getCurrentVariable() == dailyAirTemperatureMin))
+        myProject.setCurrentVariable(airTemperature);
 
-            //check
-            if (myProject.getCurrentVariable() == airTemperature)
-                myProject.setCurrentVariable(dailyAirTemperatureAvg);
+    else if ((myProject.getCurrentVariable() == dailyAirRelHumidityAvg)
+             || (myProject.getCurrentVariable() == dailyAirRelHumidityMax)
+             || (myProject.getCurrentVariable() == dailyAirRelHumidityMin))
+         myProject.setCurrentVariable(airRelHumidity);
 
-            else if (myProject.getCurrentVariable() == precipitation)
-                myProject.setCurrentVariable(dailyPrecipitation);
+    else if (myProject.getCurrentVariable() == dailyAirDewTemperatureAvg)
+        myProject.setCurrentVariable(airDewTemperature);
 
-            else if (myProject.getCurrentVariable() == globalIrradiance)
-                myProject.setCurrentVariable(dailyGlobalRadiation);
+    else if (myProject.getCurrentVariable() == dailyPrecipitation)
+            myProject.setCurrentVariable(precipitation);
 
-            else if (myProject.getCurrentVariable() == airRelHumidity)
-                myProject.setCurrentVariable(dailyAirRelHumidityAvg);
+    else if (myProject.getCurrentVariable() == dailyGlobalRadiation)
+        myProject.setCurrentVariable(globalIrradiance);
 
-            else if (myProject.getCurrentVariable() == airDewTemperature)
-                myProject.setCurrentVariable(dailyAirDewTemperatureAvg);
-
-            else if (myProject.getCurrentVariable() == windIntensity)
-                myProject.setCurrentVariable(dailyWindIntensityAvg);
-        }
-
-        else if (myProject.getCurrentFrequency() == hourly)
-        {
-            this->ui->labelFrequency->setText("Hourly");
-
-            //check
-            if ((myProject.getCurrentVariable() == dailyAirTemperatureAvg)
-                    || (myProject.getCurrentVariable() == dailyAirTemperatureMax)
-                    || (myProject.getCurrentVariable() == dailyAirTemperatureMin))
-                myProject.setCurrentVariable(airTemperature);
-
-            else if ((myProject.getCurrentVariable() == dailyAirRelHumidityAvg)
-                     || (myProject.getCurrentVariable() == dailyAirRelHumidityMax)
-                     || (myProject.getCurrentVariable() == dailyAirRelHumidityMin))
-                 myProject.setCurrentVariable(airRelHumidity);
-
-            else if (myProject.getCurrentVariable() == dailyAirDewTemperatureAvg)
-                myProject.setCurrentVariable(airDewTemperature);
-
-            else if (myProject.getCurrentVariable() == dailyPrecipitation)
-                    myProject.setCurrentVariable(precipitation);
-
-            else if (myProject.getCurrentVariable() == dailyGlobalRadiation)
-                myProject.setCurrentVariable(globalIrradiance);
-
-            else if (myProject.getCurrentVariable() == dailyWindIntensityAvg)
-                myProject.setCurrentVariable(windIntensity);
-        }
-    }
+    else if (myProject.getCurrentVariable() == dailyWindIntensityAvg)
+        myProject.setCurrentVariable(windIntensity);
 
     std::string myString = getVariableString(myProject.getCurrentVariable());
     ui->labelVariable->setText(QString::fromStdString(myString));
@@ -686,17 +651,6 @@ void MainWindow::on_variableButton_clicked()
 }
 
 
-void MainWindow::on_frequencyButton_clicked()
-{
-   frequencyType myFrequency = chooseFrequency();
-
-   if (myFrequency != noFrequency)
-   {
-       myProject.setCurrentFrequency(myFrequency);
-       this->updateVariable();
-   }
-}
-
 void MainWindow::setInputRasterVisible(bool value)
 {
     inputRasterColorLegend->setVisible(value);
@@ -784,7 +738,7 @@ void MainWindow::on_actionProjectSettings_triggered()
 
 void MainWindow::on_actionCriteria3D_Initialize_triggered()
 {
-    myProject.initializeCriteria3D();
+    myProject.initializeCriteria3DModel();
 }
 
 
@@ -937,7 +891,6 @@ void MainWindow::setMapVariable(meteoVariable myVar, gis::Crit3DRasterGrid *myGr
     ui->opacitySliderRasterOutput->setVisible(true);
 
     myProject.setCurrentVariable(myVar);
-    myProject.setCurrentFrequency(getVarFrequency(myVar));
     currentPointsVisualization = showCurrentVariable;
     updateVariable();
 }
@@ -1065,7 +1018,6 @@ void MainWindow::on_actionCompute_solar_radiation_triggered()
         return;
     }
 
-    myProject.setCurrentFrequency(hourly);
     myProject.setCurrentVariable(globalIrradiance);
     this->currentPointsVisualization = showCurrentVariable;
     this->updateVariable();

@@ -793,7 +793,7 @@ bool initializeWaterBalance(Vine3DProject* myProject)
 
     if (isCrit3dError(myResult, &myError))
     {
-        myProject->errorString = "initializeCriteria3D:" + myError;
+        myProject->errorString = "initializeWaterBalance:" + myError;
         return(false);
     }
 
