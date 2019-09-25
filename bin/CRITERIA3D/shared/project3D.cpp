@@ -49,6 +49,8 @@ void Project3D::initializeProject3D()
     nrLayers = 0;
     nrNodes = 0;
     nrLateralLink = 8;
+
+    setCurrentFrequency(hourly);
 }
 
 

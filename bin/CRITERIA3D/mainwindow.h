@@ -48,7 +48,6 @@
         void on_actionMapTerrain_triggered();
 
         void on_variableButton_clicked();
-        void on_frequencyButton_clicked();
 
         void on_actionRectangle_Selection_triggered();
         void on_actionVariableQualitySpatial_triggered();

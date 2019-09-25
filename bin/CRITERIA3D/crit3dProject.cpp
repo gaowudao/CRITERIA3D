@@ -41,7 +41,6 @@ Crit3DProject::Crit3DProject() : Project3D()
     isCriteria3DInitialized = false;
 
     hourlyMeteoMaps = nullptr;
-    setCurrentFrequency(hourly);
 }
 
 
@@ -51,7 +50,9 @@ bool Crit3DProject::loadCriteria3DProject(QString myFileName)
 
     clearCriteria3DProject();
     if (isProjectLoaded) clearProject();
+
     initializeProject();
+    initializeProject3D();
 
     if (! loadProjectSettings(myFileName))
         return false;
