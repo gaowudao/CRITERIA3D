@@ -606,7 +606,7 @@ void MainWindow::on_variableButton_clicked()
     myProject.setCurrentVariable(myVar);
     this->updateVariable();
 
-    if (myProject.getFrequency() != noFrequency)
+    if (myProject.getCurrentFrequency() != noFrequency)
     {
         this->ui->actionShowPointsVariable->setEnabled(true);
         redrawMeteoPoints(showCurrentVariable, true);
