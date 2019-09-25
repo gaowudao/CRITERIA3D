@@ -7,11 +7,8 @@
 #include "formInfo.h"
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
-#include "Position.h"
 #include "crit3dProject.h"
-#include "utilities.h"
 #include "soilDbTools.h"
-#include "gis.h"
 #include "dialogSelection.h"
 #include "spatialControl.h"
 #include "dialogInterpolation.h"
@@ -62,8 +59,7 @@ MainWindow::MainWindow(QWidget *parent) :
     showPointsGroup->addAction(this->ui->actionView_PointsCurrentVariable);
     showPointsGroup->setEnabled(false);
 
-    // Set tiles source
-    this->setMapSource(OSMTileSource::OSMTiles);
+    this->setTileMapSource(OSMTileSource::OSMTiles);
 
     // Set start size and position
     this->startCenter = new Position (myProject.gisSettings.startLocation.longitude, myProject.gisSettings.startLocation.latitude, 0.0);
@@ -202,8 +198,35 @@ void MainWindow::drawMeteoPoints()
 }
 
 
+void MainWindow::setProjectTileMap()
+{
+    if (myProject.tileMap != "")
+    {
+        if (myProject.tileMap.toUpper() == "ESRI" || myProject.tileMap == "ESRIWorldImagery")
+        {
+            this->setTileMapSource(OSMTileSource::ESRIWorldImagery);
+        }
+        else if (myProject.tileMap.toUpper() == "TERRAIN")
+        {
+            this->setTileMapSource(OSMTileSource::Terrain);
+        }
+        else
+        {
+            this->setTileMapSource(OSMTileSource::OSMTiles);
+        }
+    }
+    else
+    {
+        // default: Open Street Map
+        this->setTileMapSource(OSMTileSource::OSMTiles);
+    }
+}
+
+
 void MainWindow::drawProject()
 {
+    setProjectTileMap();
+
     mapView->centerOn(startCenter->lonLat());
 
     if (myProject.DEM.isLoaded)
@@ -852,23 +875,23 @@ void MainWindow::on_actionView_PointsCurrentVariable_triggered()
 
 void MainWindow::on_actionMapTerrain_triggered()
 {
-    this->setMapSource(OSMTileSource::Terrain);
+    this->setTileMapSource(OSMTileSource::Terrain);
 }
 
 
 void MainWindow::on_actionMapOpenStreetMap_triggered()
 {
-    this->setMapSource(OSMTileSource::OSMTiles);
+    this->setTileMapSource(OSMTileSource::OSMTiles);
 }
 
 
 void MainWindow::on_actionMapESRISatellite_triggered()
 {
-    this->setMapSource(OSMTileSource::ESRIWorldImagery);
+    this->setTileMapSource(OSMTileSource::ESRIWorldImagery);
 }
 
 
-void MainWindow::setMapSource(OSMTileSource::OSMTileType mySource)
+void MainWindow::setTileMapSource(OSMTileSource::OSMTileType mySource)
 {
     // set menu
     ui->actionMapOpenStreetMap->setChecked(false);

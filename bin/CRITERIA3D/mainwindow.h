@@ -13,6 +13,7 @@
     #include "viewer3d.h"
 
     #include <QMainWindow>
+
     class QActionGroup;
 
 
@@ -135,7 +136,8 @@
         Viewer3D *viewer3D;
         Crit3DSoilWidget *soilWidget;
 
-        void setMapSource(OSMTileSource::OSMTileType mySource);
+        void setTileMapSource(OSMTileSource::OSMTileType mySource);
+        void setProjectTileMap();
 
         QPoint getMapPoint(QPoint* point) const;
 

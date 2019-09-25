@@ -63,6 +63,7 @@
         QString dbPointsFileName;
         QString dbGridXMLFileName;
         QString parametersFileName;
+        QString tileMap;
 
         std::ofstream logFile;
 
