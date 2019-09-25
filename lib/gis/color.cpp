@@ -305,7 +305,7 @@ bool roundColorScale(Crit3DColorScale* myScale, int nrIntervals, bool lessRounde
     float myExp;
     float roundAvg = avg;
 
-    if (avg == 0)
+    if (avg == 0.f)
     {
         myExp = floor(logLevel)-1;
     }
@@ -321,10 +321,10 @@ bool roundColorScale(Crit3DColorScale* myScale, int nrIntervals, bool lessRounde
     float pow10 = powf(10.0, myExp);
     float roundLevel = ceil(level / pow10) * pow10;
 
-    if (avg != 0)
+    if (avg != 0.f)
         roundAvg = round(avg / pow10) * pow10;
 
-    if (myScale->minimum == 0)
+    if (myScale->minimum == 0.f)
     {
         //precipitation
         myScale->maximum = roundLevel * nrIntervals;

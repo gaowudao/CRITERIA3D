@@ -848,7 +848,7 @@ namespace gis
         float lonUtmZone , lonTimeZone;
         lonUtmZone = float((utmZone - 1) * 6 - 180 + 3);
         lonTimeZone = float(timeZone * 15);
-        if (fabs(lonTimeZone - lonUtmZone) <= 7.5) return true;
+        if (fabs(lonTimeZone - lonUtmZone) <= 7.5f) return true;
         else return false;
     }
 
@@ -1040,7 +1040,7 @@ namespace gis
                         myMapOut->value[myRow][myCol] = (myMap1->value[myRow][myCol] * myMap2->value[myRow][myCol]);
                     else if (myOperation == operationDivide)
                     {
-                        if (myMap2->value[myRow][myCol] != 0)
+                        if (myMap2->value[myRow][myCol] != 0.f)
                             myMapOut->value[myRow][myCol] = (myMap1->value[myRow][myCol] / myMap2->value[myRow][myCol]);
                         else
                             return false;
@@ -1074,7 +1074,7 @@ namespace gis
                         myMapOut->value[myRow][myCol] = (myMap1->value[myRow][myCol] * myValue);
                     else if (myOperation == operationDivide)
                     {
-                        if (myValue != 0)
+                        if (myValue != 0.f)
                             myMapOut->value[myRow][myCol] = (myMap1->value[myRow][myCol] / myValue);
                         else
                             return false;
