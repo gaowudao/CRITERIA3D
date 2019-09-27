@@ -169,10 +169,10 @@ void RasterObject::freeIndexesMatrix()
 
 void RasterObject::initializeIndexesMatrix()
 {
-    this->matrix = (RowCol **) calloc(unsigned(this->latLonHeader.nrRows), sizeof(RowCol *));
+    this->matrix = new RowCol*[unsigned(latLonHeader.nrRows)];
 
     for (int row = 0; row < this->latLonHeader.nrRows; row++)
-        this->matrix[row] = (RowCol *) calloc(unsigned(this->latLonHeader.nrCols), sizeof(RowCol));
+        this->matrix[row] = new RowCol[unsigned(latLonHeader.nrCols)];
 
     for (int row = 0; row < this->latLonHeader.nrRows; row++)
         for (int col = 0; col < this->latLonHeader.nrCols; col++)
