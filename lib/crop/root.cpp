@@ -29,7 +29,6 @@
 
 
 #include <math.h>
-#include <stdlib.h>
 #include <iostream>
 
 #include "commonConstants.h"
@@ -39,34 +38,22 @@
 #include "soil.h"
 
 
-    Crit3DRoot::Crit3DRoot()
-    {
-        this->rootShape = CYLINDRICAL_DISTRIBUTION;
-        this->growth = LOGISTIC;
-        this->shapeDeformation = NODATA;
-        this->degreeDaysRootGrowth = NODATA;
-        this->rootDepthMin = NODATA;
-        this->rootDepthMax = NODATA;
-        this->firstRootLayer = NODATA;
-        this->lastRootLayer = NODATA;
-        this->rootLength = NODATA;
-        this->rootDepth = NODATA;
-        this->rootDensity = nullptr;
-        this->transpiration = nullptr;
-    }
+Crit3DRoot::Crit3DRoot()
+{
+    this->rootShape = CYLINDRICAL_DISTRIBUTION;
+    this->growth = LOGISTIC;
+    this->shapeDeformation = NODATA;
+    this->degreeDaysRootGrowth = NODATA;
+    this->rootDepthMin = NODATA;
+    this->rootDepthMax = NODATA;
+    this->firstRootLayer = NODATA;
+    this->lastRootLayer = NODATA;
+    this->rootLength = NODATA;
+    this->rootDepth = NODATA;
+    this->rootDensity = nullptr;
+    this->transpiration = nullptr;
+}
 
-    Crit3DRoot::Crit3DRoot(rootDistributionType myShape, double myDepthMin, double myDepthMax, double myDegreeDaysRootGrowth)
-    {
-        rootShape = myShape;
-        degreeDaysRootGrowth = myDegreeDaysRootGrowth;
-        rootDepthMin = myDepthMin;
-        rootDepthMax = myDepthMax;
-        firstRootLayer = NODATA;
-        lastRootLayer = NODATA;
-        rootDepth = 0;
-        rootDensity = nullptr;
-        transpiration = nullptr;
-    }
 
 namespace root
 {
@@ -293,8 +280,8 @@ namespace root
     void cardioidDistribution(double shapeFactor, int nrLayersWithRoot,
                               int nrUpperLayersWithoutRoot , int totalLayers, double* densityThinLayers)
     {
-        double *lunette =  (double *) calloc(unsigned(2*nrLayersWithRoot), sizeof(double));
-        double *lunetteDensity = (double *) calloc(unsigned(2*nrLayersWithRoot), sizeof(double));
+        double *lunette =  new double[unsigned(2*nrLayersWithRoot)];
+        double *lunetteDensity = new double[unsigned(2*nrLayersWithRoot)];
         for (int i = 0 ; i<nrLayersWithRoot ; i++)
         {
             double sinAlfa, cosAlfa, alfa;
@@ -319,7 +306,6 @@ namespace root
         rootDensitySum = 0 ;
         for (int i = 0 ; i<(2*nrLayersWithRoot) ; i++)
         {
-            // modified from VB6 to C
             lunetteDensity[i] *= exp(-k*(i+0.5));
             rootDensitySum += lunetteDensity[i];
         }
@@ -343,14 +329,14 @@ namespace root
 
     void cylindricalDistribution(double deformation, int nrLayersWithRoot,int nrUpperLayersWithoutRoot , int totalLayers,double* densityThinLayers)
     {
-
        int i;
 
-       double *cylinderDensity =  (double *) calloc(unsigned(2*nrLayersWithRoot), sizeof(double));
+       double *cylinderDensity =  new double[unsigned(2*nrLayersWithRoot)];
        for (i = 0 ; i<2*nrLayersWithRoot; i++)
        {
            cylinderDensity[i]= 1./(2*nrLayersWithRoot);
        } // not deformed cylinder
+
        // linear and ovoidal deformation
        double deltaDeformation,rootDensitySum;
        rootDensitySum =0;
@@ -372,7 +358,7 @@ namespace root
        {
            cylinderDensity[i] /= rootDensitySum;
        }
-       for  (i = 0 ; i<totalLayers ; i++)
+       for (i = 0 ; i<totalLayers ; i++)
        {
            densityThinLayers[i] = 0;
        }
@@ -389,20 +375,23 @@ namespace root
         int i, j, layer;
 
         // Initialize
-        for (i=0; i<nrLayers; i++)
-            myCrop->roots.rootDensity[i]=0.0;
+        for (i = 0; i < nrLayers; i++)
+        {
+            myCrop->roots.rootDensity[i] = 0.0;
+        }
 
         if ((! myCrop->isLiving) || (myCrop->roots.rootLength <= 0 )) return true;
 
-        if ((myCrop->roots.rootShape == CARDIOID_DISTRIBUTION) || (myCrop->roots.rootShape == CYLINDRICAL_DISTRIBUTION))
+        if ((myCrop->roots.rootShape == CARDIOID_DISTRIBUTION)
+            || (myCrop->roots.rootShape == CYLINDRICAL_DISTRIBUTION))
         {
             double minimumThickness;
-            int *atoms =  (int *) calloc(unsigned(nrLayers), sizeof(int));
+            int *atoms = new int[unsigned(nrLayers)];
             int numberOfRootedLayers, numberOfTopUnrootedLayers, totalLayers;
             totalLayers = root::nrAtoms(layers, nrLayers, myCrop->roots.rootDepthMin, &minimumThickness, atoms);
             numberOfTopUnrootedLayers = int(round(myCrop->roots.rootDepthMin / minimumThickness));
             numberOfRootedLayers = int(ceil(MINVALUE(myCrop->roots.rootLength, soilDepth) / minimumThickness));
-            double *densityThinLayers =  (double *) calloc(unsigned(totalLayers+1), sizeof(double));
+            double *densityThinLayers =  new double[unsigned(totalLayers+1)];
             densityThinLayers[totalLayers] = 0.;
             for (i=0; i < totalLayers; i++)
                 densityThinLayers[i] = 0.;
@@ -469,7 +458,8 @@ namespace root
 
             myCrop->roots.firstRootLayer = 0;
             layer = 0;
-            while ((myCrop->roots.rootDensity[layer] == 0)
+
+            while ((myCrop->roots.rootDensity[layer] == 0.0)
                    && (layer < nrLayers))
             {
                 layer++;
@@ -477,7 +467,7 @@ namespace root
             }
 
             myCrop->roots.lastRootLayer = myCrop->roots.firstRootLayer;
-            while ((myCrop->roots.rootDensity[layer] != 0)
+            while ((myCrop->roots.rootDensity[layer] != 0.0)
                 && (layer < nrLayers))
             {
                 (myCrop->roots.lastRootLayer) = layer;
@@ -488,3 +478,4 @@ namespace root
         return true;
     }
 }
+

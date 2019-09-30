@@ -42,6 +42,7 @@ void Project::initializeProject()
     requestedExit = false;
     logFileName = "";
     errorString = "";
+    tileMap = "";
 
     meteoSettings->initialize();
     quality->initialize();
@@ -1673,6 +1674,7 @@ bool Project::loadProjectSettings(QString settingsFileName)
     projectSettings->beginGroup("settings");
         parametersFileName = projectSettings->value("parameters_file").toString();
         logFileName = projectSettings->value("log_file").toString();
+        tileMap = projectSettings->value("tile_map").toString();
     projectSettings->endGroup();
 
     return true;

@@ -21,7 +21,7 @@ bool loadCropParameters(QString idCrop, Crit3DCrop* myCrop, QSqlDatabase* dbCrop
 
     if (! query.isValid())
     {
-        if (query.lastError().number() > 0)
+        if (query.lastError().isValid())
             *myError = "Error in reading crop parameters of " + idCropString + "\n" + query.lastError().text();
         else
             *myError = "Missing crop: " + idCropString;
@@ -105,7 +105,7 @@ QString getCropFromClass(QSqlDatabase* dbCrop, QString cropClassTable, QString c
 
     if (! query.isValid())
     {
-        if (query.lastError().number() > 0)
+        if (query.lastError().isValid())
             *myError = query.lastError().text();
         return "";
     }
@@ -127,7 +127,7 @@ QString getCropFromId(QSqlDatabase* dbCrop, QString cropClassTable, QString crop
 
     if (! query.isValid())
     {
-        if (query.lastError().number() > 0)
+        if (query.lastError().isValid())
             *myError = query.lastError().text();
         return "";
     }
@@ -150,7 +150,7 @@ float getIrriRatioFromClass(QSqlDatabase* dbCrop, QString cropClassTable, QStrin
 
     if (! query.isValid())
     {
-        if (query.lastError().number() > 0)
+        if (query.lastError().isValid())
             *myError = query.lastError().text();
         return(NODATA);
     }
@@ -175,7 +175,7 @@ float getIrriRatioFromId(QSqlDatabase* dbCrop, QString cropClassTable, QString c
 
     if (! query.isValid())
     {
-        if (query.lastError().number() > 0)
+        if (query.lastError().isValid())
             *myError = query.lastError().text();
         return(NODATA);
     }

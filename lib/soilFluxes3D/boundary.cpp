@@ -195,7 +195,7 @@ double getSurfaceWaterFraction(int i)
         return 0.0;
     else
     {
-        double h = MAXVALUE(myNode[i].H - myNode[i].z, 0.0);
+        double h = MAXVALUE(myNode[i].H - double(myNode[i].z), 0);
         return 1.0 - MAXVALUE(0.0, myNode[i].Soil->Pond - h) / myNode[i].Soil->Pond;
     }
 }

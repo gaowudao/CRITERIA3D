@@ -1,21 +1,5 @@
 #include "commonConstants.h"
 
-#include <QGridLayout>
-#include <QFileDialog>
-#include <QtDebug>
-#include <QMessageBox>
-#include <QDialogButtonBox>
-#include <QPushButton>
-#include <QListWidget>
-#include <QRadioButton>
-#include <QTextBrowser>
-#include <QLineEdit>
-#include <QLabel>
-
-#include <sstream>
-#include <iostream>
-#include <fstream>
-
 #include "tileSources/OSMTileSource.h"
 #include "tileSources/CompositeTileSource.h"
 
@@ -23,29 +7,20 @@
 #include "formInfo.h"
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
-#include "Position.h"
 #include "crit3dProject.h"
-#include "utilities.h"
 #include "soilDbTools.h"
-#include "gis.h"
 #include "dialogSelection.h"
 #include "spatialControl.h"
 #include "dialogInterpolation.h"
 #include "dialogSettings.h"
 #include "dialogRadiation.h"
 
-#include <Qt3DRender/QCamera>
-#include <Qt3DExtras/Qt3DWindow>
-#include <Qt3DExtras/QForwardRenderer>
-#include <Qt3DExtras/QFirstPersonCameraController>
-#include <Qt3DInput>
-
 #include "crit3dProject.h"
 
 extern Crit3DProject myProject;
 
 #define MAPBORDER 11
-#define TOOLSWIDTH 244
+#define TOOLSWIDTH 243
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -53,7 +28,6 @@ MainWindow::MainWindow(QWidget *parent) :
 {
     ui->setupUi(this);
 
-    this->myRubberBand = nullptr;
     this->viewer3D = nullptr;
 
     // Set the MapGraphics Scene and View
@@ -85,8 +59,7 @@ MainWindow::MainWindow(QWidget *parent) :
     showPointsGroup->addAction(this->ui->actionView_PointsCurrentVariable);
     showPointsGroup->setEnabled(false);
 
-    // Set tiles source
-    this->setMapSource(OSMTileSource::OSMTiles);
+    this->setTileMapSource(OSMTileSource::OSMTiles);
 
     // Set start size and position
     this->startCenter = new Position (myProject.gisSettings.startLocation.longitude, myProject.gisSettings.startLocation.latitude, 0.0);
@@ -102,8 +75,6 @@ MainWindow::MainWindow(QWidget *parent) :
     this->updateVariable();
     this->updateDateTime();
 
-    //connect(this->ui->dateEdit, SIGNAL(editingFinished()), this, SLOT(on_dateChanged()));
-
     this->setMouseTracking(true);
 }
 
@@ -111,13 +82,19 @@ MainWindow::MainWindow(QWidget *parent) :
 void MainWindow::resizeEvent(QResizeEvent * event)
 {
     Q_UNUSED(event)
+
     const int INFOHEIGHT = 40;
     int x1 = this->width() - TOOLSWIDTH - MAPBORDER;
+    int dy = ui->groupBoxMeteoPoints->height() + ui->groupBoxInput->height() + ui->groupBoxOutput->height() + MAPBORDER*2;
+    int y1 = (this->height() - INFOHEIGHT - dy) / 2;
 
     ui->widgetMap->setGeometry(0, 0, x1, this->height() - INFOHEIGHT);
     mapView->resize(ui->widgetMap->size());
 
-    ui->groupBoxInput->move(x1, 2);
+    ui->groupBoxMeteoPoints->move(x1, y1);
+    ui->groupBoxMeteoPoints->resize(TOOLSWIDTH, ui->groupBoxMeteoPoints->height());
+
+    ui->groupBoxInput->move(x1, y1 + ui->groupBoxMeteoPoints->height() + MAPBORDER);
     ui->groupBoxInput->resize(TOOLSWIDTH, ui->groupBoxInput->height());
 
     ui->groupBoxOutput->move(x1, ui->groupBoxInput->y() + ui->groupBoxInput->height() + MAPBORDER);
@@ -127,66 +104,9 @@ void MainWindow::resizeEvent(QResizeEvent * event)
 
 void MainWindow::mouseReleaseEvent(QMouseEvent *event)
 {
+    Q_UNUSED(event)
+
     this->rasterObj->updateCenter();
-
-    if (myRubberBand != nullptr && myRubberBand->isVisible())
-    {
-        gis::Crit3DGeoPoint pointSelected;
-        QPointF lastCornerOffset = event->localPos();
-        QPointF firstCornerOffset = myRubberBand->getFirstCorner();
-        QPoint pixelTopLeft;
-        QPoint pixelBottomRight;
-
-        if (firstCornerOffset.y() > lastCornerOffset.y())
-        {
-            if (firstCornerOffset.x() > lastCornerOffset.x())
-            {
-                // bottom to left
-                pixelTopLeft = lastCornerOffset.toPoint();
-                pixelBottomRight = firstCornerOffset.toPoint();
-            }
-            else
-            {
-                // bottom to right
-                pixelTopLeft = QPoint(firstCornerOffset.toPoint().x(), lastCornerOffset.toPoint().y());
-                pixelBottomRight = QPoint(lastCornerOffset.toPoint().x(), firstCornerOffset.toPoint().y());
-            }
-        }
-        else
-        {
-            if (firstCornerOffset.x() > lastCornerOffset.x())
-            {
-                // top to left
-                pixelTopLeft = QPoint(lastCornerOffset.toPoint().x(), firstCornerOffset.toPoint().y());
-                pixelBottomRight = QPoint(firstCornerOffset.toPoint().x(), lastCornerOffset.toPoint().y());
-            }
-            else
-            {
-                // top to right
-                pixelTopLeft = firstCornerOffset.toPoint();
-                pixelBottomRight = lastCornerOffset.toPoint();
-            }
-        }
-
-        QPointF topLeft = this->mapView->mapToScene(getMapPoint(&pixelTopLeft));
-        QPointF bottomRight = this->mapView->mapToScene(getMapPoint(&pixelBottomRight));
-        QRectF rectF(topLeft, bottomRight);
-
-        foreach (StationMarker* marker, pointList)
-        {
-            if (rectF.contains(marker->longitude(), marker->latitude()))
-            {
-                if ( marker->color() ==  Qt::white )
-                {
-                    marker->setFillColor(QColor((Qt::red)));
-                    pointSelected.latitude = marker->latitude();
-                    pointSelected.longitude = marker->longitude();
-                    myProject.meteoPointsSelected << pointSelected;
-                }
-            }
-        }
-        myRubberBand->hide();
-    }
 }
 
 
@@ -221,11 +141,6 @@ void MainWindow::mouseMoveEvent(QMouseEvent * event)
 
     Position geoPoint = this->mapView->mapToScene(mapPoint);
     this->ui->statusBar->showMessage(QString::number(geoPoint.latitude()) + " " + QString::number(geoPoint.longitude()));
-
-    if (myRubberBand != nullptr && myRubberBand->isActive)
-    {
-        myRubberBand->setGeometry(QRect(myRubberBand->getOrigin(), mapPoint).normalized());
-    }
 }
 
 
@@ -233,22 +148,7 @@ void MainWindow::mousePressEvent(QMouseEvent *event)
 {
     if (event->button() == Qt::RightButton)
     {
-        if (myRubberBand != nullptr)
-        {
-            // rubber band
-            QPoint pos = event->pos();
-            QPoint mapPoint = getMapPoint(&pos);
-            QPointF firstCorner = event->localPos();
-            myRubberBand->setFirstCorner(firstCorner);
-            myRubberBand->setOrigin(mapPoint);
-            myRubberBand->setGeometry(QRect(mapPoint, QSize()));
-            myRubberBand->isActive = true;
-            myRubberBand->show();
-        }
-        else
-        {
-            contextMenuRequested(event->pos(), event->globalPos());
-        }
+        contextMenuRequested(event->pos(), event->globalPos());
 
         #ifdef NETCDF
         if (myProject.netCDF.isLoaded)
@@ -259,21 +159,6 @@ void MainWindow::mousePressEvent(QMouseEvent *event)
             exportNetCDFDataSeries(geoPoint);
         }
         #endif
-    }
-}
-
-
-void MainWindow::on_actionRectangle_Selection_triggered()
-{
-    if (myRubberBand != nullptr)
-    {
-        delete myRubberBand;
-        myRubberBand = nullptr;
-    }
-
-    if (ui->actionRectangle_Selection->isChecked())
-    {
-        myRubberBand = new RubberBand(QRubberBand::Rectangle, this->mapView);
     }
 }
 
@@ -313,8 +198,35 @@ void MainWindow::drawMeteoPoints()
 }
 
 
+void MainWindow::setProjectTileMap()
+{
+    if (myProject.tileMap != "")
+    {
+        if (myProject.tileMap.toUpper() == "ESRI" || myProject.tileMap == "ESRIWorldImagery")
+        {
+            this->setTileMapSource(OSMTileSource::ESRIWorldImagery);
+        }
+        else if (myProject.tileMap.toUpper() == "TERRAIN")
+        {
+            this->setTileMapSource(OSMTileSource::Terrain);
+        }
+        else
+        {
+            this->setTileMapSource(OSMTileSource::OSMTiles);
+        }
+    }
+    else
+    {
+        // default: Open Street Map
+        this->setTileMapSource(OSMTileSource::OSMTiles);
+    }
+}
+
+
 void MainWindow::drawProject()
 {
+    setProjectTileMap();
+
     mapView->centerOn(startCenter->lonLat());
 
     if (myProject.DEM.isLoaded)
@@ -472,65 +384,28 @@ void MainWindow::interpolateDemGUI()
 
 void MainWindow::updateVariable()
 {
-    // FREQUENCY
-    if (myProject.getCurrentFrequency() == noFrequency)
-    {
-        this->ui->labelFrequency->setText("None");
-    }
-    else
-    {
-        if (myProject.getCurrentFrequency() == daily)
-        {
-            this->ui->labelFrequency->setText("Daily");
+    //check
+    if ((myProject.getCurrentVariable() == dailyAirTemperatureAvg)
+            || (myProject.getCurrentVariable() == dailyAirTemperatureMax)
+            || (myProject.getCurrentVariable() == dailyAirTemperatureMin))
+        myProject.setCurrentVariable(airTemperature);
 
-            //check
-            if (myProject.getCurrentVariable() == airTemperature)
-                myProject.setCurrentVariable(dailyAirTemperatureAvg);
+    else if ((myProject.getCurrentVariable() == dailyAirRelHumidityAvg)
+             || (myProject.getCurrentVariable() == dailyAirRelHumidityMax)
+             || (myProject.getCurrentVariable() == dailyAirRelHumidityMin))
+         myProject.setCurrentVariable(airRelHumidity);
 
-            else if (myProject.getCurrentVariable() == precipitation)
-                myProject.setCurrentVariable(dailyPrecipitation);
+    else if (myProject.getCurrentVariable() == dailyAirDewTemperatureAvg)
+        myProject.setCurrentVariable(airDewTemperature);
 
-            else if (myProject.getCurrentVariable() == globalIrradiance)
-                myProject.setCurrentVariable(dailyGlobalRadiation);
+    else if (myProject.getCurrentVariable() == dailyPrecipitation)
+            myProject.setCurrentVariable(precipitation);
 
-            else if (myProject.getCurrentVariable() == airRelHumidity)
-                myProject.setCurrentVariable(dailyAirRelHumidityAvg);
+    else if (myProject.getCurrentVariable() == dailyGlobalRadiation)
+        myProject.setCurrentVariable(globalIrradiance);
 
-            else if (myProject.getCurrentVariable() == airDewTemperature)
-                myProject.setCurrentVariable(dailyAirDewTemperatureAvg);
-
-            else if (myProject.getCurrentVariable() == windIntensity)
-                myProject.setCurrentVariable(dailyWindIntensityAvg);
-        }
-
-        else if (myProject.getCurrentFrequency() == hourly)
-        {
-            this->ui->labelFrequency->setText("Hourly");
-
-            //check
-            if ((myProject.getCurrentVariable() == dailyAirTemperatureAvg)
-                    || (myProject.getCurrentVariable() == dailyAirTemperatureMax)
-                    || (myProject.getCurrentVariable() == dailyAirTemperatureMin))
-                myProject.setCurrentVariable(airTemperature);
-
-            else if ((myProject.getCurrentVariable() == dailyAirRelHumidityAvg)
-                     || (myProject.getCurrentVariable() == dailyAirRelHumidityMax)
-                     || (myProject.getCurrentVariable() == dailyAirRelHumidityMin))
-                 myProject.setCurrentVariable(airRelHumidity);
-
-            else if (myProject.getCurrentVariable() == dailyAirDewTemperatureAvg)
-                myProject.setCurrentVariable(airDewTemperature);
-
-            else if (myProject.getCurrentVariable() == dailyPrecipitation)
-                    myProject.setCurrentVariable(precipitation);
-
-            else if (myProject.getCurrentVariable() == dailyGlobalRadiation)
-                myProject.setCurrentVariable(globalIrradiance);
-
-            else if (myProject.getCurrentVariable() == dailyWindIntensityAvg)
-                myProject.setCurrentVariable(windIntensity);
-        }
-    }
+    else if (myProject.getCurrentVariable() == dailyWindIntensityAvg)
+        myProject.setCurrentVariable(windIntensity);
 
     std::string myString = getVariableString(myProject.getCurrentVariable());
     ui->labelVariable->setText(QString::fromStdString(myString));
@@ -686,17 +561,6 @@ void MainWindow::on_variableButton_clicked()
 }
 
 
-void MainWindow::on_frequencyButton_clicked()
-{
-   frequencyType myFrequency = chooseFrequency();
-
-   if (myFrequency != noFrequency)
-   {
-       myProject.setCurrentFrequency(myFrequency);
-       this->updateVariable();
-   }
-}
-
 void MainWindow::setInputRasterVisible(bool value)
 {
     inputRasterColorLegend->setVisible(value);
@@ -784,7 +648,7 @@ void MainWindow::on_actionProjectSettings_triggered()
 
 void MainWindow::on_actionCriteria3D_Initialize_triggered()
 {
-    myProject.initializeCriteria3D();
+    myProject.initializeCriteria3DModel();
 }
 
 
@@ -937,7 +801,6 @@ void MainWindow::setMapVariable(meteoVariable myVar, gis::Crit3DRasterGrid *myGr
     ui->opacitySliderRasterOutput->setVisible(true);
 
     myProject.setCurrentVariable(myVar);
-    myProject.setCurrentFrequency(getVarFrequency(myVar));
     currentPointsVisualization = showCurrentVariable;
     updateVariable();
 }
@@ -1012,23 +875,23 @@ void MainWindow::on_actionView_PointsCurrentVariable_triggered()
 
 void MainWindow::on_actionMapTerrain_triggered()
 {
-    this->setMapSource(OSMTileSource::Terrain);
+    this->setTileMapSource(OSMTileSource::Terrain);
 }
 
 
 void MainWindow::on_actionMapOpenStreetMap_triggered()
 {
-    this->setMapSource(OSMTileSource::OSMTiles);
+    this->setTileMapSource(OSMTileSource::OSMTiles);
 }
 
 
 void MainWindow::on_actionMapESRISatellite_triggered()
 {
-    this->setMapSource(OSMTileSource::ESRIWorldImagery);
+    this->setTileMapSource(OSMTileSource::ESRIWorldImagery);
 }
 
 
-void MainWindow::setMapSource(OSMTileSource::OSMTileType mySource)
+void MainWindow::setTileMapSource(OSMTileSource::OSMTileType mySource)
 {
     // set menu
     ui->actionMapOpenStreetMap->setChecked(false);
@@ -1065,7 +928,6 @@ void MainWindow::on_actionCompute_solar_radiation_triggered()
         return;
     }
 
-    myProject.setCurrentFrequency(hourly);
     myProject.setCurrentVariable(globalIrradiance);
     this->currentPointsVisualization = showCurrentVariable;
     this->updateVariable();

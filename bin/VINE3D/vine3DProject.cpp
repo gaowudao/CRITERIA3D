@@ -44,7 +44,7 @@ void Vine3DProject::initializeVine3DProject()
     dbPassword = "postgres";
 
     isObsDataLoaded = false;
-    setFrequency(hourly);
+    setCurrentFrequency(hourly);
 
     dailyOutputPath = "daily_output/";
     fieldMapName = "";

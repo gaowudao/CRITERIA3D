@@ -79,7 +79,6 @@ SOURCES += mainwindow.cpp \
     ../PRAGA/shared/dialogInterpolation.cpp \
     ../PRAGA/shared/interpolationCmd.cpp \
     ../PRAGA/shared/mapGraphicsRasterObject.cpp \
-    ../PRAGA/shared/rubberBand.cpp \
     ../PRAGA/shared/colorLegend.cpp \
     ../PRAGA/shared/project.cpp \
     ../PRAGA/shared/formInfo.cpp \
@@ -99,7 +98,6 @@ HEADERS += mainwindow.h \
     ../PRAGA/shared/dialogInterpolation.h \
     ../PRAGA/shared/interpolationCmd.h  \
     ../PRAGA/shared/mapGraphicsRasterObject.h \
-    ../PRAGA/shared/rubberBand.h \
     ../PRAGA/shared/colorLegend.h \
     ../PRAGA/shared/project.h \
     ../PRAGA/shared/formInfo.h \

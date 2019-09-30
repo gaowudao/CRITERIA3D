@@ -36,7 +36,6 @@
         double rootDepth;                   /*!<  [m]  current root depth */
 
         Crit3DRoot();
-        Crit3DRoot(rootDistributionType myShape, double myDepthMin, double myDepthMax, double myDegreeDaysRootGrowth);
 
     };
 

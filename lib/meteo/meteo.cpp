@@ -502,15 +502,15 @@ float computeThomIndex(float temp, float relHum)
     {
         float zT = temp;
         float zUR = relHum;
-        float es = 0.611f * float(exp(17.27f * zT / (zT + ZEROCELSIUS - 36.f)));
+        float es = 0.611f * exp(17.27f * zT / (zT + float(ZEROCELSIUS) - 36.f));
         float zTwb = zT;
         float zTwbPrec = -999.f;
-        while ( abs(zTwb - zTwbPrec) > 0.1)
+        while (abs(zTwb - zTwbPrec) > 0.1f)
         {
             zTwbPrec = zTwb;
-            zT1 = (zT + zTwb) / 2.f;
-            es1 = float(0.611f * exp(17.27f * zT1 / (zT1 + ZEROCELSIUS - 36.f)));
-            delta = float(es1 / (zT1 + ZEROCELSIUS) * log(207700000.f / es1));
+            zT1 = (zT + zTwb) / 2;
+            es1 = 0.611f * exp(17.27f * zT1 / (zT1 + float(ZEROCELSIUS) - 36.f));
+            delta = es1 / (zT1 + float(ZEROCELSIUS)) * log(207700000 / es1);
             zTwb = zT - es * (1.f - zUR / 100.f) / (delta + 0.06667f);
         }
         return 0.4f * (zT + zTwb) + 4.8f;

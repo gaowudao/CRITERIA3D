@@ -26,6 +26,7 @@
 #include <algorithm>
 #include <math.h>
 #include "commonConstants.h"
+#include "basicMath.h"
 #include "color.h"
 
 
@@ -293,19 +294,22 @@ bool setRadiationScale(Crit3DColorScale* myScale)
 bool roundColorScale(Crit3DColorScale* myScale, int nrIntervals, bool lessRounded)
 {
     if (myScale == nullptr) return false;
-    if (myScale->minimum == NODATA || myScale->maximum == NODATA) return false;
+
+    if (isEqual(myScale->minimum, NODATA)
+        || isEqual(myScale->maximum, NODATA)) return false;
+
     if (nrIntervals < 1) return false;
-    if (myScale->minimum == myScale->maximum) return false;
+
+    if (isEqual(myScale->minimum, myScale->maximum)) return false;
 
     float avg = myScale->minimum + (myScale->maximum - myScale->minimum) / 2;
     float level = (myScale->maximum - myScale->minimum) / nrIntervals;
-
     float logLevel = log10(level);
 
     float myExp;
     float roundAvg = avg;
 
-    if (avg == 0)
+    if (avg == 0.f)
     {
         myExp = floor(logLevel)-1;
     }
@@ -313,18 +317,22 @@ bool roundColorScale(Crit3DColorScale* myScale, int nrIntervals, bool lessRounde
     {
         float logAvg = log10(avg);
         if (lessRounded)
+        {
             myExp = std::min(floor(logLevel)-1, floor(logAvg)-1);
+        }
         else
+        {
             myExp = std::max(floor(logLevel)-1, floor(logAvg)-1);
+        }
     }
 
     float pow10 = powf(10.0, myExp);
     float roundLevel = ceil(level / pow10) * pow10;
 
-    if (avg != 0)
+    if (avg != 0.f)
         roundAvg = round(avg / pow10) * pow10;
 
-    if (myScale->minimum == 0)
+    if (myScale->minimum == 0.f)
     {
         //precipitation
         myScale->maximum = roundLevel * nrIntervals;
@@ -334,6 +342,7 @@ bool roundColorScale(Crit3DColorScale* myScale, int nrIntervals, bool lessRounde
         myScale->minimum = roundAvg - roundLevel*(nrIntervals/2);
         myScale->maximum = roundAvg + roundLevel*(nrIntervals/2);
     }
+
     return true;
 }
 

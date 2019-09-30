@@ -67,7 +67,7 @@ DbfTableDialog::DbfTableDialog(Crit3DShapeHandler* shapeHandler, QString fileNam
             }
             if (shapeHandler->isDBFRecordDeleted(j))
             {
-                m_DBFTableWidget->item(j,i)->setBackgroundColor(Qt::yellow);    // mark as DELETED records
+                m_DBFTableWidget->item(j,i)->setBackground(Qt::yellow);    // mark as DELETED records
             }
 
         }
@@ -160,7 +160,7 @@ void DbfTableDialog::removeRowClicked()
                 {
                     if (m_DBFTableWidget->item(row,i) != nullptr)
                     {
-                        m_DBFTableWidget->item(row,i)->setBackgroundColor(Qt::yellow);
+                        m_DBFTableWidget->item(row,i)->setBackground(Qt::yellow);
                     }
                     else
                     {

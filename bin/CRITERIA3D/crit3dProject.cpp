@@ -50,7 +50,9 @@ bool Crit3DProject::loadCriteria3DProject(QString myFileName)
 
     clearCriteria3DProject();
     if (isProjectLoaded) clearProject();
+
     initializeProject();
+    initializeProject3D();
 
     if (! loadProjectSettings(myFileName))
         return false;
@@ -349,7 +351,7 @@ bool Crit3DProject::computeAllMeteoMaps(const Crit3DTime& myTime, bool showInfo)
 }
 
 
-bool Crit3DProject::initializeCriteria3D()
+bool Crit3DProject::initializeCriteria3DModel()
 {
     // check data
     if (! this->DEM.isLoaded)

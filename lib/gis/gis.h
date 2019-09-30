@@ -143,7 +143,7 @@
 
             bool setConstantValueWithBase(float initValue, const Crit3DRasterGrid& initGrid);
             float getValueFromRowCol(int myRow, int myCol) const;
-            float getFastValueXY(double x, double y) const;
+            float getFastValueXY(float x, float y) const;
             bool isFlag(int myRow, int myCol);
 
             Crit3DPoint mapCenter();

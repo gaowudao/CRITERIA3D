@@ -9,11 +9,11 @@
 
     #include "mapGraphicsRasterObject.h"
     #include "stationMarker.h"
-    #include "rubberBand.h"
     #include "colorLegend.h"
     #include "viewer3d.h"
 
     #include <QMainWindow>
+
     class QActionGroup;
 
 
@@ -47,10 +47,6 @@
         void on_actionMapESRISatellite_triggered();
         void on_actionMapTerrain_triggered();
 
-        void on_variableButton_clicked();
-        void on_frequencyButton_clicked();
-
-        void on_actionRectangle_Selection_triggered();
         void on_actionVariableQualitySpatial_triggered();
         void on_timeEdit_timeChanged(const QTime &time);
         void on_dateEdit_dateChanged(const QDate &date);
@@ -69,6 +65,8 @@
         void on_actionView_PointsHide_triggered();
         void on_actionView_PointsLocation_triggered();
         void on_actionView_PointsCurrentVariable_triggered();
+
+        void on_variableButton_clicked();
 
         void on_viewer3DClosed();
 
@@ -126,7 +124,6 @@
 
         RasterObject* rasterObj;
         QList<StationMarker*> pointList;
-        RubberBand *myRubberBand;
 
         ColorLegend *inputRasterColorLegend;
         ColorLegend *outputRasterColorLegend;
@@ -139,7 +136,8 @@
         Viewer3D *viewer3D;
         Crit3DSoilWidget *soilWidget;
 
-        void setMapSource(OSMTileSource::OSMTileType mySource);
+        void setTileMapSource(OSMTileSource::OSMTileType mySource);
+        void setProjectTileMap();
 
         QPoint getMapPoint(QPoint* point) const;
 
