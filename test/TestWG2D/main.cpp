@@ -49,7 +49,7 @@ int main()
     doy = day = month = year = NODATA;
     prec = minT = maxT = meanT = NODATA;
     bool firstDay = true;
-    int nrStations = 10;
+    int nrStations = 4;
     int lengthDataSeries = numberMeteoLines;
     int nrVariables = 3;
     int nrDate = 3;
@@ -279,14 +279,14 @@ int main()
     WG2D.setObservedData(observedDataDaily);
 
 
-    bool computePrecipitation = false;
+    bool computePrecipitation = true;
     bool computeTemperature = true;
     printf("weather generator\n");
     if (computePrecipitation) printf("compute precipitation\n");
     if (computeTemperature) printf("compute temperature\n");
 
     int distributionType = 1; // 1 multiexponential 2 multigamma
-    int yearsOfSimulations = 500;
+    int yearsOfSimulations = 10;
     WG2D.initializeParameters(NODATA, yearsOfSimulations, distributionType,
                               computePrecipitation, computeTemperature);
     WG2D.computeWeatherGenerator2D();
