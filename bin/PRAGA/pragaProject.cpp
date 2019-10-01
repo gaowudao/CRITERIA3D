@@ -1434,24 +1434,27 @@ bool PragaProject::interpolationMeteoGridPeriod(QDate dateIni, QDate dateFin, QL
             }
         }
 
+        //aggregate hourly to daily
+
+
         //interpolation daily var (not aggregated, e.g. daily minimum temperature, daily precipitation, maximum wind intensity)
         foreach (meteoVariable myVar, variables)
         {
             if (getVarFrequency(myVar) == daily)
             {
                 if (myVar == dailyReferenceEvapotranspirationHS) {
-                    //pragaDailyMaps->
+                    pragaDailyMaps->computeHSET0Map(&gisSettings, getCrit3DDate(myDate));
                 }
                 else {
                     if (! interpolationDemMain(myVar, getCrit3DTime(myDate, myHour), pragaDailyMaps->getMapFromVar(myVar), false)) return false;
                 }
 
-                // scalar/vector wind???
+                // fix daily temperatures consistency
 
                 //save raster
                 if (saveRasters) gis::writeEsriGrid(getProjectPath().toStdString() + PATH_METEOGRID + getMapFileOutName(myVar, myDate, myHour).toStdString(), pragaDailyMaps->getMapFromVar(myVar), &errString);
 
-                meteoGridDbHandler->meteoGrid()->aggregateMeteoGrid(myVar, hourly, getCrit3DDate(myDate), myHour, 0, &DEM, myGrid, interpolationSettings.getMeteoGridAggrMethod());
+                meteoGridDbHandler->meteoGrid()->aggregateMeteoGrid(myVar, daily, getCrit3DDate(myDate), myHour, 0, &DEM, myGrid, interpolationSettings.getMeteoGridAggrMethod());
 
             }
         }
@@ -1462,10 +1465,14 @@ bool PragaProject::interpolationMeteoGridPeriod(QDate dateIni, QDate dateFin, QL
         myDate = myDate.addDays(1);
     }
 
-    logInfo("Save meteo grid hourly data");
+    // saving hourly and meteo grid data to DB
+    logInfo("Save meteo grid data");
     meteoGridDbHandler->saveGridData(&myError, QDateTime(dateIni, QTime(0,0,0)), QDateTime(dateFin.addDays(1), QTime(0,0,0)), variables);
 
-    //restore original proxy grids
+    // restore original proxy grids
+    logInfo("Restoring proxy grids");
+    if (! loadProxyGrids())
+        return false;
 
     return true;
 
