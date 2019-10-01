@@ -1,4 +1,6 @@
+#include "commonConstants.h"
 #include "basicMath.h"
+#include "meteo.h"
 #include "meteoMaps.h"
 
 
@@ -22,6 +24,7 @@ Crit3DDailyMeteoMaps::Crit3DDailyMeteoMaps(const gis::Crit3DRasterGrid& DEM)
     mapDailyRHMin = new gis::Crit3DRasterGrid;
     mapDailyRHMax = new gis::Crit3DRasterGrid;
     mapDailyLeafW = new gis::Crit3DRasterGrid;
+    mapDailyET0HS = new gis::Crit3DRasterGrid;
 
     mapDailyTAvg->initializeGrid(DEM);
     mapDailyTMax->initializeGrid(DEM);
@@ -31,6 +34,7 @@ Crit3DDailyMeteoMaps::Crit3DDailyMeteoMaps(const gis::Crit3DRasterGrid& DEM)
     mapDailyRHMin->initializeGrid(DEM);
     mapDailyRHMax->initializeGrid(DEM);
     mapDailyLeafW->initializeGrid(DEM);
+    mapDailyET0HS->initializeGrid(DEM);
 
     isInitialized = true;
 }
@@ -45,6 +49,7 @@ void Crit3DDailyMeteoMaps::clean()
     mapDailyRHMin->emptyGrid();
     mapDailyRHMax->emptyGrid();
     mapDailyLeafW->emptyGrid();
+    mapDailyET0HS->emptyGrid();
 }
 
 Crit3DDailyMeteoMaps::~Crit3DDailyMeteoMaps()
@@ -59,7 +64,34 @@ Crit3DDailyMeteoMaps::~Crit3DDailyMeteoMaps()
         mapDailyRHMin->clear();
         mapDailyRHMax->clear();
         mapDailyLeafW->clear();
+        mapDailyET0HS->clear();
     }
+}
+
+bool Crit3DDailyMeteoMaps::computeHSET0Map(gis::Crit3DGisSettings* gisSettings, Crit3DDate myDate)
+{
+    float airTmin, airTmax;
+    double X, Y, latitude, longitude;
+
+    mapDailyET0HS->emptyGrid();
+
+    for (long row = 0; row < mapDailyET0HS->header->nrRows ; row++)
+    {
+        for (long col = 0; col < mapDailyET0HS->header->nrCols; col++)
+        {
+            airTmin = mapDailyTMin->value[row][col];
+            airTmax = mapDailyTMax->value[row][col];
+            if (! isEqual(airTmin, mapDailyTMin->header->flag)
+                 && ! isEqual(airTmax, mapDailyTMax->header->flag))
+            {
+                gis::getUtmXYFromRowCol(*mapDailyET0HS->header, row, col, &X, &Y);
+                gis::getLatLonFromUtm(*gisSettings, X, Y, &latitude, &longitude);
+                mapDailyET0HS->value[row][col] = ET0_Hargreaves(double(TRANSMISSIVITY_SAMANI_COEFF_DEFAULT), latitude, getDoyFromDate(myDate), double(airTmax), double(airTmin));
+            }
+        }
+    }
+
+    return gis::updateMinMaxRasterGrid(mapDailyET0HS);
 }
 
 bool Crit3DHourlyMeteoMaps::getIsInitialized() const
@@ -178,7 +210,7 @@ gis::Crit3DRasterGrid* Crit3DHourlyMeteoMaps::getMapFromVar(meteoVariable myVar)
 }
 
 
-bool Crit3DHourlyMeteoMaps::computeET0Map(gis::Crit3DRasterGrid* myDEM, Crit3DRadiationMaps *radMaps)
+bool Crit3DHourlyMeteoMaps::computeET0PMMap(gis::Crit3DRasterGrid* myDEM, Crit3DRadiationMaps *radMaps)
 {
     float globalRadiation, transmissivity, clearSkyTransmissivity;
     float temperature, relHumidity, windSpeed, height;

@@ -1417,7 +1417,7 @@ bool PragaProject::interpolationMeteoGridPeriod(QDate dateIni, QDate dateFin, QL
                         pragaHourlyMaps->computeLeafWetnessMap() ;
                     }
                     else if (myVar == referenceEvapotranspiration) {
-                        pragaHourlyMaps->computeET0Map(&DEM, radiationMaps);
+                        pragaHourlyMaps->computeET0PMMap(&DEM, radiationMaps);
                     }
                     else {
                         if (! interpolationDemMain(myVar, getCrit3DTime(myDate, myHour), pragaHourlyMaps->getMapFromVar(myVar), false)) return false;
@@ -1429,9 +1429,35 @@ bool PragaProject::interpolationMeteoGridPeriod(QDate dateIni, QDate dateFin, QL
                     if (saveRasters) gis::writeEsriGrid(getProjectPath().toStdString() + PATH_METEOGRID + getMapFileOutName(myVar, myDate, myHour).toStdString(), pragaHourlyMaps->getMapFromVar(myVar), &errString);
 
                     meteoGridDbHandler->meteoGrid()->aggregateMeteoGrid(myVar, hourly, getCrit3DDate(myDate), myHour, 0, &DEM, myGrid, interpolationSettings.getMeteoGridAggrMethod());
+
                 }
             }
         }
+
+        //interpolation daily var (not aggregated, e.g. daily minimum temperature, daily precipitation, maximum wind intensity)
+        foreach (meteoVariable myVar, variables)
+        {
+            if (getVarFrequency(myVar) == daily)
+            {
+                if (myVar == dailyReferenceEvapotranspirationHS) {
+                    //pragaDailyMaps->
+                }
+                else {
+                    if (! interpolationDemMain(myVar, getCrit3DTime(myDate, myHour), pragaDailyMaps->getMapFromVar(myVar), false)) return false;
+                }
+
+                // scalar/vector wind???
+
+                //save raster
+                if (saveRasters) gis::writeEsriGrid(getProjectPath().toStdString() + PATH_METEOGRID + getMapFileOutName(myVar, myDate, myHour).toStdString(), pragaDailyMaps->getMapFromVar(myVar), &errString);
+
+                meteoGridDbHandler->meteoGrid()->aggregateMeteoGrid(myVar, hourly, getCrit3DDate(myDate), myHour, 0, &DEM, myGrid, interpolationSettings.getMeteoGridAggrMethod());
+
+            }
+        }
+
+        pragaHourlyMaps->clean();
+        pragaDailyMaps->clean();
 
         myDate = myDate.addDays(1);
     }
@@ -1443,260 +1469,6 @@ bool PragaProject::interpolationMeteoGridPeriod(QDate dateIni, QDate dateFin, QL
 
     return true;
 
-    /*
-
-        computeLeafWetness = (computePrec And computeRelHum)
-        computeEtpPenman = (computeTemp And computeRelHum And computeWind And computeRad)
-        computeEtpHargreaves = computeTemp
-
-        myYearUrban = Definitions.NO_DATA
-
-        'log file
-        Print #myHandleFile, "Interpolation started at " & format(Now, "YYYY-MM-DD HH:MM:SS") & vbCrLf
-        Print #myHandleFile, "From " & format(myStartDate, "YYYY-MM-DD") & " to "; format(myEndDate, "YYYY-MM-DD")
-        Print #myHandleFile, "Interpolation method: "; Interpolation.GetInterpolationMethod
-
-        For myDate = myStartDate To myEndDate
-
-            If DBPointsManagement.loadPointHourly_Date(myDate, True, Definitions.INFO_NOT_VISUALIZE) Then
-
-                If computeRad Then
-                    Radiation.InitializeRadiationMaps GIS.DEM
-                    Radiation.InitializeTransmissivityMap GIS.DEM
-                End If
-
-                dbGridManagement.initializeMeteoGrid passaggioDati.currentDay
-
-                infoString = format(myDate, "DD/MM/YYYY") & " H:" & CStr(myHour) & " "
-                PragaShell.StartInfo "Interpolating data - " & infoString, 24
-
-                'PREC HOUR 0
-                If computePrec Then
-                    PragaShell.SetInfoOnlyText infoString & Definitions.HOURLY_PREC
-                    passaggioDati.setCurrentHour 0
-                    Print #myHandleFile, "HOUR:00"
-                    If InterpolationSingle(Definitions.HOURLY_PREC, False, False, False) Then
-                        grdPrecPreviousHour = GIS.DEM_Var
-                        Print #myHandleFile, vbCrLf & getInfoInterpolation(Definitions.HOURLY_PREC)
-                    End If
-                End If
-
-                For myHour = 1 To 24
-                    PragaShell.updateInfo myHour
-                    Print #myHandleFile, "HOUR:" & format(myHour, "00")
-
-                    myFilenamePre = Praga_Path & Definitions.PATH_OUTPUT
-                    myFilenamePost = "_" & format(myHour, "00") & ".flt"
-
-                    passaggioDati.setCurrentHour myHour
-
-                    infoString = format(myDate, "DD/MM/YYYY") & " H:" & CStr(myHour) & " "
-
-                    'Tavg
-                    If computeTemp Then
-                        PragaShell.SetInfoOnlyText infoString & Definitions.HOURLY_TAVG
-                        If InterpolationSingle(Definitions.HOURLY_TAVG, False, False, False) Then
-                            grdTemperature = GIS.DEM_Var
-                            Print #myHandleFile, getInfoInterpolation(Definitions.HOURLY_TAVG)
-                        End If
-                    End If
-
-                    'RHavg
-                    If computeRelHum Then
-                        If Interpolation.GetUseDewPoint Then
-                            PragaShell.SetInfoOnlyText infoString & Definitions.HOURLY_TDEW
-                            If InterpolationSingle(Definitions.HOURLY_TDEW, False, False, False) Then
-                                grdDewTemperature = GIS.DEM_Var
-                                computeGridUmedFromTdew grdTemperature, grdDewTemperature, grdHumidity
-                                Print #myHandleFile, getInfoInterpolation(Definitions.HOURLY_TDEW)
-                            End If
-                        Else
-                            PragaShell.SetInfoOnlyText infoString & Definitions.HOURLY_RHAVG
-                            If InterpolationSingle(Definitions.HOURLY_RHAVG, False, False, False) Then
-                                grdHumidity = GIS.DEM_Var
-                                Print #myHandleFile, getInfoInterpolation(Definitions.HOURLY_RHAVG)
-                            End If
-                        End If
-                    End If
-
-                    'PREC
-                    If computePrec Then
-                        PragaShell.SetInfoOnlyText infoString & Definitions.HOURLY_PREC
-                        If InterpolationSingle(Definitions.HOURLY_PREC, False, False, False) Then
-                            grdPrecipitation = GIS.DEM_Var
-                            Print #myHandleFile, getInfoInterpolation(Definitions.HOURLY_PREC)
-                        End If
-                    End If
-
-                    'WIND
-                    If computeWind Then
-                        'interpolate vector wind because we need direction
-                        PragaShell.SetInfoOnlyText infoString & Definitions.HOURLY_VMED_X
-                        If InterpolationSingle(Definitions.HOURLY_VMED_X, False, False, False) Then
-                            grdWindX = GIS.DEM_Var
-                            Print #myHandleFile, getInfoInterpolation(Definitions.HOURLY_VMED_X)
-                        End If
-                        PragaShell.SetInfoOnlyText infoString & Definitions.HOURLY_VMED_Y
-                        If InterpolationSingle(Definitions.HOURLY_VMED_Y, False, False, False) Then
-                            grdWindY = GIS.DEM_Var
-                            If grdWindX.isLoaded Then
-                                computeGridWind grdWindX, grdWindY, grdWindInt, grdWindDir
-                                Print #myHandleFile, getInfoInterpolation(Definitions.HOURLY_VMED_Y)
-                            End If
-                        End If
-                        'interpolate wind intensity as scalar
-                        PragaShell.SetInfoOnlyText infoString & Definitions.HOURLY_VMED_INT
-                        If InterpolationSingle(Definitions.HOURLY_VMED_INT, False, False, False) Then
-                            grdWindInt = GIS.DEM_Var
-                            Print #myHandleFile, getInfoInterpolation(Definitions.HOURLY_VMED_INT)
-                        End If
-                    End If
-
-                    'RAD
-                    If computeRad Then
-                        PragaShell.SetInfoOnlyText infoString & Definitions.HOURLY_RAD
-                        If Radiation.ComputeRadiationCurrentTime_GRID(GIS.DEM, True, False) Then
-                            grdRadiation = Radiation.GlobalRadiationMap
-                            grdTransmissivity = Radiation.TransmissivityMap
-                        End If
-                    End If
-
-                    'ETP PENMAN
-                    If computeEtpPenman Then
-                        If grdTemperature.isLoaded And grdHumidity.isLoaded And grdWindInt.isLoaded And grdRadiation.isLoaded Then
-                            computeGridEtpPenman GIS.DEM, grdTemperature, grdHumidity, grdWindInt, grdRadiation, grdTransmissivity, grdEtpPenman
-                        End If
-                    End If
-
-                    'LEAF WETNESS
-                    If computeLeafWetness Then
-                        If grdPrecipitation.isLoaded And grdPrecPreviousHour.isLoaded And grdHumidity.isLoaded Then
-                            computeGridLeafWetness grdPrecipitation, grdPrecPreviousHour, grdHumidity, grdLeafWetness
-                        End If
-                    End If
-
-                    'SAVE HOURLY DEM MAPS
-                    If saveRasters Then
-                        PragaShell.SetInfoOnlyText infoString & "Saving hourly maps..."
-                        If grdTemperature.isLoaded Then Output.saveGridToExport grdTemperature, "flt", myFilenamePre & Definitions.HOURLY_TAVG & myFilenamePost
-                        If grdPrecipitation.isLoaded Then Output.saveGridToExport grdPrecipitation, "flt", myFilenamePre & Definitions.HOURLY_PREC & myFilenamePost
-                        If grdHumidity.isLoaded Then Output.saveGridToExport grdHumidity, "flt", myFilenamePre & Definitions.HOURLY_RHAVG & myFilenamePost
-                        If grdWindInt.isLoaded Then Output.saveGridToExport grdWindInt, "flt", myFilenamePre & Definitions.HOURLY_VMED_INT & myFilenamePost
-                        If grdRadiation.isLoaded Then Output.saveGridToExport grdRadiation, "flt", myFilenamePre & Definitions.HOURLY_RAD & myFilenamePost
-                        If grdEtpPenman.isLoaded Then Output.saveGridToExport grdEtpPenman, "flt", myFilenamePre & Definitions.HOURLY_ET0_PM & myFilenamePost
-                        If grdLeafWetness.isLoaded Then Output.saveGridToExport grdLeafWetness, "flt", myFilenamePre & Definitions.HOURLY_LEAFWETNESS & myFilenamePost
-                    End If
-
-                    'AGGREGATE HOURLY MAPS TO GRID
-                    PragaShell.SetInfoOnlyText infoString & "Aggregating hourly maps..."
-                    If grdTemperature.isLoaded Then InterpolationCmd.AggregateMeteoGrid Definitions.HOURLY_TAVG, grdTemperature, False
-                    If grdPrecipitation.isLoaded Then InterpolationCmd.AggregateMeteoGrid Definitions.HOURLY_PREC, grdPrecipitation, False
-                    If grdHumidity.isLoaded Then InterpolationCmd.AggregateMeteoGrid Definitions.HOURLY_RHAVG, grdHumidity, False
-                    If grdWindX.isLoaded Then InterpolationCmd.AggregateMeteoGrid Definitions.HOURLY_VMED_X, grdWindX, False
-                    If grdWindY.isLoaded Then InterpolationCmd.AggregateMeteoGrid Definitions.HOURLY_VMED_Y, grdWindY, False
-                    If grdWindX.isLoaded And grdWindY.isLoaded Then dbGridManagement.gridComputePolarWind Definitions.HOURLY
-                    If grdRadiation.isLoaded Then InterpolationCmd.AggregateMeteoGrid Definitions.HOURLY_RAD, grdRadiation, False
-                    If grdEtpPenman.isLoaded Then InterpolationCmd.AggregateMeteoGrid Definitions.HOURLY_ET0_PM, grdEtpPenman, False
-                    If grdLeafWetness.isLoaded Then InterpolationCmd.AggregateMeteoGrid Definitions.HOURLY_LEAFWETNESS, grdLeafWetness, False
-
-                    grdPrecPreviousHour = grdPrecipitation
-
-                    'FREE MEMORY
-                    GIS.clearGrid grdTemperature
-                    GIS.clearGrid grdDewTemperature
-                    GIS.clearGrid grdHumidity
-                    GIS.clearGrid grdPrecipitation
-                    GIS.clearGrid grdRadiation
-                    GIS.clearGrid grdTransmissivity
-                    GIS.clearGrid grdWindX
-                    GIS.clearGrid grdWindY
-                    GIS.clearGrid grdWindInt
-                    GIS.clearGrid grdWindDir
-                    GIS.clearGrid grdEtpPenman
-                    GIS.clearGrid grdLeafWetness
-
-                Next myHour
-
-                GIS.clearGrid grdPrecPreviousHour
-
-                PragaShell.SetInfoOnlyText "Loading daily data - " & format(myDate, "DD/MM/YYYY")
-                If DBPointsManagement.loadPointDaily_Date(myDate, True, Definitions.INFO_NOT_VISUALIZE) Then
-                    infoString = format(myDate, "DD/MM/YYYY") & " "
-                    Print #myHandleFile, "DAILY VARIABLES"
-
-                    'interpolate daily minimum and maximum temperatures using consistent method
-                    PragaShell.SetInfoOnlyText infoString & "Interpolating daily maps: Tmax"
-                    If InterpolationSingle(Definitions.DAILY_TMAX, False, False, False) Then
-                        grdTmax = GIS.DEM_Var
-                        Print #myHandleFile, getInfoInterpolation(Definitions.DAILY_TMAX)
-                        If InterpolationSingle(Definitions.DAILY_TMIN, False, False, False) Then
-                            grdTmin = GIS.DEM_Var
-                            Print #myHandleFile, getInfoInterpolation(Definitions.DAILY_TMIN)
-                            If Quality.fixDailyThermalConsistencyRaster(grdTmax, grdTmin) Then
-                                Print #myHandleFile, "Temperature range incoherence errors fixed"
-                            End If
-                        End If
-                    End If
-
-                    'interpolate daily precipitation
-                    PragaShell.SetInfoOnlyText infoString & "Interpolating daily maps: Prec"
-                    If InterpolationSingle(Definitions.DAILY_PREC, False, False, False) Then
-                        grdPrecDaily = GIS.DEM_Var
-                        Print #myHandleFile, getInfoInterpolation(Definitions.DAILY_PREC)
-                    End If
-
-                    'interpolate maximum wind intensity
-                    PragaShell.SetInfoOnlyText infoString & "Interpolating daily maps: Max wind intensity"
-                    If InterpolationSingle(Definitions.DAILY_VMAX, False, False, False) Then
-                        grdWindMax = GIS.DEM_Var
-                        Print #myHandleFile, getInfoInterpolation(Definitions.DAILY_VMAX)
-                    End If
-
-                    'compute et0 Hargreaves
-                    If computeEtpHargreaves Then
-                        PragaShell.SetInfoOnlyText infoString & " Computing daily maps: Et0 Hargreaves"
-                        If grdTmin.isLoaded And grdTmax.isLoaded Then
-                            computeGridEtpHargreaves TimeUtility.DateToDOY(myDate), grdTmin, grdTmax, grdEtpHargreaves
-                        End If
-                    End If
-
-                    'save daily rasters
-                    If saveRasters Then
-                        PragaShell.SetInfoOnlyText infoString & "Saving hourly maps..."
-                        If grdTmin.isLoaded Then Output.saveGridToExport grdTmin, "flt", myFilenamePre & Definitions.DAILY_TMIN & ".flt"
-                        If grdTmax.isLoaded Then Output.saveGridToExport grdTmax, "flt", myFilenamePre & Definitions.DAILY_TMAX & ".flt"
-                        If grdPrecDaily.isLoaded Then Output.saveGridToExport grdPrecDaily, "flt", myFilenamePre & Definitions.DAILY_PREC & ".flt"
-                        If grdWindMax.isLoaded Then Output.saveGridToExport grdWindMax, "flt", myFilenamePre & Definitions.DAILY_VMAX & ".flt"
-                        If grdEtpHargreaves.isLoaded Then Output.saveGridToExport grdEtpHargreaves, "flt", myFilenamePre & Definitions.DAILY_ET0_HS & ".flt"
-                    End If
-
-                    'aggregate daily values from dem to grid
-                    PragaShell.SetInfoOnlyText infoString & "Aggregating daily maps..."
-                    If grdTmin.isLoaded Then InterpolationCmd.AggregateMeteoGrid Definitions.DAILY_TMIN, grdTmin, False
-                    If grdTmax.isLoaded Then InterpolationCmd.AggregateMeteoGrid Definitions.DAILY_TMAX, grdTmax, False
-                    If grdPrecDaily.isLoaded Then InterpolationCmd.AggregateMeteoGrid Definitions.DAILY_PREC, grdPrecDaily, False
-                    If grdWindMax.isLoaded Then InterpolationCmd.AggregateMeteoGrid Definitions.DAILY_VMAX, grdWindMax, False
-                    If grdEtpHargreaves.isLoaded Then InterpolationCmd.AggregateMeteoGrid Definitions.DAILY_ET0_HS, grdEtpHargreaves, False
-                End If
-
-                dbGridManagement.saveHourly_5VarVM True, True, True, True, True, writeVM, True
-                dbGridManagement.AggregateHourlyInDailyGridCurrentDay True, True, True, True, True, False, True, False
-                dbGridManagement.saveDaily_5VarVM True, True, True, True, True, writeVM, True
-
-            End If
-
-        Next myDate
-
-        If Interpolation.GetUseTAD Then Erase TadMaps
-
-        PragaShell.StopInfo
-        Print #myHandleFile, "Interpolation finished at " & format(Now, "YYYY-MM-DD HH:MM:SS")
-        Close #myHandleFile
-
-        InterpolationERG5v2 = True
-
-    End Function
-    */
 }
 
 bool PragaProject::interpolationMeteoGrid(meteoVariable myVar, frequencyType myFrequency, const Crit3DTime& myTime,
