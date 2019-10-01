@@ -35,6 +35,7 @@ public:
     void clean();
     gis::Crit3DRasterGrid* getMapFromVar(meteoVariable myVar);
     bool computeHSET0Map(gis::Crit3DGisSettings *gisSettings, Crit3DDate myDate);
+    bool fixDailyThermalConsistency();
     bool getIsInitialized() const;
     void setIsInitialized(bool value);
 };

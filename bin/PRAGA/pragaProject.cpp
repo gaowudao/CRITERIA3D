@@ -1450,6 +1450,9 @@ bool PragaProject::interpolationMeteoGridPeriod(QDate dateIni, QDate dateFin, QL
                 }
 
                 // fix daily temperatures consistency
+                if (myVar == dailyAirTemperatureMax || myVar == dailyAirTemperatureMin) {
+                    if (! pragaDailyMaps->fixDailyThermalConsistency()) return false;
+                }
 
                 //save raster
                 if (saveRasters) gis::writeEsriGrid(getProjectPath().toStdString() + PATH_METEOGRID + getMapFileOutName(myVar, myDate, myHour).toStdString(), pragaDailyMaps->getMapFromVar(myVar), &errString);
