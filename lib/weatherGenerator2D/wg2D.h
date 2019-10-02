@@ -187,7 +187,7 @@
 
         ToutputWeatherData *outputWeatherData;
 
-        double* uniformRandomNumbers;
+        double* normalRandomNumbers;
         //int contatoreGammaUguale = 0;
         //int contatoreGammaUguale2 = 0;
         //int contatoreGammaDiverso = 0;
@@ -231,6 +231,7 @@
 
         void getWeatherGeneratorOutput();
         void initializeOutputData(int* nrDays);
+        void randomSet(double *arrayNormal,int dimArray);
 
     public:
         // variables
@@ -242,6 +243,7 @@
         void setObservedData(TObsDataD** observations);
         void computeWeatherGenerator2D();
         void pressEnterToContinue();
+        void initializeRandomNumbers(double* vector);
     };
 
 #endif // WEATHERGENERATOR2D_H

@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <math.h>
 #include <time.h>
+#include <stdio.h>
 
 #include "commonConstants.h"
 #include "furtherMathFunctions.h"
@@ -33,7 +34,44 @@ void obsDataMeteoPointFormat(int nrStations, int nrData, float*** weatherArray, 
 
 int main()
 {
-    FILE *fp;
+    // read uniform random numbers and generation of the array to be used for tests
+    FILE* fp;
+    fp = fopen("randomNumbers2.txt","r");
+    char vectorDummy[20];
+    double randomSeries[10000];
+
+    int counter = 0;
+    char dummy;
+
+    for (int j=0;j<10000;j++)
+    {
+        counter = 0;
+        for (int i=0;i<20;i++)
+        {
+            vectorDummy[i] = '\0';
+        }
+        do
+        {
+            dummy = getc(fp);
+            //printf("%s",dummy);
+            //getchar();
+            if (dummy != '\n');
+                vectorDummy[counter]= dummy;
+            counter++;
+        } while (dummy != '\n');
+        //getc(fp);
+
+        //printf("%s",dummy);
+        randomSeries[j] = atof(vectorDummy);
+        //printf("%f\n",randomSeries[j]);
+        //getchar();
+    }
+    //getchar();
+    fclose(fp);
+    WG2D.initializeRandomNumbers(randomSeries);
+
+
+    //FILE *fp;
     fp = fopen("inputData/budrio_1961_2018.txt", "r");
     if (fp == nullptr)
     {
