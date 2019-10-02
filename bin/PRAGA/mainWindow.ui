@@ -2947,9 +2947,8 @@
     <addaction name="separator"/>
     <addaction name="actionOpen_meteo_grid"/>
     <addaction name="actionClose_meteo_grid"/>
-    <addaction name="actionOpen_crop_map"/>
-    <addaction name="actionOpen_NetCDF_data"/>
     <addaction name="separator"/>
+    <addaction name="actionOpen_NetCDF_grid"/>
    </widget>
    <widget class="QMenu" name="menuVariable">
     <property name="title">
@@ -3156,17 +3155,6 @@
     <string>Spatial quality control</string>
    </property>
   </action>
-  <action name="actionOpen_NetCDF_data">
-   <property name="enabled">
-    <bool>false</bool>
-   </property>
-   <property name="text">
-    <string>Open NetCDF data...</string>
-   </property>
-   <property name="visible">
-    <bool>false</bool>
-   </property>
-  </action>
   <action name="actionExtract_NetCDF_series">
    <property name="text">
     <string>Extract NetCDF series</string>
@@ -3190,14 +3178,6 @@
   <action name="actionInterpolation_to_DEM">
    <property name="text">
     <string>Interpolation to DEM</string>
-   </property>
-  </action>
-  <action name="actionOpen_crop_map">
-   <property name="text">
-    <string>Open crop map...</string>
-   </property>
-   <property name="visible">
-    <bool>false</bool>
    </property>
   </action>
   <action name="actionAnomaly_meteo_points_bk">
@@ -3465,6 +3445,11 @@
   <action name="actionSaveGridCurrentData">
    <property name="text">
     <string>Save current data</string>
+   </property>
+  </action>
+  <action name="actionOpen_NetCDF_grid">
+   <property name="text">
+    <string>Open NetCDF grid</string>
    </property>
   </action>
  </widget>

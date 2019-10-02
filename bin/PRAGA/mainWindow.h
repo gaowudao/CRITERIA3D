@@ -16,6 +16,7 @@
     #include "stationMarker.h"
     #include "colorLegend.h"
     #include "dbArkimet.h"
+    #include "project.h"
 
     enum visualizationType {notShown, showLocation, showCurrentVariable, showElaboration, showAnomalyAbsolute, showAnomalyPercentage, showClimate};
 
@@ -111,11 +112,11 @@
         bool on_actionAggregate_from_grid_triggered();
 
         #ifdef NETCDF
-            void on_actionOpen_NetCDF_data_triggered();
+            void on_actionOpen_NetCDF_grid_triggered();
             void on_actionExtract_NetCDF_series_triggered();
         #endif
 
-    protected:
+        protected:
         /*!
          * \brief mouseReleaseEvent call moveCenter
          * \param event

@@ -20,7 +20,6 @@
 #include "project.h"
 
 
-
 QString editValue(QString windowsTitle, QString defaultValue)
 {
     QDialog myDialog;
@@ -271,15 +270,15 @@ meteoVariable chooseMeteoVariable(Project* myProject)
 
 
 #ifdef NETCDF
-    bool chooseNetCDFVariable(int* varId, QDateTime* firstDate, QDateTime* lastDate)
+    bool chooseNetCDFVariable(NetCDFHandler* netCDF, int* varId, QDateTime* firstDate, QDateTime* lastDate)
     {
         // check
-        if (! project_netCDF.isLoaded)
+        if (! netCDF->isLoaded)
         {
             QMessageBox::information(nullptr, "No data", "Load NetCDF before");
             return false;
         }
-        if (! project_netCDF.isStandardTime)
+        if (! netCDF->isStandardTime)
         {
             QMessageBox::information(nullptr, "Wrong time", "Reads only POSIX standard (seconds since 1970-01-01)");
             return false;
@@ -297,12 +296,12 @@ meteoVariable chooseMeteoVariable(Project* myProject)
         QLabel *VariableLabel = new QLabel("<b>Variable:</b>");
         layoutVariable.addWidget(VariableLabel);
 
-        int nrVariables = project_netCDF.getNrVariables();
+        int nrVariables = netCDF->getNrVariables();
         std::vector<QRadioButton*> buttonVars;
 
         for (int i = 0; i < nrVariables; i++)
         {
-            QString varName = QString::fromStdString(project_netCDF.variables[i].getVarName());
+            QString varName = QString::fromStdString(netCDF->variables[i].getVarName());
             buttonVars.push_back(new QRadioButton(varName));
 
             layoutVariable.addWidget(buttonVars[i]);
@@ -312,8 +311,8 @@ meteoVariable chooseMeteoVariable(Project* myProject)
         layoutVariable.addWidget(new QLabel());
 
         //Date widgets
-        *firstDate = QDateTime::fromTime_t(project_netCDF.getFirstTime(), Qt::UTC);
-        *lastDate = QDateTime::fromTime_t(project_netCDF.getLastTime(), Qt::UTC);
+        *firstDate = QDateTime::fromTime_t(netCDF->getFirstTime(), Qt::UTC);
+        *lastDate = QDateTime::fromTime_t(netCDF->getLastTime(), Qt::UTC);
 
         QDateTimeEdit *firstYearEdit = new QDateTimeEdit;
         firstYearEdit->setDateTimeRange(*firstDate, *lastDate);
@@ -367,7 +366,7 @@ meteoVariable chooseMeteoVariable(Project* myProject)
         {
             if (buttonVars[i]->isChecked())
             {
-               *varId = project_netCDF.variables[i].id;
+               *varId = netCDF->variables[i].id;
                 isVarSelected = true;
             }
             i++;

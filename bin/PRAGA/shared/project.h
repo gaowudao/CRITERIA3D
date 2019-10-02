@@ -30,6 +30,8 @@
         #include <fstream>
     #endif
 
+    #define NETCDF
+
     #ifdef NETCDF
         #include "netcdfHandler.h"
     #endif

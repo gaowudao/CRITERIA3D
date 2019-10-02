@@ -38,7 +38,8 @@
 
         NetCDFHandler();
 
-        void initialize(int myUtmZone);
+        void clear();
+        void initialize(int _utmZone);
 
         bool isPointInside(gis::Crit3DGeoPoint geoPoint);
 

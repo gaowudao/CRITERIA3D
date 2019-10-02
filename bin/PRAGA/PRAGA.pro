@@ -15,7 +15,7 @@ TEMPLATE = app
 INCLUDEPATH +=  ./shared ../../mapGraphics \
                 ../../lib/crit3dDate ../../lib/mathFunctions ../../lib/meteo ../../lib/gis \
                 ../../lib/interpolation ../../lib/solarRadiation ../../lib/utilities \
-                ../../lib/dbMeteoPoints ../../lib/dbMeteoGrid ../../lib/climate
+                ../../lib/dbMeteoPoints ../../lib/dbMeteoGrid ../../lib/climate ../../lib/netcdfHandler
 
 CONFIG += debug_and_release
 
@@ -30,6 +30,9 @@ win32:{
     }
 }
 
+
+LIBS += -L$$(NC4_INSTALL_DIR)/lib -lnetcdf
+
 CONFIG(debug, debug|release) {
 
 unix:{
@@ -39,6 +42,7 @@ unix:{
     PRE_TARGETDEPS += ../../lib/utilities/debug/libutilities.a
     PRE_TARGETDEPS += ../../lib/solarRadiation/debug/libsolarRadiation.a
     PRE_TARGETDEPS += ../../lib/interpolation/debug/libinterpolation.a
+    PRE_TARGETDEPS += ../../lib/netcdfHandler/debug -lnetcdfHandler
     PRE_TARGETDEPS += ../../lib/meteo/debug/libmeteo.a
     PRE_TARGETDEPS += ../../lib/gis/debug/libgis.a
     PRE_TARGETDEPS += ../../lib/crit3dDate/debug/libcrit3dDate.a
@@ -51,6 +55,7 @@ unix:{
     LIBS += -L../../lib/utilities/debug -lutilities
     LIBS += -L../../lib/solarRadiation/debug -lsolarRadiation
     LIBS += -L../../lib/interpolation/debug -linterpolation
+    LIBS += -L../../lib/netcdfHandler/debug -lnetcdfHandler
     LIBS += -L../../lib/meteo/debug -lmeteo
     LIBS += -L../../lib/gis/debug -lgis
     LIBS += -L../../lib/crit3dDate/debug -lcrit3dDate
@@ -65,6 +70,7 @@ unix:{
     PRE_TARGETDEPS += ../../lib/utilities/release/libutilities.a
     PRE_TARGETDEPS += ../../lib/solarRadiation/release/libsolarRadiation.a
     PRE_TARGETDEPS += ../../lib/interpolation/release/libinterpolation.a
+    PRE_TARGETDEPS += ../../lib/netcdfHandler/release -lnetcdfHandler
     PRE_TARGETDEPS += ../../lib/meteo/release/libmeteo.a
     PRE_TARGETDEPS += ../../lib/gis/release/libgis.a
     PRE_TARGETDEPS += ../../lib/crit3dDate/release/libcrit3dDate.a
@@ -77,15 +83,12 @@ unix:{
     LIBS += -L../../lib/utilities/release -lutilities
     LIBS += -L../../lib/solarRadiation/release -lsolarRadiation
     LIBS += -L../../lib/interpolation/release -linterpolation
+    LIBS += -L../../lib/netcdfHandler/release -lnetcdfHandler
     LIBS += -L../../lib/meteo/release -lmeteo
     LIBS += -L../../lib/gis/release -lgis
     LIBS += -L../../lib/crit3dDate/release -lcrit3dDate
     LIBS += -L../../lib/mathFunctions/release -lmathFunctions
 }
-
-
-#ifdef NETCDF
-#LIBS += -L$$(NC4_INSTALL_DIR)/lib -lnetcdf
 
 
 SOURCES += main.cpp\

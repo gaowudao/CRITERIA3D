@@ -2,8 +2,9 @@
 #define DIALOGSELECTION_H
 
     #include <QString>
-
+    #include <QDateTime>
     #include "meteo.h"
+    #include "project.h"
 
     class Project;
 
@@ -15,7 +16,7 @@
     meteoVariable chooseMeteoVariable(Project *project_);
 
     #ifdef NETCDF
-        bool chooseNetCDFVariable(int *varId, QDateTime *firstDate, QDateTime *lastDate);
+        bool chooseNetCDFVariable(NetCDFHandler* netCDF, int *varId, QDateTime *firstDate, QDateTime *lastDate);
     #endif
 
 #endif // DIALOGSELECTION_H

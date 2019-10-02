@@ -1,8 +1,6 @@
 #ifndef PRAGAPROJECT_H
 #define PRAGAPROJECT_H
 
-#define PRAGA
-
 #ifndef CRIT3DCLIMATE_H
     #include "crit3dClimate.h"
 #endif

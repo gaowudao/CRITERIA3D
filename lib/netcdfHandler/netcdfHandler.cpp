@@ -73,17 +73,17 @@ std::string NetCDFVariable::getVarName()
 NetCDFHandler::NetCDFHandler()
 {
     ncId = NODATA;
-    this->initialize(NODATA);
+    this->clear();
 }
 
 
-void NetCDFHandler::initialize(int myUtmZone)
+void NetCDFHandler::clear()
 {
-     utmZone = myUtmZone;
-
     // CLOSE file, freeing all resources
     if (ncId != NODATA) nc_close(ncId);
     ncId = NODATA;
+
+    utmZone = NODATA;
 
     nrX = NODATA;
     nrY = NODATA;
@@ -110,6 +110,13 @@ void NetCDFHandler::initialize(int myUtmZone)
     dataGrid.clear();
     dimensions.clear();
     variables.clear();
+}
+
+
+void NetCDFHandler::initialize(int _utmZone)
+{
+    this->clear();
+    utmZone = _utmZone;
 }
 
 

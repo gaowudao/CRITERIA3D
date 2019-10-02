@@ -273,6 +273,7 @@ void MainWindow::mousePressEvent(QMouseEvent *event)
             myRubberBand->show();
         }
 
+        /*
         #ifdef NETCDF
         if (myProject.netCDF.isLoaded)
         {
@@ -283,6 +284,7 @@ void MainWindow::mousePressEvent(QMouseEvent *event)
             exportNetCDFDataSeries(geoPoint);
         }
         #endif
+        */
     }
 }
 
@@ -701,10 +703,8 @@ void MainWindow::on_timeEdit_timeChanged(const QTime &time)
 
 
 
-
-
 #ifdef NETCDF
-    void MainWindow::on_actionOpen_NetCDF_data_triggered()
+    void MainWindow::on_actionOpen_NetCDF_grid_triggered()
     {
         QString fileName = QFileDialog::getOpenFileName(this, tr("Open NetCDF data"), "", tr("NetCDF files (*.nc)"));
 
@@ -745,7 +745,7 @@ void MainWindow::on_timeEdit_timeChanged(const QTime &time)
         int idVar;
         QDateTime firstDate, lastDate;
 
-        if (chooseNetCDFVariable(&idVar, &firstDate, &lastDate))
+        if (chooseNetCDFVariable(&(myProject.netCDF), &idVar, &firstDate, &lastDate))
         {
             QMessageBox::information(nullptr, "Variable",
                                      "Variable: " + QString::number(idVar)
@@ -761,7 +761,7 @@ void MainWindow::on_timeEdit_timeChanged(const QTime &time)
             int idVar;
             QDateTime firstTime, lastTime;
 
-            if (chooseNetCDFVariable(&idVar, &firstTime, &lastTime))
+            if (chooseNetCDFVariable(&(myProject.netCDF), &idVar, &firstTime, &lastTime))
             {
                 std::stringstream buffer;
                 if (! myProject.netCDF.exportDataSeries(idVar, geoPoint, firstTime.toTime_t(), lastTime.toTime_t(), &buffer))
@@ -778,6 +778,7 @@ void MainWindow::on_timeEdit_timeChanged(const QTime &time)
         }
     }
 #endif
+
 
 void MainWindow::drawMeteoPoints()
 {
@@ -2104,4 +2105,5 @@ void MainWindow::on_actionInterpolateSaveGridPeriod_triggered()
     myVariables.push_back(myVar);
     myProject.interpolationMeteoGridPeriod(myFirstTime.date(), myLastTime.date(), myVariables, false);
 }
+
 
