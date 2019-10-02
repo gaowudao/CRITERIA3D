@@ -311,20 +311,21 @@ void weatherGenerator2D::commonModuleCompute()
 
 
     // read uniform random numbers and generation of the array to be used for tests
-    /*FILE* fp;
+    FILE* fp;
     fp = fopen("randomNumbers.txt","r");
     char vectorDummy[20];
     double randomSeries[10000];
 
     int counter = 0;
     char dummy;
+
     for (int j=0;j<10000;j++)
     {
         counter = 0;
         for (int i=0;i<20;i++)
         {
             vectorDummy[i] = '\0';
-        }
+        }/*
         do
         {
             dummy = getc(fp);
@@ -335,10 +336,10 @@ void weatherGenerator2D::commonModuleCompute()
         getc(fp);
         randomSeries[j] = atof(vectorDummy);
         printf("%f\n",randomSeries[j]);
-        getchar();
+        getchar();*/
     }
 
-    fclose(fp);*/
+    fclose(fp);
     // step 1 of precipitation WG2D
     printf("modulo comune fase 1/9 \n");
     weatherGenerator2D::precipitationP00P10(); // it computes the monthly probabilities p00 and p10
