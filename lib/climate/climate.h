@@ -116,6 +116,8 @@
 
     int nParameters(meteoComputation elab);
 
+    bool parseXMLElaboration(QString xmlFileName, QString *myError);
+
     //int getClimateIndexFromDate(QDate myDate, period periodType);
 
 #endif // CLIMATE_H
