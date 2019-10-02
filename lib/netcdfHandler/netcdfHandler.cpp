@@ -1,6 +1,5 @@
 #include <iostream>
 #include <sstream>
-#include <vector>
 #include <algorithm>
 #include <iomanip>
 
@@ -200,7 +199,7 @@ bool NetCDFHandler::readProperties(string fileName, stringstream *buffer)
     {
        nc_inq_attname(ncId, NC_GLOBAL, a, attrName);
        nc_inq_attlen(ncId, NC_GLOBAL, attrName, &lenght);
-       valueStr = (char *) calloc(lenght +1, sizeof(char));
+       valueStr = new char[lenght +1];
        nc_get_att_text(ncId, NC_GLOBAL, attrName, valueStr);
 
        *buffer << attrName << " = " << valueStr << endl;
@@ -266,7 +265,7 @@ bool NetCDFHandler::readProperties(string fileName, stringstream *buffer)
        {
             int i = getDimensionIndex(varName);
             if (i != NODATA)
-                dimensions[i].type = ncTypeId;
+                dimensions[unsigned(i)].type = ncTypeId;
             else
                 *buffer << endl << "ERRORE: dimensione non trovata: " << varName << endl;
        }
@@ -302,7 +301,7 @@ bool NetCDFHandler::readProperties(string fileName, stringstream *buffer)
             if (ncTypeId == NC_CHAR)
             {
                 nc_inq_attlen(ncId, v, attrName, &lenght);
-                valueStr = (char *) calloc(lenght +1, sizeof(char));
+                valueStr = new char[lenght +1];
                 nc_get_att_text(ncId, v, attrName, valueStr);
                 *buffer << attrName << " = " << valueStr << endl;
 
@@ -378,16 +377,16 @@ bool NetCDFHandler::readProperties(string fileName, stringstream *buffer)
     {
         if (idX != NODATA && idY != NODATA)
         {
-            x = (float*) calloc(nrX, sizeof(float));
-            if (retval = nc_get_var_float(ncId, idX, x))
+            x = new float[unsigned(nrX)];
+            if ((retval = nc_get_var_float(ncId, idX, x)))
             {
                 *buffer << "\nERROR in reading x: " << nc_strerror(retval);
                 nc_close(ncId);
                 return false;
             }
 
-            y = (float*) calloc(nrY, sizeof(float));
-            if (retval = nc_get_var_float(ncId, idY, y))
+            y = new float[unsigned(nrY)];
+            if ((retval = nc_get_var_float(ncId, idY, y)))
             {
                 *buffer << "\nERROR in reading y: " << nc_strerror(retval);
                 nc_close(ncId);
@@ -397,9 +396,9 @@ bool NetCDFHandler::readProperties(string fileName, stringstream *buffer)
             if ((x[1]-x[0]) != (y[1]-y[0]))
                 *buffer << "\nWarning! dx != dy" << endl;
 
-            dataGrid.header->cellSize = x[1]-x[0];
-            dataGrid.header->llCorner->x = x[0] - dataGrid.header->cellSize*0.5;
-            dataGrid.header->llCorner->y = y[0] - dataGrid.header->cellSize*0.5;
+            dataGrid.header->cellSize = double(x[1]-x[0]);
+            dataGrid.header->llCorner->x = double(x[0]) - dataGrid.header->cellSize*0.5;
+            dataGrid.header->llCorner->y = double(y[0]) - dataGrid.header->cellSize*0.5;
 
             dataGrid.header->nrCols = nrX;
             dataGrid.header->nrRows = nrY;
@@ -413,17 +412,17 @@ bool NetCDFHandler::readProperties(string fileName, stringstream *buffer)
     // TIME
     if (isStandardTime)
     {
-        time = (double*) calloc(nrTime, sizeof(double));
+        time = new double[unsigned(nrTime)];
 
         if (timeType == NC_DOUBLE)
             retval = nc_get_var(ncId, idTime, time);
 
         else if (timeType == NC_FLOAT)
         {
-            float* floatTime = (float*) calloc(nrTime, sizeof(float));
+            float* floatTime = new float[unsigned(nrTime)];
             retval = nc_get_var_float(ncId, idTime, floatTime);
             for (int i = 0; i < nrTime; i++)
-                time[i] = floatTime[i];
+                time[i] = double(floatTime[i]);
         }
     }
 
@@ -508,14 +507,14 @@ bool NetCDFHandler::exportDataSeries(int idVar, gis::Crit3DGeoPoint geoPoint, ti
     *buffer << endl;
 
     // write data
-    size_t* index = (size_t*) calloc(3, sizeof(size_t));
+    size_t* index = new size_t[3];
     index[1] = size_t(row);
     index[2] = size_t(col);
 
     float value;
     for (int t = t1; t <= t2; t++)
     {
-        index[0] = t;
+        index[0] = unsigned(t);
         nc_get_var1_float(ncId, idVar, index, &value);
         *buffer << getDateTimeStr(t) << "," << value << endl;
     }
