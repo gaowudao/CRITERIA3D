@@ -26,6 +26,7 @@ public:
     gis::Crit3DRasterGrid* mapDailyRHAvg;
     gis::Crit3DRasterGrid* mapDailyRHMin;
     gis::Crit3DRasterGrid* mapDailyRHMax;
+    gis::Crit3DRasterGrid* mapDailyET0HS;
     gis::Crit3DRasterGrid* mapDailyLeafW;
 
     Crit3DDailyMeteoMaps(const gis::Crit3DRasterGrid& DEM);
@@ -33,6 +34,8 @@ public:
 
     void clean();
     gis::Crit3DRasterGrid* getMapFromVar(meteoVariable myVar);
+    bool computeHSET0Map(gis::Crit3DGisSettings *gisSettings, Crit3DDate myDate);
+    bool fixDailyThermalConsistency();
     bool getIsInitialized() const;
     void setIsInitialized(bool value);
 };
@@ -60,7 +63,7 @@ public:
     void clean();
 
     gis::Crit3DRasterGrid* getMapFromVar(meteoVariable myVar);
-    bool computeET0Map(gis::Crit3DRasterGrid* DEM, Crit3DRadiationMaps *radMaps);
+    bool computeET0PMMap(gis::Crit3DRasterGrid* DEM, Crit3DRadiationMaps *radMaps);
     bool computeRelativeHumidityMap();
     bool computeLeafWetnessMap();
     bool getIsInitialized() const;
