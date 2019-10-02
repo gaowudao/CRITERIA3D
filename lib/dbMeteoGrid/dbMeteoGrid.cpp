@@ -15,6 +15,7 @@ Crit3DMeteoGridDbHandler::~Crit3DMeteoGridDbHandler()
     delete _meteoGrid;
 }
 
+
 bool Crit3DMeteoGridDbHandler::parseXMLFile(QString xmlFileName, QDomDocument* xmlDoc, QString *error)
 {
     if (xmlFileName == "")
@@ -45,6 +46,7 @@ bool Crit3DMeteoGridDbHandler::parseXMLFile(QString xmlFileName, QDomDocument* x
     myFile.close();
     return true;
 }
+
 
 bool Crit3DMeteoGridDbHandler::parseXMLGrid(QString xmlFileName, QString *myError)
 {

@@ -293,7 +293,7 @@ void weatherGenerator2D::computeTemperatureParameters()
         // compute the Fourier coefficients
 
         double *par;
-        int nrPar = 5;
+        int nrPar = 11;
         par = (double *) calloc(nrPar, sizeof(double));
         for (int i=0;i<nrPar;i++)
         {
@@ -531,6 +531,7 @@ void weatherGenerator2D::harmonicsFourier(double* variable, double *par,int nrPa
             indexVariable++;
         }
     }
+    /*
     double *parMin = (double *) calloc(nrPar+1, sizeof(double));
     double* parMax = (double *) calloc(nrPar+1, sizeof(double));
     double* parDelta = (double *) calloc(nrPar+1, sizeof(double));
@@ -553,8 +554,37 @@ void weatherGenerator2D::harmonicsFourier(double* variable, double *par,int nrPa
     parMarquardt[3] = par[3] = 0;
     parMarquardt[4] = par[4] = 0;
     parMarquardt[5] = 365;
+    */
+    double *parMin = (double *) calloc(nrPar+1, sizeof(double));
+    double* parMax = (double *) calloc(nrPar+1, sizeof(double));
+    double* parDelta = (double *) calloc(nrPar+1, sizeof(double));
+    double* parMarquardt = (double *) calloc(nrPar+1, sizeof(double));
+    for (int i=0;i<(nrPar);i++)
+    {
+        parMin[i]= valueMin;
+        parMax[i]= valueMax;
+        parDelta[i] = 0.0001;
+    }
+    parMin[11]= 365 - EPSILON;
+    parMax[11]= 365 + EPSILON; // da chiedere a Tomei come modificare questo !!
+    parDelta[11] = EPSILON;
+    double meanVariable = 0;
+    for (int i=0;i<nrValidDays;i++) meanVariable += y[i];
+    meanVariable /= nrValidDays;
+    parMarquardt[0] = par[0] = meanVariable;
+    parMarquardt[1] = par[1] = 0;
+    parMarquardt[2] = par[2] = 0;
+    parMarquardt[3] = par[3] = 0;
+    parMarquardt[4] = par[4] = 0;
+    parMarquardt[5] = par[5] = 0;
+    parMarquardt[6] = par[6] = 0;
+    parMarquardt[7] = par[7] = 0;
+    parMarquardt[8] = par[8] = 0;
+    parMarquardt[9] = par[9] = 0;
+    parMarquardt[10] = par[10] = 0;
+    parMarquardt[11] = 365;
 
-    interpolation::fittingMarquardt(parMin,parMax,parMarquardt,nrPar+1,parDelta,10000,0.0001,FUNCTION_CODE_FOURIER_GENERAL_HARMONICS,x,y,nrValidDays);
+    interpolation::fittingMarquardt(parMin,parMax,parMarquardt,nrPar+1,parDelta,20000,0.0001,FUNCTION_CODE_FOURIER_GENERAL_HARMONICS,x,y,nrValidDays);
 
     for (int i=0;i<nrPar;i++)
     {
@@ -562,7 +592,13 @@ void weatherGenerator2D::harmonicsFourier(double* variable, double *par,int nrPa
     }
     for (int i=0;i<365;i++)
     {
-        estimatedVariable[i] = par[0] + par[1]*cos(2*PI/nrEstimatedVariable*i) + par[2]*sin(2*PI/nrEstimatedVariable*i) + par[3]*cos(4*PI/nrEstimatedVariable*i) + par[4]*sin(4*PI/nrEstimatedVariable*i); 
+        //estimatedVariable[i] = par[0] + par[1]*cos(2*PI/nrEstimatedVariable*i) + par[2]*sin(2*PI/nrEstimatedVariable*i) + par[3]*cos(4*PI/nrEstimatedVariable*i) + par[4]*sin(4*PI/nrEstimatedVariable*i);
+        estimatedVariable[i] = par[0]
+                + par[1]*cos(2*PI/nrEstimatedVariable*i) + par[2]*sin(2*PI/nrEstimatedVariable*i)
+                + par[3]*cos(4*PI/nrEstimatedVariable*i) + par[4]*sin(4*PI/nrEstimatedVariable*i)
+                + par[5]*cos(6*PI/nrEstimatedVariable*i) + par[6]*sin(6*PI/nrEstimatedVariable*i)
+                + par[7]*cos(8*PI/nrEstimatedVariable*i) + par[8]*sin(8*PI/nrEstimatedVariable*i)
+                + par[9]*cos(10*PI/nrEstimatedVariable*i) + par[10]*sin(10*PI/nrEstimatedVariable*i);
     }
 
     // free memory

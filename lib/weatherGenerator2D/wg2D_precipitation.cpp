@@ -224,14 +224,14 @@ void weatherGenerator2D::precipitationMultiDistributionParameterization()
           {
               if  (obsPrecDataD[i][j].prec <= parametersModel.precipitationThreshold)
               {
-                  obsPrecDataD[i][j].amounts = 0.;
                   obsPrecDataD[i][j].occurrences = 0.;
+                  obsPrecDataD[i][j].amounts = 0.;
                   obsPrecDataD[i][j].amountsLessThreshold = 0.;
               }
               else
               {
-                  obsPrecDataD[i][j].amounts = obsDataD[i][j].prec;
                   obsPrecDataD[i][j].occurrences = 1.;
+                  obsPrecDataD[i][j].amounts = obsDataD[i][j].prec;
                   obsPrecDataD[i][j].amountsLessThreshold = obsPrecDataD[i][j].amounts - parametersModel.precipitationThreshold;
               }
           }
@@ -349,7 +349,6 @@ void weatherGenerator2D::precipitationMultiDistributionParameterization()
                            moran[ijk][qq][counterData] = numeratorMoran / denominatorMoran;
                            rainfallLessThreshold[ijk][qq][counterData] = obsPrecDataD[ijk][i].amountsLessThreshold ;
                        }
-
                        else
                        {
                           moran[ijk][qq][counterData]= 1;
@@ -413,7 +412,7 @@ void weatherGenerator2D::precipitationMultiDistributionParameterization()
            {
                bins[i]=bins2[i];
                nrBins[i-1] = 0;
-               if (bins2[i] != NODATA)
+               if (fabs(bins2[i] - NODATA) < EPSILON)
                {
                    bincenter[i-1]= (bins2[i-1] + bins[i])*0.5; //?????
                    newCounter++;
@@ -1065,7 +1064,7 @@ void weatherGenerator2D::precipitationMultisiteAmountsGeneration()
 
 
 
-    printf("parte 5 fine\n");
+    //printf("parte 5 fine\n");
    // free the memory step 5
    for (int i=0;i<nrStations;i++)
    {

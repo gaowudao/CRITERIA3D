@@ -186,6 +186,8 @@
         double** occurrencePrecGenerated;
 
         ToutputWeatherData *outputWeatherData;
+
+        double* uniformRandomNumbers;
         //int contatoreGammaUguale = 0;
         //int contatoreGammaUguale2 = 0;
         //int contatoreGammaDiverso = 0;
