@@ -2287,22 +2287,27 @@ bool parseXMLElaboration(bool *isMeteoGrid, Crit3DClimate* clima, QString xmlFil
             if (ancestor.toElement().attribute("PeriodType").toUpper() == "Generic")
             {
                 clima->setPeriodStr("Generic");
+                clima->setPeriodType(genericPeriod);
             }
             else if (ancestor.toElement().attribute("PeriodType").toUpper() == "Daily")
             {
                 clima->setPeriodStr("Daily");
+                clima->setPeriodType(dailyPeriod);
             }
             else if (ancestor.toElement().attribute("PeriodType").toUpper() == "Decadal")
             {
                 clima->setPeriodStr("Decadal");
+                clima->setPeriodType(decadalPeriod);
             }
             else if (ancestor.toElement().attribute("PeriodType").toUpper() == "Monthly")
             {
                 clima->setPeriodStr("Monthly");
+                clima->setPeriodType(monthlyPeriod);
             }
             else if (ancestor.toElement().attribute("PeriodType").toUpper() == "Annual")
             {
                 clima->setPeriodStr("Annual");
+                clima->setPeriodType(annualPeriod);
             }
             else
             {
@@ -2326,12 +2331,38 @@ bool parseXMLElaboration(bool *isMeteoGrid, Crit3DClimate* clima, QString xmlFil
                 }
                 if (myTag == "PERIOD")
                 {
+                    switch(clima->periodType())
+                    {
+                    case annualPeriod: case genericPeriod:
+
+                    case decadalPeriod:
+
+                    case monthlyPeriod:
+
+                    case seasonalPeriod:
+
+                    case dailyPeriod:
+                    {
+                        clima->setNYears(0);
+                        int dayOfYear = child.toElement().attribute("doy").toInt();
+                        QDate date = QDate(clima->yearStart(), 1, 1).addDays(dayOfYear - 1);
+                        clima->setGenericPeriodDateStart(date);
+                        clima->setGenericPeriodDateEnd(date);
+
+                    };
+
+                    }
+
                     QString periodEnd = child.toElement().attribute("fin");
                     QString periodStart = child.toElement().attribute("ini");
                 }
                 if (myTag == "PRIMARYELABORATION")
                 {
                     clima->setElab1(myTag);
+                }
+                if (myTag == "UNIT")
+                {
+                    // LC serve questa informazione?
                 }
                 child = child.nextSibling();
             }
