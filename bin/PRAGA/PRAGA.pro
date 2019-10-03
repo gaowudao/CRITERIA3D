@@ -39,7 +39,7 @@ CONFIG(debug, debug|release) {
     LIBS += -L../../lib/climate/debug -lclimate
     LIBS += -L../../lib/netcdfHandler/debug -lnetcdfHandler
     win32:{
-        LIBS += $$(NC4_INSTALL_DIR)/lib -lnetcdf
+        LIBS += -L$$(NC4_INSTALL_DIR)/lib -lnetcdf
     }
     unix:{
         LIBS += -lnetcdf
@@ -59,7 +59,7 @@ CONFIG(debug, debug|release) {
     LIBS += -L../../lib/climate/release -lclimate
     LIBS += -L../../lib/netcdfHandler/release -lnetcdfHandler
     win32:{
-        LIBS += $$(NC4_INSTALL_DIR)/lib -lnetcdf
+        LIBS += -L$$(NC4_INSTALL_DIR)/lib -lnetcdf
     }
     unix:{
         LIBS += -lnetcdf
