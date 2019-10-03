@@ -199,11 +199,12 @@ time_t NetCDFHandler::getTime(int timeIndex)
 bool NetCDFHandler::readProperties(string fileName, stringstream *buffer)
 {
     int retval;
-    char name[NC_MAX_NAME+1];
-    char attrName[NC_MAX_NAME+1];
-    char varName[NC_MAX_NAME+1];
-    char typeName[NC_MAX_NAME+1];
-    char *valueStr;
+    //char name[NC_MAX_NAME+1];
+    char* name = new char[NC_MAX_NAME+1];
+    char* attrName = new char[NC_MAX_NAME+1];
+    char* varName = new char[NC_MAX_NAME+1];
+    char* typeName = new char[NC_MAX_NAME+1];
+    char* valueStr = new char[NC_MAX_NAME+1];
     int valueInt;
     double value;
     size_t lenght;
@@ -228,14 +229,15 @@ bool NetCDFHandler::readProperties(string fileName, stringstream *buffer)
     // GLOBAL ATTRIBUTES
     *buffer << fileName << endl << endl;
     *buffer << "Global attributes:" << endl;
-    for (int a = 0; a <nrGlobalAttributes; a++)
-    {
-       nc_inq_attname(ncId, NC_GLOBAL, a, attrName);
-       nc_inq_attlen(ncId, NC_GLOBAL, attrName, &lenght);
-       valueStr = new char[lenght +1];
-       nc_get_att_text(ncId, NC_GLOBAL, attrName, valueStr);
 
-       *buffer << attrName << " = " << valueStr << endl;
+    for (int a = 0; a < nrGlobalAttributes; a++)
+    {
+        nc_inq_attname(ncId, NC_GLOBAL, a, attrName);
+        nc_inq_attlen(ncId, NC_GLOBAL, attrName, &lenght);
+        valueStr = (char *) malloc(lenght +1);
+        nc_get_att_text(ncId, NC_GLOBAL, attrName, valueStr);
+
+        *buffer << attrName << " = " << valueStr << endl;
    }
 
    // DIMENSIONS
@@ -334,7 +336,7 @@ bool NetCDFHandler::readProperties(string fileName, stringstream *buffer)
             if (ncTypeId == NC_CHAR)
             {
                 nc_inq_attlen(ncId, v, attrName, &lenght);
-                valueStr = new char[lenght +1];
+                valueStr = (char *) malloc(lenght +1);
                 nc_get_att_text(ncId, v, attrName, valueStr);
                 *buffer << attrName << " = " << valueStr << endl;
 
