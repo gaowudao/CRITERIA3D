@@ -2265,7 +2265,7 @@ bool parseXMLElaboration(bool *isMeteoGrid, Crit3DClimate* clima, QString xmlFil
     QDomNode ancestor = xmlDoc.documentElement().firstChild();
     QString myTag;
     QString mySecondTag;
-/*
+
     while(!ancestor.isNull())
     {
         if (ancestor.toElement().tagName().toUpper() == "ELABORATION")
@@ -2336,181 +2336,44 @@ bool parseXMLElaboration(bool *isMeteoGrid, Crit3DClimate* clima, QString xmlFil
                 child = child.nextSibling();
             }
         }
-        else if (ancestor.toElement().tagName().toUpper() == "TABLEDAILY")
+        else if (ancestor.toElement().tagName().toUpper() == "ANOMALY")
         {
             child = ancestor.firstChild();
             while( !child.isNull())
             {
-                myTag = child.toElement().tagName().toUpper();
-                if (myTag == "FIELDTIME")
-                {
-                    _tableDaily.fieldTime = child.toElement().text();
-                    // remove white spaces
-                    _tableDaily.fieldTime = _tableDaily.fieldTime.simplified();
-                }
-                if (myTag == "PREFIX")
-                {
-                    _tableDaily.prefix = child.toElement().text();
-                    // remove white spaces
-                    _tableDaily.prefix = _tableDaily.prefix.simplified();
-                }
-                if (myTag == "POSTFIX")
-                {
-                    _tableDaily.postFix = child.toElement().text();
-                    // remove white spaces
-                    _tableDaily.postFix = _tableDaily.postFix.simplified();
-                }
-                if (myTag == "VARCODE")
-                {
-                    secondChild = child.firstChild();
-                    _tableDaily.varcode.push_back(varTable);
 
-                    while( !secondChild.isNull())
-                    {
-                        mySecondTag = secondChild.toElement().tagName().toUpper();
-
-
-                        if (mySecondTag == "VARFIELD")
-                        {
-                            _tableDaily.varcode[_tableDaily.varcode.size()-1].varField = secondChild.toElement().text();
-
-                        }
-
-                        else if (mySecondTag == "VARCODE")
-                        {
-                            _tableDaily.varcode[_tableDaily.varcode.size()-1].varCode = secondChild.toElement().text().toInt();
-
-                        }
-
-                        else if (mySecondTag == "VARPRAGANAME")
-                        {
-                            _tableDaily.varcode[_tableDaily.varcode.size()-1].varPragaName = secondChild.toElement().text();
-                            // remove white spaces
-                            _tableDaily.varcode[_tableDaily.varcode.size()-1].varPragaName = _tableDaily.varcode[_tableDaily.varcode.size()-1].varPragaName.simplified();
-                        }
-                        else
-                        {
-                            _tableDaily.varcode[_tableDaily.varcode.size()-1].varCode = NODATA;
-                        }
-
-                        secondChild = secondChild.nextSibling();
-                    }
-                }
-                child = child.nextSibling();
             }
+            child = child.nextSibling();
         }
 
-        else if (ancestor.toElement().tagName().toUpper() == "TABLEHOURLY")
+        else if (ancestor.toElement().tagName().toUpper() == "PHENOLOGY")
         {
             child = ancestor.firstChild();
             while( !child.isNull())
             {
-                myTag = child.toElement().tagName().toUpper();
-                if (myTag == "FIELDTIME")
-                {
-                    _tableHourly.fieldTime = child.toElement().text();
-                    // remove white spaces
-                    _tableHourly.fieldTime = _tableHourly.fieldTime.simplified();
-                }
-                if (myTag == "PREFIX")
-                {
-                    _tableHourly.prefix = child.toElement().text();
-                    // remove white spaces
-                    _tableHourly.prefix = _tableHourly.prefix.simplified();
-                }
-                if (myTag == "POSTFIX")
-                {
-                    _tableHourly.postFix = child.toElement().text();
-                    // remove white spaces
-                    _tableHourly.postFix = _tableHourly.postFix.simplified();
-                }
-                if (myTag == "VARCODE")
-                {
-                    secondChild = child.firstChild();
-                    _tableHourly.varcode.push_back(varTable);
 
-                    while( !secondChild.isNull())
-                    {
-                        mySecondTag = secondChild.toElement().tagName().toUpper();
-
-
-                        if (mySecondTag == "VARFIELD")
-                        {
-                            _tableHourly.varcode[_tableHourly.varcode.size()-1].varField = secondChild.toElement().text();
-
-                        }
-
-                        else if (mySecondTag == "VARCODE")
-                        {
-                            _tableHourly.varcode[_tableHourly.varcode.size()-1].varCode = secondChild.toElement().text().toInt();
-
-                        }
-
-                        else if (mySecondTag == "VARPRAGANAME")
-                        {
-                            _tableHourly.varcode[_tableHourly.varcode.size()-1].varPragaName = secondChild.toElement().text();
-                            // remove white spaces
-                            _tableHourly.varcode[_tableHourly.varcode.size()-1].varPragaName = _tableHourly.varcode[_tableHourly.varcode.size()-1].varPragaName.simplified();
-                        }
-                        else
-                        {
-                            _tableHourly.varcode[_tableHourly.varcode.size()-1].varCode = NODATA;
-                        }
-
-                        secondChild = secondChild.nextSibling();
-                    }
-                }
-
-                child = child.nextSibling();
             }
+            child = child.nextSibling();
+        }
 
+        else if (ancestor.toElement().tagName().toUpper() == "DROUGHT")
+        {
+            child = ancestor.firstChild();
+            while( !child.isNull())
+            {
+
+            }
+            child = child.nextSibling();
         }
 
         ancestor = ancestor.nextSibling();
     }
     xmlDoc.clear();
 
-    if (!checkXML(myError))
-    {
-        return false;
-    }
+//    if (!checkXML(myError))
+//    {
+//        return false;
+//    }
 
-    // create variable maps
-    for (unsigned int i=0; i < _tableDaily.varcode.size(); i++)
-    {
-        try
-        {
-            meteoVariable gridMeteoKey = MapDailyMeteoVar.at(_tableDaily.varcode[i].varPragaName.toStdString());
-            _gridDailyVar.insert(gridMeteoKey, _tableDaily.varcode[i].varCode);
-            _gridDailyVarField.insert(gridMeteoKey, _tableDaily.varcode[i].varField);
-        }
-        catch (const std::out_of_range& oor)
-        {
-            QString errMess = QString("%1 does not exist" ).arg(_tableDaily.varcode[i].varPragaName);
-            *myError = oor.what() + errMess;
-        }
-
-    }
-
-    for (unsigned int i=0; i < _tableHourly.varcode.size(); i++)
-    {
-        try
-        {
-            meteoVariable gridMeteoKey = MapHourlyMeteoVar.at(_tableHourly.varcode[i].varPragaName.toStdString());
-            _gridHourlyVar.insert(gridMeteoKey, _tableHourly.varcode[i].varCode);
-            _gridHourlyVarField.insert(gridMeteoKey, _tableHourly.varcode[i].varField);
-        }
-        catch (const std::out_of_range& oor)
-        {
-            QString errMess = QString("%1 does not exist" ).arg(_tableHourly.varcode[i].varPragaName);
-            *myError = oor.what() + errMess;
-        }
-    }
-
-
-    _meteoGrid->setGridStructure(_gridStructure);
-
-    _meteoGrid->initMeteoPoints(nRow, nCol);
-*/
     return true;
 }
