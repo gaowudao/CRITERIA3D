@@ -2226,7 +2226,7 @@ int getClimateIndexFromDate(QDate myDate, period periodType)
 }
 */
 
-bool parseXMLElaboration(QString xmlFileName, QString *myError)
+bool parseXMLElaboration(bool *isMeteoGrid, Crit3DClimate* clima, QString xmlFileName, QString *myError)
 {
 
     QDomDocument xmlDoc;
@@ -2265,185 +2265,77 @@ bool parseXMLElaboration(QString xmlFileName, QString *myError)
     QDomNode ancestor = xmlDoc.documentElement().firstChild();
     QString myTag;
     QString mySecondTag;
-    int nRow;
-    int nCol;
-
-    // TO DO
-    /*
+/*
     while(!ancestor.isNull())
     {
         if (ancestor.toElement().tagName().toUpper() == "ELABORATION")
         {
             if (ancestor.toElement().attribute("Datatype").toUpper() == "GRID")
             {
-                //_gridStructure.setIsRegular(true);
+                *isMeteoGrid = true;
             }
             else if (ancestor.toElement().attribute("Datatype").toUpper() == "POINT")
             {
-                //_gridStructure.setIsRegular(false);
+                *isMeteoGrid = false;
             }
             else
             {
-                *myError = "Invalid isRegular attribute";
+                *myError = "Invalid Datatype attribute";
                 return false;
             }
 
             if (ancestor.toElement().attribute("PeriodType").toUpper() == "Generic")
             {
-
+                clima->setPeriodStr("Generic");
             }
-            else if (ancestor.toElement().attribute("PeriodType").toUpper() == "")
+            else if (ancestor.toElement().attribute("PeriodType").toUpper() == "Daily")
             {
-
+                clima->setPeriodStr("Daily");
+            }
+            else if (ancestor.toElement().attribute("PeriodType").toUpper() == "Decadal")
+            {
+                clima->setPeriodStr("Decadal");
+            }
+            else if (ancestor.toElement().attribute("PeriodType").toUpper() == "Monthly")
+            {
+                clima->setPeriodStr("Monthly");
+            }
+            else if (ancestor.toElement().attribute("PeriodType").toUpper() == "Annual")
+            {
+                clima->setPeriodStr("Annual");
             }
             else
             {
-                *myError = "Invalid isutm attribute";
+                *myError = "Invalid Datatype attribute";
                 return false;
             }
             child = ancestor.firstChild();
-            while( !child.isNull())
-            {
-                myTag = child.toElement().tagName().toUpper();
-                if (myTag == "PROVIDER")
-                {
-                    _connection.provider = child.toElement().text();
-                    // remove white spaces
-                    _connection.provider = _connection.provider.simplified();
-                }
-                else if (myTag == "SERVER")
-                {
-                    _connection.server = child.toElement().text();
-                    // remove white spaces
-                    _connection.server = _connection.server.simplified();
-                }
-                else if (myTag == "NAME")
-                {
-                    _connection.name = child.toElement().text();
-                    // remove white spaces
-                    _connection.server = _connection.server.simplified();
-                }
-                else if (myTag == "USER")
-                {
-                    _connection.user = child.toElement().text();
-                    // remove white spaces
-                    _connection.user = _connection.user.simplified();
-                }
-                else if (myTag == "PASSWORD")
-                {
-                    _connection.password = child.toElement().text();
-                    // remove white spaces
-                    _connection.password = _connection.password.simplified();
-                }
-
-                child = child.nextSibling();
-            }
-        }
-        else if (ancestor.toElement().tagName().toUpper() == "GRIDSTRUCTURE")
-        {
-            if (ancestor.toElement().attribute("isregular").toUpper() == "TRUE")
-            {
-                _gridStructure.setIsRegular(true);
-            }
-            else if (ancestor.toElement().attribute("isregular").toUpper() == "FALSE")
-            {
-                _gridStructure.setIsRegular(false);
-            }
-            else
-            {
-                *myError = "Invalid isRegular attribute";
-                return false;
-            }
-
-            if (ancestor.toElement().attribute("isutm").toUpper() == "TRUE")
-            {
-                _gridStructure.setIsUTM(true);
-            }
-            else if (ancestor.toElement().attribute("isutm").toUpper() == "FALSE")
-            {
-                _gridStructure.setIsUTM(false);
-            }
-            else
-            {
-                *myError = "Invalid isutm attribute";
-                return false;
-            }
-
-            if (ancestor.toElement().attribute("istin").toUpper() == "TRUE")
-            {
-                _gridStructure.setIsTIN(true);
-            }
-            else if (ancestor.toElement().attribute("istin").toUpper() == "FALSE")
-            {
-                _gridStructure.setIsTIN(false);
-            }
-            else
-            {
-                *myError = "Invalid istin attribute";
-                return false;
-            }
-
-            if (ancestor.toElement().attribute("isfixedfields").toUpper() == "TRUE")
-            {
-                _gridStructure.setIsFixedFields(true);
-                initMapMySqlVarType();
-            }
-            else if (ancestor.toElement().attribute("isfixedfields").toUpper() == "FALSE")
-            {
-                _gridStructure.setIsFixedFields(false);
-            }
-            else
-            {
-                *myError = "Invalid isfixedfields attribute";
-                return false;
-            }
-
-
-            child = ancestor.firstChild();
-            gis::Crit3DGridHeader header;
-
-            header.llCorner->longitude = NODATA;
-            header.llCorner->latitude = NODATA;
-            header.nrRows = NODATA;
-            header.nrCols = NODATA;
-            header.dx = NODATA;
-            header.dy = NODATA;
 
             while( !child.isNull())
             {
                 myTag = child.toElement().tagName().toUpper();
-                if (myTag == "XLL")
+                if (myTag == "VARIABLE")
                 {
-                    header.llCorner->longitude = child.toElement().text().toFloat();
+                    meteoVariable var = getKeyMeteoVarMeteoMap(MapDailyMeteoVarToString, myTag.toStdString());
+                    clima->setVariable(var);
                 }
-                if (myTag == "YLL")
+                if (myTag == "YEARINTERVAL")
                 {
-                    header.llCorner->latitude = child.toElement().text().toFloat();
+                    clima->setYearEnd(child.toElement().attribute("fin").toInt());
+                    clima->setYearStart(child.toElement().attribute("ini").toInt());
                 }
-                if (myTag == "NROWS")
+                if (myTag == "PERIOD")
                 {
-                    header.nrRows = child.toElement().text().toInt();
-                    nRow = header.nrRows;
+                    QString periodEnd = child.toElement().attribute("fin");
+                    QString periodStart = child.toElement().attribute("ini");
                 }
-                if (myTag == "NCOLS")
+                if (myTag == "PRIMARYELABORATION")
                 {
-                    header.nrCols = child.toElement().text().toInt();
-                    nCol = header.nrCols;
-                }
-                if (myTag == "XWIDTH")
-                {
-                    header.dx = child.toElement().text().toFloat();
-                }
-                if (myTag == "YWIDTH")
-                {
-                    header.dy = child.toElement().text().toFloat();
+                    clima->setElab1(myTag);
                 }
                 child = child.nextSibling();
             }
-            _gridStructure.setHeader(header);
-
         }
-
         else if (ancestor.toElement().tagName().toUpper() == "TABLEDAILY")
         {
             child = ancestor.firstChild();

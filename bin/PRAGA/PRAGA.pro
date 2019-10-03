@@ -31,31 +31,19 @@ win32:{
 }
 
 
-LIBS += -L$$(NC4_INSTALL_DIR)/lib -lnetcdf
+LIBS += -L$$(NC4_INSTALL_DIR)/lib -lnetcdf #X Fausto non utilizzare Variabile di ambiente altrimenti funziona solo sul tuo pc.
+
 
 CONFIG(debug, debug|release) {
 
-unix:{
-    PRE_TARGETDEPS += ../../lib/climate/debug/libclimate.a
-    PRE_TARGETDEPS += ../../lib/dbMeteoGrid/debug/libdbMeteoGrid.a
-    PRE_TARGETDEPS += ../../lib/dbMeteoPoints/debug/libdbMeteoPoints.a
-    PRE_TARGETDEPS += ../../lib/utilities/debug/libutilities.a
-    PRE_TARGETDEPS += ../../lib/solarRadiation/debug/libsolarRadiation.a
-    PRE_TARGETDEPS += ../../lib/interpolation/debug/libinterpolation.a
-    PRE_TARGETDEPS += ../../lib/netcdfHandler/debug -lnetcdfHandler
-    PRE_TARGETDEPS += ../../lib/meteo/debug/libmeteo.a
-    PRE_TARGETDEPS += ../../lib/gis/debug/libgis.a
-    PRE_TARGETDEPS += ../../lib/crit3dDate/debug/libcrit3dDate.a
-    PRE_TARGETDEPS += ../../lib/mathFunctions/debug/libmathFunctions.a
-}
-
-    LIBS += -L../../lib/dbMeteoGrid/debug -ldbMeteoGrid
     LIBS += -L../../lib/climate/debug -lclimate
+    LIBS += -L../../lib/netcdfHandler/debug -lnetcdfHandler
+    LIBS += -lnetcdf
+    LIBS += -L../../lib/dbMeteoGrid/debug -ldbMeteoGrid
     LIBS += -L../../lib/dbMeteoPoints/debug -ldbMeteoPoints
     LIBS += -L../../lib/utilities/debug -lutilities
     LIBS += -L../../lib/solarRadiation/debug -lsolarRadiation
     LIBS += -L../../lib/interpolation/debug -linterpolation
-    LIBS += -L../../lib/netcdfHandler/debug -lnetcdfHandler
     LIBS += -L../../lib/meteo/debug -lmeteo
     LIBS += -L../../lib/gis/debug -lgis
     LIBS += -L../../lib/crit3dDate/debug -lcrit3dDate
@@ -63,27 +51,14 @@ unix:{
 
 } else {
 
-unix:{
-    PRE_TARGETDEPS += ../../lib/climate/release/libclimate.a
-    PRE_TARGETDEPS += ../../lib/dbMeteoGrid/release/libdbMeteoGrid.a
-    PRE_TARGETDEPS += ../../lib/dbMeteoPoints/release/libdbMeteoPoints.a
-    PRE_TARGETDEPS += ../../lib/utilities/release/libutilities.a
-    PRE_TARGETDEPS += ../../lib/solarRadiation/release/libsolarRadiation.a
-    PRE_TARGETDEPS += ../../lib/interpolation/release/libinterpolation.a
-    PRE_TARGETDEPS += ../../lib/netcdfHandler/release -lnetcdfHandler
-    PRE_TARGETDEPS += ../../lib/meteo/release/libmeteo.a
-    PRE_TARGETDEPS += ../../lib/gis/release/libgis.a
-    PRE_TARGETDEPS += ../../lib/crit3dDate/release/libcrit3dDate.a
-    PRE_TARGETDEPS += ../../lib/mathFunctions/release/libmathFunctions.a
-}
-
     LIBS += -L../../lib/climate/release -lclimate
+    LIBS += -L../../lib/netcdfHandler/release -lnetcdfHandler
+    LIBS += -lnetcdf
     LIBS += -L../../lib/dbMeteoGrid/release -ldbMeteoGrid
     LIBS += -L../../lib/dbMeteoPoints/release -ldbMeteoPoints
     LIBS += -L../../lib/utilities/release -lutilities
     LIBS += -L../../lib/solarRadiation/release -lsolarRadiation
     LIBS += -L../../lib/interpolation/release -linterpolation
-    LIBS += -L../../lib/netcdfHandler/release -lnetcdfHandler
     LIBS += -L../../lib/meteo/release -lmeteo
     LIBS += -L../../lib/gis/release -lgis
     LIBS += -L../../lib/crit3dDate/release -lcrit3dDate
