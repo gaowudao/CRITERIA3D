@@ -404,6 +404,9 @@ bool NetCDFHandler::readProperties(string fileName, stringstream *buffer)
                 isLatDecreasing = true;
             }
 
+            latLonHeader.llCorner->longitude -= (latLonHeader.dx * 0.5);
+            latLonHeader.llCorner->latitude -= (latLonHeader.dy * 0.5);
+
             latLonHeader.flag = NODATA;
 
             dataGrid.header->convertFromLatLon(latLonHeader);
