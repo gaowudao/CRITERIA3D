@@ -365,13 +365,13 @@ bool NetCDFHandler::readProperties(string fileName, stringstream *buffer)
     {
         if (idLat != NODATA && idLon != NODATA)
         {
-            float* lat = (float*) calloc(nrLat, sizeof(float));
-            float* lon = (float*) calloc(nrLon, sizeof(float));
+            float* lat = new float[unsigned(nrLat)];
+            float* lon = new float[unsigned(nrLon)];
 
-            if (retval = nc_get_var_float(ncId, idLon, lon))
+            if ((retval = nc_get_var_float(ncId, idLon, lon)))
                 *buffer << "\nERROR in reading longitude:" << nc_strerror(retval);
 
-            if (retval = nc_get_var_float(ncId, idLat, lat))
+            if ((retval = nc_get_var_float(ncId, idLat, lat)))
                 *buffer << "\nERROR in reading latitude:" << nc_strerror(retval);
 
             *buffer << endl << "lat:" << endl;
@@ -385,18 +385,18 @@ bool NetCDFHandler::readProperties(string fileName, stringstream *buffer)
             latLonHeader.nrRows = nrLat;
             latLonHeader.nrCols = nrLon;
 
-            latLonHeader.llCorner->longitude = lon[0];
-            latLonHeader.dx = (lon[1]-lon[0]);
+            latLonHeader.llCorner->longitude = double(lon[0]);
+            latLonHeader.dx = double(lon[1]-lon[0]);
 
             if (lat[1] > lat[0])
             {
-                latLonHeader.llCorner->latitude = lat[0];
-                latLonHeader.dy = (lat[1]-lat[0]);
+                latLonHeader.llCorner->latitude = double(lat[0]);
+                latLonHeader.dy = double(lat[1]-lat[0]);
             }
             else
             {
-                latLonHeader.llCorner->latitude = lat[nrLat-1];
-                latLonHeader.dy = (lat[0]-lat[1]);
+                latLonHeader.llCorner->latitude = double(lat[nrLat-1]);
+                latLonHeader.dy = double(lat[0]-lat[1]);
                 isLatDecreasing = true;
             }
 

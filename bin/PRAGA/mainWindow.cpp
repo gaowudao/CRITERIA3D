@@ -270,7 +270,7 @@ void MainWindow::mousePressEvent(QMouseEvent *event)
             myRubberBand->show();
         }
 
-        /*
+
         #ifdef NETCDF
         if (myProject.netCDF.isLoaded)
         {
@@ -281,7 +281,6 @@ void MainWindow::mousePressEvent(QMouseEvent *event)
             exportNetCDFDataSeries(geoPoint);
         }
         #endif
-        */
     }
 }
 
