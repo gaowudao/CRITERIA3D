@@ -30,12 +30,6 @@
         #include <fstream>
     #endif
 
-    #define NETCDF
-
-    #ifdef NETCDF
-        #include "netcdfHandler.h"
-    #endif
-
 
     class Project {
     private:
@@ -102,10 +96,6 @@
         std::vector <Crit3DProxyGridSeries> proxyGridSeries;
 
         Crit3DClimateParameters climateParameters;
-
-        #ifdef NETCDF
-            NetCDFHandler netCDF;
-        #endif
 
         Project();
 

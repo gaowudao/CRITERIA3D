@@ -340,7 +340,7 @@ bool Crit3DProject::computeAllMeteoMaps(const Crit3DTime& myTime, bool showInfo)
         myInfo.setValue(5);
     }
 
-    if (! this->hourlyMeteoMaps->computeET0Map(&(this->DEM), this->radiationMaps))
+    if (! this->hourlyMeteoMaps->computeET0PMMap(&(this->DEM), this->radiationMaps))
         return false;
 
     if (showInfo) myInfo.close();

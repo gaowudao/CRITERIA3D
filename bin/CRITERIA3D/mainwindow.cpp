@@ -149,16 +149,6 @@ void MainWindow::mousePressEvent(QMouseEvent *event)
     if (event->button() == Qt::RightButton)
     {
         contextMenuRequested(event->pos(), event->globalPos());
-
-        #ifdef NETCDF
-        if (myProject.netCDF.isLoaded)
-        {
-            Position myPos = mapView->mapToScene(getMapPoint(&pos));
-            gis::Crit3DGeoPoint geoPoint = gis::Crit3DGeoPoint(myPos.latitude(), myPos.longitude());
-
-            exportNetCDFDataSeries(geoPoint);
-        }
-        #endif
     }
 }
 

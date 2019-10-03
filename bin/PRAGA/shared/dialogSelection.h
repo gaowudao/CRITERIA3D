@@ -6,6 +6,10 @@
     #include "meteo.h"
     #include "project.h"
 
+    #ifdef NETCDF
+        #include "netcdfHandler.h"
+    #endif
+
     class Project;
 
     QString editValue(QString windowsTitle, QString defaultValue);
