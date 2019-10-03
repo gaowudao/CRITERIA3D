@@ -612,7 +612,8 @@ void weatherGenerator2D::precipitationMultisiteOccurrenceGeneration()
             //printf("end\n");
 
         }
-        /*double* arrayRandomNormalNumbers = (double *)calloc(nrStations*nrDaysIterativeProcessMonthly[iMonth], sizeof(double));
+        // !! questa parte è stata aggiunta per fare uno studio comparativo tra weather generaotr in Matlab e in C usando gli stessi numeri random
+        double* arrayRandomNormalNumbers = (double *)calloc(nrStations*nrDaysIterativeProcessMonthly[iMonth], sizeof(double));
         randomSet(arrayRandomNormalNumbers,nrStations*nrDaysIterativeProcessMonthly[iMonth]);
         int countRandom = 0;
         for (int i=0;i<nrStations;i++)
@@ -625,7 +626,9 @@ void weatherGenerator2D::precipitationMultisiteOccurrenceGeneration()
             }
             //printf("\n");
         }
-        free(arrayRandomNormalNumbers);*/
+        free(arrayRandomNormalNumbers);
+        // fine parte da togliere
+
         //pressEnterToContinue();
         // initialization outputs of weatherGenerator2D::spatialIterationOccurrence
         double** M;

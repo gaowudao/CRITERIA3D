@@ -565,9 +565,9 @@ void weatherGenerator2D::harmonicsFourier(double* variable, double *par,int nrPa
         parMax[i]= valueMax;
         parDelta[i] = 0.0001;
     }
-    parMin[11]= 365 - EPSILON;
-    parMax[11]= 365 + EPSILON; // da chiedere a Tomei come modificare questo !!
-    parDelta[11] = EPSILON;
+    parMin[11]= 365;
+    parMax[11]= 365; // da chiedere a Tomei come modificare questo !!
+    parDelta[11] = 0;
     double meanVariable = 0;
     for (int i=0;i<nrValidDays;i++) meanVariable += y[i];
     meanVariable /= nrValidDays;
