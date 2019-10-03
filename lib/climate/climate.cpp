@@ -2226,7 +2226,7 @@ int getClimateIndexFromDate(QDate myDate, period periodType)
 }
 */
 
-bool parseXMLElaboration(QString xmlFileName, QString *myError)
+bool parseXMLElaboration(bool *isMeteoGrid, Crit3DClimate* clima, QString xmlFileName, QString *myError)
 {
 
     QDomDocument xmlDoc;
@@ -2265,360 +2265,115 @@ bool parseXMLElaboration(QString xmlFileName, QString *myError)
     QDomNode ancestor = xmlDoc.documentElement().firstChild();
     QString myTag;
     QString mySecondTag;
-    int nRow;
-    int nCol;
 
-    // TO DO
-    /*
     while(!ancestor.isNull())
     {
         if (ancestor.toElement().tagName().toUpper() == "ELABORATION")
         {
             if (ancestor.toElement().attribute("Datatype").toUpper() == "GRID")
             {
-                //_gridStructure.setIsRegular(true);
+                *isMeteoGrid = true;
             }
             else if (ancestor.toElement().attribute("Datatype").toUpper() == "POINT")
             {
-                //_gridStructure.setIsRegular(false);
+                *isMeteoGrid = false;
             }
             else
             {
-                *myError = "Invalid isRegular attribute";
+                *myError = "Invalid Datatype attribute";
                 return false;
             }
 
             if (ancestor.toElement().attribute("PeriodType").toUpper() == "Generic")
             {
-
+                clima->setPeriodStr("Generic");
             }
-            else if (ancestor.toElement().attribute("PeriodType").toUpper() == "")
+            else if (ancestor.toElement().attribute("PeriodType").toUpper() == "Daily")
             {
-
+                clima->setPeriodStr("Daily");
+            }
+            else if (ancestor.toElement().attribute("PeriodType").toUpper() == "Decadal")
+            {
+                clima->setPeriodStr("Decadal");
+            }
+            else if (ancestor.toElement().attribute("PeriodType").toUpper() == "Monthly")
+            {
+                clima->setPeriodStr("Monthly");
+            }
+            else if (ancestor.toElement().attribute("PeriodType").toUpper() == "Annual")
+            {
+                clima->setPeriodStr("Annual");
             }
             else
             {
-                *myError = "Invalid isutm attribute";
+                *myError = "Invalid Datatype attribute";
                 return false;
             }
             child = ancestor.firstChild();
-            while( !child.isNull())
-            {
-                myTag = child.toElement().tagName().toUpper();
-                if (myTag == "PROVIDER")
-                {
-                    _connection.provider = child.toElement().text();
-                    // remove white spaces
-                    _connection.provider = _connection.provider.simplified();
-                }
-                else if (myTag == "SERVER")
-                {
-                    _connection.server = child.toElement().text();
-                    // remove white spaces
-                    _connection.server = _connection.server.simplified();
-                }
-                else if (myTag == "NAME")
-                {
-                    _connection.name = child.toElement().text();
-                    // remove white spaces
-                    _connection.server = _connection.server.simplified();
-                }
-                else if (myTag == "USER")
-                {
-                    _connection.user = child.toElement().text();
-                    // remove white spaces
-                    _connection.user = _connection.user.simplified();
-                }
-                else if (myTag == "PASSWORD")
-                {
-                    _connection.password = child.toElement().text();
-                    // remove white spaces
-                    _connection.password = _connection.password.simplified();
-                }
-
-                child = child.nextSibling();
-            }
-        }
-        else if (ancestor.toElement().tagName().toUpper() == "GRIDSTRUCTURE")
-        {
-            if (ancestor.toElement().attribute("isregular").toUpper() == "TRUE")
-            {
-                _gridStructure.setIsRegular(true);
-            }
-            else if (ancestor.toElement().attribute("isregular").toUpper() == "FALSE")
-            {
-                _gridStructure.setIsRegular(false);
-            }
-            else
-            {
-                *myError = "Invalid isRegular attribute";
-                return false;
-            }
-
-            if (ancestor.toElement().attribute("isutm").toUpper() == "TRUE")
-            {
-                _gridStructure.setIsUTM(true);
-            }
-            else if (ancestor.toElement().attribute("isutm").toUpper() == "FALSE")
-            {
-                _gridStructure.setIsUTM(false);
-            }
-            else
-            {
-                *myError = "Invalid isutm attribute";
-                return false;
-            }
-
-            if (ancestor.toElement().attribute("istin").toUpper() == "TRUE")
-            {
-                _gridStructure.setIsTIN(true);
-            }
-            else if (ancestor.toElement().attribute("istin").toUpper() == "FALSE")
-            {
-                _gridStructure.setIsTIN(false);
-            }
-            else
-            {
-                *myError = "Invalid istin attribute";
-                return false;
-            }
-
-            if (ancestor.toElement().attribute("isfixedfields").toUpper() == "TRUE")
-            {
-                _gridStructure.setIsFixedFields(true);
-                initMapMySqlVarType();
-            }
-            else if (ancestor.toElement().attribute("isfixedfields").toUpper() == "FALSE")
-            {
-                _gridStructure.setIsFixedFields(false);
-            }
-            else
-            {
-                *myError = "Invalid isfixedfields attribute";
-                return false;
-            }
-
-
-            child = ancestor.firstChild();
-            gis::Crit3DGridHeader header;
-
-            header.llCorner->longitude = NODATA;
-            header.llCorner->latitude = NODATA;
-            header.nrRows = NODATA;
-            header.nrCols = NODATA;
-            header.dx = NODATA;
-            header.dy = NODATA;
 
             while( !child.isNull())
             {
                 myTag = child.toElement().tagName().toUpper();
-                if (myTag == "XLL")
+                if (myTag == "VARIABLE")
                 {
-                    header.llCorner->longitude = child.toElement().text().toFloat();
+                    meteoVariable var = getKeyMeteoVarMeteoMap(MapDailyMeteoVarToString, myTag.toStdString());
+                    clima->setVariable(var);
                 }
-                if (myTag == "YLL")
+                if (myTag == "YEARINTERVAL")
                 {
-                    header.llCorner->latitude = child.toElement().text().toFloat();
+                    clima->setYearEnd(child.toElement().attribute("fin").toInt());
+                    clima->setYearStart(child.toElement().attribute("ini").toInt());
                 }
-                if (myTag == "NROWS")
+                if (myTag == "PERIOD")
                 {
-                    header.nrRows = child.toElement().text().toInt();
-                    nRow = header.nrRows;
+                    QString periodEnd = child.toElement().attribute("fin");
+                    QString periodStart = child.toElement().attribute("ini");
                 }
-                if (myTag == "NCOLS")
+                if (myTag == "PRIMARYELABORATION")
                 {
-                    header.nrCols = child.toElement().text().toInt();
-                    nCol = header.nrCols;
-                }
-                if (myTag == "XWIDTH")
-                {
-                    header.dx = child.toElement().text().toFloat();
-                }
-                if (myTag == "YWIDTH")
-                {
-                    header.dy = child.toElement().text().toFloat();
-                }
-                child = child.nextSibling();
-            }
-            _gridStructure.setHeader(header);
-
-        }
-
-        else if (ancestor.toElement().tagName().toUpper() == "TABLEDAILY")
-        {
-            child = ancestor.firstChild();
-            while( !child.isNull())
-            {
-                myTag = child.toElement().tagName().toUpper();
-                if (myTag == "FIELDTIME")
-                {
-                    _tableDaily.fieldTime = child.toElement().text();
-                    // remove white spaces
-                    _tableDaily.fieldTime = _tableDaily.fieldTime.simplified();
-                }
-                if (myTag == "PREFIX")
-                {
-                    _tableDaily.prefix = child.toElement().text();
-                    // remove white spaces
-                    _tableDaily.prefix = _tableDaily.prefix.simplified();
-                }
-                if (myTag == "POSTFIX")
-                {
-                    _tableDaily.postFix = child.toElement().text();
-                    // remove white spaces
-                    _tableDaily.postFix = _tableDaily.postFix.simplified();
-                }
-                if (myTag == "VARCODE")
-                {
-                    secondChild = child.firstChild();
-                    _tableDaily.varcode.push_back(varTable);
-
-                    while( !secondChild.isNull())
-                    {
-                        mySecondTag = secondChild.toElement().tagName().toUpper();
-
-
-                        if (mySecondTag == "VARFIELD")
-                        {
-                            _tableDaily.varcode[_tableDaily.varcode.size()-1].varField = secondChild.toElement().text();
-
-                        }
-
-                        else if (mySecondTag == "VARCODE")
-                        {
-                            _tableDaily.varcode[_tableDaily.varcode.size()-1].varCode = secondChild.toElement().text().toInt();
-
-                        }
-
-                        else if (mySecondTag == "VARPRAGANAME")
-                        {
-                            _tableDaily.varcode[_tableDaily.varcode.size()-1].varPragaName = secondChild.toElement().text();
-                            // remove white spaces
-                            _tableDaily.varcode[_tableDaily.varcode.size()-1].varPragaName = _tableDaily.varcode[_tableDaily.varcode.size()-1].varPragaName.simplified();
-                        }
-                        else
-                        {
-                            _tableDaily.varcode[_tableDaily.varcode.size()-1].varCode = NODATA;
-                        }
-
-                        secondChild = secondChild.nextSibling();
-                    }
+                    clima->setElab1(myTag);
                 }
                 child = child.nextSibling();
             }
         }
-
-        else if (ancestor.toElement().tagName().toUpper() == "TABLEHOURLY")
+        else if (ancestor.toElement().tagName().toUpper() == "ANOMALY")
         {
             child = ancestor.firstChild();
             while( !child.isNull())
             {
-                myTag = child.toElement().tagName().toUpper();
-                if (myTag == "FIELDTIME")
-                {
-                    _tableHourly.fieldTime = child.toElement().text();
-                    // remove white spaces
-                    _tableHourly.fieldTime = _tableHourly.fieldTime.simplified();
-                }
-                if (myTag == "PREFIX")
-                {
-                    _tableHourly.prefix = child.toElement().text();
-                    // remove white spaces
-                    _tableHourly.prefix = _tableHourly.prefix.simplified();
-                }
-                if (myTag == "POSTFIX")
-                {
-                    _tableHourly.postFix = child.toElement().text();
-                    // remove white spaces
-                    _tableHourly.postFix = _tableHourly.postFix.simplified();
-                }
-                if (myTag == "VARCODE")
-                {
-                    secondChild = child.firstChild();
-                    _tableHourly.varcode.push_back(varTable);
 
-                    while( !secondChild.isNull())
-                    {
-                        mySecondTag = secondChild.toElement().tagName().toUpper();
-
-
-                        if (mySecondTag == "VARFIELD")
-                        {
-                            _tableHourly.varcode[_tableHourly.varcode.size()-1].varField = secondChild.toElement().text();
-
-                        }
-
-                        else if (mySecondTag == "VARCODE")
-                        {
-                            _tableHourly.varcode[_tableHourly.varcode.size()-1].varCode = secondChild.toElement().text().toInt();
-
-                        }
-
-                        else if (mySecondTag == "VARPRAGANAME")
-                        {
-                            _tableHourly.varcode[_tableHourly.varcode.size()-1].varPragaName = secondChild.toElement().text();
-                            // remove white spaces
-                            _tableHourly.varcode[_tableHourly.varcode.size()-1].varPragaName = _tableHourly.varcode[_tableHourly.varcode.size()-1].varPragaName.simplified();
-                        }
-                        else
-                        {
-                            _tableHourly.varcode[_tableHourly.varcode.size()-1].varCode = NODATA;
-                        }
-
-                        secondChild = secondChild.nextSibling();
-                    }
-                }
-
-                child = child.nextSibling();
             }
+            child = child.nextSibling();
+        }
 
+        else if (ancestor.toElement().tagName().toUpper() == "PHENOLOGY")
+        {
+            child = ancestor.firstChild();
+            while( !child.isNull())
+            {
+
+            }
+            child = child.nextSibling();
+        }
+
+        else if (ancestor.toElement().tagName().toUpper() == "DROUGHT")
+        {
+            child = ancestor.firstChild();
+            while( !child.isNull())
+            {
+
+            }
+            child = child.nextSibling();
         }
 
         ancestor = ancestor.nextSibling();
     }
     xmlDoc.clear();
 
-    if (!checkXML(myError))
-    {
-        return false;
-    }
+//    if (!checkXML(myError))
+//    {
+//        return false;
+//    }
 
-    // create variable maps
-    for (unsigned int i=0; i < _tableDaily.varcode.size(); i++)
-    {
-        try
-        {
-            meteoVariable gridMeteoKey = MapDailyMeteoVar.at(_tableDaily.varcode[i].varPragaName.toStdString());
-            _gridDailyVar.insert(gridMeteoKey, _tableDaily.varcode[i].varCode);
-            _gridDailyVarField.insert(gridMeteoKey, _tableDaily.varcode[i].varField);
-        }
-        catch (const std::out_of_range& oor)
-        {
-            QString errMess = QString("%1 does not exist" ).arg(_tableDaily.varcode[i].varPragaName);
-            *myError = oor.what() + errMess;
-        }
-
-    }
-
-    for (unsigned int i=0; i < _tableHourly.varcode.size(); i++)
-    {
-        try
-        {
-            meteoVariable gridMeteoKey = MapHourlyMeteoVar.at(_tableHourly.varcode[i].varPragaName.toStdString());
-            _gridHourlyVar.insert(gridMeteoKey, _tableHourly.varcode[i].varCode);
-            _gridHourlyVarField.insert(gridMeteoKey, _tableHourly.varcode[i].varField);
-        }
-        catch (const std::out_of_range& oor)
-        {
-            QString errMess = QString("%1 does not exist" ).arg(_tableHourly.varcode[i].varPragaName);
-            *myError = oor.what() + errMess;
-        }
-    }
-
-
-    _meteoGrid->setGridStructure(_gridStructure);
-
-    _meteoGrid->initMeteoPoints(nRow, nCol);
-*/
     return true;
 }

@@ -11,7 +11,6 @@
 
 #include <sstream>
 #include <iostream>
-#include <fstream>
 
 #include "tileSources/OSMTileSource.h"
 #include "tileSources/CompositeTileSource.h"
@@ -23,7 +22,6 @@
 #include "dbMeteoPointsHandler.h"
 #include "dbArkimet.h"
 #include "download.h"
-#include "pragaProject.h"
 #include "commonConstants.h"
 #include "dialogSelection.h"
 #include "dialogDownloadMeteoData.h"
@@ -33,7 +31,6 @@
 #include "dialogInterpolation.h"
 #include "dialogRadiation.h"
 #include "dialogPragaSettings.h"
-#include "gis.h"
 #include "spatialControl.h"
 #include "dialogPragaProject.h"
 #include "utilities.h"
@@ -273,7 +270,7 @@ void MainWindow::mousePressEvent(QMouseEvent *event)
             myRubberBand->show();
         }
 
-        /*
+
         #ifdef NETCDF
         if (myProject.netCDF.isLoaded)
         {
@@ -284,7 +281,6 @@ void MainWindow::mousePressEvent(QMouseEvent *event)
             exportNetCDFDataSeries(geoPoint);
         }
         #endif
-        */
     }
 }
 

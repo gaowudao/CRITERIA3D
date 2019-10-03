@@ -199,11 +199,12 @@ time_t NetCDFHandler::getTime(int timeIndex)
 bool NetCDFHandler::readProperties(string fileName, stringstream *buffer)
 {
     int retval;
-    char name[NC_MAX_NAME+1];
-    char attrName[NC_MAX_NAME+1];
-    char varName[NC_MAX_NAME+1];
-    char typeName[NC_MAX_NAME+1];
-    char *valueStr;
+    //char name[NC_MAX_NAME+1];
+    char* name = new char[NC_MAX_NAME+1];
+    char* attrName = new char[NC_MAX_NAME+1];
+    char* varName = new char[NC_MAX_NAME+1];
+    char* typeName = new char[NC_MAX_NAME+1];
+    char* valueStr = new char[NC_MAX_NAME+1];
     int valueInt;
     double value;
     size_t lenght;
@@ -228,14 +229,15 @@ bool NetCDFHandler::readProperties(string fileName, stringstream *buffer)
     // GLOBAL ATTRIBUTES
     *buffer << fileName << endl << endl;
     *buffer << "Global attributes:" << endl;
-    for (int a = 0; a <nrGlobalAttributes; a++)
-    {
-       nc_inq_attname(ncId, NC_GLOBAL, a, attrName);
-       nc_inq_attlen(ncId, NC_GLOBAL, attrName, &lenght);
-       valueStr = new char[lenght +1];
-       nc_get_att_text(ncId, NC_GLOBAL, attrName, valueStr);
 
-       *buffer << attrName << " = " << valueStr << endl;
+    for (int a = 0; a < nrGlobalAttributes; a++)
+    {
+        nc_inq_attname(ncId, NC_GLOBAL, a, attrName);
+        nc_inq_attlen(ncId, NC_GLOBAL, attrName, &lenght);
+        valueStr = (char *) malloc(lenght +1);
+        nc_get_att_text(ncId, NC_GLOBAL, attrName, valueStr);
+
+        *buffer << attrName << " = " << valueStr << endl;
    }
 
    // DIMENSIONS
@@ -334,7 +336,7 @@ bool NetCDFHandler::readProperties(string fileName, stringstream *buffer)
             if (ncTypeId == NC_CHAR)
             {
                 nc_inq_attlen(ncId, v, attrName, &lenght);
-                valueStr = new char[lenght +1];
+                valueStr = (char *) malloc(lenght +1);
                 nc_get_att_text(ncId, v, attrName, valueStr);
                 *buffer << attrName << " = " << valueStr << endl;
 
@@ -365,13 +367,13 @@ bool NetCDFHandler::readProperties(string fileName, stringstream *buffer)
     {
         if (idLat != NODATA && idLon != NODATA)
         {
-            float* lat = (float*) calloc(nrLat, sizeof(float));
-            float* lon = (float*) calloc(nrLon, sizeof(float));
+            float* lat = new float[unsigned(nrLat)];
+            float* lon = new float[unsigned(nrLon)];
 
-            if (retval = nc_get_var_float(ncId, idLon, lon))
+            if ((retval = nc_get_var_float(ncId, idLon, lon)))
                 *buffer << "\nERROR in reading longitude:" << nc_strerror(retval);
 
-            if (retval = nc_get_var_float(ncId, idLat, lat))
+            if ((retval = nc_get_var_float(ncId, idLat, lat)))
                 *buffer << "\nERROR in reading latitude:" << nc_strerror(retval);
 
             *buffer << endl << "lat:" << endl;
@@ -385,18 +387,18 @@ bool NetCDFHandler::readProperties(string fileName, stringstream *buffer)
             latLonHeader.nrRows = nrLat;
             latLonHeader.nrCols = nrLon;
 
-            latLonHeader.llCorner->longitude = lon[0];
-            latLonHeader.dx = (lon[1]-lon[0]);
+            latLonHeader.llCorner->longitude = double(lon[0]);
+            latLonHeader.dx = double(lon[1]-lon[0]);
 
             if (lat[1] > lat[0])
             {
-                latLonHeader.llCorner->latitude = lat[0];
-                latLonHeader.dy = (lat[1]-lat[0]);
+                latLonHeader.llCorner->latitude = double(lat[0]);
+                latLonHeader.dy = double(lat[1]-lat[0]);
             }
             else
             {
-                latLonHeader.llCorner->latitude = lat[nrLat-1];
-                latLonHeader.dy = (lat[0]-lat[1]);
+                latLonHeader.llCorner->latitude = double(lat[nrLat-1]);
+                latLonHeader.dy = double(lat[0]-lat[1]);
                 isLatDecreasing = true;
             }
 

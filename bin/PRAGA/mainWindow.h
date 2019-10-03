@@ -16,7 +16,7 @@
     #include "stationMarker.h"
     #include "colorLegend.h"
     #include "dbArkimet.h"
-    #include "project.h"
+    #include "pragaProject.h"
 
     enum visualizationType {notShown, showLocation, showCurrentVariable, showElaboration, showAnomalyAbsolute, showAnomalyPercentage, showClimate};
 

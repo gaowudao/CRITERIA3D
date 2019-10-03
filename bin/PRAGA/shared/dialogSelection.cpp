@@ -17,7 +17,6 @@
 #include "commonConstants.h"
 #include "dialogSelection.h"
 #include "color.h"
-#include "project.h"
 
 
 QString editValue(QString windowsTitle, QString defaultValue)

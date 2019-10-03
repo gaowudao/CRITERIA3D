@@ -1,6 +1,7 @@
 #ifndef PRAGAPROJECT_H
 #define PRAGAPROJECT_H
 
+
 #ifndef CRIT3DCLIMATE_H
     #include "crit3dClimate.h"
 #endif
@@ -12,6 +13,11 @@
 #ifndef METEOMAPS_H
     #include "meteoMaps.h"
 #endif
+
+#ifdef NETCDF
+    #include "netcdfHandler.h"
+#endif
+
 
     class PragaProject : public Project
     {
@@ -32,6 +38,10 @@
         QString climateIndex;
 
         QSettings* pragaDefaultSettings;
+
+        #ifdef NETCDF
+            NetCDFHandler netCDF;
+        #endif
 
         PragaProject();
 

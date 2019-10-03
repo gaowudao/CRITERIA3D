@@ -249,17 +249,6 @@ void MainWindow::mousePressEvent(QMouseEvent *event)
             myRubberBand->setGeometry(QRect(mapPoint, QSize()));
             myRubberBand->show();
         }
-
-        #ifdef NETCDF
-        if (myProject.netCDF.isLoaded)
-        {
-            QPoint pos = event->pos();
-            Position myPos = mapView->mapToScene(getMapPoint(&pos));
-            gis::Crit3DGeoPoint geoPoint = gis::Crit3DGeoPoint(myPos.latitude(), myPos.longitude());
-
-            exportNetCDFDataSeries(geoPoint);
-        }
-        #endif
     }
 }
 
