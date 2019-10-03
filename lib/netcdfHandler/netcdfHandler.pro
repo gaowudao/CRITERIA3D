@@ -28,7 +28,11 @@ win32:{
 
 
 INCLUDEPATH += ../mathFunctions ../crit3dDate ../gis
-INCLUDEPATH += $$(NC4_INSTALL_DIR)/include
+
+win32:{
+    INCLUDEPATH += $$(NC4_INSTALL_DIR)/include
+}
+
 
 SOURCES += \
     netcdfHandler.cpp
