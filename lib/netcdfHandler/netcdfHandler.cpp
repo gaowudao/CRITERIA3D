@@ -204,10 +204,10 @@ bool NetCDFHandler::readProperties(string fileName, stringstream *buffer)
     char* attrName = new char[NC_MAX_NAME+1];
     char* varName = new char[NC_MAX_NAME+1];
     char* typeName = new char[NC_MAX_NAME+1];
-    char* valueStr = new char[NC_MAX_NAME+1];
+    char* valueStr;
     int valueInt;
     double value;
-    size_t lenght;
+    size_t length;
     nc_type ncTypeId;
 
     //NC_NOWRITE tells netCDF we want read-only access
@@ -233,11 +233,12 @@ bool NetCDFHandler::readProperties(string fileName, stringstream *buffer)
     for (int a = 0; a < nrGlobalAttributes; a++)
     {
         nc_inq_attname(ncId, NC_GLOBAL, a, attrName);
-        nc_inq_attlen(ncId, NC_GLOBAL, attrName, &lenght);
-        valueStr = (char *) malloc(lenght +1);
+        nc_inq_attlen(ncId, NC_GLOBAL, attrName, &length);
+        valueStr = new char[length+1];
         nc_get_att_text(ncId, NC_GLOBAL, attrName, valueStr);
 
         *buffer << attrName << " = " << valueStr << endl;
+        free(valueStr);
    }
 
    // DIMENSIONS
@@ -247,36 +248,36 @@ bool NetCDFHandler::readProperties(string fileName, stringstream *buffer)
    *buffer << "\nDimensions: " << endl;
    for (int i = 0; i < nrDimensions; i++)
    {
-       nc_inq_dim(ncId, i, name, &lenght);
+       nc_inq_dim(ncId, i, name, &length);
 
        dimensions.push_back(NetCDFVariable(name, i, NODATA));
 
        if (lowerCase(string(name)) == "time")
        {
-           nrTime = int(lenght);
+           nrTime = int(length);
        }
        else if (lowerCase(string(name)) == "x")
        {
-           nrX = int(lenght);
+           nrX = int(length);
            isLatLon = false;
        }
        else if (lowerCase(string(name)) == "y")
        {
-           nrY = int(lenght);
+           nrY = int(length);
            isLatLon = false;
        }
        else if (lowerCase(string(name)) == "lat" || lowerCase(string(name)) == "latitude")
        {
-           nrLat = int(lenght);
+           nrLat = int(length);
            isLatLon = true;
        }
        else if (lowerCase(string(name)) == "lon" || lowerCase(string(name)) == "longitude")
        {
-           nrLon = int(lenght);
+           nrLon = int(length);
            isLatLon = true;
        }
 
-       *buffer << i << " - " << name << "\t values: " << lenght << endl;
+       *buffer << i << " - " << name << "\t values: " << length << endl;
    }
 
    if (isLatLon)
@@ -289,7 +290,7 @@ bool NetCDFHandler::readProperties(string fileName, stringstream *buffer)
    for (int v = 0; v < nrVariables; v++)
    {
        nc_inq_var(ncId, v, varName, &ncTypeId, &nrVarDimensions, varDimIds, &nrVarAttributes);
-       nc_inq_type(ncId, ncTypeId, typeName, &lenght);
+       nc_inq_type(ncId, ncTypeId, typeName, &length);
 
        // is Variable?
        if (nrVarDimensions > 1)
@@ -322,7 +323,7 @@ bool NetCDFHandler::readProperties(string fileName, stringstream *buffer)
        *buffer << endl << v  << "\t" << varName << "\t" << typeName << "\t dims: ";
        for (int d = 0; d < nrVarDimensions; d++)
        {
-           nc_inq_dim(ncId, varDimIds[d], name, &lenght);
+           nc_inq_dim(ncId, varDimIds[d], name, &length);
            *buffer << name << " ";
        }
        *buffer << endl;
@@ -335,8 +336,8 @@ bool NetCDFHandler::readProperties(string fileName, stringstream *buffer)
 
             if (ncTypeId == NC_CHAR)
             {
-                nc_inq_attlen(ncId, v, attrName, &lenght);
-                valueStr = (char *) malloc(lenght +1);
+                nc_inq_attlen(ncId, v, attrName, &length);
+                valueStr = new char[length+1];
                 nc_get_att_text(ncId, v, attrName, valueStr);
                 *buffer << attrName << " = " << valueStr << endl;
 
@@ -349,6 +350,7 @@ bool NetCDFHandler::readProperties(string fileName, stringstream *buffer)
                 if (lowerCase(string(attrName)) == "long_name")
                     setVarLongName(varName, valueStr);
 
+                free(valueStr);
             }
             else if (ncTypeId == NC_INT)
             {
