@@ -10,6 +10,7 @@
 #include "statistics.h"
 #include "quality.h"
 #include "dbClimate.h"
+#include "crit3dElabList.h"
 
 
 bool elaborationOnPoint(QString *myError, Crit3DMeteoPointsDbHandler* meteoPointsDbHandler, Crit3DMeteoGridDbHandler* meteoGridDbHandler,
@@ -2226,7 +2227,7 @@ int getClimateIndexFromDate(QDate myDate, period periodType)
 }
 */
 
-bool parseXMLElaboration(bool *isMeteoGrid, Crit3DClimate* clima, QString xmlFileName, QString *myError)
+bool parseXMLElaboration(bool *isMeteoGrid, Crit3DElabList *listXMLElab, QString xmlFileName, QString *myError)
 {
 
     QDomDocument xmlDoc;
@@ -2266,6 +2267,19 @@ bool parseXMLElaboration(bool *isMeteoGrid, Crit3DClimate* clima, QString xmlFil
     QString myTag;
     QString mySecondTag;
 
+    QString firstYear;
+    QString lastYear;
+    QString variable;
+    QString period;
+    enum period periodType;
+
+    QDate dateStart;
+    QDate dateEnd;
+    QString nYears;
+
+    QString elab;
+    QString unit;
+
     while(!ancestor.isNull())
     {
         if (ancestor.toElement().tagName().toUpper() == "ELABORATION")
@@ -2286,34 +2300,36 @@ bool parseXMLElaboration(bool *isMeteoGrid, Crit3DClimate* clima, QString xmlFil
 
             if (ancestor.toElement().attribute("PeriodType").toUpper() == "Generic")
             {
-                clima->setPeriodStr("Generic");
-                clima->setPeriodType(genericPeriod);
+                period = "Generic";
+                periodType = genericPeriod;
             }
             else if (ancestor.toElement().attribute("PeriodType").toUpper() == "Daily")
             {
-                clima->setPeriodStr("Daily");
-                clima->setPeriodType(dailyPeriod);
+                period = "Daily";
+                periodType = dailyPeriod;
             }
             else if (ancestor.toElement().attribute("PeriodType").toUpper() == "Decadal")
             {
-                clima->setPeriodStr("Decadal");
-                clima->setPeriodType(decadalPeriod);
+                period = "Decadal";
+                periodType = decadalPeriod;
             }
             else if (ancestor.toElement().attribute("PeriodType").toUpper() == "Monthly")
             {
-                clima->setPeriodStr("Monthly");
-                clima->setPeriodType(monthlyPeriod);
+                period = "Monthly";
+                periodType = monthlyPeriod;
             }
             else if (ancestor.toElement().attribute("PeriodType").toUpper() == "Annual")
             {
-                clima->setPeriodStr("Annual");
-                clima->setPeriodType(annualPeriod);
+                period = "Annual";
+                periodType = annualPeriod;
             }
             else
             {
                 *myError = "Invalid Datatype attribute";
                 return false;
             }
+            listXMLElab->listPeriodStr().push_back(period);
+            listXMLElab->listPeriodType().push_back(periodType);
             child = ancestor.firstChild();
 
             while( !child.isNull())
@@ -2321,48 +2337,61 @@ bool parseXMLElaboration(bool *isMeteoGrid, Crit3DClimate* clima, QString xmlFil
                 myTag = child.toElement().tagName().toUpper();
                 if (myTag == "VARIABLE")
                 {
-                    meteoVariable var = getKeyMeteoVarMeteoMap(MapDailyMeteoVarToString, myTag.toStdString());
-                    clima->setVariable(var);
+                    variable = child.toElement().text();
+                    meteoVariable var = getKeyMeteoVarMeteoMap(MapDailyMeteoVarToString, variable.toStdString());
+                    listXMLElab->listVariable().push_back(var);
                 }
                 if (myTag == "YEARINTERVAL")
                 {
-                    clima->setYearEnd(child.toElement().attribute("fin").toInt());
-                    clima->setYearStart(child.toElement().attribute("ini").toInt());
+                    firstYear = child.toElement().attribute("fin");
+                    lastYear = child.toElement().attribute("ini");
+                    listXMLElab->listYearStart().push_back(firstYear.toInt());
+                    listXMLElab->listYearEnd().push_back(lastYear.toInt());
                 }
                 if (myTag == "PERIOD")
                 {
-                    switch(clima->periodType())
+                    nYears = "0";
+                    if (period == "Generic")
                     {
-                    case annualPeriod: case genericPeriod:
-
-                    case decadalPeriod:
-
-                    case monthlyPeriod:
-
-                    case seasonalPeriod:
-
-                    case dailyPeriod:
-                    {
-                        clima->setNYears(0);
-                        int dayOfYear = child.toElement().attribute("doy").toInt();
-                        QDate date = QDate(clima->yearStart(), 1, 1).addDays(dayOfYear - 1);
-                        clima->setGenericPeriodDateStart(date);
-                        clima->setGenericPeriodDateEnd(date);
-
-                    };
-
+                        QString periodEnd = child.toElement().attribute("fin");
+                        QString periodStart = child.toElement().attribute("ini");
+                        periodEnd = periodEnd+"/"+firstYear;
+                        periodStart = periodStart+"/"+firstYear;
+                        dateStart = QDate::fromString(periodStart, "dd/MM/yyyy");
+                        dateEnd = QDate::fromString(periodEnd, "dd/MM/yyyy");
+                        nYears = child.toElement().attribute("nyears");
                     }
+                    if (period == "Daily")
+                    {
+                        int dayOfYear = child.toElement().attribute("doy").toInt();
+                        dateStart = QDate(firstYear.toInt(), 1, 1).addDays(dayOfYear - 1);
+                        dateEnd = dateStart;
+                    }
+                    if (period == "Decadal")
+                    {
+                    }
+                    if (period == "Monthly")
+                    {
+                    }
+                    if (period == "Annual")
+                    {
+                        dateStart = QDate(firstYear.toInt(), 1, 1);
+                        dateEnd = QDate(firstYear.toInt(), 12, 31);
+                    }
+                    listXMLElab->listDateStart().push_back(dateStart);
+                    listXMLElab->listDateEnd().push_back(dateEnd);
+                    listXMLElab->listNYears().push_back(nYears.toInt());
 
-                    QString periodEnd = child.toElement().attribute("fin");
-                    QString periodStart = child.toElement().attribute("ini");
                 }
                 if (myTag == "PRIMARYELABORATION")
                 {
-                    clima->setElab1(myTag);
+                    elab = child.toElement().text();
+                    listXMLElab->listElab1().push_back(elab);
                 }
                 if (myTag == "UNIT")
                 {
-                    // LC serve questa informazione?
+                    unit = child.toElement().text();
+                    listXMLElab->listUnit().push_back(unit);
                 }
                 child = child.nextSibling();
             }
