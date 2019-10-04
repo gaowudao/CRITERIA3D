@@ -2276,8 +2276,9 @@ bool parseXMLElaboration(bool *isMeteoGrid, Crit3DElabList *listXMLElab, QString
     QDate dateStart;
     QDate dateEnd;
     QString nYears;
-
     QString elab;
+    QString elabParam1;
+    QString elabParam2;
     QString unit;
 
     while(!ancestor.isNull())
@@ -2328,6 +2329,7 @@ bool parseXMLElaboration(bool *isMeteoGrid, Crit3DElabList *listXMLElab, QString
                 *myError = "Invalid Datatype attribute";
                 return false;
             }
+            // LC in vb non c'è il caso stagionale, va aggiunto?
             listXMLElab->listPeriodStr().push_back(period);
             listXMLElab->listPeriodType().push_back(periodType);
             child = ancestor.firstChild();
@@ -2369,14 +2371,26 @@ bool parseXMLElaboration(bool *isMeteoGrid, Crit3DElabList *listXMLElab, QString
                     }
                     if (period == "Decadal")
                     {
+                        int decade = child.toElement().attribute("decade").toInt();
+                        int dayStart;
+                        int dayEnd;
+                        int month;
+
+                        intervalDecade(decade, firstYear.toInt(), &dayStart, &dayEnd, &month);
+                        dateStart.setDate(firstYear.toInt(), month, dayStart);
+                        dateEnd.setDate(firstYear.toInt(), month, dayEnd);
                     }
                     if (period == "Monthly")
                     {
+                        int month = child.toElement().attribute("month").toInt();
+                        dateStart.setDate(firstYear.toInt(), month, 1);
+                        dateEnd = dateStart;
+                        dateEnd.setDate(firstYear.toInt(), month, dateEnd.daysInMonth());
                     }
                     if (period == "Annual")
                     {
-                        dateStart = QDate(firstYear.toInt(), 1, 1);
-                        dateEnd = QDate(firstYear.toInt(), 12, 31);
+                        dateStart.setDate(firstYear.toInt(), 1, 1);
+                        dateEnd.setDate(firstYear.toInt(), 12, 31);
                     }
                     listXMLElab->listDateStart().push_back(dateStart);
                     listXMLElab->listDateEnd().push_back(dateEnd);
@@ -2385,11 +2399,36 @@ bool parseXMLElaboration(bool *isMeteoGrid, Crit3DElabList *listXMLElab, QString
                 }
                 if (myTag == "PRIMARYELABORATION")
                 {
+                    elabParam1 = child.toElement().attribute("Param1");
+                    if (elabParam1.isEmpty())
+                    {
+                        listXMLElab->listParam1().push_back(NODATA);
+                    }
+                    else
+                    {
+                        listXMLElab->listParam1().push_back(elabParam1.toFloat());
+                    }
                     elab = child.toElement().text();
                     listXMLElab->listElab1().push_back(elab);
                 }
+                if (myTag == "SECONDARYELABORATION")
+                {
+                    elabParam2 = child.toElement().attribute("Param2");
+                    if (elabParam2.isEmpty())
+                    {
+                        listXMLElab->listParam2().push_back(NODATA);
+                    }
+                    else
+                    {
+                        listXMLElab->listParam2().push_back(elabParam2.toFloat());
+                    }
+                    elab = child.toElement().text();
+                    listXMLElab->listElab2().push_back(elab);
+                }
+                // LC il caso in cui i parametri siano letti da db è contemplato? (param1IsClimate e Param1ClimateField)
                 if (myTag == "UNIT")
                 {
+                    // LC serve?
                     unit = child.toElement().text();
                     listXMLElab->listUnit().push_back(unit);
                 }

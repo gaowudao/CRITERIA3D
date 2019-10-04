@@ -298,8 +298,8 @@ bool getPeriodDates(QString periodSelected, int year, QDate myDate, QDate* start
        int dayEnd;
        int month;
        intervalDecade(decade, myDate.year(), &dayStart, &dayEnd, &month);
-       startDate->setDate(startDate->year(), startDate->month(), dayStart);
-       endDate->setDate(endDate->year(), endDate->month(), dayEnd);
+       startDate->setDate(startDate->year(), month, dayStart);
+       endDate->setDate(endDate->year(), month, dayEnd);
    }
    else if (periodSelected == "Monthly")
    {
