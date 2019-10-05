@@ -27,7 +27,7 @@
         bool fillElement;
 
         double dxMin = 0.001;
-        double dxMax = 1000000;
+        double dxMax = 10000000;
 
         double xMin = (dxMin * 100);
         double xMax = (dxMax / 100);
