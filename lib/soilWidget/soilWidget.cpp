@@ -644,7 +644,7 @@ void Crit3DSoilWidget::setInfoTextural(int nHorizon)
             painter.setPen(pen);
 
             QPointF center(widthOffset + cx, heightOffset + cy);
-            if (i == nHorizon)
+            if (signed(i) == nHorizon)
             {
                 painter.setBrush(Qt::red);
                 painter.drawEllipse(center,4.5,4.5);
@@ -671,49 +671,49 @@ void Crit3DSoilWidget::setInfoTextural(int nHorizon)
     }
     else
     {
-        if (mySoil.horizon[nHorizon].vanGenuchten.thetaS == NODATA)
+        if (mySoil.horizon[unsigned(nHorizon)].vanGenuchten.thetaS == NODATA)
         {
             satValue->setText(QString::number(NODATA));
         }
         else
         {
-            satValue->setText(QString::number(mySoil.horizon[nHorizon].vanGenuchten.thetaS, 'f', 3));
+            satValue->setText(QString::number(mySoil.horizon[unsigned(nHorizon)].vanGenuchten.thetaS, 'f', 3));
         }
 
-        if (mySoil.horizon[nHorizon].waterContentFC == NODATA)
+        if (mySoil.horizon[unsigned(nHorizon)].waterContentFC == NODATA)
         {
             fcValue->setText(QString::number(NODATA));
         }
         else
         {
-            fcValue->setText(QString::number(mySoil.horizon[nHorizon].waterContentFC, 'f', 3));
+            fcValue->setText(QString::number(mySoil.horizon[unsigned(nHorizon)].waterContentFC, 'f', 3));
         }
 
-        if (mySoil.horizon[nHorizon].waterContentWP == NODATA)
+        if (mySoil.horizon[unsigned(nHorizon)].waterContentWP == NODATA)
         {
             wpValue->setText(QString::number(NODATA));
         }
         else
         {
-            wpValue->setText(QString::number(mySoil.horizon[nHorizon].waterContentWP, 'f', 3));
+            wpValue->setText(QString::number(mySoil.horizon[unsigned(nHorizon)].waterContentWP, 'f', 3));
         }
 
-        if (mySoil.horizon[nHorizon].waterContentFC == NODATA || mySoil.horizon[nHorizon].waterContentWP == NODATA)
+        if (mySoil.horizon[unsigned(nHorizon)].waterContentFC == NODATA || mySoil.horizon[unsigned(nHorizon)].waterContentWP == NODATA)
         {
             awValue->setText(QString::number(NODATA));
         }
         else
         {
-            awValue->setText(QString::number(mySoil.horizon[nHorizon].waterContentFC-mySoil.horizon[nHorizon].waterContentWP, 'f', 3));
+            awValue->setText(QString::number(mySoil.horizon[unsigned(nHorizon)].waterContentFC - mySoil.horizon[unsigned(nHorizon)].waterContentWP, 'f', 3));
         }
 
-        if (mySoil.horizon[nHorizon].fieldCapacity == NODATA)
+        if (mySoil.horizon[unsigned(nHorizon)].fieldCapacity == NODATA)
         {
             potFCValue->setText(QString::number(NODATA));
         }
         else
         {
-            potFCValue->setText(QString::number(mySoil.horizon[nHorizon].fieldCapacity, 'f', 3));
+            potFCValue->setText(QString::number(mySoil.horizon[unsigned(nHorizon)].fieldCapacity, 'f', 3));
         }
     }
 }

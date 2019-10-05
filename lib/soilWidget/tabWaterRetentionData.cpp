@@ -205,14 +205,14 @@ void TabWaterRetentionData::cellClicked(int row, int column)
 
     tableWaterRetention->clearSelection();
     tableWaterRetention->setSelectionBehavior(QAbstractItemView::SelectItems);
-    tableWaterRetention->setItemSelected(tableWaterRetention->item(row,column), true);
+    tableWaterRetention->item(row,column)->setSelected(true);
     deleteRow->setEnabled(false);
 }
 
 void TabWaterRetentionData::cellChanged(int row, int column)
 {
 
-    tableWaterRetention->setItemSelected(tableWaterRetention->item(row,column), true);
+    tableWaterRetention->item(row,column)->setSelected(true);
     if (tableWaterRetention->itemAt(row,column) == nullptr)
     {
         return;
