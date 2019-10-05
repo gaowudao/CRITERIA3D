@@ -1068,7 +1068,6 @@ void MainWindow::redrawMeteoGrid(visualizationType showType, bool showInterpolat
     }
 
     meteoGridObj->updateCenter();
-    meteoGridObj->redrawRequested();
 }
 
 bool MainWindow::loadMeteoGrid(QString xmlName)

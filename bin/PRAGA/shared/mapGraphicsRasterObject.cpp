@@ -111,10 +111,12 @@ void RasterObject::paint(QPainter *painter, const QStyleOptionGraphicsItem *opti
 
 void RasterObject::updateCenter()
 {
-    QPointF newCenter = this->view->mapToScene(QPoint(int(view->width() * 0.5), int(view->height() * 0.5)));
-    this->geoMap->referencePoint.latitude = newCenter.y();
+    QPointF newCenter = this->view->mapToScene(QPoint(view->width()/2, view->height()/2));
     this->geoMap->referencePoint.longitude = newCenter.x();
+    this->geoMap->referencePoint.latitude = newCenter.y();
     this->setPos(newCenter);
+
+    this->redrawRequested();
 }
 
 
