@@ -238,7 +238,7 @@ bool NetCDFHandler::readProperties(string fileName, stringstream *buffer)
         nc_get_att_text(ncId, NC_GLOBAL, attrName, valueStr);
 
         *buffer << attrName << " = " << valueStr << endl;
-        free(valueStr);
+        delete [] valueStr;
    }
 
    // DIMENSIONS
@@ -350,7 +350,7 @@ bool NetCDFHandler::readProperties(string fileName, stringstream *buffer)
                 if (lowerCase(string(attrName)) == "long_name")
                     setVarLongName(varName, valueStr);
 
-                free(valueStr);
+                delete [] valueStr;
             }
             else if (ncTypeId == NC_INT)
             {
@@ -390,17 +390,17 @@ bool NetCDFHandler::readProperties(string fileName, stringstream *buffer)
             latLonHeader.nrCols = nrLon;
 
             latLonHeader.llCorner->longitude = double(lon[0]);
-            latLonHeader.dx = double(lon[1]-lon[0]);
+            latLonHeader.dx = double(lon[nrLon-1]-lon[0]) / double(nrLon-1);
 
             if (lat[1] > lat[0])
             {
                 latLonHeader.llCorner->latitude = double(lat[0]);
-                latLonHeader.dy = double(lat[1]-lat[0]);
+                latLonHeader.dy = double(lat[nrLat-1]-lat[0]) / double(nrLat-1);
             }
             else
             {
                 latLonHeader.llCorner->latitude = double(lat[nrLat-1]);
-                latLonHeader.dy = double(lat[0]-lat[1]);
+                latLonHeader.dy = double(lat[0]-lat[nrLat-1]) / double(nrLat-1);
                 isLatDecreasing = true;
             }
 
