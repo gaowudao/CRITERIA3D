@@ -2299,30 +2299,40 @@ bool parseXMLElaboration(bool *isMeteoGrid, Crit3DElabList *listXMLElab, QString
                 return false;
             }
 
-            if (ancestor.toElement().attribute("PeriodType").toUpper() == "Generic")
+            if (ancestor.toElement().attribute("PeriodType").toUpper() == "GENERIC")
             {
                 period = "Generic";
                 periodType = genericPeriod;
+                listXMLElab->insertPeriodStr(period);
+                listXMLElab->insertPeriodType(periodType);
             }
-            else if (ancestor.toElement().attribute("PeriodType").toUpper() == "Daily")
+            else if (ancestor.toElement().attribute("PeriodType").toUpper() == "DAILY")
             {
                 period = "Daily";
                 periodType = dailyPeriod;
+                listXMLElab->insertPeriodStr(period);
+                listXMLElab->insertPeriodType(periodType);
             }
-            else if (ancestor.toElement().attribute("PeriodType").toUpper() == "Decadal")
+            else if (ancestor.toElement().attribute("PeriodType").toUpper() == "DECADAL")
             {
                 period = "Decadal";
                 periodType = decadalPeriod;
+                listXMLElab->insertPeriodStr(period);
+                listXMLElab->insertPeriodType(periodType);
             }
-            else if (ancestor.toElement().attribute("PeriodType").toUpper() == "Monthly")
+            else if (ancestor.toElement().attribute("PeriodType").toUpper() == "MONTHLY")
             {
                 period = "Monthly";
                 periodType = monthlyPeriod;
+                listXMLElab->insertPeriodStr(period);
+                listXMLElab->insertPeriodType(periodType);
             }
-            else if (ancestor.toElement().attribute("PeriodType").toUpper() == "Annual")
+            else if (ancestor.toElement().attribute("PeriodType").toUpper() == "ANNUAL")
             {
                 period = "Annual";
                 periodType = annualPeriod;
+                listXMLElab->insertPeriodStr(period);
+                listXMLElab->insertPeriodType(periodType);
             }
             else
             {
@@ -2330,8 +2340,6 @@ bool parseXMLElaboration(bool *isMeteoGrid, Crit3DElabList *listXMLElab, QString
                 return false;
             }
             // LC in vb non c'è il caso stagionale, va aggiunto?
-            listXMLElab->listPeriodStr().push_back(period);
-            listXMLElab->listPeriodType().push_back(periodType);
             child = ancestor.firstChild();
 
             while( !child.isNull())

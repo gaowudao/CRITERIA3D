@@ -27,7 +27,6 @@ public:
     Crit3DElabList();
     ~Crit3DElabList();
 
-
     QStringList listElab() const;
     void setListElab(const QStringList &listClimateElab);
 
@@ -44,9 +43,11 @@ public:
 
     std::vector<QString> listPeriodStr() const;
     void setListPeriodStr(const std::vector<QString> &listPeriodStr);
+    void insertPeriodStr(QString period);
 
     std::vector<period> listPeriodType() const;
     void setListPeriodType(const std::vector<period> &listPeriodType);
+    void insertPeriodType(period period);
 
     std::vector<QDate> listDateStart() const;
     void setListDateStart(const std::vector<QDate> &listDateStart);

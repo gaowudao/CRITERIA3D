@@ -16,6 +16,9 @@
     #ifndef CRIT3DCLIMATE_H
         #include "crit3dClimate.h"
     #endif
+    #ifndef CRIT3DELABLIST_H
+        #include "crit3dElabList.h"
+    #endif
 
 
     const std::map<std::string, int> MapElabWithParam = {
@@ -116,7 +119,7 @@
 
     int nParameters(meteoComputation elab);
 
-    bool parseXMLElaboration(bool* isMeteoGrid, Crit3DClimateList *listElab, QString xmlFileName, QString *myError);
+    bool parseXMLElaboration(bool* isMeteoGrid, Crit3DElabList *listElab, QString xmlFileName, QString *myError);
 
     //int getClimateIndexFromDate(QDate myDate, period periodType);
 

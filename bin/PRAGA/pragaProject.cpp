@@ -1,5 +1,6 @@
 #include "basicMath.h"
 #include "climate.h"
+#include "crit3dElabList.h"
 #include "dbClimate.h"
 #include "download.h"
 #include "dbAggregationsHandler.h"
@@ -441,6 +442,12 @@ bool PragaProject::deleteClima(bool isMeteoGrid, QString climaSelected)
 bool PragaProject::elaboration(bool isMeteoGrid, bool isAnomaly, bool saveClima)
 {
 
+    // test XML LC
+//    bool isMG;
+//    Crit3DElabList *listXMLElab = new Crit3DElabList();
+//    QString *myError;
+//    parseXMLElaboration(&isMG, listXMLElab, "/home/laura/DailyMaps.xml", myError);
+    ////////////////////////
     if (isMeteoGrid)
     {
         if (saveClima)
