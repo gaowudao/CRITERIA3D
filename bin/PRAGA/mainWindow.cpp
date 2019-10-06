@@ -232,7 +232,6 @@ void MainWindow::mouseDoubleClickEvent(QMouseEvent * event)
         this->mapView->zoomOut();
 
     this->mapView->centerOn(newCenter.lonLat());
-
     this->rasterObj->setCenter();
     this->meteoGridObj->setCenter();
 }
@@ -1616,7 +1615,7 @@ void MainWindow::showElabResult(bool updateColorSCale, bool isMeteoGrid, bool is
         ui->lineEditElab2->setVisible(true);
         if (int(myProject.clima->param2()) != NODATA)
         {
-            ui->lineEditElab2->setText(myProject.clima->elab2() + " " + QString::number(myProject.clima->param2()));
+            ui->lineEditElab2->setText(myProject.clima->elab2() + " " + QString::number(double(myProject.clima->param2())));
         }
         else
         {
