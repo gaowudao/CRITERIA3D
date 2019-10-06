@@ -316,7 +316,7 @@ void MainWindow::on_actionRectangle_Selection_triggered()
 void MainWindow::clearDEM()
 {
     this->rasterObj->clear();
-    this->rasterObj->setCenter();
+    this->rasterObj->redrawRequested();
     ui->labelRasterScale->setText("");
     this->ui->rasterOpacitySlider->setEnabled(false);
 }
@@ -1065,7 +1065,7 @@ void MainWindow::redrawMeteoGrid(visualizationType showType, bool showInterpolat
         }
     }
 
-    meteoGridObj->setCenter();
+    meteoGridObj->redrawRequested();
 }
 
 
@@ -1172,7 +1172,7 @@ void MainWindow::setCurrentRaster(gis::Crit3DRasterGrid *myRaster)
 {
     this->rasterObj->initializeUTM(myRaster, myProject.gisSettings, false);
     this->rasterLegend->colorScale = myRaster->colorScale;
-    this->rasterObj->setCenter();
+    this->rasterObj->redrawRequested();
 }
 
 
@@ -1213,7 +1213,7 @@ void MainWindow::on_actionClose_meteo_grid_triggered()
     {
         myProject.meteoGridDbHandler->meteoGrid()->dataMeteoGrid.isLoaded = false;
         meteoGridObj->clear();
-        meteoGridObj->setCenter();
+        meteoGridObj->redrawRequested();
         meteoGridLegend->setVisible(false);
         myProject.closeMeteoGridDB();
         ui->groupBoxElab->hide();
