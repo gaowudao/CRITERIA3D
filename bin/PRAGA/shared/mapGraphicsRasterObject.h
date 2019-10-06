@@ -73,7 +73,7 @@
         void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget);
 
         void clear();
-        void updateCenter();
+        void setCenter();
         void setDrawing(bool value);
         void setDrawBorders(bool value);
         void setColorLegend(ColorLegend* myLegend);

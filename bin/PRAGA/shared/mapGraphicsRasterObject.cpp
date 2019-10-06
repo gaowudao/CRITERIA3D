@@ -87,7 +87,7 @@ void RasterObject::clear()
  QRectF RasterObject::boundingRect() const
 {
      return QRectF( -this->view->width() * 1.0, -this->view->height() * 1.0,
-                     this->view->width() * 2,  this->view->height() * 2);
+                     this->view->width() * 2.0,  this->view->height() * 2.0);
 }
 
 
@@ -109,14 +109,28 @@ void RasterObject::paint(QPainter *painter, const QStyleOptionGraphicsItem *opti
 }
 
 
-void RasterObject::updateCenter()
+void RasterObject::setCenter()
 {
-    QPointF newCenter = this->view->mapToScene(QPoint(view->width()/2, view->height()/2));
-    this->geoMap->referencePoint.longitude = newCenter.x();
-    this->geoMap->referencePoint.latitude = newCenter.y();
-    this->setPos(newCenter);
+    QPointF sceneCenter = view->mapToScene(QPoint(view->width()/2, view->height()/2));
 
-    this->redrawRequested();
+    QPointF rasterCenter, center;
+    rasterCenter.setX(latLonHeader.llCorner->longitude + latLonHeader.dx * latLonHeader.nrCols*0.5);
+    rasterCenter.setY(latLonHeader.llCorner->latitude + latLonHeader.dy * latLonHeader.nrRows*0.5);
+
+    if (fabs(sceneCenter.x()-rasterCenter.x()) <  latLonHeader.dx * latLonHeader.nrCols
+        && fabs(sceneCenter.y()-rasterCenter.y()) <  latLonHeader.dy * latLonHeader.nrRows)
+    {
+        center = sceneCenter;
+    }
+    else
+    {
+        center = rasterCenter;
+    }
+
+    this->geoMap->referencePoint.longitude = center.x();
+    this->geoMap->referencePoint.latitude = center.y();
+
+    this->setPos(center);
 }
 
 
@@ -314,7 +328,7 @@ bool RasterObject::drawRaster(gis::Crit3DRasterGrid *myRaster, QPainter* myPaint
     llCorner.longitude =this->latLonHeader.llCorner->longitude + col0 * this->latLonHeader.dx;
     llCorner.latitude = this->latLonHeader.llCorner->latitude + (this->latLonHeader.nrRows-1 - rowBottom) * this->latLonHeader.dy;
     pixelLL.x = int(floor(this->geoMap->degreeToPixelX * (llCorner.longitude - this->geoMap->referencePoint.longitude)));
-    pixelLL.y = int(this->geoMap->degreeToPixelY * (llCorner.latitude - this->geoMap->referencePoint.latitude))-2;
+    pixelLL.y = int(floor(this->geoMap->degreeToPixelY * (llCorner.latitude - this->geoMap->referencePoint.latitude)));
 
     double dx = latLonHeader.dx * this->geoMap->degreeToPixelX;
     double dy = latLonHeader.dy * this->geoMap->degreeToPixelY;

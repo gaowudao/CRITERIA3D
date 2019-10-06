@@ -152,8 +152,8 @@ void MainWindow::resizeEvent(QResizeEvent *event)
 
 void MainWindow::mouseReleaseEvent(QMouseEvent *event)
 {
-    this->rasterObj->updateCenter();
-    this->meteoGridObj->updateCenter();
+    this->rasterObj->setCenter();
+    this->meteoGridObj->setCenter();
 
     gis::Crit3DGeoPoint pointSelected;
 
@@ -233,8 +233,8 @@ void MainWindow::mouseDoubleClickEvent(QMouseEvent * event)
 
     this->mapView->centerOn(newCenter.lonLat());
 
-    this->rasterObj->updateCenter();
-    this->meteoGridObj->updateCenter();
+    this->rasterObj->setCenter();
+    this->meteoGridObj->setCenter();
 }
 
 
@@ -316,7 +316,7 @@ void MainWindow::on_actionRectangle_Selection_triggered()
 void MainWindow::clearDEM()
 {
     this->rasterObj->clear();
-    this->rasterObj->redrawRequested();
+    this->rasterObj->setCenter();
     ui->labelRasterScale->setText("");
     this->ui->rasterOpacitySlider->setEnabled(false);
 }
@@ -328,19 +328,17 @@ void MainWindow::renderDEM()
     ui->labelRasterScale->setText(QString::fromStdString(getVariableString(noMeteoTerrain)));
     this->ui->rasterOpacitySlider->setEnabled(true);
 
+    // resize map
+    double size = double(this->rasterObj->getRasterMaxSize());
+    size = log2(1000 / size);
+    this->mapView->setZoomLevel(quint8(size));
+
     // center map
     gis::Crit3DGeoPoint* center = this->rasterObj->getRasterCenter();
     this->mapView->centerOn(qreal(center->longitude), qreal(center->latitude));
-
-    // resize map
-    float size = this->rasterObj->getRasterMaxSize();
-    size = log2(1000.f/size);
-    this->mapView->setZoomLevel(quint8(size));
-    this->mapView->centerOn(qreal(center->longitude), qreal(center->latitude));
-
-    // active raster object
-    this->rasterObj->updateCenter();
+    this->rasterObj->setCenter();
 }
+
 
 void MainWindow::on_actionOpen_DEM_triggered()
 {
@@ -717,7 +715,7 @@ void MainWindow::on_timeEdit_timeChanged(const QTime &time)
             meteoGridObj->initializeUTM(&(myProject.netCDF.dataGrid), myProject.gisSettings, true);
 
         myProject.netCDF.dataGrid.emptyGrid();
-        meteoGridObj->updateCenter();
+        meteoGridObj->setCenter();
 
         QDialog myDialog;
         QVBoxLayout mainLayout;
@@ -953,7 +951,7 @@ void MainWindow::drawMeteoGrid()
         myProject.loadMeteoGridData(myProject.getCurrentDate(), myProject.getCurrentDate(), true);
     }
 
-    meteoGridObj->redrawRequested();
+    meteoGridObj->setCenter();
 
     this->ui->meteoPoints->setChecked(false);
     this->ui->grid->setEnabled(true);
@@ -1067,8 +1065,9 @@ void MainWindow::redrawMeteoGrid(visualizationType showType, bool showInterpolat
         }
     }
 
-    meteoGridObj->updateCenter();
+    meteoGridObj->setCenter();
 }
+
 
 bool MainWindow::loadMeteoGrid(QString xmlName)
 {
@@ -1168,17 +1167,18 @@ void MainWindow::on_rasterRestoreButton_clicked()
     ui->labelRasterScale->setText(QString::fromStdString(getVariableString(noMeteoTerrain)));
 }
 
+
 void MainWindow::setCurrentRaster(gis::Crit3DRasterGrid *myRaster)
 {
     this->rasterObj->initializeUTM(myRaster, myProject.gisSettings, false);
     this->rasterLegend->colorScale = myRaster->colorScale;
-    this->rasterObj->redrawRequested();
+    this->rasterObj->setCenter();
 }
 
 
 void MainWindow::on_dateEdit_dateChanged(const QDate &date)
 {
-    Q_UNUSED(date);
+    Q_UNUSED(date)
     this->on_dateChanged();
 }
 
@@ -1213,7 +1213,7 @@ void MainWindow::on_actionClose_meteo_grid_triggered()
     {
         myProject.meteoGridDbHandler->meteoGrid()->dataMeteoGrid.isLoaded = false;
         meteoGridObj->clear();
-        meteoGridObj->redrawRequested();
+        meteoGridObj->setCenter();
         meteoGridLegend->setVisible(false);
         myProject.closeMeteoGridDB();
         ui->groupBoxElab->hide();
