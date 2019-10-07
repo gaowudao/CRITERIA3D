@@ -2349,14 +2349,14 @@ bool parseXMLElaboration(bool *isMeteoGrid, Crit3DElabList *listXMLElab, QString
                 {
                     variable = child.toElement().text();
                     meteoVariable var = getKeyMeteoVarMeteoMap(MapDailyMeteoVarToString, variable.toStdString());
-                    listXMLElab->listVariable().push_back(var);
+                    listXMLElab->insertVariable(var);
                 }
                 if (myTag == "YEARINTERVAL")
                 {
                     firstYear = child.toElement().attribute("fin");
                     lastYear = child.toElement().attribute("ini");
-                    listXMLElab->listYearStart().push_back(firstYear.toInt());
-                    listXMLElab->listYearEnd().push_back(lastYear.toInt());
+                    listXMLElab->insertYearStart(firstYear.toInt());
+                    listXMLElab->insertYearEnd(lastYear.toInt());
                 }
                 if (myTag == "PERIOD")
                 {
@@ -2370,12 +2370,20 @@ bool parseXMLElaboration(bool *isMeteoGrid, Crit3DElabList *listXMLElab, QString
                         dateStart = QDate::fromString(periodStart, "dd/MM/yyyy");
                         dateEnd = QDate::fromString(periodEnd, "dd/MM/yyyy");
                         nYears = child.toElement().attribute("nyears");
+
+                        listXMLElab->insertDateStart(dateStart);
+                        listXMLElab->insertDateEnd(dateEnd);
+                        listXMLElab->insertNYears(nYears.toInt());
                     }
                     if (period == "Daily")
                     {
                         int dayOfYear = child.toElement().attribute("doy").toInt();
                         dateStart = QDate(firstYear.toInt(), 1, 1).addDays(dayOfYear - 1);
                         dateEnd = dateStart;
+
+                        listXMLElab->insertDateStart(dateStart);
+                        listXMLElab->insertDateEnd(dateEnd);
+                        listXMLElab->insertNYears(nYears.toInt());
                     }
                     if (period == "Decadal")
                     {
@@ -2387,6 +2395,10 @@ bool parseXMLElaboration(bool *isMeteoGrid, Crit3DElabList *listXMLElab, QString
                         intervalDecade(decade, firstYear.toInt(), &dayStart, &dayEnd, &month);
                         dateStart.setDate(firstYear.toInt(), month, dayStart);
                         dateEnd.setDate(firstYear.toInt(), month, dayEnd);
+
+                        listXMLElab->insertDateStart(dateStart);
+                        listXMLElab->insertDateEnd(dateEnd);
+                        listXMLElab->insertNYears(nYears.toInt());
                     }
                     if (period == "Monthly")
                     {
@@ -2394,51 +2406,55 @@ bool parseXMLElaboration(bool *isMeteoGrid, Crit3DElabList *listXMLElab, QString
                         dateStart.setDate(firstYear.toInt(), month, 1);
                         dateEnd = dateStart;
                         dateEnd.setDate(firstYear.toInt(), month, dateEnd.daysInMonth());
+
+                        listXMLElab->insertDateStart(dateStart);
+                        listXMLElab->insertDateEnd(dateEnd);
+                        listXMLElab->insertNYears(nYears.toInt());
                     }
                     if (period == "Annual")
                     {
                         dateStart.setDate(firstYear.toInt(), 1, 1);
                         dateEnd.setDate(firstYear.toInt(), 12, 31);
-                    }
-                    listXMLElab->listDateStart().push_back(dateStart);
-                    listXMLElab->listDateEnd().push_back(dateEnd);
-                    listXMLElab->listNYears().push_back(nYears.toInt());
 
+                        listXMLElab->insertDateStart(dateStart);
+                        listXMLElab->insertDateEnd(dateEnd);
+                        listXMLElab->insertNYears(nYears.toInt());
+                    }
                 }
                 if (myTag == "PRIMARYELABORATION")
                 {
                     elabParam1 = child.toElement().attribute("Param1");
                     if (elabParam1.isEmpty())
                     {
-                        listXMLElab->listParam1().push_back(NODATA);
+                        listXMLElab->insertParam1(NODATA);
                     }
                     else
                     {
-                        listXMLElab->listParam1().push_back(elabParam1.toFloat());
+                        listXMLElab->insertParam1(elabParam1.toFloat());
                     }
                     elab = child.toElement().text();
-                    listXMLElab->listElab1().push_back(elab);
+                    listXMLElab->insertElab1(elab);
                 }
                 if (myTag == "SECONDARYELABORATION")
                 {
                     elabParam2 = child.toElement().attribute("Param2");
                     if (elabParam2.isEmpty())
                     {
-                        listXMLElab->listParam2().push_back(NODATA);
+                        listXMLElab->insertParam2(NODATA);
                     }
                     else
                     {
-                        listXMLElab->listParam2().push_back(elabParam2.toFloat());
+                        listXMLElab->insertParam2(elabParam2.toFloat());
                     }
                     elab = child.toElement().text();
-                    listXMLElab->listElab2().push_back(elab);
+                    listXMLElab->insertElab2(elab);
                 }
                 // LC il caso in cui i parametri siano letti da db è contemplato? (param1IsClimate e Param1ClimateField)
                 if (myTag == "UNIT")
                 {
                     // LC serve?
                     unit = child.toElement().text();
-                    listXMLElab->listUnit().push_back(unit);
+                    listXMLElab->insertUnit(unit);
                 }
                 child = child.nextSibling();
             }

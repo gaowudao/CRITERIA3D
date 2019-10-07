@@ -52,6 +52,11 @@ void Crit3DElabList::setListYearStart(const std::vector<int> &listYearStart)
     _listYearStart = listYearStart;
 }
 
+void Crit3DElabList::insertYearStart(int yearStart)
+{
+    _listYearStart.push_back(yearStart);
+}
+
 std::vector<int> Crit3DElabList::listYearEnd() const
 {
     return _listYearEnd;
@@ -62,6 +67,11 @@ void Crit3DElabList::setListYearEnd(const std::vector<int> &listYearEnd)
     _listYearEnd = listYearEnd;
 }
 
+void Crit3DElabList::insertYearEnd(int yearEnd)
+{
+    _listYearEnd.push_back(yearEnd);
+}
+
 std::vector<meteoVariable> Crit3DElabList::listVariable() const
 {
     return _listVariable;
@@ -70,6 +80,11 @@ std::vector<meteoVariable> Crit3DElabList::listVariable() const
 void Crit3DElabList::setListVariable(const std::vector<meteoVariable> &listVariable)
 {
     _listVariable = listVariable;
+}
+
+void Crit3DElabList::insertVariable(meteoVariable variable)
+{
+    _listVariable.push_back(variable);
 }
 
 std::vector<QString> Crit3DElabList::listPeriodStr() const
@@ -112,6 +127,11 @@ void Crit3DElabList::setListDateStart(const std::vector<QDate> &listDateStart)
     _listDateStart = listDateStart;
 }
 
+void Crit3DElabList::insertDateStart(QDate dateStart)
+{
+    _listDateStart.push_back(dateStart);
+}
+
 std::vector<QDate> Crit3DElabList::listDateEnd() const
 {
     return _listDateEnd;
@@ -120,6 +140,11 @@ std::vector<QDate> Crit3DElabList::listDateEnd() const
 void Crit3DElabList::setListDateEnd(const std::vector<QDate> &listDateEnd)
 {
     _listDateEnd = listDateEnd;
+}
+
+void Crit3DElabList::insertDateEnd(QDate dateEnd)
+{
+    _listDateEnd.push_back(dateEnd);
 }
 
 std::vector<int> Crit3DElabList::listNYears() const
@@ -132,6 +157,11 @@ void Crit3DElabList::setListNYears(const std::vector<int> &listNYears)
     _listNYears = listNYears;
 }
 
+void Crit3DElabList::insertNYears(int nYears)
+{
+    _listNYears.push_back(nYears);
+}
+
 std::vector<QString> Crit3DElabList::listElab1() const
 {
     return _listElab1;
@@ -140,6 +170,11 @@ std::vector<QString> Crit3DElabList::listElab1() const
 void Crit3DElabList::setListElab1(const std::vector<QString> &listElab1)
 {
     _listElab1 = listElab1;
+}
+
+void Crit3DElabList::insertElab1(QString elab1)
+{
+    _listElab1.push_back(elab1);
 }
 
 std::vector<float> Crit3DElabList::listParam1() const
@@ -152,6 +187,11 @@ void Crit3DElabList::setListParam1(const std::vector<float> &listParam1)
     _listParam1 = listParam1;
 }
 
+void Crit3DElabList::insertParam1(float param1)
+{
+    _listParam1.push_back(param1);
+}
+
 std::vector<bool> Crit3DElabList::listParam1IsClimate() const
 {
     return _listParam1IsClimate;
@@ -160,6 +200,11 @@ std::vector<bool> Crit3DElabList::listParam1IsClimate() const
 void Crit3DElabList::setListParam1IsClimate(const std::vector<bool> &listParam1IsClimate)
 {
     _listParam1IsClimate = listParam1IsClimate;
+}
+
+void Crit3DElabList::insertParam1IsClimate(bool param1IsClimate)
+{
+    _listParam1IsClimate.push_back(param1IsClimate);
 }
 
 std::vector<QString> Crit3DElabList::listParam1ClimateField() const
@@ -172,6 +217,11 @@ void Crit3DElabList::setListParam1ClimateField(const std::vector<QString> &listP
     _listParam1ClimateField = listParam1ClimateField;
 }
 
+void Crit3DElabList::insertParam1ClimateField(QString param1ClimateField)
+{
+    _listParam1ClimateField.push_back(param1ClimateField);
+}
+
 std::vector<QString> Crit3DElabList::listElab2() const
 {
     return _listElab2;
@@ -180,6 +230,11 @@ std::vector<QString> Crit3DElabList::listElab2() const
 void Crit3DElabList::setListElab2(const std::vector<QString> &listElab2)
 {
     _listElab2 = listElab2;
+}
+
+void Crit3DElabList::insertElab2(QString elab2)
+{
+    _listElab2.push_back(elab2);
 }
 
 std::vector<float> Crit3DElabList::listParam2() const
@@ -192,6 +247,11 @@ void Crit3DElabList::setListParam2(const std::vector<float> &listParam2)
     _listParam2 = listParam2;
 }
 
+void Crit3DElabList::insertParam2(float param2)
+{
+    _listParam2.push_back(param2);
+}
+
 std::vector<QString> Crit3DElabList::listUnit() const
 {
     return _listUnit;
@@ -200,6 +260,11 @@ std::vector<QString> Crit3DElabList::listUnit() const
 void Crit3DElabList::setListUnit(const std::vector<QString> &listUnit)
 {
     _listUnit = listUnit;
+}
+
+void Crit3DElabList::insertUnit(QString unit)
+{
+    _listUnit.push_back(unit);
 }
 
 /*
