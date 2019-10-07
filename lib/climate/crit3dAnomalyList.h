@@ -1,5 +1,5 @@
-#ifndef CRIT3DELABLIST_H
-#define CRIT3DELABLIST_H
+#ifndef CRIT3DANOMALYLIST_H
+#define CRIT3DANOMALYLIST_H
 
 #ifndef METEO_H
     #include "meteo.h"
@@ -20,18 +20,18 @@
 #endif
 
 
-class Crit3DElabList
+class Crit3DAnomalyList
 {
 
 public:
-    Crit3DElabList();
-    ~Crit3DElabList();
+    Crit3DAnomalyList();
+    ~Crit3DAnomalyList();
 
     bool isMeteoGrid() const;
     void setIsMeteoGrid(bool isMeteoGrid);
 
-    QStringList listAll() const;
-    void setListAll(const QStringList &listClimateElab);
+    QStringList listAnomaly() const;
+    void setListAnomaly(const QStringList &listAnomaly);
 
     void reset();
 
@@ -114,4 +114,4 @@ private:
     std::vector<float> _listParam2;
 };
 
-#endif // CRIT3DELABLIST_H
+#endif // CRIT3DANOMALYLIST_H
