@@ -115,17 +115,19 @@ void RasterObject::paint(QPainter *painter, const QStyleOptionGraphicsItem *opti
 
 void RasterObject::setCenter()
 {
+    if (! isDrawing) return;
+
     QPointF sceneCenter, rasterCenter, center;
 
     int widthPixels = this->view->width() - MAPBORDER*2;
     int heightPixels = this->view->height() - MAPBORDER*2;
-    sceneCenter = view->mapToScene(QPoint(widthPixels/2, heightPixels/2));
+    sceneCenter = this->view->mapToScene(QPoint(widthPixels/2, heightPixels/2));
 
-    rasterCenter.setX(latLonHeader.llCorner->longitude + latLonHeader.dx * latLonHeader.nrCols*0.5);
-    rasterCenter.setY(latLonHeader.llCorner->latitude + latLonHeader.dy * latLonHeader.nrRows*0.5);
+    rasterCenter.setX(this->latLonHeader.llCorner->longitude + this->latLonHeader.dx * this->latLonHeader.nrCols*0.5);
+    rasterCenter.setY(this->latLonHeader.llCorner->latitude + this->latLonHeader.dy * this->latLonHeader.nrRows*0.5);
 
-    if (fabs(sceneCenter.x() - rasterCenter.x()) <  latLonHeader.dx * latLonHeader.nrCols
-        && fabs(sceneCenter.y() - rasterCenter.y()) <  latLonHeader.dy * latLonHeader.nrRows)
+    if (fabs(sceneCenter.x() - rasterCenter.x()) <  this->latLonHeader.dx * this->latLonHeader.nrCols
+        && fabs(sceneCenter.y() - rasterCenter.y()) <  this->latLonHeader.dy * this->latLonHeader.nrRows)
     {
         center = sceneCenter;
     }
@@ -290,7 +292,7 @@ bool RasterObject::initializeUTM(gis::Crit3DRasterGrid* myRaster, const gis::Cri
 }
 
 
-bool RasterObject::initializeLatLon(gis::Crit3DRasterGrid* myRaster, const gis::Crit3DGisSettings& gisSettings, gis::Crit3DGridHeader* latLonHeader_, bool isGrid_)
+bool RasterObject::initializeLatLon(gis::Crit3DRasterGrid* myRaster, const gis::Crit3DGisSettings& gisSettings, const gis::Crit3DGridHeader &latLonHeader_, bool isGrid_)
 {
     if (myRaster == nullptr) return false;
     if (! myRaster->isLoaded) return false;
@@ -303,7 +305,7 @@ bool RasterObject::initializeLatLon(gis::Crit3DRasterGrid* myRaster, const gis::
 
     freeIndexesMatrix();
 
-    this->latLonHeader = *latLonHeader_;
+    this->latLonHeader = latLonHeader_;
 
     setDrawing(true);
     setDrawBorders(isGrid_);

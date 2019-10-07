@@ -152,8 +152,8 @@ void MainWindow::resizeEvent(QResizeEvent *event)
 
 void MainWindow::mouseReleaseEvent(QMouseEvent *event)
 {
-    this->rasterObj->setCenter();
-    this->meteoGridObj->setCenter();
+    rasterObj->setCenter();
+    meteoGridObj->setCenter();
 
     gis::Crit3DGeoPoint pointSelected;
 
@@ -709,7 +709,7 @@ void MainWindow::on_timeEdit_timeChanged(const QTime &time)
         myProject.netCDF.readProperties(fileName.toStdString(), &buffer);
 
         if (myProject.netCDF.isLatLon)
-            meteoGridObj->initializeLatLon(&(myProject.netCDF.dataGrid), myProject.gisSettings, &(myProject.netCDF.latLonHeader), true);
+            meteoGridObj->initializeLatLon(&(myProject.netCDF.dataGrid), myProject.gisSettings, myProject.netCDF.latLonHeader, true);
         else
             meteoGridObj->initializeUTM(&(myProject.netCDF.dataGrid), myProject.gisSettings, true);
 
@@ -933,7 +933,7 @@ void MainWindow::drawMeteoGrid()
 
     if (myProject.meteoGridDbHandler->gridStructure().isUTM() == false)
     {
-        meteoGridObj->initializeLatLon(&(myProject.meteoGridDbHandler->meteoGrid()->dataMeteoGrid), myProject.gisSettings, &(myProject.meteoGridDbHandler->gridStructure().header()), true);
+        meteoGridObj->initializeLatLon(&(myProject.meteoGridDbHandler->meteoGrid()->dataMeteoGrid), myProject.gisSettings, myProject.meteoGridDbHandler->gridStructure().header(), true);
     }
     else
     {
