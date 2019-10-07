@@ -79,7 +79,7 @@
         void setColorLegend(ColorLegend* myLegend);
         bool initializeUTM(gis::Crit3DRasterGrid* myRaster, const gis::Crit3DGisSettings& gisSettings, bool isGrid_);
         bool initializeLatLon(gis::Crit3DRasterGrid* myRaster, const gis::Crit3DGisSettings& gisSettings,
-                              const gis::Crit3DGridHeader& latLonHeader, bool isGrid_);
+                              gis::Crit3DGridHeader* latLonHeader, bool isGrid_);
         float getRasterMaxSize();
         gis::Crit3DGeoPoint* getRasterCenter();
         void setRaster(gis::Crit3DRasterGrid* rasterPtr);
