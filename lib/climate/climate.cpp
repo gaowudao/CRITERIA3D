@@ -10,7 +10,6 @@
 #include "statistics.h"
 #include "quality.h"
 #include "dbClimate.h"
-#include "crit3dElabList.h"
 
 
 bool elaborationOnPoint(QString *myError, Crit3DMeteoPointsDbHandler* meteoPointsDbHandler, Crit3DMeteoGridDbHandler* meteoGridDbHandler,
@@ -2227,7 +2226,7 @@ int getClimateIndexFromDate(QDate myDate, period periodType)
 }
 */
 
-bool parseXMLElaboration(Crit3DElabList *listXMLElab, QString xmlFileName, QString *myError)
+bool parseXMLElaboration(Crit3DElabList *listXMLElab, Crit3DAnomalyList *listXMLAnomaly, QString xmlFileName, QString *myError)
 {
 
     QDomDocument xmlDoc;
@@ -2265,7 +2264,6 @@ bool parseXMLElaboration(Crit3DElabList *listXMLElab, QString xmlFileName, QStri
 
     QDomNode ancestor = xmlDoc.documentElement().firstChild();
     QString myTag;
-    QString mySecondTag;
 
     QString firstYear;
     QString lastYear;
@@ -2503,12 +2501,220 @@ bool parseXMLElaboration(Crit3DElabList *listXMLElab, QString xmlFileName, QStri
         }
         else if (ancestor.toElement().tagName().toUpper() == "ANOMALY")
         {
+            if (ancestor.toElement().attribute("Datatype").toUpper() == "GRID")
+            {
+                listXMLAnomaly->setIsMeteoGrid(true);
+            }
+            else if (ancestor.toElement().attribute("Datatype").toUpper() == "POINT")
+            {
+                listXMLAnomaly->setIsMeteoGrid(false);
+            }
+            else
+            {
+                *myError = "Invalid Datatype attribute";
+                return false;
+            }
+
+            if (ancestor.toElement().attribute("PeriodType").toUpper() == "GENERIC")
+            {
+                period = "Generic";
+                periodType = genericPeriod;
+                listXMLAnomaly->insertPeriodStr(period);
+                listXMLAnomaly->insertPeriodType(periodType);
+            }
+            else if (ancestor.toElement().attribute("PeriodType").toUpper() == "DAILY")
+            {
+                period = "Daily";
+                periodType = dailyPeriod;
+                listXMLAnomaly->insertPeriodStr(period);
+                listXMLAnomaly->insertPeriodType(periodType);
+            }
+            else if (ancestor.toElement().attribute("PeriodType").toUpper() == "DECADAL")
+            {
+                period = "Decadal";
+                periodType = decadalPeriod;
+                listXMLAnomaly->insertPeriodStr(period);
+                listXMLAnomaly->insertPeriodType(periodType);
+            }
+            else if (ancestor.toElement().attribute("PeriodType").toUpper() == "MONTHLY")
+            {
+                period = "Monthly";
+                periodType = monthlyPeriod;
+                listXMLAnomaly->insertPeriodStr(period);
+                listXMLAnomaly->insertPeriodType(periodType);
+            }
+            else if (ancestor.toElement().attribute("PeriodType").toUpper() == "SEASONAL")
+            {
+                period = "Seasonal";
+                periodType = seasonalPeriod;
+                listXMLAnomaly->insertPeriodStr(period);
+                listXMLAnomaly->insertPeriodType(periodType);
+            }
+            else if (ancestor.toElement().attribute("PeriodType").toUpper() == "ANNUAL")
+            {
+                period = "Annual";
+                periodType = annualPeriod;
+                listXMLAnomaly->insertPeriodStr(period);
+                listXMLAnomaly->insertPeriodType(periodType);
+            }
+            else
+            {
+                *myError = "Invalid Datatype attribute";
+                return false;
+            }
             child = ancestor.firstChild();
+
             while( !child.isNull())
             {
+                myTag = child.toElement().tagName().toUpper();
+                if (myTag == "VARIABLE")
+                {
+                    variable = child.toElement().text();
+                    meteoVariable var = getKeyMeteoVarMeteoMap(MapDailyMeteoVarToString, variable.toStdString());
+                    listXMLAnomaly->insertVariable(var);
+                }
+                if (myTag == "YEARINTERVAL")
+                {
+                    firstYear = child.toElement().attribute("fin");
+                    lastYear = child.toElement().attribute("ini");
+                    listXMLAnomaly->insertYearStart(firstYear.toInt());
+                    listXMLAnomaly->insertYearEnd(lastYear.toInt());
+                }
+                if (myTag == "PERIOD")
+                {
+                    nYears = "0";
+                    if (period == "Generic")
+                    {
+                        QString periodEnd = child.toElement().attribute("fin");
+                        QString periodStart = child.toElement().attribute("ini");
+                        periodEnd = periodEnd+"/"+firstYear;
+                        periodStart = periodStart+"/"+firstYear;
+                        dateStart = QDate::fromString(periodStart, "dd/MM/yyyy");
+                        dateEnd = QDate::fromString(periodEnd, "dd/MM/yyyy");
+                        nYears = child.toElement().attribute("nyears");
 
+                        listXMLAnomaly->insertDateStart(dateStart);
+                        listXMLAnomaly->insertDateEnd(dateEnd);
+                        listXMLAnomaly->insertNYears(nYears.toInt());
+                    }
+                    if (period == "Daily")
+                    {
+                        int dayOfYear = child.toElement().attribute("doy").toInt();
+                        dateStart = QDate(firstYear.toInt(), 1, 1).addDays(dayOfYear - 1);
+                        dateEnd = dateStart;
+
+                        listXMLAnomaly->insertDateStart(dateStart);
+                        listXMLAnomaly->insertDateEnd(dateEnd);
+                        listXMLAnomaly->insertNYears(nYears.toInt());
+                    }
+                    if (period == "Decadal")
+                    {
+                        int decade = child.toElement().attribute("decade").toInt();
+                        int dayStart;
+                        int dayEnd;
+                        int month;
+
+                        intervalDecade(decade, firstYear.toInt(), &dayStart, &dayEnd, &month);
+                        dateStart.setDate(firstYear.toInt(), month, dayStart);
+                        dateEnd.setDate(firstYear.toInt(), month, dayEnd);
+
+                        listXMLAnomaly->insertDateStart(dateStart);
+                        listXMLAnomaly->insertDateEnd(dateEnd);
+                        listXMLAnomaly->insertNYears(nYears.toInt());
+                    }
+                    if (period == "Monthly")
+                    {
+                        int month = child.toElement().attribute("month").toInt();
+                        dateStart.setDate(firstYear.toInt(), month, 1);
+                        dateEnd = dateStart;
+                        dateEnd.setDate(firstYear.toInt(), month, dateEnd.daysInMonth());
+
+                        listXMLAnomaly->insertDateStart(dateStart);
+                        listXMLAnomaly->insertDateEnd(dateEnd);
+                        listXMLAnomaly->insertNYears(nYears.toInt());
+                    }
+                    if (period == "Seasonal")
+                    {
+                        QString seasonString = child.toElement().attribute("season");
+                        int season = getSeasonFromString(seasonString);
+                        if (season == 4)
+                        {
+                            dateStart.setDate(firstYear.toInt()-1, 12, 1);
+                            QDate temp(firstYear.toInt(), 2, 1);
+                            dateEnd.setDate(firstYear.toInt(), 2, temp.daysInMonth());
+                        }
+                        else
+                        {
+                            dateStart.setDate(firstYear.toInt(), season*3, 1);
+                            QDate temp(firstYear.toInt(), season*3+2, 1);
+                            dateEnd.setDate(firstYear.toInt(), season*3+2, temp.daysInMonth());
+                        }
+
+                        listXMLAnomaly->insertDateStart(dateStart);
+                        listXMLAnomaly->insertDateEnd(dateEnd);
+                        listXMLAnomaly->insertNYears(nYears.toInt());
+                    }
+                    if (period == "Annual")
+                    {
+                        dateStart.setDate(firstYear.toInt(), 1, 1);
+                        dateEnd.setDate(firstYear.toInt(), 12, 31);
+
+                        listXMLAnomaly->insertDateStart(dateStart);
+                        listXMLAnomaly->insertDateEnd(dateEnd);
+                        listXMLAnomaly->insertNYears(nYears.toInt());
+                    }
+                }
+                if (myTag == "PRIMARYELABORATION")
+                {
+                    if (ancestor.toElement().attribute("readParamFromClimate").toUpper() == "TRUE" || ancestor.toElement().attribute("readParamFromClimate").toUpper() == "YES")
+                    {
+                        param1IsClimate = true;
+                        listXMLAnomaly->insertParam1IsClimate(true);
+                        listXMLAnomaly->insertParam1(NODATA);
+                    }
+                    else
+                    {
+                        param1IsClimate = false;
+                        listXMLAnomaly->insertParam1IsClimate(false);
+                        listXMLAnomaly->insertParam1ClimateField("");
+                    }
+                    elabParam1 = child.toElement().attribute("Param1");
+
+                    if (param1IsClimate)
+                    {
+                        listXMLAnomaly->insertParam1ClimateField(elabParam1);
+                    }
+                    else
+                    {
+                        if (elabParam1.isEmpty())
+                        {
+                            listXMLAnomaly->insertParam1(NODATA);
+                        }
+                        else
+                        {
+                            listXMLAnomaly->insertParam1(elabParam1.toFloat());
+                        }
+                    }
+
+                    elab = child.toElement().text();
+                    listXMLAnomaly->insertElab1(elab);
+                }
+                if (myTag == "SECONDARYELABORATION")
+                {
+                    elabParam2 = child.toElement().attribute("Param2");
+                    if (elabParam2.isEmpty())
+                    {
+                        listXMLAnomaly->insertParam2(NODATA);
+                    }
+                    else
+                    {
+                        listXMLAnomaly->insertParam2(elabParam2.toFloat());
+                    }
+                    elab = child.toElement().text();
+                    listXMLAnomaly->insertElab2(elab);
+                }
+                child = child.nextSibling();
             }
-            child = child.nextSibling();
         }
 
         else if (ancestor.toElement().tagName().toUpper() == "PHENOLOGY")
