@@ -32,6 +32,7 @@
 #include <netcdf.h>
 
 #include "commonConstants.h"
+#include "basicMath.h"
 #include "netcdfHandler.h"
 
 using namespace std;
@@ -177,7 +178,7 @@ std::string NetCDFHandler::getDateTimeStr(int timeIndex)
 {
     // check
     if (! isStandardTime)
-        return "ERROR: time is not standard (seconds since 1970)";
+        return "ERROR: time is not standard (std: seconds since 1970)";
 
     if (timeIndex < 0 || timeIndex >= nrTime)
         return "ERROR: time index out of range";
@@ -306,7 +307,7 @@ bool NetCDFHandler::readProperties(string fileName, stringstream *buffer)
             if (i != NODATA)
                 dimensions[unsigned(i)].type = ncTypeId;
             else
-                *buffer << endl << "ERRORE: dimensione non trovata: " << varName << endl;
+                *buffer << endl << "ERROR: dimension not found: " << varName << endl;
        }
 
        if (lowerCase(string(varName)) == "time")
@@ -427,7 +428,7 @@ bool NetCDFHandler::readProperties(string fileName, stringstream *buffer)
             x = new float[unsigned(nrX)];
             if ((retval = nc_get_var_float(ncId, idX, x)))
             {
-                *buffer << "\nERROR in reading x: " << nc_strerror(retval);
+                *buffer << endl << "ERROR in reading x: " << nc_strerror(retval);
                 nc_close(ncId);
                 return false;
             }
@@ -435,12 +436,12 @@ bool NetCDFHandler::readProperties(string fileName, stringstream *buffer)
             y = new float[unsigned(nrY)];
             if ((retval = nc_get_var_float(ncId, idY, y)))
             {
-                *buffer << "\nERROR in reading y: " << nc_strerror(retval);
+                *buffer << endl << "ERROR in reading y: " << nc_strerror(retval);
                 nc_close(ncId);
                 return false;
             }
 
-            if ((x[1]-x[0]) != (y[1]-y[0]))
+            if (! isEqual(x[1]-x[0], y[1]-y[0]))
                 *buffer << "\nWarning! dx != dy" << endl;
 
             dataGrid.header->cellSize = double(x[1]-x[0]);
