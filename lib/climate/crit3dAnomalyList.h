@@ -98,20 +98,41 @@ private:
 
     QStringList _listAll;
     bool _isMeteoGrid;
+    std::vector<bool> _isPercentage;
+    std::vector<bool> _isAnomalyFromDb; // VB RefType (Period o Clima)
+    std::vector<QString> _listAnomalyClimateField;
+
     std::vector<int> _listYearStart;
     std::vector<int> _listYearEnd;
+    std::vector<int> _listRefYearStart;
+    std::vector<int> _listRefYearEnd;
+
     std::vector<meteoVariable> _listVariable;
     std::vector<QString> _listPeriodStr;
     std::vector<period> _listPeriodType;
+    std::vector<QString> _listRefPeriodStr;
+    std::vector<period> _listRefPeriodType;
+
     std::vector<QDate> _listDateStart;
     std::vector<QDate> _listDateEnd;
     std::vector<int> _listNYears;
+    std::vector<QDate> _listRefDateStart;
+    std::vector<QDate> _listRefDateEnd;
+    std::vector<int> _listRefNYears;
+
     std::vector<QString> _listElab1;
     std::vector<float> _listParam1;
     std::vector<bool> _listParam1IsClimate;
+    std::vector<QString> _listRefElab1;
+    std::vector<float> _listRefParam1;
+    std::vector<bool> _listRefParam1IsClimate;
+
     std::vector<QString> _listParam1ClimateField;
     std::vector<QString> _listElab2;
     std::vector<float> _listParam2;
+    std::vector<QString> _listRefParam1ClimateField;
+    std::vector<QString> _listRefElab2;
+    std::vector<float> _listRefParam2;
 };
 
 #endif // CRIT3DANOMALYLIST_H
