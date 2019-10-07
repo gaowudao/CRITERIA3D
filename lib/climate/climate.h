@@ -119,7 +119,7 @@
 
     int nParameters(meteoComputation elab);
 
-    bool parseXMLElaboration(bool* isMeteoGrid, Crit3DElabList *listElab, QString xmlFileName, QString *myError);
+    bool parseXMLElaboration(Crit3DElabList *listElab, QString xmlFileName, QString *myError);
 
     //int getClimateIndexFromDate(QDate myDate, period periodType);
 

@@ -201,7 +201,7 @@ DialogMeteoComputation::DialogMeteoComputation(QSettings *settings, bool isAnoma
     local.setNumberOptions(QLocale::RejectGroupSeparator);
     elab1Parameter.setPlaceholderText("Parameter");
     elab1Parameter.setFixedWidth(90);
-    QDoubleValidator* validator = new QDoubleValidator(-9999.0, 9999.0, 2); //LC accetta double con 2 cifre decimali da -9999 a 9999
+    QDoubleValidator* validator = new QDoubleValidator(-9999.0, 9999.0, 2);
     validator->setLocale(local);
     elab1Parameter.setValidator(validator);
     readParam.setText("Read param from db Climate");

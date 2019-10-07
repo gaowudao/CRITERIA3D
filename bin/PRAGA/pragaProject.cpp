@@ -443,10 +443,9 @@ bool PragaProject::elaboration(bool isMeteoGrid, bool isAnomaly, bool saveClima)
 {
 
     // test XML LC
-//    bool isMG;
 //    Crit3DElabList *listXMLElab = new Crit3DElabList();
 //    QString *myError;
-//    parseXMLElaboration(&isMG, listXMLElab, "/home/laura/DailyMaps.xml", myError);
+//    parseXMLElaboration(listXMLElab, "/home/laura/DailyMaps.xml", myError);
     ////////////////////////
     if (isMeteoGrid)
     {

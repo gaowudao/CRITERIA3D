@@ -25,6 +25,7 @@
     int decadeFromDate(QDate date);
     void intervalDecade(int decade, int year, int* dayStart, int* dayEnd, int* month);
     int getSeasonFromDate(QDate date);
+    int getSeasonFromString(QString season);
     QString getStringSeasonFromDate(QDate date);
     bool getPeriodDates(QString periodSelected, int year, QDate myDate, QDate* startDate, QDate* endDate);
 

@@ -14,6 +14,16 @@ Crit3DElabList::~Crit3DElabList()
 {
 }
 
+bool Crit3DElabList::isMeteoGrid() const
+{
+    return _isMeteoGrid;
+}
+
+void Crit3DElabList::setIsMeteoGrid(bool isMeteoGrid)
+{
+    _isMeteoGrid = isMeteoGrid;
+}
+
 QStringList Crit3DElabList::listElab() const
 {
     return _listElab;
@@ -252,20 +262,6 @@ void Crit3DElabList::insertParam2(float param2)
     _listParam2.push_back(param2);
 }
 
-std::vector<QString> Crit3DElabList::listUnit() const
-{
-    return _listUnit;
-}
-
-void Crit3DElabList::setListUnit(const std::vector<QString> &listUnit)
-{
-    _listUnit = listUnit;
-}
-
-void Crit3DElabList::insertUnit(QString unit)
-{
-    _listUnit.push_back(unit);
-}
 
 /*
 void Crit3DElabList::parserElaboration()
