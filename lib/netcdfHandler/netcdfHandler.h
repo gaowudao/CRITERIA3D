@@ -43,7 +43,7 @@
 
         bool isPointInside(gis::Crit3DGeoPoint geoPoint);
 
-        bool setVarLongName(char* varName, char* varLongName);
+        bool setVarLongName(std::string varName, std::string varLongName);
 
         int getDimensionIndex(char* dimName);
         std::string getDateTimeStr(int timeIndex);

@@ -63,7 +63,7 @@ NetCDFVariable::NetCDFVariable(char* myName, int myId, int myType)
 
 std::string NetCDFVariable::getVarName()
 {
-    if (longName.size() < 30)
+    if (longName.size() <= 32)
         return longName;
     else
         return name;
@@ -142,13 +142,13 @@ std::string NetCDFHandler::getVarName(int idVar)
 }
 
 
-bool NetCDFHandler::setVarLongName(char* varName, char* varLongName)
+bool NetCDFHandler::setVarLongName(std::string varName, std::string varLongName)
 {
     for (unsigned int i = 0; i < variables.size(); i++)
     {
-        if (variables[i].name == std::string(varName))
+        if (variables[i].name == varName)
         {
-            variables[i].longName = std::string(varLongName);
+            variables[i].longName = varLongName;
             return true;
         }
     }
@@ -355,7 +355,7 @@ bool NetCDFHandler::readProperties(string fileName, stringstream *buffer)
                     }
                 }
                 if (lowerCase(string(attrName)) == "long_name")
-                    setVarLongName(varName, valueStr);
+                    setVarLongName(string(varName), myString);
 
                 delete [] valueStr;
             }
