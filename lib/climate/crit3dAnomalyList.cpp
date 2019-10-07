@@ -261,3 +261,228 @@ void Crit3DAnomalyList::insertParam2(float param2)
 {
     _listParam2.push_back(param2);
 }
+
+std::vector<bool> Crit3DAnomalyList::isPercentage() const
+{
+    return _isPercentage;
+}
+
+void Crit3DAnomalyList::setIsPercentage(const std::vector<bool> &isPercentage)
+{
+    _isPercentage = isPercentage;
+}
+
+std::vector<bool> Crit3DAnomalyList::isAnomalyFromDb() const
+{
+    return _isAnomalyFromDb;
+}
+
+void Crit3DAnomalyList::setIsAnomalyFromDb(const std::vector<bool> &isAnomalyFromDb)
+{
+    _isAnomalyFromDb = isAnomalyFromDb;
+}
+
+std::vector<QString> Crit3DAnomalyList::listAnomalyClimateField() const
+{
+    return _listAnomalyClimateField;
+}
+
+void Crit3DAnomalyList::setListAnomalyClimateField(const std::vector<QString> &listAnomalyClimateField)
+{
+    _listAnomalyClimateField = listAnomalyClimateField;
+}
+
+std::vector<int> Crit3DAnomalyList::listRefYearStart() const
+{
+    return _listRefYearStart;
+}
+
+void Crit3DAnomalyList::setListRefYearStart(const std::vector<int> &listRefYearStart)
+{
+    _listRefYearStart = listRefYearStart;
+}
+
+void Crit3DAnomalyList::insertRefYearStart(int refYearStart)
+{
+    _listRefYearStart.push_back(refYearStart);
+}
+
+std::vector<int> Crit3DAnomalyList::listRefYearEnd() const
+{
+    return _listRefYearEnd;
+}
+
+void Crit3DAnomalyList::setListRefYearEnd(const std::vector<int> &listRefYearEnd)
+{
+    _listRefYearEnd = listRefYearEnd;
+}
+
+void Crit3DAnomalyList::insertRefYearEnd(int refYearEnd)
+{
+    _listRefYearEnd.push_back(refYearEnd);
+}
+
+std::vector<QString> Crit3DAnomalyList::listRefPeriodStr() const
+{
+    return _listRefPeriodStr;
+}
+
+void Crit3DAnomalyList::setListRefPeriodStr(const std::vector<QString> &listRefPeriodStr)
+{
+    _listRefPeriodStr = listRefPeriodStr;
+}
+
+void Crit3DAnomalyList::insertRefPeriodStr(QString refPeriodStr)
+{
+    _listRefPeriodStr.push_back(refPeriodStr);
+}
+
+std::vector<period> Crit3DAnomalyList::listRefPeriodType() const
+{
+    return _listRefPeriodType;
+}
+
+void Crit3DAnomalyList::setListRefPeriodType(const std::vector<period> &listRefPeriodType)
+{
+    _listRefPeriodType = listRefPeriodType;
+}
+
+void Crit3DAnomalyList::insertRefPeriodType(period refPeriodType)
+{
+    _listRefPeriodType.push_back(refPeriodType);
+}
+
+std::vector<QDate> Crit3DAnomalyList::listRefDateStart() const
+{
+    return _listRefDateStart;
+}
+
+void Crit3DAnomalyList::setListRefDateStart(const std::vector<QDate> &listRefDateStart)
+{
+    _listRefDateStart = listRefDateStart;
+}
+
+void Crit3DAnomalyList::insertRefDateStart(QDate refDateStart)
+{
+    _listRefDateStart.push_back(refDateStart);
+}
+
+std::vector<QDate> Crit3DAnomalyList::listRefDateEnd() const
+{
+    return _listRefDateEnd;
+}
+
+void Crit3DAnomalyList::setListRefDateEnd(const std::vector<QDate> &listRefDateEnd)
+{
+    _listRefDateEnd = listRefDateEnd;
+}
+
+void Crit3DAnomalyList::insertRefDateEnd(QDate refDateEnd)
+{
+    _listRefDateEnd.push_back(refDateEnd);
+}
+
+std::vector<int> Crit3DAnomalyList::listRefNYears() const
+{
+    return _listRefNYears;
+}
+
+void Crit3DAnomalyList::setListRefNYears(const std::vector<int> &listRefNYears)
+{
+    _listRefNYears = listRefNYears;
+}
+
+void Crit3DAnomalyList::insertRefNYears(int refNYears)
+{
+    _listRefNYears.push_back(refNYears);
+}
+
+std::vector<QString> Crit3DAnomalyList::listRefElab1() const
+{
+    return _listRefElab1;
+}
+
+void Crit3DAnomalyList::setListRefElab1(const std::vector<QString> &listRefElab1)
+{
+    _listRefElab1 = listRefElab1;
+}
+
+void Crit3DAnomalyList::insertRefElab1(QString refElab1)
+{
+    _listRefElab1.push_back(refElab1);
+}
+
+std::vector<float> Crit3DAnomalyList::listRefParam1() const
+{
+    return _listRefParam1;
+}
+
+void Crit3DAnomalyList::setListRefParam1(const std::vector<float> &listRefParam1)
+{
+    _listRefParam1 = listRefParam1;
+}
+
+void Crit3DAnomalyList::insertRefParam1(float refParam1)
+{
+    _listRefParam1.push_back(refParam1);
+}
+
+std::vector<bool> Crit3DAnomalyList::listRefParam1IsClimate() const
+{
+    return _listRefParam1IsClimate;
+}
+
+void Crit3DAnomalyList::setListRefParam1IsClimate(const std::vector<bool> &listRefParam1IsClimate)
+{
+    _listRefParam1IsClimate = listRefParam1IsClimate;
+}
+
+void Crit3DAnomalyList::insertRefParam1IsClimate(bool refParam1IsClimate)
+{
+    _listRefParam1IsClimate.push_back(refParam1IsClimate);
+}
+
+std::vector<QString> Crit3DAnomalyList::listRefParam1ClimateField() const
+{
+    return _listRefParam1ClimateField;
+}
+
+void Crit3DAnomalyList::setListRefParam1ClimateField(const std::vector<QString> &listRefParam1ClimateField)
+{
+    _listRefParam1ClimateField = listRefParam1ClimateField;
+}
+
+void Crit3DAnomalyList::insertRefParam1ClimateField(QString refParam1ClimateField)
+{
+    _listRefParam1ClimateField.push_back(refParam1ClimateField);
+}
+
+std::vector<QString> Crit3DAnomalyList::listRefElab2() const
+{
+    return _listRefElab2;
+}
+
+void Crit3DAnomalyList::setListRefElab2(const std::vector<QString> &listRefElab2)
+{
+    _listRefElab2 = listRefElab2;
+}
+
+void Crit3DAnomalyList::insertRefElab2(QString refElab2)
+{
+    _listRefElab2.push_back(refElab2);
+}
+
+std::vector<float> Crit3DAnomalyList::listRefParam2() const
+{
+    return _listRefParam2;
+}
+
+void Crit3DAnomalyList::setListRefParam2(const std::vector<float> &listRefParam2)
+{
+    _listRefParam2 = listRefParam2;
+}
+
+void Crit3DAnomalyList::insertRefParam2(float refParam2)
+{
+    _listRefParam2.push_back(refParam2);
+}

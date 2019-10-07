@@ -94,6 +94,67 @@ public:
     //void parserElaboration();
     //bool parserGenericPeriodString(int index);
 
+    std::vector<bool> isPercentage() const;
+    void setIsPercentage(const std::vector<bool> &isPercentage);
+
+    std::vector<bool> isAnomalyFromDb() const;
+    void setIsAnomalyFromDb(const std::vector<bool> &isAnomalyFromDb);
+
+    std::vector<QString> listAnomalyClimateField() const;
+    void setListAnomalyClimateField(const std::vector<QString> &listAnomalyClimateField);
+
+    std::vector<int> listRefYearStart() const;
+    void setListRefYearStart(const std::vector<int> &listRefYearStart);
+    void insertRefYearStart(int refYearStart);
+
+    std::vector<int> listRefYearEnd() const;
+    void setListRefYearEnd(const std::vector<int> &listRefYearEnd);
+    void insertRefYearEnd(int refYearEnd);
+
+    std::vector<QString> listRefPeriodStr() const;
+    void setListRefPeriodStr(const std::vector<QString> &listRefPeriodStr);
+    void insertRefPeriodStr(QString refPeriodStr);
+
+    std::vector<period> listRefPeriodType() const;
+    void setListRefPeriodType(const std::vector<period> &listRefPeriodType);
+    void insertRefPeriodType(period refPeriodType);
+
+    std::vector<QDate> listRefDateStart() const;
+    void setListRefDateStart(const std::vector<QDate> &listRefDateStart);
+    void insertRefDateStart(QDate refDateStart);
+
+    std::vector<QDate> listRefDateEnd() const;
+    void setListRefDateEnd(const std::vector<QDate> &listRefDateEnd);
+    void insertRefDateEnd(QDate refDateEnd);
+
+    std::vector<int> listRefNYears() const;
+    void setListRefNYears(const std::vector<int> &listRefNYears);
+    void insertRefNYears(int refNYears);
+
+    std::vector<QString> listRefElab1() const;
+    void setListRefElab1(const std::vector<QString> &listRefElab1);
+    void insertRefElab1(QString refElab1);
+
+    std::vector<float> listRefParam1() const;
+    void setListRefParam1(const std::vector<float> &listRefParam1);
+    void insertRefParam1(float refParam1);
+
+    std::vector<bool> listRefParam1IsClimate() const;
+    void setListRefParam1IsClimate(const std::vector<bool> &listRefParam1IsClimate);
+    void insertRefParam1IsClimate(bool refParam1IsClimate);
+
+    std::vector<QString> listRefParam1ClimateField() const;
+    void setListRefParam1ClimateField(const std::vector<QString> &listRefParam1ClimateField);
+    void insertRefParam1ClimateField(QString refParam1ClimateField);
+
+    std::vector<QString> listRefElab2() const;
+    void setListRefElab2(const std::vector<QString> &listRefElab2);
+    void insertRefElab2(QString refElab2);
+
+    std::vector<float> listRefParam2() const;
+    void setListRefParam2(const std::vector<float> &listRefParam2);
+    void insertRefParam2(float refParam2);
+
 private:
 
     QStringList _listAll;
