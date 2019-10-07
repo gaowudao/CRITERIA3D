@@ -362,13 +362,18 @@ bool RasterObject::drawRaster(gis::Crit3DRasterGrid *myRaster, QPainter* myPaint
 
     roundColorScale(myRaster->colorScale, 4, true);
 
-    // lower left position
-    gis::Crit3DGeoPoint llCorner;
-    gis::Crit3DPixel pixelLL;
-    llCorner.longitude =this->latLonHeader.llCorner->longitude + col0 * this->latLonHeader.dx;
-    llCorner.latitude = this->latLonHeader.llCorner->latitude + (this->latLonHeader.nrRows-1 - rowBottom) * this->latLonHeader.dy;
-    pixelLL.x = int(floor(this->geoMap->degreeToPixelX * (llCorner.longitude - this->geoMap->referencePoint.longitude)));
-    pixelLL.y = int(floor(this->geoMap->degreeToPixelY * (llCorner.latitude - this->geoMap->referencePoint.latitude)));
+    // lower left pixel position
+    QPointF llCorner, pixelLL;
+    llCorner.setX(latLonHeader.llCorner->longitude + col0 * latLonHeader.dx);
+    llCorner.setY(latLonHeader.llCorner->latitude + (latLonHeader.nrRows-1 - rowBottom) * latLonHeader.dy);
+    pixelLL = getPixel(llCorner);
+
+    QPointF reference, refPixel;
+    reference.setX(geoMap->referencePoint.longitude);
+    reference.setY(geoMap->referencePoint.latitude);
+    refPixel = getPixel(reference);
+    pixelLL.setX(pixelLL.x() - refPixel.x());
+    pixelLL.setY(refPixel.y() - pixelLL.y());
 
     double dx = latLonHeader.dx * this->geoMap->degreeToPixelX;
     double dy = latLonHeader.dy * this->geoMap->degreeToPixelY;
@@ -379,15 +384,15 @@ bool RasterObject::drawRaster(gis::Crit3DRasterGrid *myRaster, QPainter* myPaint
     QColor myQColor;
     float value;
 
-    y0 = pixelLL.y;
+    y0 = int(pixelLL.y());
     for (int row = rowBottom; row >= rowTop; row -= step)
     {
-        y1 = int(pixelLL.y + (rowBottom-row + step) * dy);
-        x0 = pixelLL.x;
+        y1 = int(pixelLL.y() + (rowBottom-row + step) * dy);
+        x0 = int(pixelLL.x());
 
         for (int col = col0; col <= col1; col += step)
         {
-            x1 = int(pixelLL.x + (col-col0 + step) * dx);
+            x1 = int(pixelLL.x() + (col-col0 + step) * dx);
 
             if (this->isLatLon)
                 value = myRaster->value[row][col];
