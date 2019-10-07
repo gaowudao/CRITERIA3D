@@ -136,7 +136,7 @@ std::string NetCDFHandler::getVarName(int idVar)
 {
     for (unsigned int i = 0; i < variables.size(); i++)
         if (variables[i].id == idVar)
-            return variables[i].longName;
+            return variables[i].getVarName();
 
     return "";
 }
@@ -148,7 +148,7 @@ bool NetCDFHandler::setVarLongName(char* varName, char* varLongName)
     {
         if (variables[i].name == std::string(varName))
         {
-            variables[i].longName = varLongName;
+            variables[i].longName = std::string(varLongName);
             return true;
         }
     }
