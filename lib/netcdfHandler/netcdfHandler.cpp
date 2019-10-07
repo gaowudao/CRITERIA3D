@@ -234,10 +234,13 @@ bool NetCDFHandler::readProperties(string fileName, stringstream *buffer)
     {
         nc_inq_attname(ncId, NC_GLOBAL, a, attrName);
         nc_inq_attlen(ncId, NC_GLOBAL, attrName, &length);
+
         valueStr = new char[length+1];
         nc_get_att_text(ncId, NC_GLOBAL, attrName, valueStr);
 
-        *buffer << attrName << " = " << valueStr << endl;
+        string myString = string(valueStr).substr(0, length);
+        *buffer << attrName << " = " << myString << endl;
+
         delete [] valueStr;
    }
 
@@ -339,13 +342,17 @@ bool NetCDFHandler::readProperties(string fileName, stringstream *buffer)
                 nc_inq_attlen(ncId, v, attrName, &length);
                 valueStr = new char[length+1];
                 nc_get_att_text(ncId, v, attrName, valueStr);
-                *buffer << attrName << " = " << valueStr << endl;
+
+                string myString = string(valueStr).substr(0, length);
+                *buffer << attrName << " = " << myString << endl;
 
                 if (v == idTime)
                 {
-                    if ((lowerCase(string(attrName)) == "units")
-                       && (lowerCase(string(valueStr).substr(0, 18)) == "seconds since 1970"))
+                    if ((lowerCase(string(attrName)) == "units"
+                       && lowerCase(myString).substr(0, 18) == "seconds since 1970"))
+                    {
                            isStandardTime = true;
+                    }
                 }
                 if (lowerCase(string(attrName)) == "long_name")
                     setVarLongName(varName, valueStr);
