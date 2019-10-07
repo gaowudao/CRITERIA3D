@@ -397,7 +397,7 @@ bool NetCDFHandler::readProperties(string fileName, stringstream *buffer)
             latLonHeader.nrCols = nrLon;
 
             latLonHeader.llCorner->longitude = double(lon[0]);
-            latLonHeader.dx = double(lon[nrLon-1]-lon[0]) / double(nrLon-1);
+            latLonHeader.dx = double(lon[nrLon-1] - lon[0]) / double(nrLon-1);
 
             if (lat[1] > lat[0])
             {
