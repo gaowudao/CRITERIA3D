@@ -174,6 +174,7 @@ bool NetCDFHandler::isPointInside(gis::Crit3DGeoPoint geoPoint)
     }
 }
 
+
 std::string NetCDFHandler::getDateTimeStr(int timeIndex)
 {
     // check
