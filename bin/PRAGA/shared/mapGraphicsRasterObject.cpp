@@ -52,6 +52,17 @@ RasterObject::RasterObject(MapGraphicsView* _view, MapGraphicsObject *parent) :
 }
 
 
+void RasterObject::clear()
+{
+    setDrawing(false);
+    setDrawBorders(false);
+    freeIndexesMatrix();
+    this->latLonHeader.nrCols = 0;
+    this->latLonHeader.nrRows = 0;
+    this->colorScaleLegend = nullptr;
+}
+
+
 void RasterObject::setDrawing(bool value)
 {
     this->isDrawing = value;
@@ -70,14 +81,9 @@ void RasterObject::setColorLegend(ColorLegend* myLegend)
 }
 
 
-void RasterObject::clear()
+QPointF RasterObject::getPixel(const QPointF &latLonPoint)
 {
-    setDrawing(false);
-    setDrawBorders(false);
-    freeIndexesMatrix();
-    this->latLonHeader.nrCols = 0;
-    this->latLonHeader.nrRows = 0;
-    this->colorScaleLegend = nullptr;
+    return this->view->tileSource()->ll2qgs(latLonPoint, this->view->zoomLevel());
 }
 
 
@@ -140,6 +146,7 @@ void RasterObject::setCenter()
     this->geoMap->referencePoint.latitude = center.y();
 
     this->setPos(center);
+    this->posChanged();
 }
 
 

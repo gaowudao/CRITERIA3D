@@ -77,6 +77,9 @@
         void setDrawing(bool value);
         void setDrawBorders(bool value);
         void setColorLegend(ColorLegend* myLegend);
+
+        QPointF getPixel(const QPointF &latLonPoint);
+
         bool initializeUTM(gis::Crit3DRasterGrid* myRaster, const gis::Crit3DGisSettings& gisSettings, bool isGrid_);
         bool initializeLatLon(gis::Crit3DRasterGrid* myRaster, const gis::Crit3DGisSettings& gisSettings,
                               const gis::Crit3DGridHeader& latLonHeader, bool isGrid_);
