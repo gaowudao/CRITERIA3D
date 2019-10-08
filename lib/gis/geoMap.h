@@ -54,14 +54,7 @@
             Crit3DGeoPoint bottomLeft;
             Crit3DGeoPoint topRight;
 
-            double degreeToPixelX;
-            double pixelToDegreeX;
-            double degreeToPixelY;
-            double pixelToDegreeY;
-
             Crit3DGeoMap();
-
-            void setResolution(double dx, double dy);
         };
 
     }

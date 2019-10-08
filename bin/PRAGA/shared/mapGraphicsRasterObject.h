@@ -64,16 +64,7 @@
          */
         QRectF boundingRect() const;
 
-        /*!
-         * \brief paint pure-virtual from MapGraphicsObject
-         * \param painter a QPainter pointer
-         * \param option a QStyleOptionGraphicsItem pointer
-         * \param widget a QWidget pointer
-         */
-        void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget);
-
         void clear();
-        void setCenter();
         void setDrawing(bool value);
         void setDrawBorders(bool value);
         void setColorLegend(ColorLegend* myLegend);
@@ -87,14 +78,23 @@
         gis::Crit3DGeoPoint* getRasterCenter();
         void setRaster(gis::Crit3DRasterGrid* rasterPtr);
         gis::Crit3DRasterGrid* getRaster();
+        void updateCenter();
 
     protected:
         //virtual from MapGraphicsObject
+        /*!
+         * \brief paint pure-virtual from MapGraphicsObject
+         * \param painter a QPainter pointer
+         * \param option a QStyleOptionGraphicsItem pointer
+         * \param widget a QWidget pointer
+         */
+        void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget);
 
     private:
         MapGraphicsView* view;
         gis::Crit3DRasterGrid* rasterPointer;
         gis::Crit3DGeoMap* geoMap;
+        QPointF referencePixel;
         ColorLegend* colorScaleLegend;
         bool drawBorder;
         RowCol **matrix;
@@ -108,8 +108,8 @@
         void freeIndexesMatrix();
         void initializeIndexesMatrix();
 
-        void setMapResolution();
         bool drawRaster(gis::Crit3DRasterGrid *myRaster, QPainter* myPainter, bool drawBorder);
+        void setMapExtents();
     };
 
 

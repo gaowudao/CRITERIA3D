@@ -283,7 +283,8 @@ void MapGraphicsObject::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
 //protected
 void MapGraphicsObject::wheelEvent(QGraphicsSceneWheelEvent *event)
 {
-    event->ignore();
+    //event->ignore();
+    this->redrawRequested();
 }
 
 

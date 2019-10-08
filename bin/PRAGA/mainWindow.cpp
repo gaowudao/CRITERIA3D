@@ -84,6 +84,7 @@ MainWindow::MainWindow(QWidget *parent) :
 
     this->mapView->scene()->addObject(this->rasterObj);
     this->mapView->scene()->addObject(this->meteoGridObj);
+    connect(this->mapView, SIGNAL(zoomLevelChanged(quint8)), this, SLOT(updateMaps()));
 
     this->updateVariable();
     this->updateDateTime();
@@ -143,6 +144,13 @@ MainWindow::~MainWindow()
 }
 
 
+void MainWindow::updateMaps()
+{
+    rasterObj->updateCenter();
+    meteoGridObj->updateCenter();
+}
+
+
 void MainWindow::resizeEvent(QResizeEvent *event)
 {
     Q_UNUSED(event)
@@ -152,8 +160,7 @@ void MainWindow::resizeEvent(QResizeEvent *event)
 
 void MainWindow::mouseReleaseEvent(QMouseEvent *event)
 {
-    rasterObj->setCenter();
-    meteoGridObj->setCenter();
+    this->updateMaps();
 
     gis::Crit3DGeoPoint pointSelected;
 
@@ -232,8 +239,8 @@ void MainWindow::mouseDoubleClickEvent(QMouseEvent * event)
         this->mapView->zoomOut();
 
     this->mapView->centerOn(newCenter.lonLat());
-    this->rasterObj->setCenter();
-    this->meteoGridObj->setCenter();
+
+    this->updateMaps();
 }
 
 
@@ -335,7 +342,8 @@ void MainWindow::renderDEM()
     // center map
     gis::Crit3DGeoPoint* center = this->rasterObj->getRasterCenter();
     this->mapView->centerOn(qreal(center->longitude), qreal(center->latitude));
-    this->rasterObj->setCenter();
+
+    this->updateMaps();
 }
 
 
@@ -551,8 +559,8 @@ QPoint MainWindow::getMapPoint(QPoint* point) const
     int dx, dy;
     dx = this->ui->widgetMap->x();
     dy = this->ui->widgetMap->y() + this->ui->menuBar->height();
-    mapPoint.setX(point->x() - dx);
-    mapPoint.setY(point->y() - dy);
+    mapPoint.setX(point->x() - dx - MAPBORDER);
+    mapPoint.setY(point->y() - dy - MAPBORDER);
     return mapPoint;
 }
 
@@ -714,7 +722,7 @@ void MainWindow::on_timeEdit_timeChanged(const QTime &time)
             meteoGridObj->initializeUTM(&(myProject.netCDF.dataGrid), myProject.gisSettings, true);
 
         myProject.netCDF.dataGrid.emptyGrid();
-        meteoGridObj->setCenter();
+        meteoGridObj->redrawRequested();
 
         QDialog myDialog;
         QVBoxLayout mainLayout;
@@ -950,7 +958,7 @@ void MainWindow::drawMeteoGrid()
         myProject.loadMeteoGridData(myProject.getCurrentDate(), myProject.getCurrentDate(), true);
     }
 
-    meteoGridObj->setCenter();
+    meteoGridObj->redrawRequested();
 
     this->ui->meteoPoints->setChecked(false);
     this->ui->grid->setEnabled(true);

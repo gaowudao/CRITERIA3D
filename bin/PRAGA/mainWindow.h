@@ -173,6 +173,7 @@
         void redrawMeteoGrid(visualizationType showType, bool showInterpolationResult);
         void drawProject();
         void redrawTitle();
+        void updateMaps();
 
         void checkSaveProject();
 

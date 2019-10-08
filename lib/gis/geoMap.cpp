@@ -71,21 +71,6 @@ namespace gis
         this->isDrawing = false;
         this->isChanged = false;
         this->isSelecting = false;
-
-        this->degreeToPixelX = 1.0;
-        this->pixelToDegreeX = 1.0 / this->degreeToPixelX;
-
-        this->degreeToPixelY = 1.0;
-        this->pixelToDegreeY = 1.0 / this->degreeToPixelY;
-    }
-
-    void Crit3DGeoMap::setResolution(double dx, double dy)
-    {
-        this->pixelToDegreeX= dx;
-        this->degreeToPixelX = 1.0 / this->pixelToDegreeX;
-
-        this->pixelToDegreeY = dy;
-        this->degreeToPixelY = 1.0 / this->pixelToDegreeY;
     }
 
 }

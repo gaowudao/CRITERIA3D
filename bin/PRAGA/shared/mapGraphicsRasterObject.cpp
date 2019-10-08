@@ -47,6 +47,7 @@ RasterObject::RasterObject(MapGraphicsView* _view, MapGraphicsObject *parent) :
     this->isLatLon = false;
     this->isGrid = false;
     this->geoMap = new gis::Crit3DGeoMap();
+    this->referencePixel = QPointF(NODATA, NODATA);
     this->isDrawing = false;
     this->drawBorder = false;
 }
@@ -83,7 +84,10 @@ void RasterObject::setColorLegend(ColorLegend* myLegend)
 
 QPointF RasterObject::getPixel(const QPointF &latLonPoint)
 {
-    return this->view->tileSource()->ll2qgs(latLonPoint, this->view->zoomLevel());
+    QPointF pixel = this->view->tileSource()->ll2qgs(latLonPoint, this->view->zoomLevel());
+    pixel.setX(pixel.x() - this->referencePixel.x());
+    pixel.setY(this->referencePixel.y() - pixel.y());
+    return pixel;
 }
 
 
@@ -108,7 +112,7 @@ void RasterObject::paint(QPainter *painter, const QStyleOptionGraphicsItem *opti
 
     if (this->isDrawing)
     {
-        setMapResolution();
+        setMapExtents();
 
         if (this->rasterPointer != nullptr)
             drawRaster(this->rasterPointer, painter, this->drawBorder);
@@ -119,21 +123,21 @@ void RasterObject::paint(QPainter *painter, const QStyleOptionGraphicsItem *opti
 }
 
 
-void RasterObject::setCenter()
+void RasterObject::updateCenter()
 {
     if (! isDrawing) return;
 
     QPointF sceneCenter, rasterCenter, center;
 
-    int widthPixels = this->view->width() - MAPBORDER*2;
-    int heightPixels = this->view->height() - MAPBORDER*2;
-    sceneCenter = this->view->mapToScene(QPoint(widthPixels/2, heightPixels/2));
+    int widthPixels = view->width() - MAPBORDER*2;
+    int heightPixels = view->height() - MAPBORDER*2;
+    sceneCenter = view->mapToScene(QPoint(widthPixels/2, heightPixels/2));
 
-    rasterCenter.setX(this->latLonHeader.llCorner->longitude + this->latLonHeader.dx * this->latLonHeader.nrCols*0.5);
-    rasterCenter.setY(this->latLonHeader.llCorner->latitude + this->latLonHeader.dy * this->latLonHeader.nrRows*0.5);
+    rasterCenter.setX(latLonHeader.llCorner->longitude + latLonHeader.dx * latLonHeader.nrCols*0.5);
+    rasterCenter.setY(latLonHeader.llCorner->latitude + latLonHeader.dy * latLonHeader.nrRows*0.5);
 
-    if (fabs(sceneCenter.x() - rasterCenter.x()) <  this->latLonHeader.dx * this->latLonHeader.nrCols
-        && fabs(sceneCenter.y() - rasterCenter.y()) <  this->latLonHeader.dy * this->latLonHeader.nrRows)
+    if (fabs(sceneCenter.x() - rasterCenter.x()) <  latLonHeader.dx * latLonHeader.nrCols
+        && fabs(sceneCenter.y() - rasterCenter.y()) <  latLonHeader.dy * latLonHeader.nrRows)
     {
         center = sceneCenter;
     }
@@ -142,11 +146,17 @@ void RasterObject::setCenter()
         center = rasterCenter;
     }
 
-    this->geoMap->referencePoint.longitude = center.x();
-    this->geoMap->referencePoint.latitude = center.y();
+    // reference point
+    geoMap->referencePoint.longitude = center.x();
+    geoMap->referencePoint.latitude = center.y();
+
+    // reference pixel
+    QPointF refPoint;
+    refPoint.setX(geoMap->referencePoint.longitude);
+    refPoint.setY(geoMap->referencePoint.latitude);
+    referencePixel = view->tileSource()->ll2qgs(refPoint, view->zoomLevel());
 
     this->setPos(center);
-    this->posChanged();
 }
 
 
@@ -215,47 +225,17 @@ void RasterObject::initializeIndexesMatrix()
 }
 
 
-void RasterObject::setMapResolution()
+void RasterObject::setMapExtents()
 {
-    int widthPixels = this->view->width() - MAPBORDER*2;
-    int heightPixels = this->view->height() - MAPBORDER*2;
-    QPointF botLeft = this->view->mapToScene(QPoint(0, heightPixels));
-    QPointF topRight = this->view->mapToScene(QPoint(widthPixels, 0));
+    int widthPixels = view->width() - MAPBORDER*2;
+    int heightPixels = view->height() - MAPBORDER*2;
+    QPointF botLeft = view->mapToScene(QPoint(0, heightPixels));
+    QPointF topRight = view->mapToScene(QPoint(widthPixels, 0));
 
-    this->geoMap->bottomLeft.longitude = botLeft.x();
-    this->geoMap->bottomLeft.latitude = botLeft.y();
-    this->geoMap->topRight.longitude = topRight.x();
-    this->geoMap->topRight.latitude = topRight.y();
-
-    double widthDegree = topRight.x() - botLeft.x();
-    double dxDegree = widthDegree / widthPixels;
-    double heightDegree = topRight.y() - botLeft.y();
-    double dyDegree = heightDegree / heightPixels;
-
-    // mapGraphics don't compute correctly the latitudes at low zoomLevels
-    if (this->view->zoomLevel() <= 3)
-    {
-        int x0 = widthPixels/2;
-        int y0 = heightPixels/2;
-        int dyPixels = 200 * (this->view->zoomLevel()+1);
-
-        QPointF center = this->view->mapToScene(QPoint(x0, y0));
-        QPointF l0 = this->view->mapToScene(QPoint(x0, y0 - dyPixels/2));
-        QPointF l1 = this->view->mapToScene(QPoint(x0, y0 + dyPixels/2));
-
-        heightDegree = l0.y() - l1.y();
-        dyDegree = heightDegree / dyPixels;
-        this->geoMap->bottomLeft.latitude = center.y() - dyDegree * heightPixels/2;
-        this->geoMap->topRight.latitude = center.y() + dyDegree * heightPixels/2;
-    }
-
-    this->geoMap->setResolution(dxDegree, dyDegree);
-
-    // clean bounds
-    this->geoMap->bottomLeft.longitude = MAXVALUE(-180, this->geoMap->bottomLeft.longitude);
-    this->geoMap->bottomLeft.latitude =MAXVALUE(-90, this->geoMap->bottomLeft.latitude);
-    this->geoMap->topRight.longitude = MINVALUE(180, this->geoMap->topRight.longitude);
-    this->geoMap->topRight.latitude = MINVALUE(90, this->geoMap->topRight.latitude);
+    geoMap->bottomLeft.longitude = MAXVALUE(-180, botLeft.x());
+    geoMap->bottomLeft.latitude = MAXVALUE(-80, botLeft.y());
+    geoMap->topRight.longitude = MINVALUE(180, topRight.x());
+    geoMap->topRight.latitude = MINVALUE(80, topRight.y());
 }
 
 
@@ -267,34 +247,35 @@ bool RasterObject::initializeUTM(gis::Crit3DRasterGrid* myRaster, const gis::Cri
     double lat, lon, x, y;
     int utmRow, utmCol;
 
-    this->isLatLon = false;
+    isLatLon = false;
 
-    this->isGrid = isGrid_;
-    this->utmZone = gisSettings.utmZone;
-    this->rasterPointer = myRaster;
+    isGrid = isGrid_;
+    utmZone = gisSettings.utmZone;
+    rasterPointer = myRaster;
 
     freeIndexesMatrix();
     gis::getGeoExtentsFromUTMHeader(gisSettings, myRaster->header, &latLonHeader);
     initializeIndexesMatrix();
 
-    for (int row = 0; row < this->latLonHeader.nrRows; row++)
-        for (int col = 0; col < this->latLonHeader.nrCols; col++)
+    for (int row = 0; row < latLonHeader.nrRows; row++)
+        for (int col = 0; col < latLonHeader.nrCols; col++)
         {
-            gis::getLatLonFromRowCol(this->latLonHeader, row, col, &lat, &lon);
+            gis::getLatLonFromRowCol(latLonHeader, row, col, &lat, &lon);
             gis::latLonToUtmForceZone(gisSettings.utmZone, lat, lon, &x, &y);
             if (! gis::isOutOfGridXY(x, y, myRaster->header))
             {
                 gis::getRowColFromXY(*(myRaster->header), x, y, &utmRow, &utmCol);
-                if (this->isGrid || myRaster->getValueFromRowCol(utmRow, utmCol) != myRaster->header->flag)
+                if (isGrid || myRaster->getValueFromRowCol(utmRow, utmCol) != myRaster->header->flag)
                 {
-                    this->matrix[row][col].row = utmRow;
-                    this->matrix[row][col].col = utmCol;
+                    matrix[row][col].row = utmRow;
+                    matrix[row][col].col = utmCol;
                 }
             }
         }
 
     setDrawing(true);
-    setDrawBorders(this->isGrid);
+    setDrawBorders(isGrid);
+
     return true;
 }
 
@@ -326,15 +307,14 @@ bool RasterObject::drawRaster(gis::Crit3DRasterGrid *myRaster, QPainter* myPaint
     if (! myRaster->isLoaded) return false;
 
     // current view extent
-    int rowBottom, rowTop, col0, col1;
-    gis::getRowColFromLatLon(this->latLonHeader, this->geoMap->bottomLeft, &rowBottom, &col0);
-    gis::getRowColFromLatLon(this->latLonHeader, this->geoMap->topRight, &rowTop, &col1);
-    rowTop--;
+    int rowBottom, rowTop, colLeft, colRight;
+    gis::getRowColFromLatLon(this->latLonHeader, this->geoMap->bottomLeft, &rowBottom, &colLeft);
+    gis::getRowColFromLatLon(this->latLonHeader, this->geoMap->topRight, &rowTop, &colRight);
 
     // check if current view is out of data
-    if (((col0 < 0) && (col1 < 0))
+    if (((colLeft < 0) && (colRight < 0))
     || ((rowBottom < 0) && (rowTop < 0))
-    || ((col0 >= this->latLonHeader.nrCols) && (col1 >= this->latLonHeader.nrCols))
+    || ((colLeft >= this->latLonHeader.nrCols) && (colRight >= this->latLonHeader.nrCols))
     || ((rowBottom >= this->latLonHeader.nrRows) && (rowTop >= this->latLonHeader.nrRows)))
     {
         myRaster->minimum = NODATA;
@@ -345,13 +325,15 @@ bool RasterObject::drawRaster(gis::Crit3DRasterGrid *myRaster, QPainter* myPaint
     // fix extent
     rowBottom = std::min(this->latLonHeader.nrRows-1, std::max(0, rowBottom));
     rowTop = std::min(this->latLonHeader.nrRows-1, std::max(0, rowTop));
-    col0 = std::min(this->latLonHeader.nrCols-1, std::max(0, col0));
-    col1 = std::min(this->latLonHeader.nrCols-1, std::max(0, col1));
+    colLeft = std::min(this->latLonHeader.nrCols-1, std::max(0, colLeft));
+    colRight = std::min(this->latLonHeader.nrCols-1, std::max(0, colRight));
 
     // dynamic color scale
-    gis::Crit3DRasterWindow* latLonWindow = new gis::Crit3DRasterWindow(rowTop, col0, rowBottom, col1);
+    gis::Crit3DRasterWindow* latLonWindow = new gis::Crit3DRasterWindow(rowTop, colLeft, rowBottom, colRight);
     if (this->isLatLon)
+    {
         gis::updateColorScale(myRaster, *latLonWindow);
+    }
     else
     {
         // UTM raster
@@ -362,22 +344,20 @@ bool RasterObject::drawRaster(gis::Crit3DRasterGrid *myRaster, QPainter* myPaint
 
     roundColorScale(myRaster->colorScale, 4, true);
 
-    // lower left pixel position
-    QPointF llCorner, pixelLL;
-    llCorner.setX(latLonHeader.llCorner->longitude + col0 * latLonHeader.dx);
-    llCorner.setY(latLonHeader.llCorner->latitude + (latLonHeader.nrRows-1 - rowBottom) * latLonHeader.dy);
-    pixelLL = getPixel(llCorner);
+    // boundary pixels position
+    QPointF lowerLeft, rightTop, pixelLL, pixelRT;
+    lowerLeft.setX(latLonHeader.llCorner->longitude + colLeft * latLonHeader.dx);
+    lowerLeft.setY(latLonHeader.llCorner->latitude + (latLonHeader.nrRows-1 - rowBottom) * latLonHeader.dy);
+    rightTop.setX(latLonHeader.llCorner->longitude + (colRight+1) * latLonHeader.dx);
+    rightTop.setY(latLonHeader.llCorner->latitude + (latLonHeader.nrRows - rowTop) * latLonHeader.dy);
+    pixelLL = getPixel(lowerLeft);
+    pixelRT = getPixel(rightTop);
 
-    QPointF reference, refPixel;
-    reference.setX(geoMap->referencePoint.longitude);
-    reference.setY(geoMap->referencePoint.latitude);
-    refPixel = getPixel(reference);
-    pixelLL.setX(pixelLL.x() - refPixel.x());
-    pixelLL.setY(refPixel.y() - pixelLL.y());
-
-    double dx = latLonHeader.dx * this->geoMap->degreeToPixelX;
-    double dy = latLonHeader.dy * this->geoMap->degreeToPixelY;
-    int step = std::max(int(1.0/(std::min(dx, dy))), 1);
+    // step
+    double dx = (pixelRT.x() - pixelLL.x()) / double(colRight - colLeft +1);
+    double dy = (pixelRT.y() - pixelLL.y()) / double(rowBottom - rowTop +1);
+    int step = int(1.0 / MINVALUE(dx, dy));
+    step = MAXVALUE(1, step);
 
     int x0, y0, x1, y1, lx, ly;
     Crit3DColor* myColor;
@@ -390,9 +370,9 @@ bool RasterObject::drawRaster(gis::Crit3DRasterGrid *myRaster, QPainter* myPaint
         y1 = int(pixelLL.y() + (rowBottom-row + step) * dy);
         x0 = int(pixelLL.x());
 
-        for (int col = col0; col <= col1; col += step)
+        for (int col = colLeft; col <= colRight; col += step)
         {
-            x1 = int(pixelLL.x() + (col-col0 + step) * dx);
+            x1 = int(pixelLL.x() + (col-colLeft + step) * dx);
 
             if (this->isLatLon)
                 value = myRaster->value[row][col];
