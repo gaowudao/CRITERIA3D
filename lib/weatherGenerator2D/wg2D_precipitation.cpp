@@ -168,7 +168,7 @@ void weatherGenerator2D::precipitationMultiDistributionParameterization()
    statistics::correlationsMatrix(nrStations,occurrenceMatrixSeasonMAM,lengthSeason[1]*parametersModel.yearOfSimulation,wMAM);
    statistics::correlationsMatrix(nrStations,occurrenceMatrixSeasonJJA,lengthSeason[2]*parametersModel.yearOfSimulation,wJJA);
    statistics::correlationsMatrix(nrStations,occurrenceMatrixSeasonSON,lengthSeason[3]*parametersModel.yearOfSimulation,wSON);
-   /*for (int i=0;i<nrStations;i++)
+   for (int i=0;i<nrStations;i++)
    {
        for (int j=0;j<nrStations;j++)
        {
@@ -202,8 +202,8 @@ void weatherGenerator2D::precipitationMultiDistributionParameterization()
             printf("%.3f  ", wSON[i][j]);
        }
        printf("\n");
-   }*/
-
+   }
+    pressEnterToContinue();
    // initialize amounts and occurrences structures for precipitation
    // !!!!!! if precipitation is equal to threshold it could generate some computational problems
    for (int i=0;i<nrStations;i++)

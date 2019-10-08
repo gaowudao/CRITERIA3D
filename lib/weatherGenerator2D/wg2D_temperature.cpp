@@ -961,6 +961,24 @@ void weatherGenerator2D::multisiteRandomNumbersTemperature()
             normRandom[i][j] = myrandom::normalRandom(&gasDevIset,&gasDevGset);
         }
     }
+    // !! questa parte è stata aggiunta per fare uno studio comparativo tra weather generaotr in Matlab e in C usando gli stessi numeri random
+    /*double* arrayRandomNormalNumbers = (double *)calloc(nrStations*lengthOfRandomSeries, sizeof(double));
+    randomSet(arrayRandomNormalNumbers,lengthOfRandomSeries);
+    int countRandom = 0;
+    for (int i=0;i<nrStations;i++)
+    {
+        //randomSet(arrayRandomNormalNumbers,lengthOfRandomSeries);
+        for (int j=0;j<lengthOfRandomSeries;j++)
+        {
+            normRandom[i][j] = arrayRandomNormalNumbers[countRandom];
+            countRandom++;
+            //printf("%f  ",normalizedRandomMatrix[i][j]);
+        }
+        //printf("\n");
+    }*/
+    //free(arrayRandomNormalNumbers);
+    // fine parte da togliere
+
     matricial::matrixProduct(dummyMatrix3,normRandom,nrStations,nrStations,lengthOfRandomSeries,nrStations,normRandom2);
     matricial::transposedMatrix(normRandom2,nrStations,lengthOfRandomSeries,normRandomMaxT);
 
@@ -1031,6 +1049,24 @@ void weatherGenerator2D::multisiteRandomNumbersTemperature()
             normRandom[i][j] = myrandom::normalRandom(&gasDevIset,&gasDevGset);
         }
     }
+    // !! questa parte è stata aggiunta per fare uno studio comparativo tra weather generaotr in Matlab e in C usando gli stessi numeri random
+    //double* arrayRandomNormalNumbers = (double *)calloc(lengthOfRandomSeries, sizeof(double));
+    //randomSet(arrayRandomNormalNumbers,lengthOfRandomSeries);
+    /*countRandom = 0;
+    for (int i=0;i<nrStations;i++)
+    {
+        //randomSet(arrayRandomNormalNumbers,lengthOfRandomSeries);
+        for (int j=0;j<lengthOfRandomSeries;j++)
+        {
+            normRandom[i][j] = arrayRandomNormalNumbers[countRandom];
+            countRandom++;
+            //printf("%f  ",normalizedRandomMatrix[i][j]);
+        }
+        //printf("\n");
+    }
+    free(arrayRandomNormalNumbers); */
+    // fine parte da togliere
+
     matricial::matrixProduct(dummyMatrix3,normRandom,nrStations,nrStations,lengthOfRandomSeries,nrStations,normRandom2);
     matricial::transposedMatrix(normRandom2,nrStations,lengthOfRandomSeries,normRandomMinT);
 

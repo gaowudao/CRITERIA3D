@@ -90,6 +90,7 @@ void weatherGenerator2D::getWeatherGeneratorOutput()
                 {
                     outputWeatherData[iStation].maxT[counter] = maxTGenerated[counter][iStation];
                     outputWeatherData[iStation].minT[counter] = minTGenerated[counter][iStation];
+                    //printf("%.2f %.2f %.0f\n",outputWeatherData[0].maxT[counter],outputWeatherData[0].minT[counter],occurrencePrecGenerated[counter][0]);
                 }
                 else
                 {
@@ -107,7 +108,7 @@ void weatherGenerator2D::getWeatherGeneratorOutput()
                     else if (month == 6 || month == 7 || month == 8) iSeason = 2;
                     else iSeason = 3;
                     outputWeatherData[iStation].precipitation[counter] = simulatedPrecipitationAmounts[iSeason].matrixAmounts[iStation][counterSeason[iSeason]];
-                    //printf("%.2f\n",outputWeatherData[iStation].precipitation[counter]);
+                    //printf("%.2f %.1f\n",outputWeatherData[iStation].precipitation[counter],occurrencePrecGenerated[counter][iStation]);
                     (counterSeason[iSeason])++;
                 }
                 else

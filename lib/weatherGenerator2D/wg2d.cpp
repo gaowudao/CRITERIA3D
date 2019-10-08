@@ -412,17 +412,82 @@ void weatherGenerator2D::precipitationP00P10()
             precOccurence[idStation][month].month = month +1;
         }
     }
+    // parte da togliere una volta finito il check
+    int contatore = 0;
+    precOccurence[0][contatore].p00=0.8610;
+    precOccurence[0][contatore].p10=0.5549;
+    precOccurence[1][contatore].p00=0.8623;
+    precOccurence[1][contatore].p10=0.5619;
+    contatore++;
+    precOccurence[0][contatore].p00=0.8628;
+    precOccurence[0][contatore].p10=0.5168;
+    precOccurence[1][contatore].p00=0.8659;
+    precOccurence[1][contatore].p10=0.5140;
+    contatore++;
+    precOccurence[0][contatore].p00=0.8434;
+    precOccurence[0][contatore].p10=0.5658;
+    precOccurence[1][contatore].p00=0.8468;
+    precOccurence[1][contatore].p10=0.5799;
+    contatore++;
+    precOccurence[0][contatore].p00=0.8036;
+    precOccurence[0][contatore].p10=0.5391;
+    precOccurence[1][contatore].p00=0.8096;
+    precOccurence[1][contatore].p10=0.5671;
+    contatore++;
+    precOccurence[0][contatore].p00=0.8107;
+    precOccurence[0][contatore].p10=0.5512;
+    precOccurence[1][contatore].p00=0.8183;
+    precOccurence[1][contatore].p10=0.5513;
+    contatore++;
+    precOccurence[0][contatore].p00=0.8211;
+    precOccurence[0][contatore].p10=0.5844;
+    precOccurence[1][contatore].p00=0.8261;
+    precOccurence[1][contatore].p10=0.6466;
+    contatore++;
+    precOccurence[0][contatore].p00=0.8816;
+    precOccurence[0][contatore].p10=0.7347;
+    precOccurence[1][contatore].p00=0.8830;
+    precOccurence[1][contatore].p10=0.6996;
+    contatore++;
+    precOccurence[0][contatore].p00=0.8555;
+    precOccurence[0][contatore].p10=0.6840;
+    precOccurence[1][contatore].p00=0.8620;
+    precOccurence[1][contatore].p10=0.6942;
+    contatore++;
+    precOccurence[0][contatore].p00=0.8544;
+    precOccurence[0][contatore].p10=0.6190;
+    precOccurence[1][contatore].p00=0.8562;
+    precOccurence[1][contatore].p10=0.6667;
+    contatore++;
+    precOccurence[0][contatore].p00=0.8510;
+    precOccurence[0][contatore].p10=0.5156;
+    precOccurence[1][contatore].p00=0.8587;
+    precOccurence[1][contatore].p10=0.5361;
+    contatore++;
+    precOccurence[0][contatore].p00=0.8174;
+    precOccurence[0][contatore].p10=0.5089;
+    precOccurence[1][contatore].p00=0.8281;
+    precOccurence[1][contatore].p10=0.5151;
+    contatore++;
+    precOccurence[0][contatore].p00=0.8556;
+    precOccurence[0][contatore].p10=0.5380;
+    precOccurence[1][contatore].p00=0.8567;
+    precOccurence[1][contatore].p10=0.5727;
+    contatore++;
+
 
     for (int month=0;month<12;month++)
     {
            for (int iStation =0; iStation<nrStations;iStation++)
            {
-            //printf("%.2f ",precOccurence[iStation][month].p00);
+            printf("%f ",precOccurence[iStation][month].p10);
             //printf("%f  %f %f\n",precOccurence[0][month].p10,precOccurence[1][month].p10,precOccurence[2][month].p10);
            }
-           //printf("\n");
+           printf("\n");
     }
+    printf("parte da togliere una volta finito il check");
     //pressEnterToContinue();
+    // fine parte da togliere una volta finito il check
 }
 
 
@@ -518,17 +583,19 @@ void weatherGenerator2D::precipitationCorrelationMatrices()
             }
         }
 
-        /*for (int iStation=0;iStation<nrStations;iStation++)
+        for (int iStation=0;iStation<nrStations;iStation++)
         {
             for (int jStation=0;jStation<nrStations;jStation++)
             {
-                printf("%.3f ", correlationMatrix[iMonth].occurrence[jStation][iStation]);
+                printf("%.4f ", correlationMatrix[iMonth].occurrence[jStation][iStation]);
             }
             printf("\n");
         }
-        pressEnterToContinue();*/
+
+        //pressEnterToContinue();
 
     }
+    printf("parte da togliere una volta finito il check");
 }
 
 void weatherGenerator2D::precipitationMultisiteOccurrenceGeneration()
@@ -756,8 +823,8 @@ void weatherGenerator2D::spatialIterationOccurrence(double ** M, double** K,doub
     double minimalValueToExitFromCycle = NODATA;
     int counterConvergence=0;
     bool exitWhileCycle = false;
-    while ((val>TOLERANCE_MULGETS) && (ii<MAX_ITERATION_MULGETS) && (!exitWhileCycle))
-    //while (ii<1)
+    //while ((val>TOLERANCE_MULGETS) && (ii<MAX_ITERATION_MULGETS) && (!exitWhileCycle))
+    while (ii<1)
     {
         ii++;
         int nrEigenvaluesLessThan0 = 0;
@@ -887,8 +954,8 @@ void weatherGenerator2D::spatialIterationOccurrence(double ** M, double** K,doub
         {
             M[i][i]= 1.;
         }
-        if ((ii != MAX_ITERATION_MULGETS) && (val > TOLERANCE_MULGETS)  && (!exitWhileCycle))
-         //if (ii <1)
+        //if ((ii != MAX_ITERATION_MULGETS) && (val > TOLERANCE_MULGETS)  && (!exitWhileCycle))
+        if (ii <1)
         {
             for (int i=0; i<nrStations;i++)
             {

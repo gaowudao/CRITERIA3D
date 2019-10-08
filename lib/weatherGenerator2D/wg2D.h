@@ -138,7 +138,7 @@
     };
 
 
-    void randomSet(double *arrayNormal,int dimArray);
+    //void randomSet(double *arrayNormal,int dimArray);
     class weatherGenerator2D
     {
     private:
