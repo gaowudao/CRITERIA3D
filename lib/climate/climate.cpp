@@ -10,7 +10,7 @@
 #include "statistics.h"
 #include "quality.h"
 #include "dbClimate.h"
-
+#include "qdebug.h"
 
 bool elaborationOnPoint(QString *myError, Crit3DMeteoPointsDbHandler* meteoPointsDbHandler, Crit3DMeteoGridDbHandler* meteoGridDbHandler,
     Crit3DMeteoPoint* meteoPointTemp, Crit3DClimate* clima, bool isMeteoGrid, QDate startDate, QDate endDate, bool isAnomaly, Crit3DMeteoSettings* meteoSettings)
@@ -2260,6 +2260,7 @@ bool parseXMLElaboration(Crit3DElabList *listXMLElab, Crit3DAnomalyList *listXML
 
     QDomNode child;
     QDomNode secondChild;
+    QDomNodeList secElab;
     TXMLvar varTable;
 
     QDomNode ancestor = xmlDoc.documentElement().firstChild();
@@ -2284,6 +2285,12 @@ bool parseXMLElaboration(Crit3DElabList *listXMLElab, Crit3DAnomalyList *listXML
     {
         if (ancestor.toElement().tagName().toUpper() == "ELABORATION")
         {
+            secElab = ancestor.toElement().elementsByTagName("SecondaryElaboration");
+            if (secElab.size() == 0)
+            {
+                listXMLElab->insertElab2("");
+                listXMLElab->insertParam2(NODATA);
+            }
             if (ancestor.toElement().attribute("Datatype").toUpper() == "GRID")
             {
                 listXMLElab->setIsMeteoGrid(true);
@@ -2345,8 +2352,8 @@ bool parseXMLElaboration(Crit3DElabList *listXMLElab, Crit3DAnomalyList *listXML
                 *myError = "Invalid Datatype attribute";
                 return false;
             }
-            child = ancestor.firstChild();
 
+            child = ancestor.firstChild();
             while( !child.isNull())
             {
                 myTag = child.toElement().tagName().toUpper();
@@ -2501,6 +2508,13 @@ bool parseXMLElaboration(Crit3DElabList *listXMLElab, Crit3DAnomalyList *listXML
         }
         else if (ancestor.toElement().tagName().toUpper() == "ANOMALY")
         {
+            secElab = ancestor.toElement().elementsByTagName("SecondaryElaboration");
+            if (secElab.size() == 0)
+            {
+                listXMLAnomaly->insertElab2("");
+                listXMLAnomaly->insertParam2(NODATA);
+            }
+
             if (ancestor.toElement().attribute("Datatype").toUpper() == "GRID")
             {
                 listXMLAnomaly->setIsMeteoGrid(true);
@@ -2566,6 +2580,7 @@ bool parseXMLElaboration(Crit3DElabList *listXMLElab, Crit3DAnomalyList *listXML
 
             while( !child.isNull())
             {
+
                 myTag = child.toElement().tagName().toUpper();
                 if (myTag == "VARIABLE")
                 {
