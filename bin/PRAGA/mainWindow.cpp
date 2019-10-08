@@ -239,8 +239,6 @@ void MainWindow::mouseDoubleClickEvent(QMouseEvent * event)
         this->mapView->zoomOut();
 
     this->mapView->centerOn(newCenter.lonLat());
-
-    this->updateMaps();
 }
 
 
@@ -722,7 +720,7 @@ void MainWindow::on_timeEdit_timeChanged(const QTime &time)
             meteoGridObj->initializeUTM(&(myProject.netCDF.dataGrid), myProject.gisSettings, true);
 
         myProject.netCDF.dataGrid.emptyGrid();
-        meteoGridObj->redrawRequested();
+        updateMaps();
 
         QDialog myDialog;
         QVBoxLayout mainLayout;
@@ -958,8 +956,6 @@ void MainWindow::drawMeteoGrid()
         myProject.loadMeteoGridData(myProject.getCurrentDate(), myProject.getCurrentDate(), true);
     }
 
-    meteoGridObj->redrawRequested();
-
     this->ui->meteoPoints->setChecked(false);
     this->ui->grid->setEnabled(true);
     this->ui->grid->setChecked(true);
@@ -977,6 +973,8 @@ void MainWindow::drawMeteoGrid()
 
     currentGridVisualization = showLocation;
     redrawMeteoGrid(currentGridVisualization, false);
+
+    updateMaps();
 }
 
 

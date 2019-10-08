@@ -233,9 +233,9 @@ void RasterObject::setMapExtents()
     QPointF topRight = view->mapToScene(QPoint(widthPixels, 0));
 
     geoMap->bottomLeft.longitude = MAXVALUE(-180, botLeft.x());
-    geoMap->bottomLeft.latitude = MAXVALUE(-80, botLeft.y());
+    geoMap->bottomLeft.latitude = MAXVALUE(-84, botLeft.y());
     geoMap->topRight.longitude = MINVALUE(180, topRight.x());
-    geoMap->topRight.latitude = MINVALUE(80, topRight.y());
+    geoMap->topRight.latitude = MINVALUE(84, topRight.y());
 }
 
 
@@ -345,29 +345,34 @@ bool RasterObject::drawRaster(gis::Crit3DRasterGrid *myRaster, QPainter* myPaint
     roundColorScale(myRaster->colorScale, 4, true);
 
     // boundary pixels position
-    QPointF lowerLeft, rightTop, pixelLL, pixelRT;
+    QPointF lowerLeft, topRight, pixelLL, pixelRT;
     lowerLeft.setX(latLonHeader.llCorner->longitude + colLeft * latLonHeader.dx);
     lowerLeft.setY(latLonHeader.llCorner->latitude + (latLonHeader.nrRows-1 - rowBottom) * latLonHeader.dy);
-    rightTop.setX(latLonHeader.llCorner->longitude + (colRight+1) * latLonHeader.dx);
-    rightTop.setY(latLonHeader.llCorner->latitude + (latLonHeader.nrRows - rowTop) * latLonHeader.dy);
+    topRight.setX(latLonHeader.llCorner->longitude + (colRight+1) * latLonHeader.dx);
+    topRight.setY(latLonHeader.llCorner->latitude + (latLonHeader.nrRows - rowTop) * latLonHeader.dy);
     pixelLL = getPixel(lowerLeft);
-    pixelRT = getPixel(rightTop);
+    pixelRT = getPixel(topRight);
 
     // step
     double dx = (pixelRT.x() - pixelLL.x()) / double(colRight - colLeft +1);
     double dy = (pixelRT.y() - pixelLL.y()) / double(rowBottom - rowTop +1);
-    int step = int(1.0 / MINVALUE(dx, dy));
+    int step = int(round(1.0 / MINVALUE(dx, dy)));
     step = MAXVALUE(1, step);
 
+    // draw
     int x0, y0, x1, y1, lx, ly;
+    float value;
+    QPointF newPoint, newPixel;
     Crit3DColor* myColor;
     QColor myQColor;
-    float value;
 
+    newPoint.setX(lowerLeft.x());
     y0 = int(pixelLL.y());
     for (int row = rowBottom; row >= rowTop; row -= step)
     {
-        y1 = int(pixelLL.y() + (rowBottom-row + step) * dy);
+        newPoint.setY(lowerLeft.y() + (rowBottom-row + step) * latLonHeader.dy);
+        newPixel = getPixel(newPoint);
+        y1 = int(newPixel.y());
         x0 = int(pixelLL.x());
 
         for (int col = colLeft; col <= colRight; col += step)
@@ -382,7 +387,6 @@ bool RasterObject::drawRaster(gis::Crit3DRasterGrid *myRaster, QPainter* myPaint
                 if (this->matrix[row][col].row != NODATA)
                     value = myRaster->value[matrix[row][col].row][matrix[row][col].col];
             }
-
             if (int(value) != int(myRaster->header->flag) && int(value) != int(INDEX_ERROR))
             {
                 myColor = myRaster->colorScale->getColor(value);
@@ -392,7 +396,6 @@ bool RasterObject::drawRaster(gis::Crit3DRasterGrid *myRaster, QPainter* myPaint
                 lx = (x1 - x0) + 1;
                 ly = (y1 - y0) + 1;
                 myPainter->fillRect(x0, y0, lx, ly, myPainter->brush());
-
             }
             else if (this->isGrid && value == myRaster->header->flag && drawBorder)
             {

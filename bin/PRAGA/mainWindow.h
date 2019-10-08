@@ -111,6 +111,8 @@
         void on_actionNew_aggregation_DB_triggered();
         bool on_actionAggregate_from_grid_triggered();
 
+        void updateMaps();
+
         #ifdef NETCDF
             void on_actionOpen_NetCDF_grid_triggered();
             void on_actionExtract_NetCDF_series_triggered();
@@ -173,7 +175,6 @@
         void redrawMeteoGrid(visualizationType showType, bool showInterpolationResult);
         void drawProject();
         void redrawTitle();
-        void updateMaps();
 
         void checkSaveProject();
 
