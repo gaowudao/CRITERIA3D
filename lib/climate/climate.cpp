@@ -2248,14 +2248,11 @@ bool parseXMLElaboration(Crit3DElabList *listXMLElab, Crit3DAnomalyList *listXML
     QString lastYear;
     QString variable;
     QString period;
-    enum period periodType;
 
-    QDate dateStart;
-    QDate dateEnd;
-    QString nYears;
     QString elab;
     QString elabParam1;
     bool param1IsClimate;
+    bool anomalyIsClimate;
     QString elabParam2;
     QString unit;
 
@@ -2283,7 +2280,7 @@ bool parseXMLElaboration(Crit3DElabList *listXMLElab, Crit3DAnomalyList *listXML
                 return false;
             }
 
-            if (parseXMLPeriodType(ancestor, "PeriodType", listXMLElab, listXMLAnomaly, false, false, &period, &periodType, myError) == false)
+            if (parseXMLPeriodType(ancestor, "PeriodType", listXMLElab, listXMLAnomaly, false, false, &period, myError) == false)
             {
                 return false;
             }
@@ -2306,86 +2303,9 @@ bool parseXMLElaboration(Crit3DElabList *listXMLElab, Crit3DAnomalyList *listXML
                 }
                 if (myTag == "PERIOD")
                 {
-                    nYears = "0";
-                    if (period == "Generic")
+                    if (parseXMLPeriodTag(child, listXMLElab, listXMLAnomaly, false, false, period, firstYear, myError) == false)
                     {
-                        QString periodEnd = child.toElement().attribute("fin");
-                        QString periodStart = child.toElement().attribute("ini");
-                        periodEnd = periodEnd+"/"+firstYear;
-                        periodStart = periodStart+"/"+firstYear;
-                        dateStart = QDate::fromString(periodStart, "dd/MM/yyyy");
-                        dateEnd = QDate::fromString(periodEnd, "dd/MM/yyyy");
-                        nYears = child.toElement().attribute("nyears");
-
-                        listXMLElab->insertDateStart(dateStart);
-                        listXMLElab->insertDateEnd(dateEnd);
-                        listXMLElab->insertNYears(nYears.toInt());
-                    }
-                    if (period == "Daily")
-                    {
-                        int dayOfYear = child.toElement().attribute("doy").toInt();
-                        dateStart = QDate(firstYear.toInt(), 1, 1).addDays(dayOfYear - 1);
-                        dateEnd = dateStart;
-
-                        listXMLElab->insertDateStart(dateStart);
-                        listXMLElab->insertDateEnd(dateEnd);
-                        listXMLElab->insertNYears(nYears.toInt());
-                    }
-                    if (period == "Decadal")
-                    {
-                        int decade = child.toElement().attribute("decade").toInt();
-                        int dayStart;
-                        int dayEnd;
-                        int month;
-
-                        intervalDecade(decade, firstYear.toInt(), &dayStart, &dayEnd, &month);
-                        dateStart.setDate(firstYear.toInt(), month, dayStart);
-                        dateEnd.setDate(firstYear.toInt(), month, dayEnd);
-
-                        listXMLElab->insertDateStart(dateStart);
-                        listXMLElab->insertDateEnd(dateEnd);
-                        listXMLElab->insertNYears(nYears.toInt());
-                    }
-                    if (period == "Monthly")
-                    {
-                        int month = child.toElement().attribute("month").toInt();
-                        dateStart.setDate(firstYear.toInt(), month, 1);
-                        dateEnd = dateStart;
-                        dateEnd.setDate(firstYear.toInt(), month, dateEnd.daysInMonth());
-
-                        listXMLElab->insertDateStart(dateStart);
-                        listXMLElab->insertDateEnd(dateEnd);
-                        listXMLElab->insertNYears(nYears.toInt());
-                    }
-                    if (period == "Seasonal")
-                    {
-                        QString seasonString = child.toElement().attribute("season");
-                        int season = getSeasonFromString(seasonString);
-                        if (season == 4)
-                        {
-                            dateStart.setDate(firstYear.toInt()-1, 12, 1);
-                            QDate temp(firstYear.toInt(), 2, 1);
-                            dateEnd.setDate(firstYear.toInt(), 2, temp.daysInMonth());
-                        }
-                        else
-                        {
-                            dateStart.setDate(firstYear.toInt(), season*3, 1);
-                            QDate temp(firstYear.toInt(), season*3+2, 1);
-                            dateEnd.setDate(firstYear.toInt(), season*3+2, temp.daysInMonth());
-                        }
-
-                        listXMLElab->insertDateStart(dateStart);
-                        listXMLElab->insertDateEnd(dateEnd);
-                        listXMLElab->insertNYears(nYears.toInt());
-                    }
-                    if (period == "Annual")
-                    {
-                        dateStart.setDate(firstYear.toInt(), 1, 1);
-                        dateEnd.setDate(firstYear.toInt(), 12, 31);
-
-                        listXMLElab->insertDateStart(dateStart);
-                        listXMLElab->insertDateEnd(dateEnd);
-                        listXMLElab->insertNYears(nYears.toInt());
+                        return false;
                     }
                 }
                 if (myTag == "PRIMARYELABORATION")
@@ -2470,13 +2390,44 @@ bool parseXMLElaboration(Crit3DElabList *listXMLElab, Crit3DAnomalyList *listXML
                 *myError = "Invalid Datatype attribute";
                 return false;
             }
-            if (parseXMLPeriodType(ancestor, "PeriodType", listXMLElab, listXMLAnomaly, true, false, &period, &periodType, myError) == false)
+            if (parseXMLPeriodType(ancestor, "PeriodType", listXMLElab, listXMLAnomaly, true, false, &period, myError) == false)
             {
                 return false;
             }
-            if (parseXMLPeriodType(ancestor, "RefPeriodType", listXMLElab, listXMLAnomaly, true, true, &period, &periodType, myError) == false)
+            if (parseXMLPeriodType(ancestor, "RefPeriodType", listXMLElab, listXMLAnomaly, true, true, &period, myError) == false)
             {
                 return false;
+            }
+
+            if (ancestor.toElement().attribute("RefType").toUpper() == "PERIOD")
+            {
+                anomalyIsClimate = false;
+                listXMLAnomaly->insertIsAnomalyFromDb(false);
+                listXMLAnomaly->insertAnomalyClimateField("");
+            }
+            else if (ancestor.toElement().attribute("RefType").toUpper() == "CLIMA")
+            {
+                anomalyIsClimate = true;
+                listXMLAnomaly->insertIsAnomalyFromDb(true);
+            }
+            else
+            {
+                *myError = "Invalid RefType attribute";
+                return false;
+            }
+            if (anomalyIsClimate)
+            {
+                QString anomalyClimateField = ancestor.toElement().attribute("ClimateField");
+                if (anomalyClimateField.isEmpty())
+                {
+                    *myError = "Missing Anomaly Climate Field";
+                    return false;
+                }
+                else
+                {
+                    listXMLAnomaly->insertAnomalyClimateField(anomalyClimateField);
+                }
+
             }
             child = ancestor.firstChild();
 
@@ -2499,86 +2450,16 @@ bool parseXMLElaboration(Crit3DElabList *listXMLElab, Crit3DAnomalyList *listXML
                 }
                 if (myTag == "PERIOD")
                 {
-                    nYears = "0";
-                    if (period == "Generic")
+                    if (parseXMLPeriodTag(child, listXMLElab, listXMLAnomaly, true, false, period, firstYear, myError) == false)
                     {
-                        QString periodEnd = child.toElement().attribute("fin");
-                        QString periodStart = child.toElement().attribute("ini");
-                        periodEnd = periodEnd+"/"+firstYear;
-                        periodStart = periodStart+"/"+firstYear;
-                        dateStart = QDate::fromString(periodStart, "dd/MM/yyyy");
-                        dateEnd = QDate::fromString(periodEnd, "dd/MM/yyyy");
-                        nYears = child.toElement().attribute("nyears");
-
-                        listXMLAnomaly->insertDateStart(dateStart);
-                        listXMLAnomaly->insertDateEnd(dateEnd);
-                        listXMLAnomaly->insertNYears(nYears.toInt());
+                        return false;
                     }
-                    if (period == "Daily")
+                }
+                if (myTag == "REFPERIOD")
+                {
+                    if (parseXMLPeriodTag(child, listXMLElab, listXMLAnomaly, true, true, period, firstYear, myError) == false)
                     {
-                        int dayOfYear = child.toElement().attribute("doy").toInt();
-                        dateStart = QDate(firstYear.toInt(), 1, 1).addDays(dayOfYear - 1);
-                        dateEnd = dateStart;
-
-                        listXMLAnomaly->insertDateStart(dateStart);
-                        listXMLAnomaly->insertDateEnd(dateEnd);
-                        listXMLAnomaly->insertNYears(nYears.toInt());
-                    }
-                    if (period == "Decadal")
-                    {
-                        int decade = child.toElement().attribute("decade").toInt();
-                        int dayStart;
-                        int dayEnd;
-                        int month;
-
-                        intervalDecade(decade, firstYear.toInt(), &dayStart, &dayEnd, &month);
-                        dateStart.setDate(firstYear.toInt(), month, dayStart);
-                        dateEnd.setDate(firstYear.toInt(), month, dayEnd);
-
-                        listXMLAnomaly->insertDateStart(dateStart);
-                        listXMLAnomaly->insertDateEnd(dateEnd);
-                        listXMLAnomaly->insertNYears(nYears.toInt());
-                    }
-                    if (period == "Monthly")
-                    {
-                        int month = child.toElement().attribute("month").toInt();
-                        dateStart.setDate(firstYear.toInt(), month, 1);
-                        dateEnd = dateStart;
-                        dateEnd.setDate(firstYear.toInt(), month, dateEnd.daysInMonth());
-
-                        listXMLAnomaly->insertDateStart(dateStart);
-                        listXMLAnomaly->insertDateEnd(dateEnd);
-                        listXMLAnomaly->insertNYears(nYears.toInt());
-                    }
-                    if (period == "Seasonal")
-                    {
-                        QString seasonString = child.toElement().attribute("season");
-                        int season = getSeasonFromString(seasonString);
-                        if (season == 4)
-                        {
-                            dateStart.setDate(firstYear.toInt()-1, 12, 1);
-                            QDate temp(firstYear.toInt(), 2, 1);
-                            dateEnd.setDate(firstYear.toInt(), 2, temp.daysInMonth());
-                        }
-                        else
-                        {
-                            dateStart.setDate(firstYear.toInt(), season*3, 1);
-                            QDate temp(firstYear.toInt(), season*3+2, 1);
-                            dateEnd.setDate(firstYear.toInt(), season*3+2, temp.daysInMonth());
-                        }
-
-                        listXMLAnomaly->insertDateStart(dateStart);
-                        listXMLAnomaly->insertDateEnd(dateEnd);
-                        listXMLAnomaly->insertNYears(nYears.toInt());
-                    }
-                    if (period == "Annual")
-                    {
-                        dateStart.setDate(firstYear.toInt(), 1, 1);
-                        dateEnd.setDate(firstYear.toInt(), 12, 31);
-
-                        listXMLAnomaly->insertDateStart(dateStart);
-                        listXMLAnomaly->insertDateEnd(dateEnd);
-                        listXMLAnomaly->insertNYears(nYears.toInt());
+                        return false;
                     }
                 }
                 if (myTag == "PRIMARYELABORATION")
@@ -2670,151 +2551,153 @@ bool parseXMLElaboration(Crit3DElabList *listXMLElab, Crit3DAnomalyList *listXML
 
 
 bool parseXMLPeriodType(QDomNode ancestor, QString attributePeriod, Crit3DElabList *listXMLElab, Crit3DAnomalyList *listXMLAnomaly, bool isAnomaly, bool isRefPeriod,
-                        QString* period, enum period* periodType, QString *myError)
+                        QString* period, QString *myError)
 {
+
+    enum period periodType;
     if (ancestor.toElement().attribute(attributePeriod).toUpper() == "GENERIC")
     {
         *period = "Generic";
-        *periodType = genericPeriod;
+        periodType = genericPeriod;
         if (isAnomaly)
         {
             if (isRefPeriod)
             {
                 listXMLAnomaly->insertRefPeriodStr(*period);
-                listXMLAnomaly->insertRefPeriodType(*periodType);
+                listXMLAnomaly->insertRefPeriodType(periodType);
             }
             else
             {
                 listXMLAnomaly->insertPeriodStr(*period);
-                listXMLAnomaly->insertPeriodType(*periodType);
+                listXMLAnomaly->insertPeriodType(periodType);
             }
 
         }
         else
         {
             listXMLElab->insertPeriodStr(*period);
-            listXMLElab->insertPeriodType(*periodType);
+            listXMLElab->insertPeriodType(periodType);
         }
 
     }
     else if (ancestor.toElement().attribute(attributePeriod).toUpper() == "DAILY")
     {
         *period = "Daily";
-        *periodType = dailyPeriod;
+        periodType = dailyPeriod;
         if (isAnomaly)
         {
             if (isRefPeriod)
             {
                 listXMLAnomaly->insertRefPeriodStr(*period);
-                listXMLAnomaly->insertRefPeriodType(*periodType);
+                listXMLAnomaly->insertRefPeriodType(periodType);
             }
             else
             {
                 listXMLAnomaly->insertPeriodStr(*period);
-                listXMLAnomaly->insertPeriodType(*periodType);
+                listXMLAnomaly->insertPeriodType(periodType);
             }
 
         }
         else
         {
             listXMLElab->insertPeriodStr(*period);
-            listXMLElab->insertPeriodType(*periodType);
+            listXMLElab->insertPeriodType(periodType);
         }
     }
     else if (ancestor.toElement().attribute(attributePeriod).toUpper() == "DECADAL")
     {
         *period = "Decadal";
-        *periodType = decadalPeriod;
+        periodType = decadalPeriod;
         if (isAnomaly)
         {
             if (isRefPeriod)
             {
                 listXMLAnomaly->insertRefPeriodStr(*period);
-                listXMLAnomaly->insertRefPeriodType(*periodType);
+                listXMLAnomaly->insertRefPeriodType(periodType);
             }
             else
             {
                 listXMLAnomaly->insertPeriodStr(*period);
-                listXMLAnomaly->insertPeriodType(*periodType);
+                listXMLAnomaly->insertPeriodType(periodType);
             }
 
         }
         else
         {
             listXMLElab->insertPeriodStr(*period);
-            listXMLElab->insertPeriodType(*periodType);
+            listXMLElab->insertPeriodType(periodType);
         }
     }
     else if (ancestor.toElement().attribute(attributePeriod).toUpper() == "MONTHLY")
     {
         *period = "Monthly";
-        *periodType = monthlyPeriod;
+        periodType = monthlyPeriod;
         if (isAnomaly)
         {
             if (isRefPeriod)
             {
                 listXMLAnomaly->insertRefPeriodStr(*period);
-                listXMLAnomaly->insertRefPeriodType(*periodType);
+                listXMLAnomaly->insertRefPeriodType(periodType);
             }
             else
             {
                 listXMLAnomaly->insertPeriodStr(*period);
-                listXMLAnomaly->insertPeriodType(*periodType);
+                listXMLAnomaly->insertPeriodType(periodType);
             }
 
         }
         else
         {
             listXMLElab->insertPeriodStr(*period);
-            listXMLElab->insertPeriodType(*periodType);
+            listXMLElab->insertPeriodType(periodType);
         }
     }
     else if (ancestor.toElement().attribute(attributePeriod).toUpper() == "SEASONAL")
     {
         *period = "Seasonal";
-        *periodType = seasonalPeriod;
+        periodType = seasonalPeriod;
         if (isAnomaly)
         {
             if (isRefPeriod)
             {
                 listXMLAnomaly->insertRefPeriodStr(*period);
-                listXMLAnomaly->insertRefPeriodType(*periodType);
+                listXMLAnomaly->insertRefPeriodType(periodType);
             }
             else
             {
                 listXMLAnomaly->insertPeriodStr(*period);
-                listXMLAnomaly->insertPeriodType(*periodType);
+                listXMLAnomaly->insertPeriodType(periodType);
             }
 
         }
         else
         {
             listXMLElab->insertPeriodStr(*period);
-            listXMLElab->insertPeriodType(*periodType);
+            listXMLElab->insertPeriodType(periodType);
         }
     }
     else if (ancestor.toElement().attribute(attributePeriod).toUpper() == "ANNUAL")
     {
         *period = "Annual";
-        *periodType = annualPeriod;
+        periodType = annualPeriod;
         if (isAnomaly)
         {
             if (isRefPeriod)
             {
                 listXMLAnomaly->insertRefPeriodStr(*period);
-                listXMLAnomaly->insertRefPeriodType(*periodType);
+                listXMLAnomaly->insertRefPeriodType(periodType);
             }
             else
             {
                 listXMLAnomaly->insertPeriodStr(*period);
-                listXMLAnomaly->insertPeriodType(*periodType);
+                listXMLAnomaly->insertPeriodType(periodType);
             }
 
         }
         else
         {
             listXMLElab->insertPeriodStr(*period);
-            listXMLElab->insertPeriodType(*periodType);
+            listXMLElab->insertPeriodType(periodType);
         }
     }
     else
@@ -2822,4 +2705,217 @@ bool parseXMLPeriodType(QDomNode ancestor, QString attributePeriod, Crit3DElabLi
         *myError = "Invalid PeriodType attribute";
         return false;
     }
+}
+
+bool parseXMLPeriodTag(QDomNode child, Crit3DElabList *listXMLElab, Crit3DAnomalyList *listXMLAnomaly, bool isAnomaly, bool isRefPeriod,
+                        QString period, QString firstYear, QString *myError)
+{
+    QDate dateStart;
+    QDate dateEnd;
+    QString nYears = "0";
+    if (period == "Generic")
+    {
+        QString periodEnd = child.toElement().attribute("fin");
+        QString periodStart = child.toElement().attribute("ini");
+        periodEnd = periodEnd+"/"+firstYear;
+        periodStart = periodStart+"/"+firstYear;
+        dateStart = QDate::fromString(periodStart, "dd/MM/yyyy");
+        dateEnd = QDate::fromString(periodEnd, "dd/MM/yyyy");
+        nYears = child.toElement().attribute("nyears");
+
+        if (isAnomaly)
+        {
+            if (isRefPeriod)
+            {
+                listXMLAnomaly->insertRefDateStart(dateStart);
+                listXMLAnomaly->insertRefDateEnd(dateEnd);
+                listXMLAnomaly->insertRefNYears(nYears.toInt());
+            }
+            else
+            {
+                listXMLAnomaly->insertDateStart(dateStart);
+                listXMLAnomaly->insertDateEnd(dateEnd);
+                listXMLAnomaly->insertNYears(nYears.toInt());
+            }
+
+        }
+        else
+        {
+            listXMLElab->insertDateStart(dateStart);
+            listXMLElab->insertDateEnd(dateEnd);
+            listXMLElab->insertNYears(nYears.toInt());
+        }
+
+
+        return true;
+    }
+    if (period == "Daily")
+    {
+        int dayOfYear = child.toElement().attribute("doy").toInt();
+        dateStart = QDate(firstYear.toInt(), 1, 1).addDays(dayOfYear - 1);
+        dateEnd = dateStart;
+
+        if (isAnomaly)
+        {
+            if (isRefPeriod)
+            {
+                listXMLAnomaly->insertRefDateStart(dateStart);
+                listXMLAnomaly->insertRefDateEnd(dateEnd);
+                listXMLAnomaly->insertRefNYears(nYears.toInt());
+            }
+            else
+            {
+                listXMLAnomaly->insertDateStart(dateStart);
+                listXMLAnomaly->insertDateEnd(dateEnd);
+                listXMLAnomaly->insertNYears(nYears.toInt());
+            }
+        }
+        else
+        {
+            listXMLElab->insertDateStart(dateStart);
+            listXMLElab->insertDateEnd(dateEnd);
+            listXMLElab->insertNYears(nYears.toInt());
+        }
+
+        return true;
+    }
+    if (period == "Decadal")
+    {
+        int decade = child.toElement().attribute("decade").toInt();
+        int dayStart;
+        int dayEnd;
+        int month;
+
+        intervalDecade(decade, firstYear.toInt(), &dayStart, &dayEnd, &month);
+        dateStart.setDate(firstYear.toInt(), month, dayStart);
+        dateEnd.setDate(firstYear.toInt(), month, dayEnd);
+
+        if (isAnomaly)
+        {
+            if (isRefPeriod)
+            {
+                listXMLAnomaly->insertRefDateStart(dateStart);
+                listXMLAnomaly->insertRefDateEnd(dateEnd);
+                listXMLAnomaly->insertRefNYears(nYears.toInt());
+            }
+            else
+            {
+                listXMLAnomaly->insertDateStart(dateStart);
+                listXMLAnomaly->insertDateEnd(dateEnd);
+                listXMLAnomaly->insertNYears(nYears.toInt());
+            }
+        }
+        else
+        {
+            listXMLElab->insertDateStart(dateStart);
+            listXMLElab->insertDateEnd(dateEnd);
+            listXMLElab->insertNYears(nYears.toInt());
+        }
+
+        return true;
+    }
+    if (period == "Monthly")
+    {
+        int month = child.toElement().attribute("month").toInt();
+        dateStart.setDate(firstYear.toInt(), month, 1);
+        dateEnd = dateStart;
+        dateEnd.setDate(firstYear.toInt(), month, dateEnd.daysInMonth());
+
+        if (isAnomaly)
+        {
+            if (isRefPeriod)
+            {
+                listXMLAnomaly->insertRefDateStart(dateStart);
+                listXMLAnomaly->insertRefDateEnd(dateEnd);
+                listXMLAnomaly->insertRefNYears(nYears.toInt());
+            }
+            else
+            {
+                listXMLAnomaly->insertDateStart(dateStart);
+                listXMLAnomaly->insertDateEnd(dateEnd);
+                listXMLAnomaly->insertNYears(nYears.toInt());
+            }
+        }
+        else
+        {
+            listXMLElab->insertDateStart(dateStart);
+            listXMLElab->insertDateEnd(dateEnd);
+            listXMLElab->insertNYears(nYears.toInt());
+        }
+
+        return true;
+    }
+    if (period == "Seasonal")
+    {
+        QString seasonString = child.toElement().attribute("season");
+        int season = getSeasonFromString(seasonString);
+        if (season == 4)
+        {
+            dateStart.setDate(firstYear.toInt()-1, 12, 1);
+            QDate temp(firstYear.toInt(), 2, 1);
+            dateEnd.setDate(firstYear.toInt(), 2, temp.daysInMonth());
+        }
+        else
+        {
+            dateStart.setDate(firstYear.toInt(), season*3, 1);
+            QDate temp(firstYear.toInt(), season*3+2, 1);
+            dateEnd.setDate(firstYear.toInt(), season*3+2, temp.daysInMonth());
+        }
+
+        if (isAnomaly)
+        {
+            if (isRefPeriod)
+            {
+                listXMLAnomaly->insertRefDateStart(dateStart);
+                listXMLAnomaly->insertRefDateEnd(dateEnd);
+                listXMLAnomaly->insertRefNYears(nYears.toInt());
+            }
+            else
+            {
+                listXMLAnomaly->insertDateStart(dateStart);
+                listXMLAnomaly->insertDateEnd(dateEnd);
+                listXMLAnomaly->insertNYears(nYears.toInt());
+            }
+        }
+        else
+        {
+            listXMLElab->insertDateStart(dateStart);
+            listXMLElab->insertDateEnd(dateEnd);
+            listXMLElab->insertNYears(nYears.toInt());
+        }
+
+        return true;
+    }
+    if (period == "Annual")
+    {
+        dateStart.setDate(firstYear.toInt(), 1, 1);
+        dateEnd.setDate(firstYear.toInt(), 12, 31);
+
+        if (isAnomaly)
+        {
+            if (isRefPeriod)
+            {
+                listXMLAnomaly->insertRefDateStart(dateStart);
+                listXMLAnomaly->insertRefDateEnd(dateEnd);
+                listXMLAnomaly->insertRefNYears(nYears.toInt());
+            }
+            else
+            {
+                listXMLAnomaly->insertDateStart(dateStart);
+                listXMLAnomaly->insertDateEnd(dateEnd);
+                listXMLAnomaly->insertNYears(nYears.toInt());
+            }
+        }
+        else
+        {
+            listXMLElab->insertDateStart(dateStart);
+            listXMLElab->insertDateEnd(dateEnd);
+            listXMLElab->insertNYears(nYears.toInt());
+        }
+
+        *myError = "Invalid period";
+        return true;
+    }
+
+    return false;
 }
