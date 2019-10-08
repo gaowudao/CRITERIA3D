@@ -27,10 +27,13 @@ public:
     Crit3DElabList();
     ~Crit3DElabList();
 
-    QStringList listElab() const;
-    void setListElab(const QStringList &listClimateElab);
+    bool isMeteoGrid() const;
+    void setIsMeteoGrid(bool isMeteoGrid);
 
-    void resetListElab();
+    QStringList listAll() const;
+    void setListAll(const QStringList &listClimateElab);
+
+    void reset();
 
     std::vector<int> listYearStart() const;
     void setListYearStart(const std::vector<int> &listYearStart);
@@ -88,16 +91,13 @@ public:
     void setListParam2(const std::vector<float> &listParam2);
     void insertParam2(float param2);
 
-    std::vector<QString> listUnit() const;
-    void setListUnit(const std::vector<QString> &listUnit);
-    void insertUnit(QString unit);
-
     //void parserElaboration();
     //bool parserGenericPeriodString(int index);
 
 private:
 
-    QStringList _listElab;
+    QStringList _listAll;
+    bool _isMeteoGrid;
     std::vector<int> _listYearStart;
     std::vector<int> _listYearEnd;
     std::vector<meteoVariable> _listVariable;
@@ -112,8 +112,6 @@ private:
     std::vector<QString> _listParam1ClimateField;
     std::vector<QString> _listElab2;
     std::vector<float> _listParam2;
-    std::vector<QString> _listUnit;
-
 };
 
 #endif // CRIT3DELABLIST_H

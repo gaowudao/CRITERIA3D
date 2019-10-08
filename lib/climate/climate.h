@@ -19,6 +19,9 @@
     #ifndef CRIT3DELABLIST_H
         #include "crit3dElabList.h"
     #endif
+    #ifndef CRIT3DANOMALYLIST_H
+        #include "crit3dAnomalyList.h"
+    #endif
 
 
     const std::map<std::string, int> MapElabWithParam = {
@@ -119,7 +122,12 @@
 
     int nParameters(meteoComputation elab);
 
-    bool parseXMLElaboration(bool* isMeteoGrid, Crit3DElabList *listElab, QString xmlFileName, QString *myError);
+    bool parseXMLElaboration(Crit3DElabList *listXMLElab, Crit3DAnomalyList *listXMLAnomaly, QString xmlFileName, QString *myError);
+
+    bool parseXMLPeriodType(QDomNode ancestor, QString attributePeriod, Crit3DElabList *listXMLElab, Crit3DAnomalyList *listXMLAnomaly, bool isAnomaly, bool isRefPeriod,
+                            QString* period, QString *myError);
+    bool parseXMLPeriodTag(QDomNode child, Crit3DElabList *listXMLElab, Crit3DAnomalyList *listXMLAnomaly, bool isAnomaly, bool isRefPeriod,
+                            QString period, QString firstYear, QString *myError);
 
     //int getClimateIndexFromDate(QDate myDate, period periodType);
 

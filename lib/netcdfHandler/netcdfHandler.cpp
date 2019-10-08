@@ -32,6 +32,7 @@
 #include <netcdf.h>
 
 #include "commonConstants.h"
+#include "basicMath.h"
 #include "netcdfHandler.h"
 
 using namespace std;
@@ -63,7 +64,7 @@ NetCDFVariable::NetCDFVariable(char* myName, int myId, int myType)
 
 std::string NetCDFVariable::getVarName()
 {
-    if (longName.size() < 30)
+    if (longName.size() <= 32)
         return longName;
     else
         return name;
@@ -136,17 +137,17 @@ std::string NetCDFHandler::getVarName(int idVar)
 {
     for (unsigned int i = 0; i < variables.size(); i++)
         if (variables[i].id == idVar)
-            return variables[i].longName;
+            return variables[i].getVarName();
 
     return "";
 }
 
 
-bool NetCDFHandler::setVarLongName(char* varName, char* varLongName)
+bool NetCDFHandler::setVarLongName(std::string varName, std::string varLongName)
 {
     for (unsigned int i = 0; i < variables.size(); i++)
     {
-        if (variables[i].name == std::string(varName))
+        if (variables[i].name == varName)
         {
             variables[i].longName = varLongName;
             return true;
@@ -173,11 +174,12 @@ bool NetCDFHandler::isPointInside(gis::Crit3DGeoPoint geoPoint)
     }
 }
 
+
 std::string NetCDFHandler::getDateTimeStr(int timeIndex)
 {
     // check
     if (! isStandardTime)
-        return "ERROR: time is not standard (seconds since 1970)";
+        return "ERROR: time is not standard (std: seconds since 1970)";
 
     if (timeIndex < 0 || timeIndex >= nrTime)
         return "ERROR: time index out of range";
@@ -234,10 +236,13 @@ bool NetCDFHandler::readProperties(string fileName, stringstream *buffer)
     {
         nc_inq_attname(ncId, NC_GLOBAL, a, attrName);
         nc_inq_attlen(ncId, NC_GLOBAL, attrName, &length);
+
         valueStr = new char[length+1];
         nc_get_att_text(ncId, NC_GLOBAL, attrName, valueStr);
 
-        *buffer << attrName << " = " << valueStr << endl;
+        string myString = string(valueStr).substr(0, length);
+        *buffer << attrName << " = " << myString << endl;
+
         delete [] valueStr;
    }
 
@@ -303,7 +308,7 @@ bool NetCDFHandler::readProperties(string fileName, stringstream *buffer)
             if (i != NODATA)
                 dimensions[unsigned(i)].type = ncTypeId;
             else
-                *buffer << endl << "ERRORE: dimensione non trovata: " << varName << endl;
+                *buffer << endl << "ERROR: dimension not found: " << varName << endl;
        }
 
        if (lowerCase(string(varName)) == "time")
@@ -339,16 +344,20 @@ bool NetCDFHandler::readProperties(string fileName, stringstream *buffer)
                 nc_inq_attlen(ncId, v, attrName, &length);
                 valueStr = new char[length+1];
                 nc_get_att_text(ncId, v, attrName, valueStr);
-                *buffer << attrName << " = " << valueStr << endl;
+
+                string myString = string(valueStr).substr(0, length);
+                *buffer << attrName << " = " << myString << endl;
 
                 if (v == idTime)
                 {
-                    if ((lowerCase(string(attrName)) == "units")
-                       && (lowerCase(string(valueStr).substr(0, 18)) == "seconds since 1970"))
+                    if ((lowerCase(string(attrName)) == "units"
+                       && lowerCase(myString).substr(0, 18) == "seconds since 1970"))
+                    {
                            isStandardTime = true;
+                    }
                 }
                 if (lowerCase(string(attrName)) == "long_name")
-                    setVarLongName(varName, valueStr);
+                    setVarLongName(string(varName), myString);
 
                 delete [] valueStr;
             }
@@ -390,7 +399,7 @@ bool NetCDFHandler::readProperties(string fileName, stringstream *buffer)
             latLonHeader.nrCols = nrLon;
 
             latLonHeader.llCorner->longitude = double(lon[0]);
-            latLonHeader.dx = double(lon[nrLon-1]-lon[0]) / double(nrLon-1);
+            latLonHeader.dx = double(lon[nrLon-1] - lon[0]) / double(nrLon-1);
 
             if (lat[1] > lat[0])
             {
@@ -420,7 +429,7 @@ bool NetCDFHandler::readProperties(string fileName, stringstream *buffer)
             x = new float[unsigned(nrX)];
             if ((retval = nc_get_var_float(ncId, idX, x)))
             {
-                *buffer << "\nERROR in reading x: " << nc_strerror(retval);
+                *buffer << endl << "ERROR in reading x: " << nc_strerror(retval);
                 nc_close(ncId);
                 return false;
             }
@@ -428,12 +437,12 @@ bool NetCDFHandler::readProperties(string fileName, stringstream *buffer)
             y = new float[unsigned(nrY)];
             if ((retval = nc_get_var_float(ncId, idY, y)))
             {
-                *buffer << "\nERROR in reading y: " << nc_strerror(retval);
+                *buffer << endl << "ERROR in reading y: " << nc_strerror(retval);
                 nc_close(ncId);
                 return false;
             }
 
-            if ((x[1]-x[0]) != (y[1]-y[0]))
+            if (! isEqual(x[1]-x[0], y[1]-y[0]))
                 *buffer << "\nWarning! dx != dy" << endl;
 
             dataGrid.header->cellSize = double(x[1]-x[0]);

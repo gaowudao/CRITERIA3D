@@ -38,7 +38,7 @@
 
 extern PragaProject myProject;
 
-#define MAPBORDER 8
+#define MAPBORDER 10
 #define TOOLSWIDTH 260
 
 MainWindow::MainWindow(QWidget *parent) :
@@ -152,8 +152,8 @@ void MainWindow::resizeEvent(QResizeEvent *event)
 
 void MainWindow::mouseReleaseEvent(QMouseEvent *event)
 {
-    this->rasterObj->setCenter();
-    this->meteoGridObj->setCenter();
+    rasterObj->setCenter();
+    meteoGridObj->setCenter();
 
     gis::Crit3DGeoPoint pointSelected;
 

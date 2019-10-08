@@ -261,6 +261,29 @@ int getSeasonFromDate(QDate date)
     }
 }
 
+int getSeasonFromString(QString season)
+{
+
+    if (season == "MAM")
+    {
+        return 1;
+    }
+    else if (season == "JJA")
+    {
+        return 2;
+    }
+    else if (season == "SON")
+    {
+        return 3;
+    }
+    else if (season == "DJF")
+    {
+        return 4;
+    }
+    else
+        return NODATA;
+}
+
 
 QString getStringSeasonFromDate(QDate date)
 {
@@ -298,8 +321,8 @@ bool getPeriodDates(QString periodSelected, int year, QDate myDate, QDate* start
        int dayEnd;
        int month;
        intervalDecade(decade, myDate.year(), &dayStart, &dayEnd, &month);
-       startDate->setDate(startDate->year(), month, dayStart);
-       endDate->setDate(endDate->year(), month, dayEnd);
+       startDate->setDate(startDate->year(), startDate->month(), dayStart);
+       endDate->setDate(endDate->year(), endDate->month(), dayEnd);
    }
    else if (periodSelected == "Monthly")
    {

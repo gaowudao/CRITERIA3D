@@ -64,14 +64,6 @@
             void setResolution(double dx, double dy);
         };
 
-        class Crit3DGeoBox
-        {
-        public:
-            Crit3DGeoPoint bottomLeft;
-            Crit3DGeoPoint topRight;
-
-            Crit3DGeoBox();
-        };
     }
 
 

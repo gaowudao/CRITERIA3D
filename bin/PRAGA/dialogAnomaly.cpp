@@ -137,7 +137,7 @@ void DialogAnomaly::build(QSettings *AnomalySettings)
 
     elab1Parameter.setPlaceholderText("Parameter");
     elab1Parameter.setFixedWidth(90);
-    elab1Parameter.setValidator(new QDoubleValidator(-9999.0, 9999.0, 2)); //LC accetta double con 2 cifre decimali da -9999 a 9999
+    elab1Parameter.setValidator(new QDoubleValidator(-9999.0, 9999.0, 2));
     readParam.setText("Read param from db Climate");
     readParam.setChecked(false);
     climateDbElabList.setVisible(false);
@@ -191,7 +191,7 @@ void DialogAnomaly::build(QSettings *AnomalySettings)
 
     elab2Parameter.setPlaceholderText("Parameter");
     elab2Parameter.setFixedWidth(90);
-    elab2Parameter.setValidator(new QDoubleValidator(-9999.0, 9999.0, 2)); //LC accetta double con 2 cifre decimali da -9999 a 9999
+    elab2Parameter.setValidator(new QDoubleValidator(-9999.0, 9999.0, 2));
 
     QString elab2Field = secondElabList.currentText();
     if ( MapElabWithParam.find(elab2Field.toStdString()) == MapElabWithParam.end())
