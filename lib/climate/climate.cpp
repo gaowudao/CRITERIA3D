@@ -2204,28 +2204,6 @@ int nParameters(meteoComputation elab)
 
 }
 
-/*
- * // LC old
-int getClimateIndexFromDate(QDate myDate, period periodType)
-{
-    switch(periodType)
-    {
-    case annualPeriod: case genericPeriod:
-            return 1;
-    case decadalPeriod:
-            return decadeFromDate(myDate);
-    case monthlyPeriod:
-            return myDate.month();
-    case seasonalPeriod:
-            return getSeasonFromDate(myDate);
-    case dailyPeriod:
-            return myDate.dayOfYear();
-    default:
-            return NODATA;
-    }
-}
-*/
-
 bool parseXMLElaboration(Crit3DElabList *listXMLElab, Crit3DAnomalyList *listXMLAnomaly, QString xmlFileName, QString *myError)
 {
 
@@ -2305,54 +2283,10 @@ bool parseXMLElaboration(Crit3DElabList *listXMLElab, Crit3DAnomalyList *listXML
                 return false;
             }
 
-            if (ancestor.toElement().attribute("PeriodType").toUpper() == "GENERIC")
+            if (parseXMLPeriodType(ancestor, "PeriodType", listXMLElab, listXMLAnomaly, false, false, &period, &periodType, myError) == false)
             {
-                period = "Generic";
-                periodType = genericPeriod;
-                listXMLElab->insertPeriodStr(period);
-                listXMLElab->insertPeriodType(periodType);
-            }
-            else if (ancestor.toElement().attribute("PeriodType").toUpper() == "DAILY")
-            {
-                period = "Daily";
-                periodType = dailyPeriod;
-                listXMLElab->insertPeriodStr(period);
-                listXMLElab->insertPeriodType(periodType);
-            }
-            else if (ancestor.toElement().attribute("PeriodType").toUpper() == "DECADAL")
-            {
-                period = "Decadal";
-                periodType = decadalPeriod;
-                listXMLElab->insertPeriodStr(period);
-                listXMLElab->insertPeriodType(periodType);
-            }
-            else if (ancestor.toElement().attribute("PeriodType").toUpper() == "MONTHLY")
-            {
-                period = "Monthly";
-                periodType = monthlyPeriod;
-                listXMLElab->insertPeriodStr(period);
-                listXMLElab->insertPeriodType(periodType);
-            }
-            else if (ancestor.toElement().attribute("PeriodType").toUpper() == "SEASONAL")
-            {
-                period = "Seasonal";
-                periodType = seasonalPeriod;
-                listXMLElab->insertPeriodStr(period);
-                listXMLElab->insertPeriodType(periodType);
-            }
-            else if (ancestor.toElement().attribute("PeriodType").toUpper() == "ANNUAL")
-            {
-                period = "Annual";
-                periodType = annualPeriod;
-                listXMLElab->insertPeriodStr(period);
-                listXMLElab->insertPeriodType(periodType);
-            }
-            else
-            {
-                *myError = "Invalid Datatype attribute";
                 return false;
             }
-
             child = ancestor.firstChild();
             while( !child.isNull())
             {
@@ -2514,6 +2448,14 @@ bool parseXMLElaboration(Crit3DElabList *listXMLElab, Crit3DAnomalyList *listXML
                 listXMLAnomaly->insertElab2("");
                 listXMLAnomaly->insertParam2(NODATA);
             }
+            if (ancestor.toElement().attribute("AnomalyType").toUpper() == "PERCENTAGE")
+            {
+                listXMLAnomaly->insertIsPercentage(true);
+            }
+            else if ( !ancestor.toElement().hasAttribute("AnomalyType") || ancestor.toElement().attribute("AnomalyType").toUpper() == "ABSOLUTE")
+            {
+                listXMLAnomaly->insertIsPercentage(false);
+            }
 
             if (ancestor.toElement().attribute("Datatype").toUpper() == "GRID")
             {
@@ -2528,52 +2470,12 @@ bool parseXMLElaboration(Crit3DElabList *listXMLElab, Crit3DAnomalyList *listXML
                 *myError = "Invalid Datatype attribute";
                 return false;
             }
-
-            if (ancestor.toElement().attribute("PeriodType").toUpper() == "GENERIC")
+            if (parseXMLPeriodType(ancestor, "PeriodType", listXMLElab, listXMLAnomaly, true, false, &period, &periodType, myError) == false)
             {
-                period = "Generic";
-                periodType = genericPeriod;
-                listXMLAnomaly->insertPeriodStr(period);
-                listXMLAnomaly->insertPeriodType(periodType);
+                return false;
             }
-            else if (ancestor.toElement().attribute("PeriodType").toUpper() == "DAILY")
+            if (parseXMLPeriodType(ancestor, "RefPeriodType", listXMLElab, listXMLAnomaly, true, true, &period, &periodType, myError) == false)
             {
-                period = "Daily";
-                periodType = dailyPeriod;
-                listXMLAnomaly->insertPeriodStr(period);
-                listXMLAnomaly->insertPeriodType(periodType);
-            }
-            else if (ancestor.toElement().attribute("PeriodType").toUpper() == "DECADAL")
-            {
-                period = "Decadal";
-                periodType = decadalPeriod;
-                listXMLAnomaly->insertPeriodStr(period);
-                listXMLAnomaly->insertPeriodType(periodType);
-            }
-            else if (ancestor.toElement().attribute("PeriodType").toUpper() == "MONTHLY")
-            {
-                period = "Monthly";
-                periodType = monthlyPeriod;
-                listXMLAnomaly->insertPeriodStr(period);
-                listXMLAnomaly->insertPeriodType(periodType);
-            }
-            else if (ancestor.toElement().attribute("PeriodType").toUpper() == "SEASONAL")
-            {
-                period = "Seasonal";
-                periodType = seasonalPeriod;
-                listXMLAnomaly->insertPeriodStr(period);
-                listXMLAnomaly->insertPeriodType(periodType);
-            }
-            else if (ancestor.toElement().attribute("PeriodType").toUpper() == "ANNUAL")
-            {
-                period = "Annual";
-                periodType = annualPeriod;
-                listXMLAnomaly->insertPeriodStr(period);
-                listXMLAnomaly->insertPeriodType(periodType);
-            }
-            else
-            {
-                *myError = "Invalid Datatype attribute";
                 return false;
             }
             child = ancestor.firstChild();
@@ -2764,4 +2666,160 @@ bool parseXMLElaboration(Crit3DElabList *listXMLElab, Crit3DAnomalyList *listXML
 //    }
 
     return true;
+}
+
+
+bool parseXMLPeriodType(QDomNode ancestor, QString attributePeriod, Crit3DElabList *listXMLElab, Crit3DAnomalyList *listXMLAnomaly, bool isAnomaly, bool isRefPeriod,
+                        QString* period, enum period* periodType, QString *myError)
+{
+    if (ancestor.toElement().attribute(attributePeriod).toUpper() == "GENERIC")
+    {
+        *period = "Generic";
+        *periodType = genericPeriod;
+        if (isAnomaly)
+        {
+            if (isRefPeriod)
+            {
+                listXMLAnomaly->insertRefPeriodStr(*period);
+                listXMLAnomaly->insertRefPeriodType(*periodType);
+            }
+            else
+            {
+                listXMLAnomaly->insertPeriodStr(*period);
+                listXMLAnomaly->insertPeriodType(*periodType);
+            }
+
+        }
+        else
+        {
+            listXMLElab->insertPeriodStr(*period);
+            listXMLElab->insertPeriodType(*periodType);
+        }
+
+    }
+    else if (ancestor.toElement().attribute(attributePeriod).toUpper() == "DAILY")
+    {
+        *period = "Daily";
+        *periodType = dailyPeriod;
+        if (isAnomaly)
+        {
+            if (isRefPeriod)
+            {
+                listXMLAnomaly->insertRefPeriodStr(*period);
+                listXMLAnomaly->insertRefPeriodType(*periodType);
+            }
+            else
+            {
+                listXMLAnomaly->insertPeriodStr(*period);
+                listXMLAnomaly->insertPeriodType(*periodType);
+            }
+
+        }
+        else
+        {
+            listXMLElab->insertPeriodStr(*period);
+            listXMLElab->insertPeriodType(*periodType);
+        }
+    }
+    else if (ancestor.toElement().attribute(attributePeriod).toUpper() == "DECADAL")
+    {
+        *period = "Decadal";
+        *periodType = decadalPeriod;
+        if (isAnomaly)
+        {
+            if (isRefPeriod)
+            {
+                listXMLAnomaly->insertRefPeriodStr(*period);
+                listXMLAnomaly->insertRefPeriodType(*periodType);
+            }
+            else
+            {
+                listXMLAnomaly->insertPeriodStr(*period);
+                listXMLAnomaly->insertPeriodType(*periodType);
+            }
+
+        }
+        else
+        {
+            listXMLElab->insertPeriodStr(*period);
+            listXMLElab->insertPeriodType(*periodType);
+        }
+    }
+    else if (ancestor.toElement().attribute(attributePeriod).toUpper() == "MONTHLY")
+    {
+        *period = "Monthly";
+        *periodType = monthlyPeriod;
+        if (isAnomaly)
+        {
+            if (isRefPeriod)
+            {
+                listXMLAnomaly->insertRefPeriodStr(*period);
+                listXMLAnomaly->insertRefPeriodType(*periodType);
+            }
+            else
+            {
+                listXMLAnomaly->insertPeriodStr(*period);
+                listXMLAnomaly->insertPeriodType(*periodType);
+            }
+
+        }
+        else
+        {
+            listXMLElab->insertPeriodStr(*period);
+            listXMLElab->insertPeriodType(*periodType);
+        }
+    }
+    else if (ancestor.toElement().attribute(attributePeriod).toUpper() == "SEASONAL")
+    {
+        *period = "Seasonal";
+        *periodType = seasonalPeriod;
+        if (isAnomaly)
+        {
+            if (isRefPeriod)
+            {
+                listXMLAnomaly->insertRefPeriodStr(*period);
+                listXMLAnomaly->insertRefPeriodType(*periodType);
+            }
+            else
+            {
+                listXMLAnomaly->insertPeriodStr(*period);
+                listXMLAnomaly->insertPeriodType(*periodType);
+            }
+
+        }
+        else
+        {
+            listXMLElab->insertPeriodStr(*period);
+            listXMLElab->insertPeriodType(*periodType);
+        }
+    }
+    else if (ancestor.toElement().attribute(attributePeriod).toUpper() == "ANNUAL")
+    {
+        *period = "Annual";
+        *periodType = annualPeriod;
+        if (isAnomaly)
+        {
+            if (isRefPeriod)
+            {
+                listXMLAnomaly->insertRefPeriodStr(*period);
+                listXMLAnomaly->insertRefPeriodType(*periodType);
+            }
+            else
+            {
+                listXMLAnomaly->insertPeriodStr(*period);
+                listXMLAnomaly->insertPeriodType(*periodType);
+            }
+
+        }
+        else
+        {
+            listXMLElab->insertPeriodStr(*period);
+            listXMLElab->insertPeriodType(*periodType);
+        }
+    }
+    else
+    {
+        *myError = "Invalid PeriodType attribute";
+        return false;
+    }
 }

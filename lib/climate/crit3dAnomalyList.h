@@ -96,12 +96,15 @@ public:
 
     std::vector<bool> isPercentage() const;
     void setIsPercentage(const std::vector<bool> &isPercentage);
+    void insertIsPercentage(bool isPercentage);
 
     std::vector<bool> isAnomalyFromDb() const;
     void setIsAnomalyFromDb(const std::vector<bool> &isAnomalyFromDb);
+    void insertIsAnomalyFromDb(bool isAnomalyFromDb);
 
     std::vector<QString> listAnomalyClimateField() const;
     void setListAnomalyClimateField(const std::vector<QString> &listAnomalyClimateField);
+    void insertAnomalyClimateField(QString anomalyClimateField);
 
     std::vector<int> listRefYearStart() const;
     void setListRefYearStart(const std::vector<int> &listRefYearStart);

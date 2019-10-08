@@ -272,6 +272,11 @@ void Crit3DAnomalyList::setIsPercentage(const std::vector<bool> &isPercentage)
     _isPercentage = isPercentage;
 }
 
+void Crit3DAnomalyList::insertIsPercentage(bool isPercentage)
+{
+    _isPercentage.push_back(isPercentage);
+}
+
 std::vector<bool> Crit3DAnomalyList::isAnomalyFromDb() const
 {
     return _isAnomalyFromDb;
@@ -282,6 +287,11 @@ void Crit3DAnomalyList::setIsAnomalyFromDb(const std::vector<bool> &isAnomalyFro
     _isAnomalyFromDb = isAnomalyFromDb;
 }
 
+void Crit3DAnomalyList::insertIsAnomalyFromDb(bool isAnomalyFromDb)
+{
+    _isAnomalyFromDb.push_back(isAnomalyFromDb);
+}
+
 std::vector<QString> Crit3DAnomalyList::listAnomalyClimateField() const
 {
     return _listAnomalyClimateField;
@@ -290,6 +300,11 @@ std::vector<QString> Crit3DAnomalyList::listAnomalyClimateField() const
 void Crit3DAnomalyList::setListAnomalyClimateField(const std::vector<QString> &listAnomalyClimateField)
 {
     _listAnomalyClimateField = listAnomalyClimateField;
+}
+
+void Crit3DAnomalyList::insertAnomalyClimateField(QString anomalyClimateField)
+{
+    _listAnomalyClimateField.push_back(anomalyClimateField);
 }
 
 std::vector<int> Crit3DAnomalyList::listRefYearStart() const
