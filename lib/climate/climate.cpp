@@ -2265,6 +2265,10 @@ bool parseXMLElaboration(Crit3DElabList *listXMLElab, Crit3DAnomalyList *listXML
     QString elabParam2;
     QString unit;
 
+    int nElab = 0;
+    int nAnomaly = 0;
+    bool error = false;
+
     while(!ancestor.isNull())
     {
         if (ancestor.toElement().tagName().toUpper() == "ELABORATION")
@@ -2287,6 +2291,7 @@ bool parseXMLElaboration(Crit3DElabList *listXMLElab, Crit3DAnomalyList *listXML
 
             if (parseXMLPeriodType(ancestor, "PeriodType", listXMLElab, listXMLAnomaly, false, false, &period, myError) == false)
             {
+                listXMLElab->eraseElement(nElab);
                 ancestor = ancestor.nextSibling(); // something is wrong, go to next elab
                 continue;
             }
@@ -2306,7 +2311,16 @@ bool parseXMLElaboration(Crit3DElabList *listXMLElab, Crit3DAnomalyList *listXML
                 {
                     variable = child.toElement().text();
                     meteoVariable var = getKeyMeteoVarMeteoMap(MapDailyMeteoVarToString, variable.toStdString());
-                    listXMLElab->insertVariable(var);
+                    if (var == noMeteoVar)
+                    {
+                        listXMLElab->eraseElement(nElab);
+                        error = true;
+                    }
+                    else
+                    {
+                        listXMLElab->insertVariable(var);
+                    }
+
                 }
                 if (myTag == "YEARINTERVAL")
                 {
@@ -2314,12 +2328,14 @@ bool parseXMLElaboration(Crit3DElabList *listXMLElab, Crit3DAnomalyList *listXML
                     lastYear = child.toElement().attribute("ini");
                     listXMLElab->insertYearStart(firstYear.toInt());
                     listXMLElab->insertYearEnd(lastYear.toInt());
+                    // TO DO check years
                 }
                 if (myTag == "PERIOD")
                 {
                     if (parseXMLPeriodTag(child, listXMLElab, listXMLAnomaly, false, false, period, firstYear, myError) == false)
                     {
-                        return false;
+                        listXMLElab->eraseElement(nElab);
+                        error = true;
                     }
                 }
                 if (myTag == "PRIMARYELABORATION")
@@ -2371,8 +2387,20 @@ bool parseXMLElaboration(Crit3DElabList *listXMLElab, Crit3DAnomalyList *listXML
                     elab = child.toElement().text();
                     listXMLElab->insertElab2(elab);
                 }
-                child = child.nextSibling();
+                if (error)
+                {
+                    error = false;
+                    child = child.lastChild();
+                    child = child.nextSibling();
+                    nElab = nElab;
+                }
+                else
+                {
+                    child = child.nextSibling();
+                }
+
             }
+            nElab = nElab + 1;
         }
         else if (ancestor.toElement().tagName().toUpper() == "ANOMALY")
         {
@@ -2593,6 +2621,7 @@ bool parseXMLElaboration(Crit3DElabList *listXMLElab, Crit3DAnomalyList *listXML
                 }
                 child = child.nextSibling();
             }
+            nAnomaly = nAnomaly + 1;
         }
 
         else if (ancestor.toElement().tagName().toUpper() == "PHENOLOGY")
@@ -2620,11 +2649,6 @@ bool parseXMLElaboration(Crit3DElabList *listXMLElab, Crit3DAnomalyList *listXML
         ancestor = ancestor.nextSibling();
     }
     xmlDoc.clear();
-
-//    if (!checkXML(myError))
-//    {
-//        return false;
-//    }
 
     return true;
 }
