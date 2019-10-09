@@ -57,13 +57,6 @@
          */
         explicit RasterObject(MapGraphicsView* view, MapGraphicsObject *parent = nullptr);
 
-        /*!
-         * \brief boundingRect pure-virtual from MapGraphicsObject
-         * Defines the outer bounds of the item as a rectangle; all painting must be restricted to inside an item's bounding rect.
-         * \return the bounding rect QRectF
-         */
-        QRectF boundingRect() const;
-
         void clear();
         void setDrawing(bool value);
         void setDrawBorders(bool value);
@@ -90,6 +83,13 @@
          */
         void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget);
 
+        /*!
+         * \brief boundingRect pure-virtual from MapGraphicsObject
+         * Defines the outer bounds of the item as a rectangle; all painting must be restricted to inside an item's bounding rect.
+         * \return the bounding rect QRectF
+         */
+        QRectF boundingRect() const;
+
     private:
         MapGraphicsView* view;
         gis::Crit3DRasterGrid* rasterPointer;
@@ -107,9 +107,9 @@
 
         void freeIndexesMatrix();
         void initializeIndexesMatrix();
+        void setMapExtents();
 
         bool drawRaster(gis::Crit3DRasterGrid *myRaster, QPainter* myPainter, bool drawBorder);
-        void setMapExtents();
     };
 
 

@@ -44,7 +44,7 @@
 #include "ui_mainWindow.h"
 
 
-#define MAPBORDER 11
+#define MAPBORDER 10
 #define INFOHEIGHT 40
 #define TOOLSWIDTH 260
 
@@ -66,16 +66,17 @@ MainWindow::MainWindow(QWidget *parent) :
     this->setMapSource(OSMTileSource::OSMTiles);
 
     // Set start size and position
-    this->startCenter = new Position (myProject.gisSettings.startLocation.longitude, myProject.gisSettings.startLocation.latitude, 0.0);
+    this->startCenter = new Position (myProject.gisSettings.startLocation.longitude,
+                                     myProject.gisSettings.startLocation.latitude, 0.0);
     this->mapView->setZoomLevel(8);
     this->mapView->centerOn(startCenter->lonLat());
-
-    this->setMouseTracking(true);
+    connect(this->mapView, SIGNAL(zoomLevelChanged(quint8)), this, SLOT(updateMaps()));
 
     connect(ui->checkList, &QListWidget::itemClicked, [=](QListWidgetItem* item){ this->itemClicked(item); });
     ui->checkList->setContextMenuPolicy(Qt::CustomContextMenu);
     connect(ui->checkList, &QListWidget::customContextMenuRequested, [=](const QPoint point){ this->itemMenuRequested(point); });
 
+    this->setMouseTracking(true);
 }
 
 
@@ -104,7 +105,7 @@ void MainWindow::resizeEvent(QResizeEvent * event)
 }
 
 
-void MainWindow::updateCenter()
+void MainWindow::updateMaps()
 {
     if (! this->rasterObjList.empty())
         for (unsigned int i = 0; i < this->rasterObjList.size(); i++)
@@ -118,7 +119,7 @@ void MainWindow::updateCenter()
 void MainWindow::mouseReleaseEvent(QMouseEvent *event)
 {
     Q_UNUSED(event)
-    this->updateCenter();
+    this->updateMaps();
 }
 
 
@@ -137,7 +138,6 @@ void MainWindow::mouseDoubleClickEvent(QMouseEvent * event)
         this->mapView->zoomOut();
 
     this->mapView->centerOn(newCenter.lonLat());
-    this->updateCenter();
 }
 
 
@@ -149,13 +149,6 @@ void MainWindow::mouseMoveEvent(QMouseEvent * event)
 
     Position geoPoint = this->mapView->mapToScene(mapPoint);
     this->ui->statusBar->showMessage(QString::number(geoPoint.latitude()) + " " + QString::number(geoPoint.longitude()));
-}
-
-
-void MainWindow::wheelEvent(QWheelEvent * event)
-{
-    Q_UNUSED(event)
-    this->updateCenter();
 }
 
 
@@ -277,7 +270,7 @@ void MainWindow::on_actionLoadRaster_triggered()
     float size = this->rasterObjList.back()->getRasterMaxSize();
     this->mapView->setZoomLevel(quint8(log2(ui->widgetMap->width() / size)));
     this->mapView->centerOn(qreal(center->longitude), qreal(center->latitude));
-    this->updateCenter();
+    this->updateMaps();
 }
 
 
@@ -455,7 +448,7 @@ void MainWindow::on_actionRasterize_shape_triggered()
         {
             myProject.getRasterFromShape(myObject->getShapeHandler(), numericFields.getFieldSelected(), numericFields.getOutputName(), numericFields.getCellSize(), true);
             addRasterObject(myProject.objectList.back());
-            this->updateCenter();
+            this->updateMaps();
         }
     }
     return;

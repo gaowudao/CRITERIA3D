@@ -7,7 +7,7 @@
 
     namespace gis
     {
-        enum mapActionType {actionDrag, actionSelect, operationSum, actionZoom, actionNone};
+        enum mapActionType {actionDrag, actionSelect, actionZoom, actionNone};
 
         class Crit3DMapPoint
         {

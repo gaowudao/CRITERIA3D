@@ -2,6 +2,9 @@
 #include "commonConstants.h"
 
 
+#define MAPBORDER 10
+
+
 MapGraphicsShapeObject::MapGraphicsShapeObject(MapGraphicsView* _view, MapGraphicsObject *parent) :
     MapGraphicsObject(true, parent)
 {
@@ -32,10 +35,23 @@ QRectF MapGraphicsShapeObject::boundingRect() const
 
 void MapGraphicsShapeObject::updateCenter()
 {
-     QPointF newCenter = this->view->mapToScene(QPoint(int(view->width() * 0.5), int(view->height() * 0.5)));
-     this->geoMap->referencePoint.latitude = newCenter.y();
-     this->geoMap->referencePoint.longitude = newCenter.x();
-     this->setPos(newCenter);
+    if (! isDrawing) return;
+
+    int widthPixels = view->width() - MAPBORDER*2;
+    int heightPixels = view->height() - MAPBORDER*2;
+    QPointF newCenter = view->mapToScene(QPoint(widthPixels/2, heightPixels/2));
+
+    // reference point
+    this->geoMap->referencePoint.latitude = newCenter.y();
+    this->geoMap->referencePoint.longitude = newCenter.x();
+
+    // reference pixel
+    QPointF refPoint;
+    refPoint.setX(geoMap->referencePoint.longitude);
+    refPoint.setY(geoMap->referencePoint.latitude);
+    referencePixel = view->tileSource()->ll2qgs(refPoint, view->zoomLevel());
+
+    this->setPos(newCenter);
 }
 
 
@@ -46,19 +62,30 @@ void MapGraphicsShapeObject::paint(QPainter *painter, const QStyleOptionGraphics
 
     if (this->isDrawing)
     {
-        setMapResolution();
+        setMapExtents();
 
         if (this->shapePointer != nullptr)
             drawShape(painter);
     }
 }
 
-
+/*
 QPointF MapGraphicsShapeObject::getPoint(LatLonPoint geoPoint)
 {
     QPointF pixel;
     pixel.setX((geoPoint.lon - this->geoMap->referencePoint.longitude) * this->geoMap->degreeToPixelX);
     pixel.setY((geoPoint.lat - this->geoMap->referencePoint.latitude) * this->geoMap->degreeToPixelY);
+    return pixel;
+}
+*/
+
+
+QPointF MapGraphicsShapeObject::getPixel(const LatLonPoint &geoPoint)
+{
+    QPointF point = QPointF(geoPoint.lon, geoPoint.lat);
+    QPointF pixel = this->view->tileSource()->ll2qgs(point, this->view->zoomLevel());
+    pixel.setX(pixel.x() - this->referencePixel.x());
+    pixel.setY(this->referencePixel.y() - pixel.y());
     return pixel;
 }
 
@@ -74,7 +101,7 @@ void MapGraphicsShapeObject::setPolygon(unsigned int i, unsigned int j, QPolygon
     for (unsigned long v = 0; v < lenght; v++)
     {
         j = offset + v;
-        point = getPoint(geoPoints[i][j]);
+        point = getPixel(geoPoints[i][j]);
         polygon->append(point);
     }
 }
@@ -223,23 +250,17 @@ void MapGraphicsShapeObject::setDrawing(bool value)
 }
 
 
-void MapGraphicsShapeObject::setMapResolution()
+void MapGraphicsShapeObject::setMapExtents()
 {
-    QPointF bottomLeft = this->view->mapToScene(QPoint(0.f, this->view->height()));
-    QPointF topRight = this->view->mapToScene(QPoint(this->view->width(), 0.f));
+    int widthPixels = view->width() - MAPBORDER*2;
+    int heightPixels = view->height() - MAPBORDER*2;
+    QPointF botLeft = view->mapToScene(QPoint(0, heightPixels));
+    QPointF topRight = view->mapToScene(QPoint(widthPixels, 0));
 
-    this->geoMap->bottomLeft.longitude = bottomLeft.x();
-    this->geoMap->bottomLeft.latitude = bottomLeft.y();
-    this->geoMap->topRight.longitude = topRight.x();
-    this->geoMap->topRight.latitude = topRight.y();
-
-    double widthLon = topRight.x() - bottomLeft.x();
-    double heightlat = topRight.y() - bottomLeft.y();
-
-    double dxdegree = widthLon / this->view->width();
-    double dydegree = heightlat / this->view->height();
-
-    this->geoMap->setResolution(dxdegree, dydegree);
+    geoMap->bottomLeft.longitude = MAXVALUE(-180, botLeft.x());
+    geoMap->bottomLeft.latitude = MAXVALUE(-84, botLeft.y());
+    geoMap->topRight.longitude = MINVALUE(180, topRight.x());
+    geoMap->topRight.latitude = MINVALUE(84, topRight.y());
 }
 
 

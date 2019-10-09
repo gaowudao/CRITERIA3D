@@ -68,7 +68,8 @@ MainWindow::MainWindow(QWidget *parent) :
     this->setMapSource(OSMTileSource::OSMTiles);
 
     // Set start size and position
-    this->startCenter = new Position (myProject.gisSettings.startLocation.longitude, myProject.gisSettings.startLocation.latitude, 0.0);
+    this->startCenter = new Position (myProject.gisSettings.startLocation.longitude,
+                                     myProject.gisSettings.startLocation.latitude, 0.0);
     this->mapView->setZoomLevel(8);
     this->mapView->centerOn(startCenter->lonLat());
 

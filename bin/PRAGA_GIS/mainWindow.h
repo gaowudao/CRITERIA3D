@@ -42,6 +42,8 @@
         void on_actionRasterize_shape_triggered();
         void on_actionCompute_Unit_Crop_Map_triggered();
 
+        void updateMaps();
+
     protected:
         /*!
          * \brief mouseReleaseEvent call moveCenter
@@ -57,8 +59,6 @@
 
         void mouseMoveEvent(QMouseEvent * event);
 
-        void wheelEvent(QWheelEvent * event);
-
         void mousePressEvent(QMouseEvent *event);
 
         void resizeEvent(QResizeEvent * event);
@@ -72,7 +72,6 @@
         std::vector<RasterObject *> rasterObjList;
         std::vector<MapGraphicsShapeObject *> shapeObjList;
 
-        void updateCenter();
         void setMapSource(OSMTileSource::OSMTileType mySource);
         void addRasterObject(GisObject* myObject);
         void addShapeObject(GisObject* myObject);

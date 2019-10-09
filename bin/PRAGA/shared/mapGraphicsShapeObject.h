@@ -14,8 +14,8 @@
 
     struct LatLonPoint
     {
-        double lat;
         double lon;
+        double lat;
     };
 
     struct GeoBounds
@@ -27,21 +27,41 @@
     class MapGraphicsShapeObject : public MapGraphicsObject
     {
         Q_OBJECT
+
     private:
         MapGraphicsView* view;
         Crit3DShapeHandler* shapePointer;
         gis::Crit3DGeoMap* geoMap;
+        QPointF referencePixel;
+
         unsigned int nrShapes;
         std::vector< std::vector<ShapeObject::Part>> shapeParts;
         std::vector< std::vector<std::vector<unsigned int>>> holes;
         std::vector< std::vector<GeoBounds>> geoBounds;
         std::vector< std::vector<LatLonPoint>> geoPoints;
+
         bool isDrawing;
 
-        void setMapResolution();
+        void setMapExtents();
         void drawShape(QPainter* myPainter);
-        QPointF getPoint(LatLonPoint geoPoint);
         void setPolygon(unsigned int i, unsigned int j, QPolygonF* polygon);
+
+    protected:
+        /*!
+         * \brief paint pure-virtual from MapGraphicsObject
+         * \param painter a QPainter pointer
+         * \param option a QStyleOptionGraphicsItem pointer
+         * \param widget a QWidget pointer
+         */
+        void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget);
+
+        /*!
+         * \brief boundingRect pure-virtual from MapGraphicsObject
+         * Defines the outer bounds of the item as a rectangle; all painting must be restricted to inside an item's bounding rect.
+         * \return the bounding rect QRectF
+         */
+        QRectF boundingRect() const;
+
 
     public:
         /*!
@@ -51,28 +71,15 @@
          */
         explicit MapGraphicsShapeObject(MapGraphicsView* view, MapGraphicsObject *parent = nullptr);
 
-        /*!
-         * \brief boundingRect pure-virtual from MapGraphicsObject
-         * Defines the outer bounds of the item as a rectangle; all painting must be restricted to inside an item's bounding rect.
-         * \return the bounding rect QRectF
-         */
-        QRectF boundingRect() const;
-
-        /*!
-         * \brief paint pure-virtual from MapGraphicsObject
-         * \param painter a QPainter pointer
-         * \param option a QStyleOptionGraphicsItem pointer
-         * \param widget a QWidget pointer
-         */
-        void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget);
+        void setDrawing(bool value);
+        void updateCenter();
+        void clear();
 
         bool initializeUTM(Crit3DShapeHandler* shapePtr);
         void setShape(Crit3DShapeHandler* shapePtr);
         Crit3DShapeHandler* getShapePointer();
 
-        void setDrawing(bool value);
-        void updateCenter();
-        void clear();
+        QPointF getPixel(const LatLonPoint &geoPoint);
     };
 
 
