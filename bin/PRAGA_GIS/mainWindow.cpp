@@ -239,7 +239,6 @@ void MainWindow::addRasterObject(GisObject* myObject)
 
 void MainWindow::addShapeObject(GisObject* myObject)
 {
-
     QListWidgetItem* item = new QListWidgetItem("[SHAPE] " + myObject->fileName);
     item->setFlags(item->flags() | Qt::ItemIsUserCheckable);
     item->setCheckState(Qt::Checked);
@@ -251,7 +250,7 @@ void MainWindow::addShapeObject(GisObject* myObject)
     this->shapeObjList.push_back(newShapeObj);
 
     this->mapView->scene()->addObject(newShapeObj);
-    newShapeObj->redrawRequested();
+    this->updateMaps();
 }
 
 

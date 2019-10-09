@@ -778,8 +778,6 @@ namespace gis
      */
     void utmToLatLon(int zoneNumber, double referenceLat, double utmEasting, double utmNorthing, double *lat, double *lon)
     {
-
-
         double ae, e1, eccSquared, eccPrimeSquared, n1, t1, c1, r1, d, m, x, y;
         double longOrigin , mu , phi1Rad;
         static double ellipsoidK0 = 0.9996;

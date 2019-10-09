@@ -35,15 +35,13 @@ QRectF MapGraphicsShapeObject::boundingRect() const
 
 void MapGraphicsShapeObject::updateCenter()
 {
-    if (! isDrawing) return;
-
     int widthPixels = view->width() - MAPBORDER*2;
     int heightPixels = view->height() - MAPBORDER*2;
     QPointF newCenter = view->mapToScene(QPoint(widthPixels/2, heightPixels/2));
 
     // reference point
-    this->geoMap->referencePoint.latitude = newCenter.y();
-    this->geoMap->referencePoint.longitude = newCenter.x();
+    geoMap->referencePoint.latitude = newCenter.y();
+    geoMap->referencePoint.longitude = newCenter.x();
 
     // reference pixel
     QPointF refPoint;
@@ -51,7 +49,7 @@ void MapGraphicsShapeObject::updateCenter()
     refPoint.setY(geoMap->referencePoint.latitude);
     referencePixel = view->tileSource()->ll2qgs(refPoint, view->zoomLevel());
 
-    this->setPos(newCenter);
+    if (isDrawing) setPos(newCenter);
 }
 
 
@@ -68,16 +66,6 @@ void MapGraphicsShapeObject::paint(QPainter *painter, const QStyleOptionGraphics
             drawShape(painter);
     }
 }
-
-/*
-QPointF MapGraphicsShapeObject::getPoint(LatLonPoint geoPoint)
-{
-    QPointF pixel;
-    pixel.setX((geoPoint.lon - this->geoMap->referencePoint.longitude) * this->geoMap->degreeToPixelX);
-    pixel.setY((geoPoint.lat - this->geoMap->referencePoint.latitude) * this->geoMap->degreeToPixelY);
-    return pixel;
-}
-*/
 
 
 QPointF MapGraphicsShapeObject::getPixel(const LatLonPoint &geoPoint)
@@ -163,6 +151,8 @@ void MapGraphicsShapeObject::drawShape(QPainter* myPainter)
 bool MapGraphicsShapeObject::initializeUTM(Crit3DShapeHandler* shapePtr)
 {
     if (shapePtr == nullptr) return false;
+
+    updateCenter();
     setShape(shapePtr);
 
     double lat, lon;
