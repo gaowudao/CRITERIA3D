@@ -1578,7 +1578,8 @@ QString Project::getCompleteFileName(QString fileName, QString secondaryPath)
 
     if (getFilePath(fileName) == "")
     {
-        QString completeFileName = this->getDefaultPath() + "DATA/" + secondaryPath + fileName;
+        //QString completeFileName = this->getDefaultPath() + "DATA/" + secondaryPath + fileName;
+        QString completeFileName = this->getDefaultPath() + secondaryPath + fileName;
         return QDir().cleanPath(completeFileName);
     }
     else if (fileName.left(1) == ".")

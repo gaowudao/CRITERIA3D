@@ -36,6 +36,7 @@ void Crit3DElabList::setListAll(const QStringList &listElab)
 
 void Crit3DElabList::reset()
 {
+    _listAll.clear();
     _listElab1.clear();
     _listElab2.clear();
     _listDateStart.clear();
@@ -50,6 +51,71 @@ void Crit3DElabList::reset()
     _listVariable.clear();
     _listYearEnd.clear();
     _listYearStart.clear();
+}
+
+void Crit3DElabList::eraseElement(int index)
+{
+    if (_listAll.size() > index)
+    {
+        _listAll.removeAt(index);
+    }
+    if (_listElab1.size() > index)
+    {
+        _listElab1.erase(_listElab1.begin() + index);
+    }
+    if (_listElab2.size() > index)
+    {
+        _listElab2.erase(_listElab2.begin() + index);
+    }
+    if (_listDateStart.size() > index)
+    {
+        _listDateStart.erase(_listDateStart.begin() + index);
+    }
+    if (_listDateEnd.size() > index)
+    {
+        _listDateEnd.erase(_listDateEnd.begin() + index);
+    }
+    if (_listNYears.size() > index)
+    {
+        _listNYears.erase(_listNYears.begin() + index);
+    }
+    if (_listParam1.size() > index)
+    {
+        _listParam1.erase(_listParam1.begin() + index);
+    }
+    if (_listParam1ClimateField.size() > index)
+    {
+        _listParam1ClimateField.erase(_listParam1ClimateField.begin() + index);
+    }
+    if (_listParam1IsClimate.size() > index)
+    {
+        _listParam1IsClimate.erase(_listParam1IsClimate.begin() + index);
+    }
+    if (_listParam2.size() > index)
+    {
+        _listParam2.erase(_listParam2.begin() + index);
+    }
+    if (_listPeriodStr.size() > index)
+    {
+        _listPeriodStr.erase(_listPeriodStr.begin() + index);
+    }
+    if (_listPeriodType.size() > index)
+    {
+        _listPeriodType.erase(_listPeriodType.begin() + index);
+    }
+    if (_listVariable.size() > index)
+    {
+        _listVariable.erase(_listVariable.begin() + index);
+    }
+    if (_listYearEnd.size() > index)
+    {
+        _listYearEnd.erase(_listYearEnd.begin() + index);
+    }
+    if (_listYearStart.size() > index)
+    {
+        _listYearStart.erase(_listYearStart.begin() + index);
+    }
+
 }
 
 std::vector<int> Crit3DElabList::listYearStart() const

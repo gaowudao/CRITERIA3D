@@ -36,22 +36,166 @@ void Crit3DAnomalyList::setListAnomaly(const QStringList &listAnomaly)
 
 void Crit3DAnomalyList::reset()
 {
+    _listAll.clear();
+    _listisPercentage.clear();
+    _listIsAnomalyFromDb.clear();
+    _listAnomalyClimateField.clear();
     _listElab1.clear();
     _listElab2.clear();
+    _listRefElab1.clear();
+    _listRefElab2.clear();
     _listDateStart.clear();
     _listDateEnd.clear();
     _listNYears.clear();
+    _listRefDateStart.clear();
+    _listRefDateEnd.clear();
+    _listRefNYears.clear();
     _listParam1.clear();
     _listParam1ClimateField.clear();
     _listParam1IsClimate.clear();
+    _listRefParam1.clear();
+    _listRefParam1ClimateField.clear();
+    _listRefParam1IsClimate.clear();
     _listParam2.clear();
+    _listRefParam2.clear();
     _listPeriodStr.clear();
     _listPeriodType.clear();
+    _listRefPeriodStr.clear();
+    _listRefPeriodType.clear();
     _listVariable.clear();
     _listYearEnd.clear();
     _listYearStart.clear();
+    _listRefYearStart.clear();
+    _listRefYearEnd.clear();
 }
 
+void Crit3DAnomalyList::eraseElement(int index)
+{
+    if (_listAll.size() > index)
+    {
+        _listAll.removeAt(index);
+    }
+    if (_listisPercentage.size() > index)
+    {
+        _listisPercentage.erase(_listisPercentage.begin() + index);
+    }
+    if (_listIsAnomalyFromDb.size() > index)
+    {
+        _listIsAnomalyFromDb.erase(_listIsAnomalyFromDb.begin() + index);
+    }
+    if (_listAnomalyClimateField.size() > index)
+    {
+        _listAnomalyClimateField.erase(_listAnomalyClimateField.begin() + index);
+    }
+    if (_listElab1.size() > index)
+    {
+        _listElab1.erase(_listElab1.begin() + index);
+    }
+    if (_listElab2.size() > index)
+    {
+        _listElab2.erase(_listElab2.begin() + index);
+    }
+    if (_listRefElab1.size() > index)
+    {
+        _listRefElab1.erase(_listRefElab1.begin() + index);
+    }
+    if (_listRefElab2.size() > index)
+    {
+        _listRefElab2.erase(_listRefElab2.begin() + index);
+    }
+    if (_listDateStart.size() > index)
+    {
+        _listDateStart.erase(_listDateStart.begin() + index);
+    }
+    if (_listDateEnd.size() > index)
+    {
+        _listDateEnd.erase(_listDateEnd.begin() + index);
+    }
+    if (_listNYears.size() > index)
+    {
+        _listNYears.erase(_listNYears.begin() + index);
+    }
+    if (_listRefDateStart.size() > index)
+    {
+        _listRefDateStart.erase(_listRefDateStart.begin() + index);
+    }
+    if (_listRefDateEnd.size() > index)
+    {
+        _listRefDateEnd.erase(_listRefDateEnd.begin() + index);
+    }
+    if (_listRefNYears.size() > index)
+    {
+        _listRefNYears.erase(_listRefNYears.begin() + index);
+    }
+    if (_listParam1.size() > index)
+    {
+        _listParam1.erase(_listParam1.begin() + index);
+    }
+    if (_listParam1ClimateField.size() > index)
+    {
+        _listParam1ClimateField.erase(_listParam1ClimateField.begin() + index);
+    }
+    if (_listParam1IsClimate.size() > index)
+    {
+        _listParam1IsClimate.erase(_listParam1IsClimate.begin() + index);
+    }
+    if (_listRefParam1.size() > index)
+    {
+        _listRefParam1.erase(_listRefParam1.begin() + index);
+    }
+    if (_listRefParam1ClimateField.size() > index)
+    {
+        _listRefParam1ClimateField.erase(_listRefParam1ClimateField.begin() + index);
+    }
+    if (_listRefParam1IsClimate.size() > index)
+    {
+        _listRefParam1IsClimate.erase(_listRefParam1IsClimate.begin() + index);
+    }
+    if (_listParam2.size() > index)
+    {
+        _listParam2.erase(_listParam2.begin() + index);
+    }
+    if (_listRefParam2.size() > index)
+    {
+        _listRefParam2.erase(_listRefParam2.begin() + index);
+    }
+    if (_listPeriodStr.size() > index)
+    {
+        _listPeriodStr.erase(_listPeriodStr.begin() + index);
+    }
+    if (_listPeriodType.size() > index)
+    {
+        _listPeriodType.erase(_listPeriodType.begin() + index);
+    }
+    if (_listRefPeriodStr.size() > index)
+    {
+        _listRefPeriodStr.erase(_listRefPeriodStr.begin() + index);
+    }
+    if (_listRefPeriodType.size() > index)
+    {
+        _listRefPeriodType.erase(_listRefPeriodType.begin() + index);
+    }
+    if (_listVariable.size() > index)
+    {
+        _listVariable.erase(_listVariable.begin() + index);
+    }
+    if (_listYearEnd.size() > index)
+    {
+        _listYearEnd.erase(_listYearEnd.begin() + index);
+    }
+    if (_listYearStart.size() > index)
+    {
+        _listYearStart.erase(_listYearStart.begin() + index);
+    }
+    if (_listRefYearStart.size() > index)
+    {
+        _listRefYearStart.erase(_listRefYearStart.begin() + index);
+    }
+    if (_listRefYearEnd.size() > index)
+    {
+        _listRefYearEnd.erase(_listRefYearEnd.begin() + index);
+    }
+}
 std::vector<int> Crit3DAnomalyList::listYearStart() const
 {
     return _listYearStart;
@@ -264,32 +408,32 @@ void Crit3DAnomalyList::insertParam2(float param2)
 
 std::vector<bool> Crit3DAnomalyList::isPercentage() const
 {
-    return _isPercentage;
+    return _listisPercentage;
 }
 
 void Crit3DAnomalyList::setIsPercentage(const std::vector<bool> &isPercentage)
 {
-    _isPercentage = isPercentage;
+    _listisPercentage = isPercentage;
 }
 
 void Crit3DAnomalyList::insertIsPercentage(bool isPercentage)
 {
-    _isPercentage.push_back(isPercentage);
+    _listisPercentage.push_back(isPercentage);
 }
 
 std::vector<bool> Crit3DAnomalyList::isAnomalyFromDb() const
 {
-    return _isAnomalyFromDb;
+    return _listIsAnomalyFromDb;
 }
 
 void Crit3DAnomalyList::setIsAnomalyFromDb(const std::vector<bool> &isAnomalyFromDb)
 {
-    _isAnomalyFromDb = isAnomalyFromDb;
+    _listIsAnomalyFromDb = isAnomalyFromDb;
 }
 
 void Crit3DAnomalyList::insertIsAnomalyFromDb(bool isAnomalyFromDb)
 {
-    _isAnomalyFromDb.push_back(isAnomalyFromDb);
+    _listIsAnomalyFromDb.push_back(isAnomalyFromDb);
 }
 
 std::vector<QString> Crit3DAnomalyList::listAnomalyClimateField() const

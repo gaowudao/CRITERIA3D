@@ -2239,6 +2239,8 @@ bool parseXMLElaboration(Crit3DElabList *listXMLElab, Crit3DAnomalyList *listXML
     QDomNode child;
     QDomNode secondChild;
     QDomNodeList secElab;
+    QDomNodeList anomalySecElab;
+    QDomNodeList anomalyRefSecElab;
     TXMLvar varTable;
 
     QDomNode ancestor = xmlDoc.documentElement().firstChild();
@@ -2246,12 +2248,19 @@ bool parseXMLElaboration(Crit3DElabList *listXMLElab, Crit3DAnomalyList *listXML
 
     QString firstYear;
     QString lastYear;
+    QString refLastYear;
+    QString refFirstYear;
     QString variable;
     QString period;
 
     QString elab;
     QString elabParam1;
+    QString refElab;
+    QString refElab2;
+    QString refElabParam1;
+    QString refElabParam2;
     bool param1IsClimate;
+    bool refParam1IsClimate;
     bool anomalyIsClimate;
     QString elabParam2;
     QString unit;
@@ -2260,30 +2269,35 @@ bool parseXMLElaboration(Crit3DElabList *listXMLElab, Crit3DAnomalyList *listXML
     {
         if (ancestor.toElement().tagName().toUpper() == "ELABORATION")
         {
+
+            QString dataTypeAttribute = ancestor.toElement().attribute("Datatype").toUpper();
+            if ( dataTypeAttribute == "GRID")
+            {
+                listXMLElab->setIsMeteoGrid(true);
+            }
+            else if (dataTypeAttribute == "POINT")
+            {
+                listXMLElab->setIsMeteoGrid(false);
+            }
+            else if (dataTypeAttribute.isEmpty() || (dataTypeAttribute != "GRID" && dataTypeAttribute != "POINT"))
+            {
+                ancestor = ancestor.nextSibling(); // something is wrong, go to next elab
+                continue;
+            }
+
+            if (parseXMLPeriodType(ancestor, "PeriodType", listXMLElab, listXMLAnomaly, false, false, &period, myError) == false)
+            {
+                ancestor = ancestor.nextSibling(); // something is wrong, go to next elab
+                continue;
+            }
+
             secElab = ancestor.toElement().elementsByTagName("SecondaryElaboration");
             if (secElab.size() == 0)
             {
                 listXMLElab->insertElab2("");
                 listXMLElab->insertParam2(NODATA);
             }
-            if (ancestor.toElement().attribute("Datatype").toUpper() == "GRID")
-            {
-                listXMLElab->setIsMeteoGrid(true);
-            }
-            else if (ancestor.toElement().attribute("Datatype").toUpper() == "POINT")
-            {
-                listXMLElab->setIsMeteoGrid(false);
-            }
-            else
-            {
-                *myError = "Invalid Datatype attribute";
-                return false;
-            }
 
-            if (parseXMLPeriodType(ancestor, "PeriodType", listXMLElab, listXMLAnomaly, false, false, &period, myError) == false)
-            {
-                return false;
-            }
             child = ancestor.firstChild();
             while( !child.isNull())
             {
@@ -2362,41 +2376,51 @@ bool parseXMLElaboration(Crit3DElabList *listXMLElab, Crit3DAnomalyList *listXML
         }
         else if (ancestor.toElement().tagName().toUpper() == "ANOMALY")
         {
-            secElab = ancestor.toElement().elementsByTagName("SecondaryElaboration");
-            if (secElab.size() == 0)
-            {
-                listXMLAnomaly->insertElab2("");
-                listXMLAnomaly->insertParam2(NODATA);
-            }
+
             if (ancestor.toElement().attribute("AnomalyType").toUpper() == "PERCENTAGE")
             {
                 listXMLAnomaly->insertIsPercentage(true);
             }
-            else if ( !ancestor.toElement().hasAttribute("AnomalyType") || ancestor.toElement().attribute("AnomalyType").toUpper() == "ABSOLUTE")
+            else if ( !ancestor.toElement().hasAttribute("AnomalyType") || ancestor.toElement().attribute("AnomalyType").toUpper() != "PERCENTAGE")
             {
                 listXMLAnomaly->insertIsPercentage(false);
             }
-
-            if (ancestor.toElement().attribute("Datatype").toUpper() == "GRID")
+            QString anomalyDataTypeAttribute = ancestor.toElement().attribute("Datatype").toUpper();
+            if ( anomalyDataTypeAttribute == "GRID")
             {
                 listXMLAnomaly->setIsMeteoGrid(true);
             }
-            else if (ancestor.toElement().attribute("Datatype").toUpper() == "POINT")
+            else if (anomalyDataTypeAttribute == "POINT")
             {
                 listXMLAnomaly->setIsMeteoGrid(false);
             }
-            else
+            else if (anomalyDataTypeAttribute.isEmpty() || (anomalyDataTypeAttribute != "GRID" && anomalyDataTypeAttribute != "POINT"))
             {
-                *myError = "Invalid Datatype attribute";
-                return false;
+                ancestor = ancestor.nextSibling(); // something is wrong, go to next elab/anomaly
+                continue;
             }
             if (parseXMLPeriodType(ancestor, "PeriodType", listXMLElab, listXMLAnomaly, true, false, &period, myError) == false)
             {
-                return false;
+                ancestor = ancestor.nextSibling(); // something is wrong, go to next elab/anomaly
+                continue;
             }
             if (parseXMLPeriodType(ancestor, "RefPeriodType", listXMLElab, listXMLAnomaly, true, true, &period, myError) == false)
             {
-                return false;
+                ancestor = ancestor.nextSibling(); // something is wrong, go to next elab/anomaly
+                continue;
+            }
+
+            anomalySecElab = ancestor.toElement().elementsByTagName("SecondaryElaboration");
+            if (anomalySecElab.size() == 0)
+            {
+                listXMLAnomaly->insertElab2("");
+                listXMLAnomaly->insertParam2(NODATA);
+            }
+            anomalyRefSecElab = ancestor.toElement().elementsByTagName("RefSecondaryElaboration");
+            if (anomalyRefSecElab.size() == 0)
+            {
+                listXMLAnomaly->insertRefElab2("");
+                listXMLAnomaly->insertRefParam2(NODATA);
             }
 
             if (ancestor.toElement().attribute("RefType").toUpper() == "PERIOD")
@@ -2447,6 +2471,13 @@ bool parseXMLElaboration(Crit3DElabList *listXMLElab, Crit3DAnomalyList *listXML
                     lastYear = child.toElement().attribute("ini");
                     listXMLAnomaly->insertYearStart(firstYear.toInt());
                     listXMLAnomaly->insertYearEnd(lastYear.toInt());
+                }
+                if (myTag == "REFYEARINTERVAL")
+                {
+                    refFirstYear = child.toElement().attribute("fin");
+                    refLastYear = child.toElement().attribute("ini");
+                    listXMLAnomaly->insertRefYearStart(refFirstYear.toInt());
+                    listXMLAnomaly->insertRefYearEnd(refLastYear.toInt());
                 }
                 if (myTag == "PERIOD")
                 {
@@ -2510,6 +2541,55 @@ bool parseXMLElaboration(Crit3DElabList *listXMLElab, Crit3DAnomalyList *listXML
                     }
                     elab = child.toElement().text();
                     listXMLAnomaly->insertElab2(elab);
+                }
+                if (myTag == "REFPRIMARYELABORATION")
+                {
+                    if (ancestor.toElement().attribute("readParamFromClimate").toUpper() == "TRUE" || ancestor.toElement().attribute("readParamFromClimate").toUpper() == "YES")
+                    {
+                        refParam1IsClimate = true;
+                        listXMLAnomaly->insertRefParam1IsClimate(true);
+                        listXMLAnomaly->insertRefParam1(NODATA);
+                    }
+                    else
+                    {
+                        refParam1IsClimate = false;
+                        listXMLAnomaly->insertRefParam1IsClimate(false);
+                        listXMLAnomaly->insertRefParam1ClimateField("");
+                    }
+                    refElabParam1 = child.toElement().attribute("Param1");
+
+                    if (param1IsClimate)
+                    {
+                        listXMLAnomaly->insertRefParam1ClimateField(refElabParam1);
+                    }
+                    else
+                    {
+                        if (refElabParam1.isEmpty())
+                        {
+                            listXMLAnomaly->insertRefParam1(NODATA);
+                        }
+                        else
+                        {
+                            listXMLAnomaly->insertRefParam1(refElabParam1.toFloat());
+                        }
+                    }
+
+                    refElab = child.toElement().text();
+                    listXMLAnomaly->insertRefElab1(refElab);
+                }
+                if (myTag == "REFSECONDARYELABORATION")
+                {
+                    refElabParam2 = child.toElement().attribute("Param2");
+                    if (elabParam2.isEmpty())
+                    {
+                        listXMLAnomaly->insertRefParam2(NODATA);
+                    }
+                    else
+                    {
+                        listXMLAnomaly->insertRefParam2(refElabParam2.toFloat());
+                    }
+                    refElab2 = child.toElement().text();
+                    listXMLAnomaly->insertRefElab2(refElab2);
                 }
                 child = child.nextSibling();
             }

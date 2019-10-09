@@ -34,6 +34,7 @@ public:
     void setListAnomaly(const QStringList &listAnomaly);
 
     void reset();
+    void eraseElement(int index);
 
     std::vector<int> listYearStart() const;
     void setListYearStart(const std::vector<int> &listYearStart);
@@ -162,8 +163,8 @@ private:
 
     QStringList _listAll;
     bool _isMeteoGrid;
-    std::vector<bool> _isPercentage;
-    std::vector<bool> _isAnomalyFromDb; // VB RefType (Period o Clima)
+    std::vector<bool> _listisPercentage;
+    std::vector<bool> _listIsAnomalyFromDb; // VB RefType (Period o Clima)
     std::vector<QString> _listAnomalyClimateField;
 
     std::vector<int> _listYearStart;
