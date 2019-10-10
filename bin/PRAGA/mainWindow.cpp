@@ -41,6 +41,7 @@ extern PragaProject myProject;
 #define MAPBORDER 10
 #define TOOLSWIDTH 260
 
+
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow)
@@ -296,7 +297,6 @@ void MainWindow::on_meteoGridOpacitySlider_sliderMoved(int position)
 {
     this->meteoGridObj->setOpacity(position / 100.0);
 }
-
 
 
 void MainWindow::on_actionRectangle_Selection_triggered()
