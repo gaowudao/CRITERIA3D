@@ -133,11 +133,9 @@ void RasterObject::updateCenter()
     newCenter = view->mapToScene(QPoint(widthPixels/2, heightPixels/2));
 
     // reference point
-    geoMap->referencePoint.longitude = newCenter.x();
-    geoMap->referencePoint.latitude = newCenter.y();
     referencePixel = view->tileSource()->ll2qgs(newCenter, view->zoomLevel());
 
-    this->setPos(newCenter);
+    if (isDrawing) setPos(newCenter);
 }
 
 

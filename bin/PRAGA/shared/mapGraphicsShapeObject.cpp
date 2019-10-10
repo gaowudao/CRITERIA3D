@@ -44,10 +44,7 @@ void MapGraphicsShapeObject::updateCenter()
     geoMap->referencePoint.longitude = newCenter.x();
 
     // reference pixel
-    QPointF refPoint;
-    refPoint.setX(geoMap->referencePoint.longitude);
-    refPoint.setY(geoMap->referencePoint.latitude);
-    referencePixel = view->tileSource()->ll2qgs(refPoint, view->zoomLevel());
+    referencePixel = view->tileSource()->ll2qgs(newCenter, view->zoomLevel());
 
     if (isDrawing) setPos(newCenter);
 }
