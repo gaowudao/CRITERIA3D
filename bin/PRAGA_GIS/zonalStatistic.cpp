@@ -44,7 +44,7 @@ bool zonalStatisticsShape(Crit3DShapeHandler* shapeRef, Crit3DShapeHandler* shap
     std::vector<std::string> varFieldVectorString;
     std::vector<int> varFieldVectorInt;
     std::vector<double> varFieldVectorDouble;
-    unsigned long varFieldVectorSize = 0;
+    size_t varFieldVectorSize = 0;
 
 
     if (fieldType == FTString)
@@ -69,9 +69,9 @@ bool zonalStatisticsShape(Crit3DShapeHandler* shapeRef, Crit3DShapeHandler* shap
                 if (shape!= NODATA)
                 {
                     std::string valueField = shapeVal->readStringAttribute(shape,fieldIndex);
-                    int vectorFieldPos = std::distance(varFieldVectorString.begin(), std::find (varFieldVectorString.begin(), varFieldVectorString.end(), valueField));
+                    int vectorFieldPos = int(std::distance(varFieldVectorString.begin(), std::find (varFieldVectorString.begin(), varFieldVectorString.end(), valueField)));
                     //replace value
-                    rasterVal->value[row][col] = vectorFieldPos;
+                    rasterVal->value[row][col] = float(vectorFieldPos);
                 }
             }
         }
@@ -98,9 +98,9 @@ bool zonalStatisticsShape(Crit3DShapeHandler* shapeRef, Crit3DShapeHandler* shap
                 if (shape!= NODATA)
                 {
                     int valueField = shapeVal->readIntAttribute(shape,fieldIndex);
-                    int vectorFieldPos = std::distance(varFieldVectorInt.begin(), std::find (varFieldVectorInt.begin(), varFieldVectorInt.end(), valueField));
+                    int vectorFieldPos = int(std::distance(varFieldVectorInt.begin(), std::find (varFieldVectorInt.begin(), varFieldVectorInt.end(), valueField)));
 //                    //replace value
-                    rasterVal->value[row][col] = vectorFieldPos;
+                    rasterVal->value[row][col] = float(vectorFieldPos);
                 }
             }
         }
@@ -123,7 +123,7 @@ bool zonalStatisticsShape(Crit3DShapeHandler* shapeRef, Crit3DShapeHandler* shap
         {
             for (int col = 0; col < rasterVal->header->nrCols; col++)
             {
-                int shape = rasterVal->value[row][col];
+                int shape = int(rasterVal->value[row][col]);
                 if (shape!= NODATA)
                 {
                     double valueField = shapeVal->readDoubleAttribute(shape,fieldIndex);
@@ -208,7 +208,7 @@ bool zonalStatisticsShape(Crit3DShapeHandler* shapeRef, Crit3DShapeHandler* shap
         }
         else if (fieldType == FTDouble)
         {
-            int varFieldFound = varFieldVectorDouble[indexVector[shapeIndex]];
+            double varFieldFound = varFieldVectorDouble[indexVector[shapeIndex]];
             shapeRef->writeDoubleAttribute(shapeIndex, shapeRef->getDBFFieldIndex(valField.c_str()), varFieldFound);
         }
     }

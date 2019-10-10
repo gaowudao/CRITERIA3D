@@ -211,11 +211,11 @@ namespace gis
 
     bool Crit3DRasterGrid::initializeGrid()
     {
-        this->value = new float*[this->header->nrRows];
+        this->value = new float*[unsigned(this->header->nrRows)];
 
         for (int row = 0; row < this->header->nrRows; row++)
         {
-            this->value[row] = new float[this->header->nrCols];
+            this->value[row] = new float[unsigned(this->header->nrCols)];
             if (this->value[row] == nullptr)
             {
                 // Memory error: file too big
@@ -1189,7 +1189,7 @@ namespace gis
             j = 0;
             while ((j < values.size()) && (!isFound))
             {
-                if (valueList[i] == values[j])
+                if (isEqual(valueList[i], values[j]))
                 {
                     isFound = true;
                     counters[j]++;

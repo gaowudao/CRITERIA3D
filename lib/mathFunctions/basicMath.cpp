@@ -188,11 +188,9 @@
     char* decimal_to_binary(unsigned int n, int nrBits)
     {
        int d, count;
-       char *pointer;
+       char *pointer = new char[unsigned(nrBits)];
 
        count = 0;
-       pointer = (char*)malloc(nrBits);
-
        for (short c = short(nrBits-1); c >= 0 ; c--)
        {
           d = n >> c;
