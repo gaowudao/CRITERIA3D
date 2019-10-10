@@ -81,7 +81,8 @@
         void removeRaster(GisObject* myObject);
         void removeShape(GisObject* myObject);
 
-        QPoint getMapPoint(QPoint* point) const;
+        QPoint getMapPos(const QPoint& pos);
+        bool isInsideMap(const QPoint& pos);
     };
 
 

@@ -26,17 +26,7 @@
 
 #include <cmath>
 
-#include <QFileDialog>
-#include <QLayout>
-#include <QWidget>
-#include <QFrame>
-#include <QVBoxLayout>
-#include <QMessageBox>
-
 #include "tileSources/CompositeTileSource.h"
-#include "gis.h"
-#include "gisProject.h"
-#include "dbfTableDialog.h"
 #include "dbfNumericFieldsDialog.h"
 #include "ucmDialog.h"
 
@@ -125,11 +115,10 @@ void MainWindow::mouseReleaseEvent(QMouseEvent *event)
 
 void MainWindow::mouseDoubleClickEvent(QMouseEvent * event)
 {
-    QPoint pos = event->pos();
-    QPoint mapPoint = getMapPoint(&pos);
-    if ((mapPoint.x() <= 0) || (mapPoint.y() <= 0)) return;
+    QPoint mapPos = getMapPos(event->pos());
+    if (! isInsideMap(mapPos)) return;
 
-    Position newCenter = this->mapView->mapToScene(mapPoint);
+    Position newCenter = this->mapView->mapToScene(mapPos);
     this->ui->statusBar->showMessage(QString::number(newCenter.latitude()) + " " + QString::number(newCenter.longitude()));
 
     if (event->button() == Qt::LeftButton)
@@ -143,11 +132,10 @@ void MainWindow::mouseDoubleClickEvent(QMouseEvent * event)
 
 void MainWindow::mouseMoveEvent(QMouseEvent * event)
 {
-    QPoint pos = event->pos();
-    QPoint mapPoint = getMapPoint(&pos);
-    if ((mapPoint.x() <= 0) || (mapPoint.y() <= 0)) return;
+    QPoint mapPos = getMapPos(event->pos());
+    if (! isInsideMap(mapPos)) return;
 
-    Position geoPoint = this->mapView->mapToScene(mapPoint);
+    Position geoPoint = this->mapView->mapToScene(mapPos);
     this->ui->statusBar->showMessage(QString::number(geoPoint.latitude()) + " " + QString::number(geoPoint.longitude()));
 }
 
@@ -208,15 +196,26 @@ void MainWindow::setMapSource(OSMTileSource::OSMTileType mySource)
 }
 
 
-QPoint MainWindow::getMapPoint(QPoint* point) const
+QPoint MainWindow::getMapPos(const QPoint& pos)
 {
-    QPoint mapPoint;
-    int dx, dy;
-    dx = this->ui->widgetMap->x();
-    dy = this->ui->widgetMap->y() + this->ui->menuBar->height();
-    mapPoint.setX(point->x() - dx);
-    mapPoint.setY(point->y() - dy);
-    return mapPoint;
+    QPoint mapPos;
+    int dx = ui->widgetMap->x();
+    int dy = ui->widgetMap->y() + ui->menuBar->height();
+    mapPos.setX(pos.x() - dx - MAPBORDER);
+    mapPos.setY(pos.y() - dy - MAPBORDER);
+    return mapPos;
+}
+
+
+bool MainWindow::isInsideMap(const QPoint& pos)
+{
+    if (pos.x() > 0 && pos.y() > 0 &&
+        pos.x() < (mapView->width() - MAPBORDER*2) &&
+        pos.y() < (mapView->height() - MAPBORDER*2) )
+    {
+        return true;
+    }
+    else return false;
 }
 
 
@@ -233,7 +232,6 @@ void MainWindow::addRasterObject(GisObject* myObject)
     this->rasterObjList.push_back(newRasterObj);
 
     this->mapView->scene()->addObject(newRasterObj);
-    newRasterObj->redrawRequested();
 }
 
 
@@ -450,13 +448,11 @@ void MainWindow::on_actionRasterize_shape_triggered()
             this->updateMaps();
         }
     }
-    return;
-
 }
+
 
 void MainWindow::on_actionCompute_Unit_Crop_Map_triggered()
 {
-
     if (shapeObjList.empty())
     {
         QMessageBox::information(nullptr, "No shape loaded", "Load a shape");
@@ -471,8 +467,5 @@ void MainWindow::on_actionCompute_Unit_Crop_Map_triggered()
     {
         addShapeObject(myProject.objectList.back());
     }
-
-    return;
-
 }
 
