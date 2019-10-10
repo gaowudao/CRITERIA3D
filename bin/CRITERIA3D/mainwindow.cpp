@@ -65,6 +65,7 @@ MainWindow::MainWindow(QWidget *parent) :
     this->startCenter = new Position (myProject.gisSettings.startLocation.longitude, myProject.gisSettings.startLocation.latitude, 0.0);
     this->mapView->setZoomLevel(8);
     this->mapView->centerOn(startCenter->lonLat());
+    connect(this->mapView, SIGNAL(zoomLevelChanged(quint8)), this, SLOT(updateMaps()));
 
     // Set raster object
     this->rasterObj = new RasterObject(this->mapView);
@@ -102,11 +103,16 @@ void MainWindow::resizeEvent(QResizeEvent * event)
 }
 
 
+void MainWindow::updateMaps()
+{
+    rasterObj->updateCenter();
+}
+
+
 void MainWindow::mouseReleaseEvent(QMouseEvent *event)
 {
     Q_UNUSED(event)
-
-    this->rasterObj->updateCenter();
+    updateMaps();
 }
 
 
@@ -129,7 +135,6 @@ void MainWindow::mouseDoubleClickEvent(QMouseEvent * event)
     }
 
     this->mapView->centerOn(newCenter.lonLat());
-    this->rasterObj->updateCenter();
 }
 
 
@@ -269,8 +274,7 @@ void MainWindow::renderDEM()
     mapView->setZoomLevel(quint8(size));
     mapView->centerOn(qreal(center->longitude), qreal(center->latitude));
 
-    // active raster object
-    rasterObj->updateCenter();
+    updateMaps();
 
     if (viewer3D != nullptr)
     {
@@ -707,7 +711,7 @@ void MainWindow::on_actionView_SoilMap_triggered()
         setColorScale(airTemperature, myProject.soilMap.colorScale);
         setCurrentRasterInput(&(myProject.soilMap));
         ui->labelInputRaster->setText("Soil index map");
-        rasterObj->updateCenter();
+        updateMaps();
     }
     else
     {

@@ -96,6 +96,8 @@
 
         void on_opacitySliderRasterOutput_sliderMoved(int position);
 
+        void updateMaps();
+
     protected:
         /*!
          * \brief mouseReleaseEvent call moveCenter
