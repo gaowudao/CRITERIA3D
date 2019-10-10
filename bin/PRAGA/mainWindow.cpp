@@ -203,8 +203,8 @@ void MainWindow::mouseReleaseEvent(QMouseEvent *event)
             }
         }
 
-        QPointF topLeft = this->mapView->mapToScene(getMapPoint(&pixelTopLeft));
-        QPointF bottomRight = this->mapView->mapToScene(getMapPoint(&pixelBottomRight));
+        QPointF topLeft = this->mapView->mapToScene(getMapPos(pixelTopLeft));
+        QPointF bottomRight = this->mapView->mapToScene(getMapPos(pixelBottomRight));
         QRectF rectF(topLeft, bottomRight);
 
         foreach (StationMarker* marker, pointList)
@@ -227,11 +227,10 @@ void MainWindow::mouseReleaseEvent(QMouseEvent *event)
 
 void MainWindow::mouseDoubleClickEvent(QMouseEvent * event)
 {
-    QPoint pos = event->pos();
-    QPoint mapPoint = getMapPoint(&pos);
-    if ((mapPoint.x() <= 0) || (mapPoint.y() <= 0)) return;
+    QPoint mapPos = getMapPos(event->pos());
+    if (! isInsideMap(mapPos)) return;
 
-    Position newCenter = this->mapView->mapToScene(mapPoint);
+    Position newCenter = this->mapView->mapToScene(mapPos);
     this->ui->statusBar->showMessage(QString::number(newCenter.latitude()) + " " + QString::number(newCenter.longitude()));
 
     if (event->button() == Qt::LeftButton)
@@ -245,43 +244,40 @@ void MainWindow::mouseDoubleClickEvent(QMouseEvent * event)
 
 void MainWindow::mouseMoveEvent(QMouseEvent * event)
 {
-    QPoint pos = event->pos();
-    QPoint mapPoint = getMapPoint(&pos);
-    if ((mapPoint.x() <= 0) || (mapPoint.y() <= 0)) return;
+    QPoint mapPos = getMapPos(event->pos());
+    if (! isInsideMap(mapPos)) return;
 
-    Position geoPoint = this->mapView->mapToScene(mapPoint);
+    Position geoPoint = this->mapView->mapToScene(mapPos);
     this->ui->statusBar->showMessage(QString::number(geoPoint.latitude()) + " " + QString::number(geoPoint.longitude()));
 
     if (myRubberBand != nullptr && myRubberBand->isActive)
     {
-        myRubberBand->setGeometry(QRect(myRubberBand->getOrigin(), mapPoint).normalized());
+        myRubberBand->setGeometry(QRect(myRubberBand->getOrigin(), mapPos).normalized());
     }
 }
 
 
 void MainWindow::mousePressEvent(QMouseEvent *event)
 {
+    QPoint mapPos = getMapPos(event->pos());
+    if (! isInsideMap(mapPos)) return;
+
     if (event->button() == Qt::RightButton)
     {
         if (myRubberBand != nullptr)
         {
-            QPoint pos = event->pos();
-            QPointF firstCorner = event->localPos();
-            myRubberBand->setFirstCorner(firstCorner);
-            QPoint mapPoint = getMapPoint(&pos);
-            myRubberBand->setOrigin(mapPoint);
-            myRubberBand->setGeometry(QRect(mapPoint, QSize()));
+            myRubberBand->setOrigin(mapPos);
+            myRubberBand->setFirstCorner(mapPos);
+            myRubberBand->setGeometry(QRect(mapPos, QSize()));
             myRubberBand->isActive = true;
             myRubberBand->show();
         }
 
-
         #ifdef NETCDF
         if (myProject.netCDF.isLoaded)
         {
-            QPoint pos = event->pos();
-            Position myPos = mapView->mapToScene(getMapPoint(&pos));
-            gis::Crit3DGeoPoint geoPoint = gis::Crit3DGeoPoint(myPos.latitude(), myPos.longitude());
+            Position geoPos = mapView->mapToScene(mapPos);
+            gis::Crit3DGeoPoint geoPoint = gis::Crit3DGeoPoint(geoPos.latitude(), geoPos.longitude());
 
             exportNetCDFDataSeries(geoPoint);
         }
@@ -552,16 +548,29 @@ void MainWindow::on_actionDownload_meteo_data_triggered()
         this->loadMeteoPoints(myProject.meteoPointsDbHandler->getDbName());
 }
 
-QPoint MainWindow::getMapPoint(QPoint* point) const
+
+QPoint MainWindow::getMapPos(const QPoint& pos)
 {
-    QPoint mapPoint;
-    int dx, dy;
-    dx = this->ui->widgetMap->x();
-    dy = this->ui->widgetMap->y() + this->ui->menuBar->height();
-    mapPoint.setX(point->x() - dx - MAPBORDER);
-    mapPoint.setY(point->y() - dy - MAPBORDER);
-    return mapPoint;
+    QPoint mapPos;
+    int dx = ui->widgetMap->x();
+    int dy = ui->widgetMap->y() + ui->menuBar->height();
+    mapPos.setX(pos.x() - dx - MAPBORDER);
+    mapPos.setY(pos.y() - dy - MAPBORDER);
+    return mapPos;
 }
+
+
+bool MainWindow::isInsideMap(const QPoint& pos)
+{
+    if (pos.x() > 0 && pos.y() > 0 &&
+        pos.x() < (mapView->width() - MAPBORDER*2) &&
+        pos.y() < (mapView->height() - MAPBORDER*2) )
+    {
+        return true;
+    }
+    else return false;
+}
+
 
 void MainWindow::resetMeteoPoints()
 {

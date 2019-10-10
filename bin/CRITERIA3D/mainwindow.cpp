@@ -352,7 +352,6 @@ bool MainWindow::isInsideMap(const QPoint& pos)
 }
 
 
-
 void MainWindow::resetMeteoPoints()
 {
     for (int i = 0; i < this->pointList.size(); i++)

@@ -161,7 +161,8 @@
         void setMapSource(OSMTileSource::OSMTileType mySource);
         QString selectArkimetDataset(QDialog* datasetDialog);
 
-        QPoint getMapPoint(QPoint* point) const;
+        QPoint getMapPos(const QPoint& pos);
+        bool isInsideMap(const QPoint& pos);
 
         void renderDEM();
         void clearDEM();
