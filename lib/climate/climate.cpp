@@ -2267,7 +2267,8 @@ bool parseXMLElaboration(Crit3DElabList *listXMLElab, Crit3DAnomalyList *listXML
 
     int nElab = 0;
     int nAnomaly = 0;
-    bool error = false;
+    bool errorElab = false;
+    bool errorAnomaly = false;
 
     while(!ancestor.isNull())
     {
@@ -2314,7 +2315,7 @@ bool parseXMLElaboration(Crit3DElabList *listXMLElab, Crit3DAnomalyList *listXML
                     if (var == noMeteoVar)
                     {
                         listXMLElab->eraseElement(nElab);
-                        error = true;
+                        errorElab = true;
                     }
                     else
                     {
@@ -2324,18 +2325,22 @@ bool parseXMLElaboration(Crit3DElabList *listXMLElab, Crit3DAnomalyList *listXML
                 }
                 if (myTag == "YEARINTERVAL")
                 {
-                    firstYear = child.toElement().attribute("fin");
-                    lastYear = child.toElement().attribute("ini");
+                    lastYear = child.toElement().attribute("fin");
+                    firstYear = child.toElement().attribute("ini");
                     listXMLElab->insertYearStart(firstYear.toInt());
                     listXMLElab->insertYearEnd(lastYear.toInt());
-                    // TO DO check years
+                    if (checkYears(firstYear, lastYear) == false)
+                    {
+                        listXMLElab->eraseElement(nElab);
+                        errorElab = true;
+                    }
                 }
                 if (myTag == "PERIOD")
                 {
                     if (parseXMLPeriodTag(child, listXMLElab, listXMLAnomaly, false, false, period, firstYear, myError) == false)
                     {
                         listXMLElab->eraseElement(nElab);
-                        error = true;
+                        errorElab = true;
                     }
                 }
                 if (myTag == "PRIMARYELABORATION")
@@ -2356,11 +2361,24 @@ bool parseXMLElaboration(Crit3DElabList *listXMLElab, Crit3DAnomalyList *listXML
 
                     if (param1IsClimate)
                     {
-                        listXMLElab->insertParam1ClimateField(elabParam1);
+                        if (elabParam1.isEmpty())
+                        {
+                            listXMLElab->eraseElement(nElab);
+                            errorElab = true;
+                        }
+                        else
+                        {
+                            listXMLElab->insertParam1ClimateField(elabParam1);
+                        }
                     }
                     else
                     {
-                        if (elabParam1.isEmpty())
+                        if (checkElabParam(child.toElement().text(), elabParam1) == false)
+                        {
+                            listXMLElab->eraseElement(nElab);
+                            errorElab = true;
+                        }
+                        else if (elabParam1.isEmpty())
                         {
                             listXMLElab->insertParam1(NODATA);
                         }
@@ -2371,12 +2389,26 @@ bool parseXMLElaboration(Crit3DElabList *listXMLElab, Crit3DAnomalyList *listXML
                     }
 
                     elab = child.toElement().text();
-                    listXMLElab->insertElab1(elab);
+                    if (checkSpecialElab(elab, listXMLElab->listElab2().at(nElab)) == false)
+                    {
+                        listXMLElab->eraseElement(nElab);
+                        errorElab = true;
+                    }
+                    else
+                    {
+                        listXMLElab->insertElab1(elab);
+                    }
+
                 }
                 if (myTag == "SECONDARYELABORATION")
                 {
                     elabParam2 = child.toElement().attribute("Param2");
-                    if (elabParam2.isEmpty())
+                    if (checkElabParam(child.toElement().text(), elabParam2) == false)
+                    {
+                        listXMLElab->eraseElement(nElab);
+                        errorElab = true;
+                    }
+                    else if (elabParam2.isEmpty())
                     {
                         listXMLElab->insertParam2(NODATA);
                     }
@@ -2387,12 +2419,12 @@ bool parseXMLElaboration(Crit3DElabList *listXMLElab, Crit3DAnomalyList *listXML
                     elab = child.toElement().text();
                     listXMLElab->insertElab2(elab);
                 }
-                if (error)
+                if (errorElab)
                 {
-                    error = false;
+                    errorElab = false;
                     child = child.lastChild();
                     child = child.nextSibling();
-                    nElab = nElab;
+                    nElab = nElab - 1;
                 }
                 else
                 {
@@ -2464,16 +2496,16 @@ bool parseXMLElaboration(Crit3DElabList *listXMLElab, Crit3DAnomalyList *listXML
             }
             else
             {
-                *myError = "Invalid RefType attribute";
-                return false;
+                ancestor = ancestor.nextSibling(); // something is wrong, go to next elab/anomaly
+                continue;
             }
             if (anomalyIsClimate)
             {
                 QString anomalyClimateField = ancestor.toElement().attribute("ClimateField");
                 if (anomalyClimateField.isEmpty())
                 {
-                    *myError = "Missing Anomaly Climate Field";
-                    return false;
+                    ancestor = ancestor.nextSibling(); // something is wrong, go to next elab/anomaly
+                    continue;
                 }
                 else
                 {
@@ -2491,34 +2523,54 @@ bool parseXMLElaboration(Crit3DElabList *listXMLElab, Crit3DAnomalyList *listXML
                 {
                     variable = child.toElement().text();
                     meteoVariable var = getKeyMeteoVarMeteoMap(MapDailyMeteoVarToString, variable.toStdString());
-                    listXMLAnomaly->insertVariable(var);
+                    if (var == noMeteoVar)
+                    {
+                        listXMLAnomaly->eraseElement(nAnomaly);
+                        errorAnomaly = true;
+                    }
+                    else
+                    {
+                        listXMLAnomaly->insertVariable(var);
+                    }
                 }
                 if (myTag == "YEARINTERVAL")
                 {
-                    firstYear = child.toElement().attribute("fin");
-                    lastYear = child.toElement().attribute("ini");
+                    lastYear = child.toElement().attribute("fin");
+                    firstYear = child.toElement().attribute("ini");
                     listXMLAnomaly->insertYearStart(firstYear.toInt());
                     listXMLAnomaly->insertYearEnd(lastYear.toInt());
+                    if (checkYears(firstYear, lastYear) == false)
+                    {
+                        listXMLAnomaly->eraseElement(nAnomaly);
+                        errorAnomaly = true;
+                    }
                 }
                 if (myTag == "REFYEARINTERVAL")
                 {
-                    refFirstYear = child.toElement().attribute("fin");
-                    refLastYear = child.toElement().attribute("ini");
+                    refLastYear = child.toElement().attribute("fin");
+                    refFirstYear = child.toElement().attribute("ini");
                     listXMLAnomaly->insertRefYearStart(refFirstYear.toInt());
                     listXMLAnomaly->insertRefYearEnd(refLastYear.toInt());
+                    if (checkYears(refFirstYear, refLastYear) == false)
+                    {
+                        listXMLAnomaly->eraseElement(nAnomaly);
+                        errorAnomaly = true;
+                    }
                 }
                 if (myTag == "PERIOD")
                 {
                     if (parseXMLPeriodTag(child, listXMLElab, listXMLAnomaly, true, false, period, firstYear, myError) == false)
                     {
-                        return false;
+                        listXMLAnomaly->eraseElement(nAnomaly);
+                        errorAnomaly = true;
                     }
                 }
                 if (myTag == "REFPERIOD")
                 {
                     if (parseXMLPeriodTag(child, listXMLElab, listXMLAnomaly, true, true, period, firstYear, myError) == false)
                     {
-                        return false;
+                        listXMLAnomaly->eraseElement(nAnomaly);
+                        errorAnomaly = true;
                     }
                 }
                 if (myTag == "PRIMARYELABORATION")
@@ -2539,11 +2591,24 @@ bool parseXMLElaboration(Crit3DElabList *listXMLElab, Crit3DAnomalyList *listXML
 
                     if (param1IsClimate)
                     {
-                        listXMLAnomaly->insertParam1ClimateField(elabParam1);
+                        if (elabParam1.isEmpty())
+                        {
+                            listXMLAnomaly->eraseElement(nAnomaly);
+                            errorAnomaly = true;
+                        }
+                        else
+                        {
+                            listXMLAnomaly->insertParam1ClimateField(elabParam1);
+                        }
                     }
                     else
                     {
-                        if (elabParam1.isEmpty())
+                        if (checkElabParam(child.toElement().text(), elabParam1) == false)
+                        {
+                            listXMLAnomaly->eraseElement(nAnomaly);
+                            errorAnomaly = true;
+                        }
+                        else if (elabParam1.isEmpty())
                         {
                             listXMLAnomaly->insertParam1(NODATA);
                         }
@@ -2551,15 +2616,29 @@ bool parseXMLElaboration(Crit3DElabList *listXMLElab, Crit3DAnomalyList *listXML
                         {
                             listXMLAnomaly->insertParam1(elabParam1.toFloat());
                         }
+
                     }
 
                     elab = child.toElement().text();
-                    listXMLAnomaly->insertElab1(elab);
+                    if (checkSpecialElab(elab, listXMLAnomaly->listElab2().at(nAnomaly)) == false)
+                    {
+                        listXMLAnomaly->eraseElement(nAnomaly);
+                        errorAnomaly = true;
+                    }
+                    else
+                    {
+                        listXMLAnomaly->insertElab1(elab);
+                    }
                 }
                 if (myTag == "SECONDARYELABORATION")
                 {
                     elabParam2 = child.toElement().attribute("Param2");
-                    if (elabParam2.isEmpty())
+                    if (checkElabParam(child.toElement().text(), elabParam2) == false)
+                    {
+                        listXMLAnomaly->eraseElement(nAnomaly);
+                        errorAnomaly = true;
+                    }
+                    else if (elabParam2.isEmpty())
                     {
                         listXMLAnomaly->insertParam2(NODATA);
                     }
@@ -2588,11 +2667,24 @@ bool parseXMLElaboration(Crit3DElabList *listXMLElab, Crit3DAnomalyList *listXML
 
                     if (param1IsClimate)
                     {
-                        listXMLAnomaly->insertRefParam1ClimateField(refElabParam1);
+                        if (refElabParam1.isEmpty())
+                        {
+                            listXMLAnomaly->eraseElement(nAnomaly);
+                            errorAnomaly = true;
+                        }
+                        else
+                        {
+                            listXMLAnomaly->insertRefParam1ClimateField(refElabParam1);
+                        }
                     }
                     else
                     {
-                        if (refElabParam1.isEmpty())
+                        if (checkElabParam(child.toElement().text(), refElabParam1) == false)
+                        {
+                            listXMLAnomaly->eraseElement(nAnomaly);
+                            errorAnomaly = true;
+                        }
+                        else if (refElabParam1.isEmpty())
                         {
                             listXMLAnomaly->insertRefParam1(NODATA);
                         }
@@ -2600,15 +2692,30 @@ bool parseXMLElaboration(Crit3DElabList *listXMLElab, Crit3DAnomalyList *listXML
                         {
                             listXMLAnomaly->insertRefParam1(refElabParam1.toFloat());
                         }
+
                     }
 
                     refElab = child.toElement().text();
-                    listXMLAnomaly->insertRefElab1(refElab);
+                    if (checkSpecialElab(refElab, listXMLAnomaly->listElab2().at(nAnomaly)) == false)
+                    {
+                        listXMLAnomaly->eraseElement(nAnomaly);
+                        errorAnomaly = true;
+                    }
+                    else
+                    {
+                        listXMLAnomaly->insertRefElab1(refElab);
+                    }
+
                 }
                 if (myTag == "REFSECONDARYELABORATION")
                 {
                     refElabParam2 = child.toElement().attribute("Param2");
-                    if (elabParam2.isEmpty())
+                    if (checkElabParam(child.toElement().text(), refElabParam2) == false)
+                    {
+                        listXMLAnomaly->eraseElement(nAnomaly);
+                        errorAnomaly = true;
+                    }
+                    else if (refElabParam2.isEmpty())
                     {
                         listXMLAnomaly->insertRefParam2(NODATA);
                     }
@@ -2616,10 +2723,21 @@ bool parseXMLElaboration(Crit3DElabList *listXMLElab, Crit3DAnomalyList *listXML
                     {
                         listXMLAnomaly->insertRefParam2(refElabParam2.toFloat());
                     }
+
                     refElab2 = child.toElement().text();
                     listXMLAnomaly->insertRefElab2(refElab2);
                 }
-                child = child.nextSibling();
+                if (errorAnomaly)
+                {
+                    errorAnomaly = false;
+                    child = child.lastChild();
+                    child = child.nextSibling();
+                    nAnomaly = nAnomaly - 1;
+                }
+                else
+                {
+                    child = child.nextSibling();
+                }
             }
             nAnomaly = nAnomaly + 1;
         }
@@ -2826,6 +2944,8 @@ bool parseXMLPeriodTag(QDomNode child, Crit3DElabList *listXMLElab, Crit3DAnomal
         dateStart = QDate::fromString(periodStart, "dd/MM/yyyy");
         dateEnd = QDate::fromString(periodEnd, "dd/MM/yyyy");
         nYears = child.toElement().attribute("nyears");
+        bool ok = true;
+        int nY = nYears.toInt(&ok);
 
         if (isAnomaly)
         {
@@ -2833,13 +2953,13 @@ bool parseXMLPeriodTag(QDomNode child, Crit3DElabList *listXMLElab, Crit3DAnomal
             {
                 listXMLAnomaly->insertRefDateStart(dateStart);
                 listXMLAnomaly->insertRefDateEnd(dateEnd);
-                listXMLAnomaly->insertRefNYears(nYears.toInt());
+                listXMLAnomaly->insertRefNYears(nY);
             }
             else
             {
                 listXMLAnomaly->insertDateStart(dateStart);
                 listXMLAnomaly->insertDateEnd(dateEnd);
-                listXMLAnomaly->insertNYears(nYears.toInt());
+                listXMLAnomaly->insertNYears(nY);
             }
 
         }
@@ -2847,11 +2967,19 @@ bool parseXMLPeriodTag(QDomNode child, Crit3DElabList *listXMLElab, Crit3DAnomal
         {
             listXMLElab->insertDateStart(dateStart);
             listXMLElab->insertDateEnd(dateEnd);
-            listXMLElab->insertNYears(nYears.toInt());
+            listXMLElab->insertNYears(nY);
         }
 
+        if (!dateStart.isValid() || !dateEnd.isValid() || dateStart > dateEnd || ok == false)
+        {
+            *myError = "Invalid period";
+            return false;
+        }
+        else
+        {
+            return true;
+        }
 
-        return true;
     }
     if (period == "Daily")
     {
@@ -2881,7 +3009,20 @@ bool parseXMLPeriodTag(QDomNode child, Crit3DElabList *listXMLElab, Crit3DAnomal
             listXMLElab->insertNYears(nYears.toInt());
         }
 
-        return true;
+        if (dayOfYear < 1 || dayOfYear > 366)
+        {
+            *myError = "Invalid period";
+            return false;
+        }
+        else if (!dateStart.isValid() || !dateEnd.isValid() || dateStart > dateEnd)
+        {
+            *myError = "Invalid period";
+            return false;
+        }
+        else
+        {
+            return true;
+        }
     }
     if (period == "Decadal")
     {
@@ -2915,8 +3056,20 @@ bool parseXMLPeriodTag(QDomNode child, Crit3DElabList *listXMLElab, Crit3DAnomal
             listXMLElab->insertDateEnd(dateEnd);
             listXMLElab->insertNYears(nYears.toInt());
         }
-
-        return true;
+        if (decade < 1 || decade > 36)
+        {
+            *myError = "Invalid period";
+            return false;
+        }
+        else if (!dateStart.isValid() || !dateEnd.isValid() || dateStart > dateEnd)
+        {
+            *myError = "Invalid period";
+            return false;
+        }
+        else
+        {
+            return true;
+        }
     }
     if (period == "Monthly")
     {
@@ -2946,8 +3099,21 @@ bool parseXMLPeriodTag(QDomNode child, Crit3DElabList *listXMLElab, Crit3DAnomal
             listXMLElab->insertDateEnd(dateEnd);
             listXMLElab->insertNYears(nYears.toInt());
         }
-
-        return true;
+        if (month < 1 || month > 12)
+        {
+            *myError = "Invalid period";
+            return false;
+        }
+        else
+        if (!dateStart.isValid() || !dateEnd.isValid() || dateStart > dateEnd)
+        {
+            *myError = "Invalid period";
+            return false;
+        }
+        else
+        {
+            return true;
+        }
     }
     if (period == "Seasonal")
     {
@@ -2987,8 +3153,20 @@ bool parseXMLPeriodTag(QDomNode child, Crit3DElabList *listXMLElab, Crit3DAnomal
             listXMLElab->insertDateEnd(dateEnd);
             listXMLElab->insertNYears(nYears.toInt());
         }
-
-        return true;
+        if (season < 1 || season > 4)
+        {
+            *myError = "Invalid period";
+            return false;
+        }
+        if (!dateStart.isValid() || !dateEnd.isValid() || dateStart > dateEnd)
+        {
+            *myError = "Invalid period";
+            return false;
+        }
+        else
+        {
+            return true;
+        }
     }
     if (period == "Annual")
     {
@@ -3017,9 +3195,62 @@ bool parseXMLPeriodTag(QDomNode child, Crit3DElabList *listXMLElab, Crit3DAnomal
             listXMLElab->insertNYears(nYears.toInt());
         }
 
-        *myError = "Invalid period";
-        return true;
+
+        if (!dateStart.isValid() || !dateEnd.isValid() || dateStart > dateEnd)
+        {
+            *myError = "Invalid period";
+            return false;
+        }
+        else
+        {
+            return true;
+        }
     }
 
+    *myError = "Invalid period";
     return false;
+}
+
+bool checkYears(QString firstYear, QString lastYear)
+{
+    bool okFirst = true;
+    bool okLast = true;
+    int fY = firstYear.toInt(&okFirst);
+    int lY = lastYear.toInt(&okLast);
+    if (okFirst == false || okLast == false)
+    {
+        return false;
+    }
+    else if (firstYear.size() != 4 || lastYear.size() != 4 || fY > lY)
+    {
+        return false;
+    }
+    else
+    {
+        return true;
+    }
+}
+
+bool checkElabParam(QString elab, QString param)
+{
+    if ( MapElabWithParam.find(elab.toStdString()) != MapElabWithParam.end())
+    {
+        if(param.isEmpty())
+        {
+            return false;
+        }
+    }
+    return true;
+}
+
+bool checkSpecialElab(QString elab1, QString elab2)
+{
+    if (elab1 == "huglin" || elab1 == "winkler" || elab1 == "fregoni")
+    {
+        if (elab2.isEmpty())
+        {
+            return false;
+        }
+    }
+    return true;
 }
