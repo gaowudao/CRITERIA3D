@@ -162,14 +162,10 @@ void MainWindow::resizeEvent(QResizeEvent *event)
 
 void MainWindow::mouseReleaseEvent(QMouseEvent *event)
 {
-    this->updateMaps();
-
-    gis::Crit3DGeoPoint pointSelected;
-
     if (myRubberBand != nullptr && myRubberBand->isVisible())
     {
-        QPointF lastCornerOffset = event->localPos();
-        QPointF firstCornerOffset = myRubberBand->getFirstCorner();
+        QPoint lastCornerOffset = getMapPos(event->pos());
+        QPoint firstCornerOffset = myRubberBand->getOrigin() - QPoint(MAPBORDER, MAPBORDER);
         QPoint pixelTopLeft;
         QPoint pixelBottomRight;
 
@@ -178,14 +174,14 @@ void MainWindow::mouseReleaseEvent(QMouseEvent *event)
             if (firstCornerOffset.x() > lastCornerOffset.x())
             {
                 // bottom to left
-                pixelTopLeft = lastCornerOffset.toPoint();
-                pixelBottomRight = firstCornerOffset.toPoint();
+                pixelTopLeft = lastCornerOffset;
+                pixelBottomRight = firstCornerOffset;
             }
             else
             {
                 // bottom to right
-                pixelTopLeft = QPoint(firstCornerOffset.toPoint().x(), lastCornerOffset.toPoint().y());
-                pixelBottomRight = QPoint(lastCornerOffset.toPoint().x(), firstCornerOffset.toPoint().y());
+                pixelTopLeft = QPoint(firstCornerOffset.x(), lastCornerOffset.y());
+                pixelBottomRight = QPoint(lastCornerOffset.x(), firstCornerOffset.y());
             }
         }
         else
@@ -193,20 +189,21 @@ void MainWindow::mouseReleaseEvent(QMouseEvent *event)
             if (firstCornerOffset.x() > lastCornerOffset.x())
             {
                 // top to left
-                pixelTopLeft = QPoint(lastCornerOffset.toPoint().x(), firstCornerOffset.toPoint().y());
-                pixelBottomRight = QPoint(firstCornerOffset.toPoint().x(), lastCornerOffset.toPoint().y());
+                pixelTopLeft = QPoint(lastCornerOffset.x(), firstCornerOffset.y());
+                pixelBottomRight = QPoint(firstCornerOffset.x(), lastCornerOffset.y());
             }
             else
             {
                 // top to right
-                pixelTopLeft = firstCornerOffset.toPoint();
-                pixelBottomRight = lastCornerOffset.toPoint();
+                pixelTopLeft = firstCornerOffset;
+                pixelBottomRight = lastCornerOffset;
             }
         }
 
-        QPointF topLeft = this->mapView->mapToScene(getMapPos(pixelTopLeft));
-        QPointF bottomRight = this->mapView->mapToScene(getMapPos(pixelBottomRight));
+        QPointF topLeft = this->mapView->mapToScene(pixelTopLeft);
+        QPointF bottomRight = this->mapView->mapToScene(pixelBottomRight);
         QRectF rectF(topLeft, bottomRight);
+        gis::Crit3DGeoPoint pointSelected;
 
         foreach (StationMarker* marker, pointList)
         {
@@ -221,6 +218,7 @@ void MainWindow::mouseReleaseEvent(QMouseEvent *event)
                 }
             }
         }
+
         myRubberBand->hide();
     }
 }
@@ -253,7 +251,8 @@ void MainWindow::mouseMoveEvent(QMouseEvent * event)
 
     if (myRubberBand != nullptr && myRubberBand->isActive)
     {
-        myRubberBand->setGeometry(QRect(myRubberBand->getOrigin(), mapPos).normalized());
+        QPoint widgetPos = mapPos + QPoint(MAPBORDER, MAPBORDER);
+        myRubberBand->setGeometry(QRect(myRubberBand->getOrigin(), widgetPos).normalized());
     }
 }
 
@@ -267,9 +266,9 @@ void MainWindow::mousePressEvent(QMouseEvent *event)
     {
         if (myRubberBand != nullptr)
         {
-            myRubberBand->setOrigin(mapPos);
-            myRubberBand->setFirstCorner(mapPos);
-            myRubberBand->setGeometry(QRect(mapPos, QSize()));
+            QPoint widgetPos = mapPos + QPoint(MAPBORDER, MAPBORDER);
+            myRubberBand->setOrigin(widgetPos);
+            myRubberBand->setGeometry(QRect(widgetPos, QSize()));
             myRubberBand->isActive = true;
             myRubberBand->show();
         }
@@ -580,8 +579,6 @@ void MainWindow::resetMeteoPoints()
     this->pointList.clear();
 
     datasetCheckbox.clear();
-
-    this->myRubberBand = nullptr;
 }
 
 

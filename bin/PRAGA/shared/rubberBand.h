@@ -13,14 +13,11 @@
 
         RubberBand(Shape s, QWidget *p = Q_NULLPTR);
 
-        void setOrigin(QPoint origin);
+        void setOrigin(QPoint origin_);
         QPoint getOrigin();
-        void setFirstCorner(QPointF firstCorner);
-        QPointF getFirstCorner();
 
     private:
         QPoint origin;
-        QPointF firstCorner;
 
     signals:
 
