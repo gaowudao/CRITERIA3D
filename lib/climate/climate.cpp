@@ -2263,7 +2263,6 @@ bool parseXMLElaboration(Crit3DElabList *listXMLElab, Crit3DAnomalyList *listXML
     bool refParam1IsClimate;
     bool anomalyIsClimate;
     QString elabParam2;
-    QString unit;
 
     int nElab = 0;
     int nAnomaly = 0;

@@ -328,6 +328,58 @@ void Crit3DElabList::insertParam2(float param2)
     _listParam2.push_back(param2);
 }
 
+void Crit3DElabList::addElab(unsigned int index)
+{
+
+    QString yearStart = QString::number(_listYearStart[index]);
+    QString yearEnd = QString::number(_listYearEnd[index]);
+    QString variable = QString::fromStdString(MapDailyMeteoVarToString.at(_listVariable[index]));
+    QString period = _listPeriodStr[index];
+    QString periodStartDay = QString::number(_listDateStart[index].day());
+    QString periodStartMonth = QString::number(_listDateStart[index].month());
+    QString periodEndDay = QString::number(_listDateEnd[index].day());
+    QString periodEndMonth = QString::number(_listDateEnd[index].month());
+    QString nYear = QString::number(_listNYears[index]);
+    QString elab1 = _listElab1[index];
+    QString secondElab = _listElab2[index];
+    QString elab1Param = QString::number(_listParam1[index]);
+    QString elab2Param = QString::number(_listParam2[index]);
+    QString elab1ParamFromdB = _listParam1ClimateField[index];
+
+
+    QString elabAdded = yearStart + "-" + yearEnd + "_" + variable + "_" + period;
+    elabAdded = elabAdded + "_" + periodStartDay + ":" + periodStartMonth + "-" + periodEndDay + ":" + periodEndMonth;
+    if (nYear != "0")
+    {
+        elabAdded = elabAdded + "-+" + nYear + "y";
+    }
+
+    if (!secondElab.isEmpty())
+    {
+        elabAdded = elabAdded + "_" + secondElab;
+
+        if (!elab2Param.isEmpty())
+        {
+            elabAdded = elabAdded + "_" + elab2Param;
+        }
+    }
+    elabAdded = elabAdded + "_" + elab1;
+    if (!elab1Param.isEmpty())
+    {
+        elabAdded = elabAdded + "_" + elab1Param;
+    }
+    else if(_listParam1IsClimate[index] == true && !elab1ParamFromdB.isEmpty())
+    {
+        elabAdded = elabAdded + "_|" + elab1ParamFromdB + "||";
+    }
+
+    if (_listAll.contains(elabAdded)!= 0)
+    {
+        return;
+    }
+
+    _listAll.append(elabAdded);
+}
 
 /*
 void Crit3DElabList::parserElaboration()
