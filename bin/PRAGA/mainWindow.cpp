@@ -162,6 +162,8 @@ void MainWindow::resizeEvent(QResizeEvent *event)
 
 void MainWindow::mouseReleaseEvent(QMouseEvent *event)
 {
+    updateMaps();
+
     if (myRubberBand != nullptr && myRubberBand->isVisible())
     {
         QPoint lastCornerOffset = getMapPos(event->pos());

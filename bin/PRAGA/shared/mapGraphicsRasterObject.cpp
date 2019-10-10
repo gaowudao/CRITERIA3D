@@ -127,36 +127,17 @@ void RasterObject::updateCenter()
 {
     if (! isDrawing) return;
 
-    QPointF sceneCenter, rasterCenter, center;
-
+    QPointF newCenter;
     int widthPixels = view->width() - MAPBORDER*2;
     int heightPixels = view->height() - MAPBORDER*2;
-    sceneCenter = view->mapToScene(QPoint(widthPixels/2, heightPixels/2));
-
-    rasterCenter.setX(latLonHeader.llCorner->longitude + latLonHeader.dx * latLonHeader.nrCols*0.5);
-    rasterCenter.setY(latLonHeader.llCorner->latitude + latLonHeader.dy * latLonHeader.nrRows*0.5);
-
-    if (fabs(sceneCenter.x() - rasterCenter.x()) <  latLonHeader.dx * latLonHeader.nrCols
-        && fabs(sceneCenter.y() - rasterCenter.y()) <  latLonHeader.dy * latLonHeader.nrRows)
-    {
-        center = sceneCenter;
-    }
-    else
-    {
-        center = rasterCenter;
-    }
+    newCenter = view->mapToScene(QPoint(widthPixels/2, heightPixels/2));
 
     // reference point
-    geoMap->referencePoint.longitude = center.x();
-    geoMap->referencePoint.latitude = center.y();
+    geoMap->referencePoint.longitude = newCenter.x();
+    geoMap->referencePoint.latitude = newCenter.y();
+    referencePixel = view->tileSource()->ll2qgs(newCenter, view->zoomLevel());
 
-    // reference pixel
-    QPointF refPoint;
-    refPoint.setX(geoMap->referencePoint.longitude);
-    refPoint.setY(geoMap->referencePoint.latitude);
-    referencePixel = view->tileSource()->ll2qgs(refPoint, view->zoomLevel());
-
-    this->setPos(center);
+    this->setPos(newCenter);
 }
 
 
