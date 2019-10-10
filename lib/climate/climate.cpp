@@ -2300,7 +2300,7 @@ bool parseXMLElaboration(Crit3DElabList *listXMLElab, Crit3DAnomalyList *listXML
             secElab = ancestor.toElement().elementsByTagName("SecondaryElaboration");
             if (secElab.size() == 0)
             {
-                listXMLElab->insertElab2("");
+                listXMLElab->insertElab2("");       // there is not secondary elab
                 listXMLElab->insertParam2(NODATA);
             }
 
@@ -2474,13 +2474,13 @@ bool parseXMLElaboration(Crit3DElabList *listXMLElab, Crit3DAnomalyList *listXML
             anomalySecElab = ancestor.toElement().elementsByTagName("SecondaryElaboration");
             if (anomalySecElab.size() == 0)
             {
-                listXMLAnomaly->insertElab2("");
+                listXMLAnomaly->insertElab2("");       // there is not secondary elab
                 listXMLAnomaly->insertParam2(NODATA);
             }
             anomalyRefSecElab = ancestor.toElement().elementsByTagName("RefSecondaryElaboration");
             if (anomalyRefSecElab.size() == 0)
             {
-                listXMLAnomaly->insertRefElab2("");
+                listXMLAnomaly->insertRefElab2("");     // there is not ref secondary elab
                 listXMLAnomaly->insertRefParam2(NODATA);
             }
 
@@ -2974,7 +2974,12 @@ bool parseXMLPeriodTag(QDomNode child, Crit3DElabList *listXMLElab, Crit3DAnomal
             listXMLElab->insertNYears(nY);
         }
 
-        if (!dateStart.isValid() || !dateEnd.isValid() || dateStart > dateEnd || ok == false)
+        if (!dateStart.isValid() || !dateEnd.isValid() || ok == false)
+        {
+            *myError = "Invalid period";
+            return false;
+        }
+        else if (nY == 0 && dateStart > dateEnd)
         {
             *myError = "Invalid period";
             return false;
