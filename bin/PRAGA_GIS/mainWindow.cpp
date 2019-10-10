@@ -34,7 +34,7 @@
 #include "ui_mainWindow.h"
 
 
-#define MAPBORDER 10
+#define MAPBORDER 11
 #define INFOHEIGHT 40
 #define TOOLSWIDTH 260
 
