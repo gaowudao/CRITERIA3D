@@ -141,7 +141,8 @@
         void setTileMapSource(OSMTileSource::OSMTileType mySource);
         void setProjectTileMap();
 
-        QPoint getMapPoint(QPoint* point) const;
+        QPoint getMapPos(const QPoint& pos);
+        bool isInsideMap(const QPoint& pos);
 
         void updateVariable();
         void updateDateTime();
@@ -158,7 +159,7 @@
         bool checkMapVariable(bool isComputed);
         void setMapVariable(meteoVariable myVar, gis::Crit3DRasterGrid *myGrid);
 
-        void openSoilWidget(QPoint localPos);
+        void openSoilWidget(QPoint mapPos);
         void contextMenuRequested(QPoint localPos, QPoint globalPos);
 
         void setInputRasterVisible(bool value);

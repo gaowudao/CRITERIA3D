@@ -118,11 +118,10 @@ void MainWindow::mouseReleaseEvent(QMouseEvent *event)
 
 void MainWindow::mouseDoubleClickEvent(QMouseEvent * event)
 {
-    QPoint pos = event->pos();
-    QPoint mapPoint = getMapPoint(&pos);
-    if ((mapPoint.x() <= 0) || (mapPoint.y() <= 0)) return;
+    QPoint mapPos = getMapPos(event->pos());
+    if (! isInsideMap(mapPos)) return;
 
-    Position newCenter = this->mapView->mapToScene(mapPoint);
+    Position newCenter = this->mapView->mapToScene(mapPos);
     this->ui->statusBar->showMessage(QString::number(newCenter.latitude()) + " " + QString::number(newCenter.longitude()));
 
     if (event->button() == Qt::LeftButton)
@@ -140,11 +139,10 @@ void MainWindow::mouseDoubleClickEvent(QMouseEvent * event)
 
 void MainWindow::mouseMoveEvent(QMouseEvent * event)
 {
-    QPoint pos = event->pos();
-    QPoint mapPoint = getMapPoint(&pos);
-    if ((mapPoint.x() <= 0) || (mapPoint.y() <= 0)) return;
+    QPoint mapPos = getMapPos(event->pos());
+    if (! isInsideMap(mapPos)) return;
 
-    Position geoPoint = this->mapView->mapToScene(mapPoint);
+    Position geoPoint = this->mapView->mapToScene(mapPos);
     this->ui->statusBar->showMessage(QString::number(geoPoint.latitude()) + " " + QString::number(geoPoint.longitude()));
 }
 
@@ -331,15 +329,26 @@ void MainWindow::on_actionClose_Project_triggered()
 }
 
 
-QPoint MainWindow::getMapPoint(QPoint* point) const
+QPoint MainWindow::getMapPos(const QPoint& pos)
 {
     QPoint mapPoint;
-    int dx, dy;
-    dx = this->ui->widgetMap->x();
-    dy = this->ui->widgetMap->y() + this->ui->menuBar->height();
-    mapPoint.setX(point->x() - dx - MAPBORDER);
-    mapPoint.setY(point->y() - dy - MAPBORDER);
+    int dx = ui->widgetMap->x();
+    int dy = ui->widgetMap->y() + ui->menuBar->height();
+    mapPoint.setX(pos.x() - dx - MAPBORDER);
+    mapPoint.setY(pos.y() - dy - MAPBORDER);
     return mapPoint;
+}
+
+
+bool MainWindow::isInsideMap(const QPoint& pos)
+{
+    if (pos.x() > 0 && pos.y() > 0 &&
+        pos.x() < (mapView->width() - MAPBORDER*2) &&
+        pos.y() < (mapView->height() - MAPBORDER*2) )
+    {
+        return true;
+    }
+    else return false;
 }
 
 
@@ -940,11 +949,10 @@ void MainWindow::on_actionCompute_AllMeteoMaps_triggered()
 }
 
 
-void MainWindow::openSoilWidget(QPoint localPos)
+void MainWindow::openSoilWidget(QPoint mapPos)
 {
     double x, y;
-
-    Position geoPos = mapView->mapToScene(getMapPoint(&localPos));
+    Position geoPos = mapView->mapToScene(mapPos);
     gis::latLonToUtmForceZone(myProject.gisSettings.utmZone, geoPos.latitude(), geoPos.longitude(), &x, &y);
     QString soilCode = myProject.getCrit3DSoilCode(x, y);
 
@@ -968,6 +976,9 @@ void MainWindow::contextMenuRequested(QPoint localPos, QPoint globalPos)
     QMenu submenu;
     int nrItems = 0;
 
+    QPoint mapPos = getMapPos(localPos);
+    if (! isInsideMap(mapPos)) return;
+
     if (myProject.soilMap.isLoaded)
     {
         submenu.addAction("Soil data");
@@ -982,7 +993,7 @@ void MainWindow::contextMenuRequested(QPoint localPos, QPoint globalPos)
         if (myAction->text().contains("Soil data") )
         {
             if (myProject.nrSoils > 0) {
-                openSoilWidget(localPos);
+                openSoilWidget(mapPos);
             }
             else {
                 myProject.logInfoGUI("Load soil database before.");
