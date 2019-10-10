@@ -133,8 +133,6 @@
 
     bool checkElabParam(QString elab, QString param);
 
-    bool checkSpecialElab(QString elab1, QString elab2);
-
     //int getClimateIndexFromDate(QDate myDate, period periodType);
 
 #endif // CLIMATE_H

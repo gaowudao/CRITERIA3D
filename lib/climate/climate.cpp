@@ -2274,7 +2274,7 @@ bool parseXMLElaboration(Crit3DElabList *listXMLElab, Crit3DAnomalyList *listXML
     {
         if (ancestor.toElement().tagName().toUpper() == "ELABORATION")
         {
-
+            qDebug() << "ELABORATION ";
             QString dataTypeAttribute = ancestor.toElement().attribute("Datatype").toUpper();
             if ( dataTypeAttribute == "GRID")
             {
@@ -2389,7 +2389,7 @@ bool parseXMLElaboration(Crit3DElabList *listXMLElab, Crit3DAnomalyList *listXML
                     }
 
                     elab = child.toElement().text();
-                    if (checkSpecialElab(elab, listXMLElab->listElab2().at(nElab)) == false)
+                    if ( (elab == "huglin" || elab == "winkler" || elab == "fregoni") && secElab.size() == 0 )
                     {
                         listXMLElab->eraseElement(nElab);
                         errorElab = true;
@@ -2433,10 +2433,11 @@ bool parseXMLElaboration(Crit3DElabList *listXMLElab, Crit3DAnomalyList *listXML
 
             }
             nElab = nElab + 1;
+            qDebug() << "nElab " << nElab;
         }
         else if (ancestor.toElement().tagName().toUpper() == "ANOMALY")
         {
-
+            qDebug() << "ANOMALY ";
             if (ancestor.toElement().attribute("AnomalyType").toUpper() == "PERCENTAGE")
             {
                 listXMLAnomaly->insertIsPercentage(true);
@@ -2620,7 +2621,7 @@ bool parseXMLElaboration(Crit3DElabList *listXMLElab, Crit3DAnomalyList *listXML
                     }
 
                     elab = child.toElement().text();
-                    if (checkSpecialElab(elab, listXMLAnomaly->listElab2().at(nAnomaly)) == false)
+                    if ( (elab == "huglin" || elab == "winkler" || elab == "fregoni") && anomalySecElab.size() == 0 )
                     {
                         listXMLAnomaly->eraseElement(nAnomaly);
                         errorAnomaly = true;
@@ -2696,7 +2697,7 @@ bool parseXMLElaboration(Crit3DElabList *listXMLElab, Crit3DAnomalyList *listXML
                     }
 
                     refElab = child.toElement().text();
-                    if (checkSpecialElab(refElab, listXMLAnomaly->listElab2().at(nAnomaly)) == false)
+                    if ( (refElab == "huglin" || refElab == "winkler" || refElab == "fregoni") && anomalyRefSecElab.size() == 0 )
                     {
                         listXMLAnomaly->eraseElement(nAnomaly);
                         errorAnomaly = true;
@@ -2740,10 +2741,12 @@ bool parseXMLElaboration(Crit3DElabList *listXMLElab, Crit3DAnomalyList *listXML
                 }
             }
             nAnomaly = nAnomaly + 1;
+            qDebug() << "nAnomaly " << nAnomaly;
         }
 
         else if (ancestor.toElement().tagName().toUpper() == "PHENOLOGY")
         {
+            qDebug() << "PHENOLOGY ";
               // TO DO
 //            child = ancestor.firstChild();
 //            while( !child.isNull())
@@ -2755,6 +2758,7 @@ bool parseXMLElaboration(Crit3DElabList *listXMLElab, Crit3DAnomalyList *listXML
 
         else if (ancestor.toElement().tagName().toUpper() == "DROUGHT")
         {
+            qDebug() << "DROUGHT ";
               // TO DO
 //            child = ancestor.firstChild();
 //            while( !child.isNull())
@@ -3243,14 +3247,3 @@ bool checkElabParam(QString elab, QString param)
     return true;
 }
 
-bool checkSpecialElab(QString elab1, QString elab2)
-{
-    if (elab1 == "huglin" || elab1 == "winkler" || elab1 == "fregoni")
-    {
-        if (elab2.isEmpty())
-        {
-            return false;
-        }
-    }
-    return true;
-}
