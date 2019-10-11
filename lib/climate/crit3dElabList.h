@@ -93,8 +93,6 @@ public:
     void insertParam2(float param2);
 
     void addElab(unsigned int index);
-    //void parserElaboration();
-    //bool parserGenericPeriodString(int index);
 
 private:
 

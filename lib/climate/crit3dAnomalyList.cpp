@@ -645,3 +645,114 @@ void Crit3DAnomalyList::insertRefParam2(float refParam2)
 {
     _listRefParam2.push_back(refParam2);
 }
+
+void Crit3DAnomalyList::addAnomaly(unsigned int index)
+{
+
+    QString yearStart = QString::number(_listYearStart[index]);
+    QString yearEnd = QString::number(_listYearEnd[index]);
+    QString variable = QString::fromStdString(MapDailyMeteoVarToString.at(_listVariable[index]));
+    QString period = _listPeriodStr[index];
+    QString periodStartDay = QString::number(_listDateStart[index].day());
+    QString periodStartMonth = QString::number(_listDateStart[index].month());
+    QString periodEndDay = QString::number(_listDateEnd[index].day());
+    QString periodEndMonth = QString::number(_listDateEnd[index].month());
+    QString nYear = QString::number(_listNYears[index]);
+    QString elab1 = _listElab1[index];
+    QString secondElab = _listElab2[index];
+    float elab1Param = _listParam1[index];
+    float elab2Param = _listParam2[index];
+    QString elab1ParamFromdB = _listParam1ClimateField[index];
+
+    QString anomalyClimate = _listAnomalyClimateField[index];
+    QString refYearStart = QString::number(_listRefYearStart[index]);
+    QString refYearEnd = QString::number(_listRefYearEnd[index]);
+    QString refPeriod = _listRefPeriodStr[index];
+    QString refPeriodStartDay = QString::number(_listRefDateStart[index].day());
+    QString refPeriodStartMonth = QString::number(_listRefDateStart[index].month());
+    QString refPeriodEndDay = QString::number(_listRefDateEnd[index].day());
+    QString refPeriodEndMonth = QString::number(_listRefDateEnd[index].month());
+    QString refNYear = QString::number(_listRefNYears[index]);
+    QString refElab1 = _listRefElab1[index];
+    QString refSecondElab = _listRefElab2[index];
+    float refElab1Param = _listRefParam1[index];
+    float refElab2Param = _listRefParam2[index];
+    QString refElab1ParamFromdB = _listRefParam1ClimateField[index];
+
+
+    QString anomalyAdded = yearStart + "-" + yearEnd + "_" + variable + "_" + period;
+    anomalyAdded = anomalyAdded + "_" + periodStartDay + ":" + periodStartMonth + "-" + periodEndDay + ":" + periodEndMonth;
+    if (nYear != "0")
+    {
+        anomalyAdded = anomalyAdded + "-+" + nYear + "y";
+    }
+
+    if (!secondElab.isEmpty())
+    {
+        anomalyAdded = anomalyAdded + "_" + secondElab;
+
+        if (elab2Param != NODATA)
+        {
+            anomalyAdded = anomalyAdded + "_" + QString::number(elab2Param);
+        }
+    }
+    anomalyAdded = anomalyAdded + "_" + elab1;
+    if (elab1Param != NODATA)
+    {
+        anomalyAdded = anomalyAdded + "_" + QString::number(elab1Param);
+    }
+    else if(_listParam1IsClimate[index] == true && !elab1ParamFromdB.isEmpty())
+    {
+        anomalyAdded = anomalyAdded + "_|" + elab1ParamFromdB + "||";
+    }
+    anomalyAdded = anomalyAdded + "_REF_";
+    if (_listIsAnomalyFromDb[index] == true)
+    {
+        anomalyAdded = anomalyAdded + anomalyClimate;
+    }
+    else
+    {
+        anomalyAdded = anomalyAdded + refYearStart + "-" + refYearEnd + "_" + refPeriod;
+        anomalyAdded = anomalyAdded + "_" + refPeriodStartDay + ":" + refPeriodStartMonth + "-" + refPeriodEndDay + ":" + refPeriodEndMonth;
+        if (refNYear != "0")
+        {
+            anomalyAdded = anomalyAdded + "-+" + refNYear + "y";
+        }
+
+        if (!refSecondElab.isEmpty())
+        {
+            anomalyAdded = anomalyAdded + "_" + refSecondElab;
+
+            if (refElab2Param != NODATA)
+            {
+                anomalyAdded = anomalyAdded + "_" + QString::number(refElab2Param);
+            }
+        }
+        anomalyAdded = anomalyAdded + "_" + refElab1;
+        if (refElab1Param != NODATA)
+        {
+            anomalyAdded = anomalyAdded + "_" + QString::number(refElab1Param);
+        }
+        else if(_listRefParam1IsClimate[index] == true && !refElab1ParamFromdB.isEmpty())
+        {
+            anomalyAdded = anomalyAdded + "_|" + refElab1ParamFromdB + "||";
+        }
+    }
+
+    if (_listAll.contains(anomalyAdded)!= 0)
+    {
+        return;
+    }
+
+    _listAll.append(anomalyAdded);
+}
+
+QStringList Crit3DAnomalyList::listAll() const
+{
+    return _listAll;
+}
+
+void Crit3DAnomalyList::setListAll(const QStringList &listAll)
+{
+    _listAll = listAll;
+}

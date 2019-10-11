@@ -92,9 +92,6 @@ public:
     void setListParam2(const std::vector<float> &listParam2);
     void insertParam2(float param2);
 
-    //void parserElaboration();
-    //bool parserGenericPeriodString(int index);
-
     std::vector<bool> isPercentage() const;
     void setIsPercentage(const std::vector<bool> &isPercentage);
     void insertIsPercentage(bool isPercentage);
@@ -158,6 +155,11 @@ public:
     std::vector<float> listRefParam2() const;
     void setListRefParam2(const std::vector<float> &listRefParam2);
     void insertRefParam2(float refParam2);
+
+    void addAnomaly(unsigned int index);
+
+    QStringList listAll() const;
+    void setListAll(const QStringList &listAll);
 
 private:
 
