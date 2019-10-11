@@ -77,6 +77,7 @@ MainWindow::MainWindow(QWidget *parent) :
     this->startCenter = new Position (myProject.gisSettings.startLocation.longitude, myProject.gisSettings.startLocation.latitude, 0.0);
     this->mapView->setZoomLevel(8);
     this->mapView->centerOn(startCenter->lonLat());
+    connect(this->mapView, SIGNAL(zoomLevelChanged(quint8)), this, SLOT(updateMaps()));
 
     // Set raster objects
     this->rasterObj = new RasterObject(this->mapView);
@@ -131,17 +132,19 @@ void MainWindow::resizeEvent(QResizeEvent * event)
 }
 
 
+void MainWindow::updateMaps()
+{
+    rasterObj->updateCenter();
+}
+
+
 void MainWindow::mouseReleaseEvent(QMouseEvent *event){
-    Q_UNUSED(event)
-
-    this->rasterObj->updateCenter();
-
-    gis::Crit3DGeoPoint pointSelected;
+    updateMaps();
 
     if (myRubberBand != nullptr && myRubberBand->isVisible())
     {
-        QPointF lastCornerOffset = event->localPos();
-        QPointF firstCornerOffset = myRubberBand->getFirstCorner();
+        QPoint lastCornerOffset = getMapPos(event->pos());
+        QPoint firstCornerOffset = myRubberBand->getOrigin() - QPoint(MAPBORDER, MAPBORDER);
         QPoint pixelTopLeft;
         QPoint pixelBottomRight;
 
@@ -149,37 +152,37 @@ void MainWindow::mouseReleaseEvent(QMouseEvent *event){
         {
             if (firstCornerOffset.x() > lastCornerOffset.x())
             {
-                qDebug() << "bottom to left";
-                pixelTopLeft = lastCornerOffset.toPoint();
-                pixelBottomRight = firstCornerOffset.toPoint();
+                // bottom to left
+                pixelTopLeft = lastCornerOffset;
+                pixelBottomRight = firstCornerOffset;
             }
             else
             {
-                qDebug() << "bottom to right";
-
-                pixelTopLeft = QPoint(firstCornerOffset.toPoint().x(), lastCornerOffset.toPoint().y());
-                pixelBottomRight = QPoint(lastCornerOffset.toPoint().x(), firstCornerOffset.toPoint().y());
+                // bottom to right
+                pixelTopLeft = QPoint(firstCornerOffset.x(), lastCornerOffset.y());
+                pixelBottomRight = QPoint(lastCornerOffset.x(), firstCornerOffset.y());
             }
         }
         else
         {
             if (firstCornerOffset.x() > lastCornerOffset.x())
             {
-                qDebug() << "top to left";
-                pixelTopLeft = QPoint(lastCornerOffset.toPoint().x(), firstCornerOffset.toPoint().y());
-                pixelBottomRight = QPoint(firstCornerOffset.toPoint().x(), lastCornerOffset.toPoint().y());
+                // top to left
+                pixelTopLeft = QPoint(lastCornerOffset.x(), firstCornerOffset.y());
+                pixelBottomRight = QPoint(firstCornerOffset.x(), lastCornerOffset.y());
             }
             else
             {
-                qDebug() << "top to right";
-                pixelTopLeft = firstCornerOffset.toPoint();
-                pixelBottomRight = lastCornerOffset.toPoint();
+                // top to right
+                pixelTopLeft = firstCornerOffset;
+                pixelBottomRight = lastCornerOffset;
             }
         }
 
-        QPointF topLeft = this->mapView->mapToScene(getMapPoint(&pixelTopLeft));
-        QPointF bottomRight = this->mapView->mapToScene(getMapPoint(&pixelBottomRight));
+        QPointF topLeft = this->mapView->mapToScene(pixelTopLeft);
+        QPointF bottomRight = this->mapView->mapToScene(pixelBottomRight);
         QRectF rectF(topLeft, bottomRight);
+        gis::Crit3DGeoPoint pointSelected;
 
         foreach (StationMarker* marker, pointList)
         {
@@ -194,6 +197,7 @@ void MainWindow::mouseReleaseEvent(QMouseEvent *event){
                 }
             }
         }
+
         myRubberBand->hide();
     }
 }
@@ -201,11 +205,10 @@ void MainWindow::mouseReleaseEvent(QMouseEvent *event){
 
 void MainWindow::mouseDoubleClickEvent(QMouseEvent * event)
 {
-    QPoint pos = event->pos();
-    QPoint mapPoint = getMapPoint(&pos);
-    if ((mapPoint.x() <= 0) || (mapPoint.y() <= 0)) return;
+    QPoint mapPos = getMapPos(event->pos());
+    if (! isInsideMap(mapPos)) return;
 
-    Position newCenter = this->mapView->mapToScene(mapPoint);
+    Position newCenter = this->mapView->mapToScene(mapPos);
     this->ui->statusBar->showMessage(QString::number(newCenter.latitude()) + " " + QString::number(newCenter.longitude()));
 
     if (event->button() == Qt::LeftButton)
@@ -214,39 +217,38 @@ void MainWindow::mouseDoubleClickEvent(QMouseEvent * event)
         this->mapView->zoomOut();
 
     this->mapView->centerOn(newCenter.lonLat());
-
-    this->rasterObj->updateCenter();
 }
 
 
 void MainWindow::mouseMoveEvent(QMouseEvent * event)
 {
-    QPoint pos = event->pos();
-    QPoint mapPoint = getMapPoint(&pos);
-    if ((mapPoint.x() <= 0) || (mapPoint.y() <= 0)) return;
+    QPoint mapPos = getMapPos(event->pos());
+    if (! isInsideMap(mapPos)) return;
 
-    Position geoPoint = this->mapView->mapToScene(mapPoint);
+    Position geoPoint = this->mapView->mapToScene(mapPos);
     this->ui->statusBar->showMessage(QString::number(geoPoint.latitude()) + " " + QString::number(geoPoint.longitude()));
 
-    if (myRubberBand != nullptr)
+    if (myRubberBand != nullptr && myRubberBand->isActive)
     {
-        myRubberBand->setGeometry(QRect(myRubberBand->getOrigin(), mapPoint).normalized());
+        QPoint widgetPos = mapPos + QPoint(MAPBORDER, MAPBORDER);
+        myRubberBand->setGeometry(QRect(myRubberBand->getOrigin(), widgetPos).normalized());
     }
 }
 
 
 void MainWindow::mousePressEvent(QMouseEvent *event)
 {
+    QPoint mapPos = getMapPos(event->pos());
+    if (! isInsideMap(mapPos)) return;
+
     if (event->button() == Qt::RightButton)
     {
         if (myRubberBand != nullptr)
         {
-            QPoint pos = event->pos();
-            QPointF firstCorner = event->localPos();
-            myRubberBand->setFirstCorner(firstCorner);
-            QPoint mapPoint = getMapPoint(&pos);
-            myRubberBand->setOrigin(mapPoint);
-            myRubberBand->setGeometry(QRect(mapPoint, QSize()));
+            QPoint widgetPos = mapPos + QPoint(MAPBORDER, MAPBORDER);
+            myRubberBand->setOrigin(widgetPos);
+            myRubberBand->setGeometry(QRect(widgetPos, QSize()));
+            myRubberBand->isActive = true;
             myRubberBand->show();
         }
     }
@@ -257,6 +259,7 @@ void MainWindow::on_rasterOpacitySlider_sliderMoved(int position)
 {
     this->rasterObj->setOpacity(position / 100.0);
 }
+
 
 void MainWindow::on_actionMapTerrain_triggered()
 {
@@ -284,36 +287,38 @@ void MainWindow::on_actionMapESRISatellite_triggered()
     ui->actionMapESRISatellite->setChecked(true);
 }
 
+
 void MainWindow::renderDEM()
 {
-    this->setCurrentRaster(&(myProject.DEM));
+    setCurrentRaster(&(myProject.DEM));
     ui->labelRasterScale->setText(QString::fromStdString(getVariableString(noMeteoTerrain)));
-    this->ui->rasterOpacitySlider->setEnabled(true);
+    ui->rasterOpacitySlider->setEnabled(true);
 
     // center map
-    gis::Crit3DGeoPoint* center = this->rasterObj->getRasterCenter();
-    this->mapView->centerOn(qreal(center->longitude), qreal(center->latitude));
+    gis::Crit3DGeoPoint* center = rasterObj->getRasterCenter();
+    mapView->centerOn(qreal(center->longitude), qreal(center->latitude));
 
     // resize map
-    float size = this->rasterObj->getRasterMaxSize();
+    float size = rasterObj->getRasterMaxSize();
     size = log2(1000.f/size);
-    this->mapView->setZoomLevel(quint8(size));
-    this->mapView->centerOn(qreal(center->longitude), qreal(center->latitude));
+    mapView->setZoomLevel(quint8(size));
+    mapView->centerOn(qreal(center->longitude), qreal(center->latitude));
 
-    // active raster object
-    this->rasterObj->updateCenter();
+    updateMaps();
 }
+
 
 void MainWindow::drawMeteoPoints()
 {
-    this->resetMeteoPoints();
-    this->addMeteoPoints();
-    this->updateDateTime();
+    resetMeteoPoints();
+    addMeteoPoints();
+    updateDateTime();
     myProject.loadObsDataAllPoints(myProject.getCurrentDate(), myProject.getCurrentDate(), true);
-    this->showPointsGroup->setEnabled(true);
+    showPointsGroup->setEnabled(true);
     currentPointsVisualization = showLocation;
     redrawMeteoPoints(currentPointsVisualization, true);
 }
+
 
 void MainWindow::on_actionOpen_project_triggered()
 {
@@ -343,15 +348,27 @@ void MainWindow::on_actionRun_models_triggered()
     myProject.runModels(timeIni, timeFin, true, true, myProject.idArea);
 }
 
-QPoint MainWindow::getMapPoint(QPoint* point) const
+
+QPoint MainWindow::getMapPos(const QPoint& pos)
 {
-    QPoint mapPoint;
-    int dx, dy;
-    dx = this->ui->widgetMap->x();
-    dy = this->ui->widgetMap->y() + this->ui->menuBar->height();
-    mapPoint.setX(point->x() - dx);
-    mapPoint.setY(point->y() - dy);
-    return mapPoint;
+    QPoint mapPos;
+    int dx = ui->widgetMap->x();
+    int dy = ui->widgetMap->y() + ui->menuBar->height();
+    mapPos.setX(pos.x() - dx - MAPBORDER);
+    mapPos.setY(pos.y() - dy - MAPBORDER);
+    return mapPos;
+}
+
+
+bool MainWindow::isInsideMap(const QPoint& pos)
+{
+    if (pos.x() > 0 && pos.y() > 0 &&
+        pos.x() < (mapView->width() - MAPBORDER*2) &&
+        pos.y() < (mapView->height() - MAPBORDER*2) )
+    {
+        return true;
+    }
+    else return false;
 }
 
 

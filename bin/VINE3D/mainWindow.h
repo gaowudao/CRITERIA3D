@@ -69,8 +69,9 @@
         void on_actionParameters_triggered();
 
         void on_actionRun_models_triggered();
-
         void on_actionRadiation_settings_triggered();
+
+        void updateMaps();
 
     protected:
         /*!
@@ -107,7 +108,8 @@
 
         void setMapSource(OSMTileSource::OSMTileType mySource);
 
-        QPoint getMapPoint(QPoint* point) const;
+        QPoint getMapPos(const QPoint& pos);
+        bool isInsideMap(const QPoint& pos);
 
         void updateVariable();
         void updateDateTime();
