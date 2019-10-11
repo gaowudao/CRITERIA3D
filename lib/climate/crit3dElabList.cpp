@@ -342,8 +342,8 @@ void Crit3DElabList::addElab(unsigned int index)
     QString nYear = QString::number(_listNYears[index]);
     QString elab1 = _listElab1[index];
     QString secondElab = _listElab2[index];
-    QString elab1Param = QString::number(_listParam1[index]);
-    QString elab2Param = QString::number(_listParam2[index]);
+    int elab1Param = _listParam1[index];
+    int elab2Param = _listParam2[index];
     QString elab1ParamFromdB = _listParam1ClimateField[index];
 
 
@@ -358,15 +358,15 @@ void Crit3DElabList::addElab(unsigned int index)
     {
         elabAdded = elabAdded + "_" + secondElab;
 
-        if (!elab2Param.isEmpty())
+        if (elab2Param != NODATA)
         {
-            elabAdded = elabAdded + "_" + elab2Param;
+            elabAdded = elabAdded + "_" + QString::number(elab2Param);
         }
     }
     elabAdded = elabAdded + "_" + elab1;
-    if (!elab1Param.isEmpty())
+    if (elab1Param != NODATA)
     {
-        elabAdded = elabAdded + "_" + elab1Param;
+        elabAdded = elabAdded + "_" + QString::number(elab1Param);
     }
     else if(_listParam1IsClimate[index] == true && !elab1ParamFromdB.isEmpty())
     {

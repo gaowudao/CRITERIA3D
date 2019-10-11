@@ -2771,6 +2771,11 @@ bool parseXMLElaboration(Crit3DElabList *listXMLElab, Crit3DAnomalyList *listXML
     }
     xmlDoc.clear();
 
+    for (int i = 0; i < nElab; i++)
+    {
+        listXMLElab->addElab(i);
+        qDebug() << "elab: " << listXMLElab->listAll().at(i);
+    }
     return true;
 }
 
