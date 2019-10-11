@@ -18,6 +18,7 @@ class DialogMeteoComputation : public QDialog
 
     private:
         QSettings* settings;
+        bool isMeteoGrid;
         bool isAnomaly;
         bool saveClima;
         QString title;
@@ -47,6 +48,8 @@ class DialogMeteoComputation : public QDialog
 
         QPushButton add;
         QPushButton del;
+        QPushButton loadXML;
+        QPushButton appendXML;
         QPushButton delAll;
         SaveClimaLayout saveClimaLayout;
 
@@ -56,7 +59,7 @@ class DialogMeteoComputation : public QDialog
 
 
     public:
-        DialogMeteoComputation(QSettings *settings, bool isAnomaly, bool saveClima);
+        DialogMeteoComputation(QSettings *settings, bool isMeteoGrid, bool isAnomaly, bool saveClima);
         void done(bool res);
         void displayPeriod(const QString value);
         void checkYears();
@@ -68,6 +71,8 @@ class DialogMeteoComputation : public QDialog
         void copyDataToSaveLayout();
         bool checkValidData();
         QStringList getElabSaveList();
+        void copyDataFromXML();
+        void saveDataToXML();
 };
 
 
