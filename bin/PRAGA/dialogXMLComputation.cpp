@@ -1,5 +1,10 @@
 #include "dialogXMLComputation.h"
 
+int DialogXMLComputation::getIndex() const
+{
+    return index;
+}
+
 DialogXMLComputation::DialogXMLComputation(bool isAnomaly, QStringList listXML): isAnomaly(isAnomaly), listXML(listXML)
 {
     if (isAnomaly)
@@ -10,7 +15,7 @@ DialogXMLComputation::DialogXMLComputation(bool isAnomaly, QStringList listXML):
     {
         setWindowTitle("Elaboration");
     }
-    QHBoxLayout mainLayout;
+    QVBoxLayout mainLayout;
     QVBoxLayout elabLayout;
     QHBoxLayout layoutOk;
 
@@ -29,6 +34,7 @@ DialogXMLComputation::DialogXMLComputation(bool isAnomaly, QStringList listXML):
     mainLayout.addLayout(&layoutOk);
 
     setLayout(&mainLayout);
+    this->setMinimumWidth(500);
 
     show();
     exec();
@@ -36,5 +42,5 @@ DialogXMLComputation::DialogXMLComputation(bool isAnomaly, QStringList listXML):
 
 void DialogXMLComputation::elabClicked(QListWidgetItem* item)
 {
-
+    index = listXMLWidget.currentRow();
 }

@@ -1173,12 +1173,12 @@ void DialogMeteoComputation::copyDataFromXML()
     {
         if (isMeteoGrid && listXMLElab->isMeteoGrid() == false)
         {
-            QMessageBox::information(nullptr, "DB Meteo required", "Open Meteo Points DB");
+            QMessageBox::information(nullptr, "No elaborations", "There are not Meteo Grid elaborations");
             return;
         }
         else if (!isMeteoGrid && listXMLElab->isMeteoGrid() == true)
         {
-            QMessageBox::information(nullptr, "Meteo Grid required", "Open Meteo Grid DB");
+            QMessageBox::information(nullptr, "No elaborations", "There are not Meteo Points elaborations");
             return;
         }
         else
@@ -1191,21 +1191,23 @@ void DialogMeteoComputation::copyDataFromXML()
             else
             {
                 DialogXMLComputation xmlDialog(isAnomaly, listXMLElab->listAll());
+                if (xmlDialog.result() == QDialog::Accepted)
+                {
+                    qDebug() << "index " << xmlDialog.getIndex();
+                }
             }
-
         }
-
     }
     else
     {
         if (isMeteoGrid && listXMLAnomaly->isMeteoGrid() == false)
         {
-            QMessageBox::information(nullptr, "DB Meteo required", "Open Meteo Points DB");
+            QMessageBox::information(nullptr, "No elaborations", "There are not Meteo Grid elaborations");
             return;
         }
         else if (!isMeteoGrid && listXMLAnomaly->isMeteoGrid() == true)
         {
-            QMessageBox::information(nullptr, "Meteo Grid required", "Open Meteo Grid DB");
+            QMessageBox::information(nullptr, "No elaborations", "There are not Meteo Points elaborations");
             return;
         }
         else
@@ -1218,9 +1220,15 @@ void DialogMeteoComputation::copyDataFromXML()
             else
             {
                 DialogXMLComputation xmlDialog(isAnomaly, listXMLAnomaly->listAll());
+                if (xmlDialog.result() == QDialog::Accepted)
+                {
+                    qDebug() << "index " << xmlDialog.getIndex();
+                }
             }
         }
     }
+    delete listXMLElab;
+    delete listXMLAnomaly;
 
 }
 
