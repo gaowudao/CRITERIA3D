@@ -1193,7 +1193,63 @@ void DialogMeteoComputation::copyDataFromXML()
                 DialogXMLComputation xmlDialog(isAnomaly, listXMLElab->listAll());
                 if (xmlDialog.result() == QDialog::Accepted)
                 {
-                    qDebug() << "index " << xmlDialog.getIndex();
+                    int index = xmlDialog.getIndex();
+                    firstYearEdit.setText(QString::number(listXMLElab->listYearStart()[index]));
+                    lastYearEdit.setText(QString::number(listXMLElab->listYearEnd()[index]));
+                    std::string xmlVariable = MapDailyMeteoVarToString.at(listXMLElab->listVariable()[index]);
+                    variableList.setCurrentText(QString::fromStdString(xmlVariable));
+                    elaborationList.setCurrentText(listXMLElab->listElab1()[index]);
+                    if ( (listXMLElab->listParam1()[index] != NODATA) && (!listXMLElab->listParam1IsClimate()[index]) )
+                    {
+                        elab1Parameter.setReadOnly(false);
+                        elab1Parameter.setText(QString::number(listXMLElab->listParam1()[index]));
+                    }
+                    else if (listXMLElab->listParam1IsClimate()[index])
+                    {
+                        elab1Parameter.clear();
+                        elab1Parameter.setReadOnly(true);
+                        readParam.setChecked(true);
+                        climateDbElabList.setVisible(true);
+                        adjustSize();
+                        QStringList itemsClimateDbElabList;
+                        for (int pos = 0; pos < climateDbElabList.count(); pos++)
+                        {
+                            itemsClimateDbElabList << climateDbElabList.itemText(pos);
+                        }
+                        if (itemsClimateDbElabList.contains(listXMLElab->listParam1ClimateField()[index]))
+                        {
+                            climateDbElabList.setCurrentText(listXMLElab->listParam1ClimateField()[index]);
+                        }
+                        else
+                        {
+                            QMessageBox::information(nullptr, "Wrong Climate", "param1 climate fields does not exists");
+                        }
+                    }
+                    else
+                    {
+                        readParam.setChecked(false);
+                        climateDbElabList.setVisible(false);
+                        adjustSize();
+                    }
+                    if (listXMLElab->listElab2()[index] != "")
+                    {
+                        secondElabList.setCurrentText(listXMLElab->listElab2()[index]);
+                        if ( QString::number(listXMLElab->listParam2()[index]) != NODATA)
+                        {
+                            elab2Parameter.setText(QString::number(listXMLElab->listParam2()[index]));
+                        }
+                    }
+                    periodTypeList.setCurrentText(listXMLElab->listPeriodStr()[index]);
+                    if (listXMLElab->listPeriodStr()[index] == "Generic")
+                    {
+                        genericPeriodStart.setDate(listXMLElab->listDateStart()[index]);
+                        genericPeriodEnd.setDate(listXMLElab->listDateStart()[index]);
+                        nrYear.setText(QString::number(listXMLElab->listNYears()[index]));
+                    }
+                    else
+                    {
+                        currentDay.setDate(listXMLElab->listDateStart()[index]);
+                    }
                 }
             }
         }

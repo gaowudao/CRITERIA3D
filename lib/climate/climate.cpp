@@ -2388,13 +2388,17 @@ bool parseXMLElaboration(Crit3DElabList *listXMLElab, Crit3DAnomalyList *listXML
                     }
 
                     elab = child.toElement().text();
-                    if ( (elab == "huglin" || elab == "winkler" || elab == "fregoni") && secElab.size() == 0 )
+                    if ( (elab.toUpper() == "HUGLIN" || elab.toUpper() == "WINKLER" || elab.toUpper() == "FREGONI") && secElab.size() == 0 )
                     {
                         listXMLElab->eraseElement(nElab);
                         errorElab = true;
                     }
                     else
                     {
+                        if (elab.toUpper() == "MEAN")
+                        {
+                            elab = "average";
+                        }
                         listXMLElab->insertElab1(elab);
                     }
 
@@ -2416,6 +2420,10 @@ bool parseXMLElaboration(Crit3DElabList *listXMLElab, Crit3DAnomalyList *listXML
                         listXMLElab->insertParam2(elabParam2.toFloat());
                     }
                     elab = child.toElement().text();
+                    if (elab.toUpper() == "MEAN")
+                    {
+                        elab = "average";
+                    }
                     listXMLElab->insertElab2(elab);
                 }
                 if (errorElab)
