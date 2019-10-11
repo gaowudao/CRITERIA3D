@@ -1268,7 +1268,7 @@ void MainWindow::on_actionCompute_elaboration_triggered()
 
     if (myProject.elaborationCheck(isMeteoGrid, isAnomaly))
     {
-        DialogMeteoComputation compDialog(myProject.pragaDefaultSettings, isAnomaly, saveClima);
+        DialogMeteoComputation compDialog(myProject.pragaDefaultSettings, isMeteoGrid, isAnomaly, saveClima);
         if (compDialog.result() != QDialog::Accepted)
             return;
 
@@ -1317,7 +1317,7 @@ void MainWindow::on_actionCompute_anomaly_triggered()
 
     if (myProject.elaborationCheck(isMeteoGrid, isAnomaly))
     {
-        DialogMeteoComputation compDialog(myProject.pragaDefaultSettings, isAnomaly, saveClima);
+        DialogMeteoComputation compDialog(myProject.pragaDefaultSettings, isMeteoGrid, isAnomaly, saveClima);
         if (compDialog.result() != QDialog::Accepted)
             return;
 
@@ -1370,7 +1370,7 @@ void MainWindow::on_actionCompute_climate_triggered()
     if (myProject.elaborationCheck(isMeteoGrid, isAnomaly))
     {
         myProject.clima->resetListElab();
-        DialogMeteoComputation compDialog(myProject.pragaDefaultSettings, isAnomaly, saveClima);
+        DialogMeteoComputation compDialog(myProject.pragaDefaultSettings, isMeteoGrid, isAnomaly, saveClima);
         if (compDialog.result() != QDialog::Accepted)
             return;
 

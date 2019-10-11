@@ -102,7 +102,8 @@ SOURCES += main.cpp\
     shared/shell.cpp \
     pragaShell.cpp \
     shared/dialogRadiation.cpp \
-    shared/formPeriod.cpp
+    shared/formPeriod.cpp \
+    dialogXMLComputation.cpp
 
 
 HEADERS  += mainWindow.h \
@@ -130,7 +131,8 @@ HEADERS  += mainWindow.h \
     shared/shell.h \
     pragaShell.h \
     shared/dialogRadiation.h \
-    shared/formPeriod.h
+    shared/formPeriod.h \
+    dialogXMLComputation.h
 
 
 FORMS    += mainWindow.ui \

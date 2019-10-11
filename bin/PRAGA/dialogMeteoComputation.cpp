@@ -3,11 +3,12 @@
 #include "dbClimate.h"
 #include "utilities.h"
 #include "pragaProject.h"
+#include "dialogXMLComputation.h"
 
 extern PragaProject myProject;
 
-DialogMeteoComputation::DialogMeteoComputation(QSettings *settings, bool isAnomaly, bool saveClima)
-    : settings(settings), isAnomaly(isAnomaly), saveClima(saveClima)
+DialogMeteoComputation::DialogMeteoComputation(QSettings *settings, bool isMeteoGrid, bool isAnomaly, bool saveClima)
+    : settings(settings), isMeteoGrid(isMeteoGrid), isAnomaly(isAnomaly), saveClima(saveClima)
 {
 
     if (saveClima)
@@ -29,6 +30,7 @@ DialogMeteoComputation::DialogMeteoComputation(QSettings *settings, bool isAnoma
     QHBoxLayout periodLayout;
     QHBoxLayout displayLayout;
     QHBoxLayout genericPeriodLayout;
+    QHBoxLayout layoutXML;
     QHBoxLayout layoutOk;
 
     QHBoxLayout elaborationLayout;
@@ -301,6 +303,14 @@ DialogMeteoComputation::DialogMeteoComputation(QSettings *settings, bool isAnoma
     connect(&copyData, &QPushButton::clicked, [=](){ this->copyDataToAnomaly(); });
 
 
+    loadXML.setText("Load from XML");
+    appendXML.setText("Append to XML");
+    layoutXML.addWidget(&loadXML);
+    layoutXML.addWidget(&appendXML);
+
+    connect(&loadXML, &QPushButton::clicked, [=](){ this->copyDataFromXML(); });
+    connect(&appendXML, &QPushButton::clicked, [=](){ this->saveDataToXML(); });
+
     QDialogButtonBox buttonBox(QDialogButtonBox::Ok | QDialogButtonBox::Cancel);
 
     connect(&buttonBox, &QDialogButtonBox::accepted, [=](){ this->done(true); });
@@ -337,6 +347,7 @@ DialogMeteoComputation::DialogMeteoComputation(QSettings *settings, bool isAnoma
         mainLayout.addLayout(&saveClimaMainLayout);
     }
 
+    mainLayout.addLayout(&layoutXML);
     mainLayout.addLayout(&layoutOk);
 
     setLayout(&mainLayout);
@@ -1142,5 +1153,87 @@ bool DialogMeteoComputation::checkValidData()
 QStringList DialogMeteoComputation::getElabSaveList()
 {
     return saveClimaLayout.getList();
+}
+
+void DialogMeteoComputation::copyDataFromXML()
+{
+    Crit3DElabList *listXMLElab = new Crit3DElabList();
+    Crit3DAnomalyList *listXMLAnomaly = new Crit3DAnomalyList();
+    QString *myError = new QString();
+    QString xmlName = QFileDialog::getOpenFileName(this, tr("Open XML"), "", tr("xml files (*.xml)"));
+    if (xmlName != "")
+    {
+        if (!parseXMLElaboration(listXMLElab, listXMLAnomaly, xmlName, myError))
+        {
+            QMessageBox::information(nullptr, "XML error", "Check XML");
+            return;
+        }
+    }
+    if (!isAnomaly)
+    {
+        if (isMeteoGrid && listXMLElab->isMeteoGrid() == false)
+        {
+            QMessageBox::information(nullptr, "DB Meteo required", "Open Meteo Points DB");
+            return;
+        }
+        else if (!isMeteoGrid && listXMLElab->isMeteoGrid() == true)
+        {
+            QMessageBox::information(nullptr, "Meteo Grid required", "Open Meteo Grid DB");
+            return;
+        }
+        else
+        {
+            if (listXMLElab->listAll().isEmpty())
+            {
+                QMessageBox::information(nullptr, "Empty List", "There are not elaborations");
+                return;
+            }
+            else
+            {
+                DialogXMLComputation xmlDialog(isAnomaly, listXMLElab->listAll());
+            }
+
+        }
+
+    }
+    else
+    {
+        if (isMeteoGrid && listXMLAnomaly->isMeteoGrid() == false)
+        {
+            QMessageBox::information(nullptr, "DB Meteo required", "Open Meteo Points DB");
+            return;
+        }
+        else if (!isMeteoGrid && listXMLAnomaly->isMeteoGrid() == true)
+        {
+            QMessageBox::information(nullptr, "Meteo Grid required", "Open Meteo Grid DB");
+            return;
+        }
+        else
+        {
+            if (listXMLAnomaly->listAll().isEmpty())
+            {
+                QMessageBox::information(nullptr, "Empty List", "There are not anomalies");
+                return;
+            }
+            else
+            {
+                DialogXMLComputation xmlDialog(isAnomaly, listXMLAnomaly->listAll());
+            }
+        }
+    }
+
+}
+
+void DialogMeteoComputation::saveDataToXML()
+{
+    Crit3DElabList *listXMLElab = new Crit3DElabList();
+    Crit3DAnomalyList *listXMLAnomaly = new Crit3DAnomalyList();
+    QString *myError = new QString();
+    QString xmlName = QFileDialog::getOpenFileName(this, tr("Open XML"), "", tr("xml files (*.xml)"));
+    if (xmlName != "")
+    {
+        parseXMLElaboration(listXMLElab, listXMLAnomaly, xmlName, myError);
+    }
+    // TO DO
 }
 
