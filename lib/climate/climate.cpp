@@ -2635,6 +2635,10 @@ bool parseXMLElaboration(Crit3DElabList *listXMLElab, Crit3DAnomalyList *listXML
                     }
                     else
                     {
+                        if (elab.toUpper() == "MEAN")
+                        {
+                            elab = "average";
+                        }
                         listXMLAnomaly->insertElab1(elab);
                     }
                 }
@@ -2655,6 +2659,10 @@ bool parseXMLElaboration(Crit3DElabList *listXMLElab, Crit3DAnomalyList *listXML
                         listXMLAnomaly->insertParam2(elabParam2.toFloat());
                     }
                     elab = child.toElement().text();
+                    if (elab.toUpper() == "MEAN")
+                    {
+                        elab = "average";
+                    }
                     listXMLAnomaly->insertElab2(elab);
                 }
                 if (myTag == "REFPRIMARYELABORATION")
@@ -2711,6 +2719,10 @@ bool parseXMLElaboration(Crit3DElabList *listXMLElab, Crit3DAnomalyList *listXML
                     }
                     else
                     {
+                        if (refElab.toUpper() == "MEAN")
+                        {
+                            refElab = "average";
+                        }
                         listXMLAnomaly->insertRefElab1(refElab);
                     }
 
@@ -2733,6 +2745,10 @@ bool parseXMLElaboration(Crit3DElabList *listXMLElab, Crit3DAnomalyList *listXML
                     }
 
                     refElab2 = child.toElement().text();
+                    if (refElab2.toUpper() == "MEAN")
+                    {
+                        refElab2 = "average";
+                    }
                     listXMLAnomaly->insertRefElab2(refElab2);
                 }
                 if (errorAnomaly)

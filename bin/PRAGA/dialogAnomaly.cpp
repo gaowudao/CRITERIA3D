@@ -639,7 +639,8 @@ QString DialogAnomaly::AnomalyGetPeriodTypeList() const
 
 void DialogAnomaly::AnomalySetPeriodTypeList(QString period)
 {
-    periodTypeList.setCurrentText(period);
+    int index = periodTypeList.findText(period, Qt::MatchFixedString);
+    periodTypeList.setCurrentIndex(index);
 }
 
 int DialogAnomaly::AnomalyGetYearStart() const
@@ -709,7 +710,8 @@ QString DialogAnomaly::AnomalyGetElaboration() const
 
 void DialogAnomaly::AnomalySetElaboration(QString elab)
 {
-    elaborationList.setCurrentText(elab);
+    int elabIndex = elaborationList.findText(elab, Qt::MatchFixedString);
+    elaborationList.setCurrentIndex(elabIndex);
 }
 
 QString DialogAnomaly::AnomalyGetSecondElaboration() const
@@ -719,7 +721,8 @@ QString DialogAnomaly::AnomalyGetSecondElaboration() const
 
 void DialogAnomaly::AnomalySetSecondElaboration(QString elab)
 {
-    secondElabList.setCurrentText(elab);
+    int index = secondElabList.findText(elab, Qt::MatchFixedString);
+    secondElabList.setCurrentIndex(index);
 }
 
 QString DialogAnomaly::AnomalyGetParam1() const
@@ -764,11 +767,18 @@ QString DialogAnomaly::AnomalyGetClimateDbElab() const
 
 void DialogAnomaly::AnomalySetClimateDbElab(QString elab)
 {
-    climateDbElabList.setCurrentText(elab);
+    int index = climateDbElabList.findText(elab, Qt::MatchFixedString);
+    climateDbElabList.setCurrentIndex(index);
 }
 
 QString DialogAnomaly::AnomalyGetClimateDb() const
 {
     return climateDbClimaList.currentText();
 }
+
+void DialogAnomaly::AnomalySetClimateDb(QString clima)
+{
+    climateDbClimaList.setCurrentText(clima);
+}
+
 

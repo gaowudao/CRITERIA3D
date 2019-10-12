@@ -14,7 +14,7 @@ private:
 public:
     DialogXMLComputation(bool isAnomaly, QStringList listXML);
     void elabClicked(QListWidgetItem* item);
-    int getIndex() const;
+    unsigned int getIndex() const;
 };
 
 #endif // DIALOGXMLCOMPUTATION_H
