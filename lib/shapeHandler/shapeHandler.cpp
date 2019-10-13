@@ -78,7 +78,6 @@ bool Crit3DShapeHandler::open(std::string filename)
     SHPGetInfo(m_handle, &m_count, &m_type, nullptr, nullptr);
     m_fields = m_dbf->nFields;
 
-
     char *fieldName =  new char[XBASE_FLDNAME_LEN_READ];
     DBFFieldType fieldType;
 
@@ -102,7 +101,7 @@ bool Crit3DShapeHandler::open(std::string filename)
     isWGS84Proj(filePrj);
     setUTMzone(filePrj);
 
-    free(fieldName);
+    delete[] fieldName;
 
     return true;
 }
@@ -127,7 +126,8 @@ bool Crit3DShapeHandler::openDBF(std::string filename)
         m_fieldsList.push_back(std::string(fieldName));
         m_fieldsTypeList.push_back(fieldType);
     }
-    free(fieldName);
+
+    delete[] fieldName;
     return true;
 }
 
