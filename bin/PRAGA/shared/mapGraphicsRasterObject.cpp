@@ -341,22 +341,27 @@ bool RasterObject::drawRaster(gis::Crit3DRasterGrid *myRaster, QPainter* myPaint
     // draw
     int x0, y0, x1, y1, lx, ly;
     float value;
-    QPointF newPoint, newPixel;
+    QPointF p0, p1, pixel;
     Crit3DColor* myColor;
     QColor myQColor;
 
-    newPoint.setX(lowerLeft.x());
-    y0 = int(pixelLL.y());
     for (int row = rowBottom; row >= rowTop; row -= step)
     {
-        newPoint.setY(lowerLeft.y() + (rowBottom-row + step) * latLonHeader.dy);
-        newPixel = getPixel(newPoint);
-        y1 = int(newPixel.y());
-        x0 = int(pixelLL.x());
+        p0.setY(lowerLeft.y() + (rowBottom-row) * latLonHeader.dy);
+        p1.setY(lowerLeft.y() + (rowBottom-row + step) * latLonHeader.dy);
 
         for (int col = colLeft; col <= colRight; col += step)
         {
-            x1 = int(pixelLL.x() + (col-colLeft + step) * dx);
+            p0.setX(lowerLeft.x() + (col-colLeft) * latLonHeader.dx);
+            p1.setX(lowerLeft.x() + (col-colLeft + step) * latLonHeader.dx);
+
+            pixel = getPixel(p0);
+            x0 = int(pixel.x());
+            y0 = int(pixel.y());
+
+            pixel = getPixel(p1);
+            y1 = int(pixel.y());
+            x1 = int(pixel.x());
 
             if (this->isLatLon)
                 value = myRaster->value[row][col];
@@ -372,22 +377,19 @@ bool RasterObject::drawRaster(gis::Crit3DRasterGrid *myRaster, QPainter* myPaint
                 myQColor = QColor(myColor->red, myColor->green, myColor->blue);
                 myPainter->setBrush(myQColor);
 
-                lx = (x1 - x0) + 1;
-                ly = (y1 - y0) + 1;
+                lx = x1 - x0;
+                ly = y1 - y0;
                 myPainter->fillRect(x0, y0, lx, ly, myPainter->brush());
             }
             else if (this->isGrid && value == myRaster->header->flag && drawBorder)
             {
-                lx = (x1 - x0) + 1;
-                ly = (y1 - y0) + 1;
+                lx = x1 - x0;
+                ly = y1 - y0;
                 myPainter->setPen(QColor(64, 64, 64));
                 myPainter->setBrush(Qt::NoBrush);
                 myPainter->drawRect(x0, y0, lx, ly);
             }
-
-            x0 = ++x1;
         }
-        y0 = ++y1;
     }
 
     return true;
