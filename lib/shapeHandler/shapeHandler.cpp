@@ -101,8 +101,6 @@ bool Crit3DShapeHandler::open(std::string filename)
     isWGS84Proj(filePrj);
     setUTMzone(filePrj);
 
-    delete[] fieldName;
-
     return true;
 }
 
@@ -127,7 +125,6 @@ bool Crit3DShapeHandler::openDBF(std::string filename)
         m_fieldsTypeList.push_back(fieldType);
     }
 
-    delete[] fieldName;
     return true;
 }
 
