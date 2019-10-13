@@ -69,11 +69,13 @@ void Crit3DAnomalyList::reset()
     _listRefYearEnd.clear();
 }
 
-void Crit3DAnomalyList::eraseElement(int index)
+void Crit3DAnomalyList::eraseElement(int signedIndex)
 {
-    if (_listAll.size() > index)
+    unsigned int index = unsigned(signedIndex);
+
+    if (_listAll.size() > signedIndex)
     {
-        _listAll.removeAt(index);
+        _listAll.removeAt(signedIndex);
     }
     if (_listisPercentage.size() > index)
     {
@@ -196,6 +198,7 @@ void Crit3DAnomalyList::eraseElement(int index)
         _listRefYearEnd.erase(_listRefYearEnd.begin() + index);
     }
 }
+
 std::vector<int> Crit3DAnomalyList::listYearStart() const
 {
     return _listYearStart;

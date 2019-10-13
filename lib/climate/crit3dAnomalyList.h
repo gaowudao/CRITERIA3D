@@ -34,7 +34,7 @@ public:
     void setListAnomaly(const QStringList &listAnomaly);
 
     void reset();
-    void eraseElement(int index);
+    void eraseElement(int signedIndex);
 
     std::vector<int> listYearStart() const;
     void setListYearStart(const std::vector<int> &listYearStart);
