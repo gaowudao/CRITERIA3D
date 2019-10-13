@@ -9,16 +9,6 @@
     {
         enum mapActionType {actionDrag, actionSelect, actionZoom, actionNone};
 
-        class Crit3DMapPoint
-        {
-        public:
-            Crit3DUtmPoint utm;
-            Crit3DPixel pixel;
-
-            Crit3DMapPoint();
-            Crit3DMapPoint(const Crit3DUtmPoint& utm, const Crit3DPixel& pixel);
-        };
-
         class Crit3DUtmWindow
         {
         public:

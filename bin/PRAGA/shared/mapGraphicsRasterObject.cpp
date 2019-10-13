@@ -280,63 +280,87 @@ bool RasterObject::initializeLatLon(gis::Crit3DRasterGrid* myRaster, const gis::
 }
 
 
+bool RasterObject::getCurrentWindow(gis::Crit3DRasterWindow* window)
+{
+    // current view extent
+    int row0, row1, col0, col1;
+    gis::getRowColFromLatLon(this->latLonHeader, this->geoMap->bottomLeft, &row0, &col0);
+    gis::getRowColFromLatLon(this->latLonHeader, this->geoMap->topRight, &row1, &col1);
+
+    // check if current window is out of map
+    if (((col0 < 0) && (col1 < 0))
+    || ((row0 < 0) && (row1 < 0))
+    || ((col0 >= this->latLonHeader.nrCols) && (col1 >= this->latLonHeader.nrCols))
+    || ((row0 >= this->latLonHeader.nrRows) && (row1 >= this->latLonHeader.nrRows)))
+    {
+        return false;
+    }
+
+    // fix extent
+    row0 = std::min(this->latLonHeader.nrRows-1, std::max(0, row0));
+    row1 = std::min(this->latLonHeader.nrRows-1, std::max(0, row1));
+    col0 = std::min(this->latLonHeader.nrCols-1, std::max(0, col0));
+    col1 = std::min(this->latLonHeader.nrCols-1, std::max(0, col1));
+
+    *window = gis::Crit3DRasterWindow(row0, col0, row1, col1);
+
+    return true;
+}
+
+
+int RasterObject::getCurrentStep(const gis::Crit3DRasterWindow& window)
+{
+    // boundary pixels position
+    QPointF lowerLeft, topRight, pixelLL, pixelRT;
+    lowerLeft.setX(latLonHeader.llCorner->longitude + window.v[0].col * latLonHeader.dx);
+    lowerLeft.setY(latLonHeader.llCorner->latitude + (latLonHeader.nrRows-1 - window.v[1].row) * latLonHeader.dy);
+    topRight.setX(latLonHeader.llCorner->longitude + (window.v[1].col+1) * latLonHeader.dx);
+    topRight.setY(latLonHeader.llCorner->latitude + (latLonHeader.nrRows - window.v[0].row) * latLonHeader.dy);
+    pixelLL = getPixel(lowerLeft);
+    pixelRT = getPixel(topRight);
+
+    // compute step
+    double dx = (pixelRT.x() - pixelLL.x() + 1) / double(window.nrCols());
+    double dy = (pixelRT.y() - pixelLL.y() + 1) / double(window.nrRows());
+
+    int step = int(round(1.0 / std::min(dx, dy)));
+    return std::max(1, step);
+}
+
+
 bool RasterObject::drawRaster(gis::Crit3DRasterGrid *myRaster, QPainter* myPainter, bool drawBorder)
 {
     if (myRaster == nullptr) return false;
     if (! myRaster->isLoaded) return false;
 
-    // current view extent
-    int rowBottom, rowTop, colLeft, colRight;
-    gis::getRowColFromLatLon(this->latLonHeader, this->geoMap->bottomLeft, &rowBottom, &colLeft);
-    gis::getRowColFromLatLon(this->latLonHeader, this->geoMap->topRight, &rowTop, &colRight);
-
-    // check if current view is out of data
-    if (((colLeft < 0) && (colRight < 0))
-    || ((rowBottom < 0) && (rowTop < 0))
-    || ((colLeft >= this->latLonHeader.nrCols) && (colRight >= this->latLonHeader.nrCols))
-    || ((rowBottom >= this->latLonHeader.nrRows) && (rowTop >= this->latLonHeader.nrRows)))
+    gis::Crit3DRasterWindow window;
+    if (! getCurrentWindow(&window))
     {
         myRaster->minimum = NODATA;
         myRaster->maximum = NODATA;
         return false;
     }
 
-    // fix extent
-    rowBottom = std::min(this->latLonHeader.nrRows-1, std::max(0, rowBottom));
-    rowTop = std::min(this->latLonHeader.nrRows-1, std::max(0, rowTop));
-    colLeft = std::min(this->latLonHeader.nrCols-1, std::max(0, colLeft));
-    colRight = std::min(this->latLonHeader.nrCols-1, std::max(0, colRight));
-
     // dynamic color scale
-    gis::Crit3DRasterWindow* latLonWindow = new gis::Crit3DRasterWindow(rowTop, colLeft, rowBottom, colRight);
     if (this->isLatLon)
     {
-        gis::updateColorScale(myRaster, *latLonWindow);
+        // lat lon raster
+        gis::updateColorScale(myRaster, window);
     }
     else
     {
         // UTM raster
         gis::Crit3DRasterWindow* utmWindow = new gis::Crit3DRasterWindow();
-        gis::getUtmWindow(this->latLonHeader, *(myRaster->header), *latLonWindow, utmWindow, this->utmZone);
+        gis::getUtmWindow(this->latLonHeader, *(myRaster->header), window, utmWindow, this->utmZone);
         gis::updateColorScale(myRaster, *utmWindow);
     }
-
     roundColorScale(myRaster->colorScale, 4, true);
 
-    // boundary pixels position
-    QPointF lowerLeft, topRight, pixelLL, pixelRT;
-    lowerLeft.setX(latLonHeader.llCorner->longitude + colLeft * latLonHeader.dx);
-    lowerLeft.setY(latLonHeader.llCorner->latitude + (latLonHeader.nrRows-1 - rowBottom) * latLonHeader.dy);
-    topRight.setX(latLonHeader.llCorner->longitude + (colRight+1) * latLonHeader.dx);
-    topRight.setY(latLonHeader.llCorner->latitude + (latLonHeader.nrRows - rowTop) * latLonHeader.dy);
-    pixelLL = getPixel(lowerLeft);
-    pixelRT = getPixel(topRight);
+    int step = getCurrentStep(window);
 
-    // step
-    double dx = (pixelRT.x() - pixelLL.x()) / double(colRight - colLeft +1);
-    double dy = (pixelRT.y() - pixelLL.y()) / double(rowBottom - rowTop +1);
-    int step = int(round(1.0 / MINVALUE(dx, dy)));
-    step = MAXVALUE(1, step);
+    QPointF lowerLeft;
+    lowerLeft.setX(latLonHeader.llCorner->longitude + window.v[0].col * latLonHeader.dx);
+    lowerLeft.setY(latLonHeader.llCorner->latitude + (latLonHeader.nrRows-1 - window.v[1].row) * latLonHeader.dy);
 
     // draw
     int x0, y0, x1, y1, lx, ly;
@@ -345,15 +369,15 @@ bool RasterObject::drawRaster(gis::Crit3DRasterGrid *myRaster, QPainter* myPaint
     Crit3DColor* myColor;
     QColor myQColor;
 
-    for (int row = rowBottom; row >= rowTop; row -= step)
+    for (int row = window.v[1].row; row >= window.v[0].row; row -= step)
     {
-        p0.setY(lowerLeft.y() + (rowBottom-row) * latLonHeader.dy);
-        p1.setY(lowerLeft.y() + (rowBottom-row + step) * latLonHeader.dy);
+        p0.setY(lowerLeft.y() + (window.v[1].row - row) * latLonHeader.dy);
+        p1.setY(p0.y() + step * latLonHeader.dy);
 
-        for (int col = colLeft; col <= colRight; col += step)
+        for (int col = window.v[0].col; col <= window.v[1].col; col += step)
         {
-            p0.setX(lowerLeft.x() + (col-colLeft) * latLonHeader.dx);
-            p1.setX(lowerLeft.x() + (col-colLeft + step) * latLonHeader.dx);
+            p0.setX(lowerLeft.x() + (col - window.v[0].col) * latLonHeader.dx);
+            p1.setX(p0.x() + step * latLonHeader.dx);
 
             pixel = getPixel(p0);
             x0 = int(pixel.x());
@@ -362,6 +386,9 @@ bool RasterObject::drawRaster(gis::Crit3DRasterGrid *myRaster, QPainter* myPaint
             pixel = getPixel(p1);
             y1 = int(pixel.y());
             x1 = int(pixel.x());
+
+            lx = x1 - x0;
+            ly = y1 - y0;
 
             if (this->isLatLon)
                 value = myRaster->value[row][col];
@@ -376,15 +403,10 @@ bool RasterObject::drawRaster(gis::Crit3DRasterGrid *myRaster, QPainter* myPaint
                 myColor = myRaster->colorScale->getColor(value);
                 myQColor = QColor(myColor->red, myColor->green, myColor->blue);
                 myPainter->setBrush(myQColor);
-
-                lx = x1 - x0;
-                ly = y1 - y0;
                 myPainter->fillRect(x0, y0, lx, ly, myPainter->brush());
             }
             else if (this->isGrid && value == myRaster->header->flag && drawBorder)
             {
-                lx = x1 - x0;
-                ly = y1 - y0;
                 myPainter->setPen(QColor(64, 64, 64));
                 myPainter->setBrush(Qt::NoBrush);
                 myPainter->drawRect(x0, y0, lx, ly);

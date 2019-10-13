@@ -108,7 +108,8 @@
         void freeIndexesMatrix();
         void initializeIndexesMatrix();
         void setMapExtents();
-
+        bool getCurrentWindow(gis::Crit3DRasterWindow* window);
+        int getCurrentStep(const gis::Crit3DRasterWindow& window);
         bool drawRaster(gis::Crit3DRasterGrid *myRaster, QPainter* myPainter, bool drawBorder);
     };
 
