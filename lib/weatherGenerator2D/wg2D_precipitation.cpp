@@ -493,13 +493,13 @@ void weatherGenerator2D::precipitationMultiDistributionParameterization()
               meanPFit[i]=Pmean[i];
               stdDevFit[i]=PstdDev[i];
               binCenter[i]= bincenter[i];
-              //printf("Pmean %f  PstdDev %f bincenter %f \n",Pmean[i], PstdDev[i], bincenter[i]);
+              printf("Pmean %f  PstdDev %f bincenter %f \n",Pmean[i], PstdDev[i], bincenter[i]);
            }
             //pressEnterToContinue();
            interpolation::fittingMarquardt(parMin,parMax,par,nrPar,parDelta,maxIterations,epsilon,functionCode,binCenter,meanPFit,nrBincenter);
            //weatherGenerator2D::bestParametersNonLinearFit(par,nrPar,binCenter,meanPFit,nrBincenter);
            //for (int i=0;i<3;i++) printf("marquardt %f\n",par[i]);
-           //for (int i=0;i<nrBincenter;i++) printf("marquardt %f %f \n",Pmean[i],par[0]+par[1]* pow(binCenter[i],par[2])); //pressEnterToContinue();
+           for (int i=0;i<nrBincenter;i++) printf("marquardt %f %f \n",Pmean[i],par[0]+par[1]* pow(binCenter[i],par[2])); //pressEnterToContinue();
            // con marquardt stimo già tutti i parametri compreso l'esponente quindi il ciclo
            // for da 2 a 20 (presente nel codice originale) risulta inutile nel codice tradotto
            for (int i=0;i<nrBincenter;i++)
@@ -528,7 +528,7 @@ void weatherGenerator2D::precipitationMultiDistributionParameterization()
                }
            }
            //for (int i=0;i<3;i++) printf("marquardt %f\n",par[i]);
-           //for (int i=0;i<nrBincenter;i++) printf("marquardt %f %f \n",PstdDev[i],stdDevFit[i]); pressEnterToContinue();
+           for (int i=0;i<nrBincenter;i++) printf("marquardt %f %f \n",PstdDev[i],stdDevFit[i]); //pressEnterToContinue();
            // !!! da togliere il seguente for
            /*for (int i=0;i<nrBincenter;i++)
            {
@@ -588,6 +588,8 @@ void weatherGenerator2D::precipitationMultiDistributionParameterization()
            }
            int indexMoranArrayPrec = 0;
            double* moranArrayPrec = (double *)calloc(counterMoranPrec, sizeof(double));
+           double*  frequencyBins = (double *)calloc(counterMoranPrec, sizeof(double));
+           int* nrBinsFrequency = (int *)calloc(counterMoranPrec,sizeof(int));
            for(int i=0; i< parametersModel.yearOfSimulation*lengthSeason[qq];i++)
            {
                if (occurrenceMatrixSeason[ijk][i] > (ONELESSEPSILON))
@@ -602,34 +604,41 @@ void weatherGenerator2D::precipitationMultiDistributionParameterization()
                //printf("%f\n",moranArrayPrec[i]);
            }*/
            //pressEnterToContinue();
+            // !! da cmbiare nrBins che deve essere maggiore 12
+           for (int i=0;i<counterMoranPrec;i++)
+           {
+                frequencyBins[i] = 0.;
+                nrBinsFrequency[i] = 0;
+           }
 
            int counterBins = 0;
            for(int i=0; i<11;i++)
            {
                if (bins[i] > NODATA + EPSILON) counterBins++;
-               nrBins[i]= 0;
            }
-
            for(int i=0; i<counterBins-1;i++)
            {
                for (int j=0;j<indexMoranArrayPrec-1;j++)
                {
-                   if (moranArrayPrec[j] >= bins[i] && moranArrayPrec[j] < bins[i+1]) nrBins[i]++;
+                   if (moranArrayPrec[j] >= bins[i] && moranArrayPrec[j] < bins[i+1]) nrBinsFrequency[i]++;
                }
+               if (moranArrayPrec[indexMoranArrayPrec] >= bins[i] && moranArrayPrec[indexMoranArrayPrec] < bins[i+1]) nrBinsFrequency[i]++;
            }
            int nrTotal = 0;
-           double frequencyBins[11];
-           for(int i=0; i<11;i++)
+           //double frequencyBins[12];
+           for(int i=0; i<counterMoranPrec;i++)
            {
-               nrTotal += nrBins[i];
+               nrTotal += nrBinsFrequency[i];
                frequencyBins[i]=0;
                //printf("%d\t",nrBins[i]);
            }
            //printf("\n totale %d \n",nrTotal);
            for(int i=0; i<counterBins-1;i++)
            {
-               frequencyBins[i]= (double)(nrBins[i])/(double)(nrTotal);
+               frequencyBins[i]= (double)(nrBinsFrequency[i])/(double)(nrTotal);
+               //printf("frequency %f\n", frequencyBins[i]);
            }
+           //pressEnterToContinue();
            int numberOfDaysAbovePrecThreshold=0;
            double precipitationMean=0.0;
            for(int i=0; i<numberObservedMax ;i++)
@@ -672,10 +681,10 @@ void weatherGenerator2D::precipitationMultiDistributionParameterization()
                {
                    occurrenceIndexSeasonal[ijk].parMultiexp[qq][i][0]=meanPFit[i]*meanPFit[i]/(PstdDev[i]*PstdDev[i]);
                    occurrenceIndexSeasonal[ijk].parMultiexp[qq][i][1]=(PstdDev[i]*PstdDev[i])/meanPFit[i];
-                   printf("lambda %f\t%f\n",occurrenceIndexSeasonal[ijk].parMultiexp[qq][i][0],occurrenceIndexSeasonal[ijk].parMultiexp[qq][i][1]);
+                   //printf("lambda %f\t%f\n",occurrenceIndexSeasonal[ijk].parMultiexp[qq][i][0],occurrenceIndexSeasonal[ijk].parMultiexp[qq][i][1]);
 
                }
-               pressEnterToContinue();
+               //pressEnterToContinue();
            }
 
            for (int i=0;i<nrBincenter;i++)
@@ -718,6 +727,8 @@ void weatherGenerator2D::precipitationMultiDistributionParameterization()
            free(binCenter);
            free(meanFit);
            free(lambda);
+           free(frequencyBins);
+           free(nrBinsFrequency);
        }
 
    }
@@ -1066,7 +1077,7 @@ void weatherGenerator2D::precipitationMultisiteAmountsGeneration()
 
 
 
-    printf("parte 5 fine\n");
+    //printf("parte 5 fine\n");
    // free the memory step 5
    for (int i=0;i<nrStations;i++)
    {
