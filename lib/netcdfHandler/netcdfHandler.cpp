@@ -370,10 +370,10 @@ bool NetCDFHandler::readProperties(string fileName, stringstream *buffer)
                             isStandardTime = true;
                             firstDate = Crit3DDate(1970,1,1);
                         }
-                        else if (lowerCase(myString).substr(0, 13) == "hours since")
+                        else if (lowerCase(myString).substr(0, 11) == "hours since")
                         {
                             isHourly = true;
-                            std::string dateStr = lowerCase(myString).substr(15, 24);
+                            std::string dateStr = lowerCase(myString).substr(13, 22);
                             firstDate = Crit3DDate(dateStr);
                         }
                     }
