@@ -30,6 +30,43 @@
 
 namespace gis
 {
+
+    Crit3DRasterWindow::Crit3DRasterWindow()
+    {}
+
+    Crit3DRasterWindow::Crit3DRasterWindow(int row0, int col0, int row1, int col1)
+    {
+        if (row0 > row1)
+        {
+            int tmp = row0;
+            row0 = row1;
+            row1 = tmp;
+        }
+
+        if (col0 > col1)
+        {
+            int tmp = col0;
+            col0 = col1;
+            col1 = tmp;
+        }
+
+        this->v[0].row = row0;
+        this->v[0].col = col0;
+        this->v[1].row = row1;
+        this->v[1].col = col1;
+    }
+
+    int Crit3DRasterWindow::nrRows() const
+    {
+        return (this->v[1].row - this->v[0].row + 1);
+    }
+
+    int Crit3DRasterWindow::nrCols() const
+    {
+        return (this->v[1].col - this->v[0].col + 1);
+    }
+
+
     Crit3DUtmWindow::Crit3DUtmWindow() {}
 
     Crit3DUtmWindow::Crit3DUtmWindow(const Crit3DUtmPoint& v0, const Crit3DUtmPoint& v1)
@@ -71,6 +108,29 @@ namespace gis
         this->isDrawing = false;
         this->isChanged = false;
         this->isSelecting = false;
+    }
+
+
+    bool updateColorScale(Crit3DRasterGrid* myGrid, const Crit3DRasterWindow& myWindow)
+    {
+        return updateColorScale(myGrid, myWindow.v[0].row, myWindow.v[0].col, myWindow.v[1].row, myWindow.v[1].col);
+    }
+
+    bool getUtmWindow(const Crit3DGridHeader& latLonHeader, const Crit3DRasterHeader& utmHeader,
+                      const Crit3DRasterWindow& latLonWindow, Crit3DRasterWindow* UtmWindow, int utmZone)
+    {
+        Crit3DGeoPoint p[2];
+        Crit3DUtmPoint utmPoint[2];
+
+        getLatLonFromRowCol(latLonHeader, latLonWindow.v[0], &(p[0]));
+        getUtmFromLatLon(utmZone, p[0], &(utmPoint[0]));
+        getRowColFromXY(utmHeader, utmPoint[0], &(UtmWindow->v[0]));
+
+        getLatLonFromRowCol(latLonHeader, latLonWindow.v[1], &(p[1]));
+        getUtmFromLatLon(utmZone, p[1], &(utmPoint[1]));
+        getRowColFromXY(utmHeader, utmPoint[1], &(UtmWindow->v[1]));
+
+        return true;
     }
 
 }

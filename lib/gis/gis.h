@@ -65,26 +65,6 @@
         };
 
 
-        class  Crit3DRasterCell {
-        public:
-            int row;
-            int col;
-
-            Crit3DRasterCell();
-        };
-
-
-        class  Crit3DRasterWindow {
-        public:
-            Crit3DRasterCell v[2];
-
-            Crit3DRasterWindow();
-            Crit3DRasterWindow(int row0, int col0, int row1, int col1);
-
-            int nrRows() const;
-            int nrCols() const;
-        };
-
         class Crit3DGridHeader
         {
         public:
@@ -112,6 +92,15 @@
             bool isEqualTo(const Crit3DRasterHeader& myHeader);
 
             friend bool operator == (const Crit3DRasterHeader& myHeader1, const Crit3DRasterHeader& myHeader2);
+        };
+
+
+        class  Crit3DRasterCell {
+        public:
+            int row;
+            int col;
+
+            Crit3DRasterCell();
         };
 
 
@@ -179,7 +168,6 @@
         double computeDistancePoint(Crit3DUtmPoint* p0, Crit3DUtmPoint *p1);
         bool updateMinMaxRasterGrid(Crit3DRasterGrid* myGrid);
         bool updateColorScale(Crit3DRasterGrid* myGrid, int row0, int col0, int row1, int col1);
-        bool updateColorScale(Crit3DRasterGrid* myGrid, const Crit3DRasterWindow& myWindow);
 
         void getRowColFromXY(const Crit3DRasterGrid &myGrid, double myX, double myY, int* row, int* col);
         void getRowColFromXY(const Crit3DRasterHeader& myHeader, double myX, double myY, int *row, int *col);
@@ -233,9 +221,6 @@
 
         bool getGeoExtentsFromUTMHeader(const Crit3DGisSettings& mySettings,
                                         Crit3DRasterHeader *utmHeader, Crit3DGridHeader *latLonHeader);
-
-        bool getUtmWindow(const Crit3DGridHeader &latLonHeader, const Crit3DRasterHeader &utmHeader,
-                          const Crit3DRasterWindow &latLonWindow, Crit3DRasterWindow *UtmWindow, int utmZone);
 
         float topographicDistance(float X1, float Y1, float Z1, float X2, float Y2, float Z2, float distance,
                                   const gis::Crit3DRasterGrid& myDEM);

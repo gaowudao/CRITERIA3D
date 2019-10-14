@@ -123,22 +123,6 @@ void RasterObject::paint(QPainter *painter, const QStyleOptionGraphicsItem *opti
 }
 
 
-void RasterObject::updateCenter()
-{
-    if (! isDrawing) return;
-
-    QPointF newCenter;
-    int widthPixels = view->width() - MAPBORDER*2;
-    int heightPixels = view->height() - MAPBORDER*2;
-    newCenter = view->mapToScene(QPoint(widthPixels/2, heightPixels/2));
-
-    // reference point
-    referencePixel = view->tileSource()->ll2qgs(newCenter, view->zoomLevel());
-
-    if (isDrawing) setPos(newCenter);
-}
-
-
 void RasterObject::setRaster(gis::Crit3DRasterGrid* rasterPtr)
 {
     this->rasterPointer = rasterPtr;
@@ -201,20 +185,6 @@ void RasterObject::initializeIndexesMatrix()
             this->matrix[row][col].row = NODATA;
             this->matrix[row][col].col = NODATA;
         }
-}
-
-
-void RasterObject::setMapExtents()
-{
-    int widthPixels = view->width() - MAPBORDER*2;
-    int heightPixels = view->height() - MAPBORDER*2;
-    QPointF botLeft = view->mapToScene(QPoint(0, heightPixels));
-    QPointF topRight = view->mapToScene(QPoint(widthPixels, 0));
-
-    geoMap->bottomLeft.longitude = MAXVALUE(-180, botLeft.x());
-    geoMap->bottomLeft.latitude = MAXVALUE(-84, botLeft.y());
-    geoMap->topRight.longitude = MINVALUE(180, topRight.x());
-    geoMap->topRight.latitude = MINVALUE(84, topRight.y());
 }
 
 
@@ -415,5 +385,37 @@ bool RasterObject::drawRaster(gis::Crit3DRasterGrid *myRaster, QPainter* myPaint
     }
 
     return true;
+}
+
+
+void RasterObject::updateCenter()
+{
+    if (! isDrawing) return;
+
+    QPointF newCenter;
+    int widthPixels = view->width() - MAPBORDER*2;
+    int heightPixels = view->height() - MAPBORDER*2;
+    newCenter = view->mapToScene(QPoint(widthPixels/2, heightPixels/2));
+
+    // reference point
+    geoMap->referencePoint.longitude = newCenter.x();
+    geoMap->referencePoint.latitude = newCenter.y();
+    referencePixel = view->tileSource()->ll2qgs(newCenter, view->zoomLevel());
+
+    if (isDrawing) setPos(newCenter);
+}
+
+
+void RasterObject::setMapExtents()
+{
+    int widthPixels = view->width() - MAPBORDER*2;
+    int heightPixels = view->height() - MAPBORDER*2;
+    QPointF botLeft = view->mapToScene(QPoint(0, heightPixels));
+    QPointF topRight = view->mapToScene(QPoint(widthPixels, 0));
+
+    geoMap->bottomLeft.longitude = MAXVALUE(-180, botLeft.x());
+    geoMap->bottomLeft.latitude = MAXVALUE(-84, botLeft.y());
+    geoMap->topRight.longitude = MINVALUE(180, topRight.x());
+    geoMap->topRight.latitude = MINVALUE(84, topRight.y());
 }
 
