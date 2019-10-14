@@ -1551,6 +1551,74 @@ void DialogMeteoComputation::saveDataToXML()
             listXMLAnomaly->insertDateEnd(end);
 
         }
+        // reference
+        if (anomaly.AnomalyGetReadReferenceState())
+        {
+            listXMLAnomaly->insertIsAnomalyFromDb(true);
+            listXMLAnomaly->insertAnomalyClimateField(anomaly.AnomalyGetClimateDb());
+        }
+        else
+        {
+            listXMLAnomaly->insertIsAnomalyFromDb(false);
+            listXMLAnomaly->insertAnomalyClimateField("");
+            listXMLAnomaly->insertRefYearStart(anomaly.AnomalyGetYearStart());
+            listXMLAnomaly->insertRefYearEnd(anomaly.AnomalyGetYearLast());
+            listXMLAnomaly->insertRefElab1(anomaly.AnomalyGetElaboration());
+            QString AnomalyPeriodSelected = anomaly.AnomalyGetPeriodTypeList();
+            listXMLAnomaly->insertRefPeriodStr(AnomalyPeriodSelected);
+            if (AnomalyPeriodSelected == "Generic")
+            {
+                listXMLAnomaly->insertRefDateStart(anomaly.AnomalyGetGenericPeriodStart());
+                listXMLAnomaly->insertRefDateEnd(anomaly.AnomalyGetGenericPeriodEnd());
+                listXMLAnomaly->insertRefNYears(anomaly.AnomalyGetNyears());
+            }
+            else
+            {
+                QDate start;
+                QDate end;
+                getPeriodDates(AnomalyPeriodSelected, anomaly.AnomalyGetYearStart(), anomaly.AnomalyGetCurrentDay(), &start, &end);
+
+                listXMLAnomaly->insertRefNYears(start.year() - anomaly.AnomalyGetYearStart());
+                listXMLAnomaly->insertRefDateStart(start);
+                listXMLAnomaly->insertRefDateEnd(end);
+
+            }
+            if (!anomaly.AnomalyReadParamIsChecked())
+            {
+                listXMLAnomaly->insertRefParam1IsClimate(false);
+                if (anomaly.AnomalyGetParam1() != "")
+                {
+                    listXMLAnomaly->insertRefParam1(anomaly.AnomalyGetParam1().toFloat());
+                }
+                else
+                {
+                    listXMLAnomaly->insertRefParam1(NODATA);
+                }
+            }
+            else
+            {
+                listXMLAnomaly->insertRefParam1IsClimate(true);
+                listXMLAnomaly->insertRefParam1ClimateField(anomaly.AnomalyGetClimateDbElab());
+            }
+            if (anomaly.AnomalyGetSecondElaboration() == "None" || anomaly.AnomalyGetSecondElaboration() == "No elaboration available" || anomaly.AnomalyGetSecondElaboration().isEmpty())
+            {
+                listXMLAnomaly->insertRefElab2("");
+                listXMLAnomaly->insertRefParam2(NODATA);
+            }
+            else
+            {
+                listXMLAnomaly->insertRefElab2(anomaly.AnomalyGetSecondElaboration());
+                if (anomaly.AnomalyGetParam2() != "")
+                {
+                    listXMLAnomaly->insertRefParam2(anomaly.AnomalyGetParam2().toFloat());
+                }
+                else
+                {
+                    listXMLAnomaly->insertRefParam2(NODATA);
+                }
+            }
+
+        }
         // TO DO append to XML
         delete listXMLAnomaly;
     }
