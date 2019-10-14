@@ -638,7 +638,7 @@ void weatherGenerator2D::precipitationMultiDistributionParameterization()
                frequencyBins[i]= (double)(nrBinsFrequency[i])/(double)(nrTotal);
                printf("frequency %f\n", frequencyBins[i]);
            }
-           pressEnterToContinue();
+           //pressEnterToContinue();
            int numberOfDaysAbovePrecThreshold=0;
            double precipitationMean=0.0;
            for(int i=0; i<numberObservedMax ;i++)
@@ -684,7 +684,7 @@ void weatherGenerator2D::precipitationMultiDistributionParameterization()
                    printf("lambda %f\t%f\n",occurrenceIndexSeasonal[ijk].parMultiexp[qq][i][0],occurrenceIndexSeasonal[ijk].parMultiexp[qq][i][1]);
 
                }
-               pressEnterToContinue();
+               //pressEnterToContinue();
            }
 
            for (int i=0;i<nrBincenter;i++)
