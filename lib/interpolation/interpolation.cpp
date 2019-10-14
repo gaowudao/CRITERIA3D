@@ -186,7 +186,7 @@ bool neighbourhoodVariability(std::vector <Crit3DInterpolationDataPoint> &myInte
                               float x, float y, float z, int nMax,
                               float* devSt, float* devStDeltaZ, float* minDistance)
 {
-    int i, max_points, nrValid;
+    int i, max_points;
     float* dataNeighborhood;
     float myValue;
     vector <float> deltaZ;

@@ -36,27 +36,27 @@
 
 Crit3DTime::Crit3DTime()
 {
-    time = 0.; date.day = 0; date.month = 0; date.year = 0;
+    time = 0; date.day = 0; date.month = 0; date.year = 0;
 }
 
-Crit3DTime::Crit3DTime(Crit3DDate myDate, float mySeconds)
+Crit3DTime::Crit3DTime(Crit3DDate myDate, int mySeconds)
 {
     date = myDate;
     time = 0;
-    *this = this->addSeconds(mySeconds);
+    *this = addSeconds(mySeconds);
 }
 
 int Crit3DTime::getHour() const
 {
-    return int(time / 3600);
+    return (time / 3600);
 }
 
 int Crit3DTime::getMinutes() const
 {
-    return int((time - getHour()*3600) / 60);
+    return (time - getHour()*3600) / 60;
 }
 
-float Crit3DTime::getSeconds() const
+int Crit3DTime::getSeconds() const
 {
     return (time - getHour()*3600 - getMinutes()*60);
 }
@@ -106,25 +106,25 @@ bool isNullTime(const Crit3DTime& myTime)
 
 bool Crit3DTime::isEqual(const Crit3DTime& myTime) const
 {
-    return ((this->date == myTime.date) && (int(this->time) == int(myTime.time)));
+    return ((this->date == myTime.date) && (this->time == myTime.time));
 }
 
-Crit3DTime Crit3DTime::addSeconds(float mySeconds) const
+Crit3DTime Crit3DTime::addSeconds(int mySeconds) const
 {
     Crit3DTime myTime = *this;
     myTime.time += mySeconds;
 
-    while (!((myTime.time >= 0.f) && (myTime.time < float(DAY_SECONDS))))
+    while (!((myTime.time >= 0) && (myTime.time < DAY_SECONDS)))
     {
-        if (myTime.time >= float(DAY_SECONDS))
+        if (myTime.time >= DAY_SECONDS)
         {
             ++(myTime.date);
-            myTime.time -= float(DAY_SECONDS);
+            myTime.time -= DAY_SECONDS;
         }
         else if (myTime.time < 0)
         {
             --(myTime.date);
-            myTime.time += float(DAY_SECONDS);
+            myTime.time += DAY_SECONDS;
         }
     }
     return myTime;
