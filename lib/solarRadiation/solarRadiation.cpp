@@ -584,7 +584,7 @@ bool computeRadiationPointRsun(Crit3DRadiationSettings* mySettings, float myTemp
         Crit3DTime localTime;
         localTime = myTime;
         if (mySettings->gisSettings->isUTC)
-            localTime = myTime.addSeconds(float(mySettings->gisSettings->timeZone * 3600));
+            localTime = myTime.addSeconds(mySettings->gisSettings->timeZone * 3600);
 
         myYear = localTime.date.year;
         myMonth =  localTime.date.month;
@@ -1090,8 +1090,8 @@ bool computeRadiationPointRsun(Crit3DRadiationSettings* mySettings, float myTemp
         {
             backwardTimeStep -= timeStepSecond;
             forwardTimeStep += timeStepSecond;
-            backwardTime = UTCTime.addSeconds(float(backwardTimeStep));
-            forwardTime = UTCTime.addSeconds(float(forwardTimeStep));
+            backwardTime = UTCTime.addSeconds(backwardTimeStep);
+            forwardTime = UTCTime.addSeconds(forwardTimeStep);
 
             if (measuredRad[windowIndex] != NODATA)
             {
