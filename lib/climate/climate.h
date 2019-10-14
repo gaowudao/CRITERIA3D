@@ -133,6 +133,8 @@
 
     bool checkElabParam(QString elab, QString param);
 
+    bool checkDataType(QString xmlFileName, bool isMeteoGrid, QString *myError);
+
     //int getClimateIndexFromDate(QDate myDate, period periodType);
 
 #endif // CLIMATE_H
