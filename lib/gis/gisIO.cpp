@@ -294,16 +294,8 @@ namespace gis
         latLonHeader->dx = (URcorner.longitude - LLcorner.longitude) / latLonHeader->nrCols;
         latLonHeader->dy = (URcorner.latitude - LLcorner.latitude) / latLonHeader->nrRows;
 
-        // center
-        Crit3DUtmPoint utmCenter;
-        utmCenter.x = utmHeader->llCorner->x + utmHeader->nrCols * utmHeader->cellSize *0.5;
-        utmCenter.y = utmHeader->llCorner->y + utmHeader->nrRows * utmHeader->cellSize *0.5;
-        Crit3DGeoPoint center;
-        gis::getLatLonFromUtm(mySettings, utmCenter, &(center));
-
-        // llCorner
-        latLonHeader->llCorner->latitude = center.latitude - latLonHeader->nrRows * latLonHeader->dy *0.5;
-        latLonHeader->llCorner->longitude = center.longitude - latLonHeader->nrCols * latLonHeader->dx *0.5;
+        latLonHeader->llCorner->latitude = LLcorner.latitude;
+        latLonHeader->llCorner->longitude = LLcorner.longitude;
 
         // flag
         latLonHeader->flag = utmHeader->flag;

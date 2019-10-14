@@ -78,8 +78,7 @@ bool Crit3DShapeHandler::open(std::string filename)
     SHPGetInfo(m_handle, &m_count, &m_type, nullptr, nullptr);
     m_fields = m_dbf->nFields;
 
-
-    char *fieldName =  (char *) malloc(sizeof(char) * (XBASE_FLDNAME_LEN_READ+1));
+    char *fieldName =  new char[XBASE_FLDNAME_LEN_READ];
     DBFFieldType fieldType;
 
     m_fieldsList.clear();
@@ -102,8 +101,6 @@ bool Crit3DShapeHandler::open(std::string filename)
     isWGS84Proj(filePrj);
     setUTMzone(filePrj);
 
-    free(fieldName);
-
     return true;
 }
 
@@ -115,7 +112,7 @@ bool Crit3DShapeHandler::openDBF(std::string filename)
 
     m_fields = m_dbf->nFields;
 
-    char *fieldName =  (char *) malloc(sizeof(char) * (XBASE_FLDNAME_LEN_READ+1));
+    char *fieldName =  new char[XBASE_FLDNAME_LEN_READ+1];
     DBFFieldType fieldType;
 
     m_fieldsList.clear();
@@ -127,7 +124,7 @@ bool Crit3DShapeHandler::openDBF(std::string filename)
         m_fieldsList.push_back(std::string(fieldName));
         m_fieldsTypeList.push_back(fieldType);
     }
-    free(fieldName);
+
     return true;
 }
 
@@ -408,7 +405,7 @@ void Crit3DShapeHandler::packDBF(std::string newFile)
 
 
     // copy fields
-    for( int i = 0; i < m_fields; i++ )
+    for(unsigned int i = 0; i < unsigned(m_fields); i++ )
     {
         int nWidth = m_dbf->panFieldSize[i];
         int nDecimals = m_dbf->panFieldDecimals[i];

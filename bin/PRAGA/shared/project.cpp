@@ -1351,9 +1351,8 @@ bool Project::writeTopographicDistanceMaps(bool onlyWithData)
         QDir().mkdir(mapsFolder);
 
     FormInfo myInfo;
-    int infoStep;
     QString infoStr = "Computing topographic distance maps...";
-    infoStep = myInfo.start(infoStr, nrMeteoPoints);
+    int infoStep = myInfo.start(infoStr, nrMeteoPoints);
 
     std::string myError;
     std::string fileName;
@@ -1362,7 +1361,7 @@ bool Project::writeTopographicDistanceMaps(bool onlyWithData)
 
     for (int i=0; i < nrMeteoPoints; i++)
     {
-        myInfo.setValue(i);
+        if ((i % infoStep) == 0) myInfo.setValue(i);
 
         if (meteoPoints[i].active)
         {
@@ -1409,9 +1408,8 @@ bool Project::loadTopographicDistanceMaps()
     }
 
     FormInfo myInfo;
-    int infoStep;
     QString infoStr = "Loading topographic distance maps...";
-    infoStep = myInfo.start(infoStr, nrMeteoPoints);
+    int infoStep = myInfo.start(infoStr, nrMeteoPoints);
 
     std::string myError;
     std::string fileName;
@@ -1419,7 +1417,7 @@ bool Project::loadTopographicDistanceMaps()
 
     for (int i=0; i < nrMeteoPoints; i++)
     {
-        myInfo.setValue(i);
+        if ((i % infoStep) == 0) myInfo.setValue(i);
 
         if (meteoPoints[i].active)
         {

@@ -441,14 +441,6 @@ bool PragaProject::deleteClima(bool isMeteoGrid, QString climaSelected)
 
 bool PragaProject::elaboration(bool isMeteoGrid, bool isAnomaly, bool saveClima)
 {
-
-    // test XML LC
-      Crit3DElabList *listXMLElab = new Crit3DElabList();
-      Crit3DAnomalyList *listXMLAnomaly = new Crit3DAnomalyList();
-      QString *myError = new QString();
-      parseXMLElaboration(listXMLElab, listXMLAnomaly, "/home/laura/xmlWeekly.xml", myError);
-
-    ////////////////////////
     if (isMeteoGrid)
     {
         if (saveClima)

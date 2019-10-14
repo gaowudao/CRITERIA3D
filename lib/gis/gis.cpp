@@ -80,15 +80,44 @@ namespace gis
 
     Crit3DRasterWindow::Crit3DRasterWindow()
     {
+        this->v[0].row = NODATA;
+        this->v[0].col = NODATA;
+        this->v[1].row = NODATA;
+        this->v[1].col = NODATA;
     }
 
-    Crit3DRasterWindow::Crit3DRasterWindow(int row1, int col1, int row2, int col2)
+    Crit3DRasterWindow::Crit3DRasterWindow(int row0, int col0, int row1, int col1)
     {
-        this->v[0].row = row1;
-        this->v[0].col = col1;
-        this->v[1].row = row2;
-        this->v[1].col = col2;
+        if (row0 > row1)
+        {
+            int tmp = row0;
+            row0 = row1;
+            row1 = tmp;
+        }
+
+        if (col0 > col1)
+        {
+            int tmp = col0;
+            col0 = col1;
+            col1 = tmp;
+        }
+
+        this->v[0].row = row0;
+        this->v[0].col = col0;
+        this->v[1].row = row1;
+        this->v[1].col = col1;
     }
+
+    int Crit3DRasterWindow::nrRows() const
+    {
+        return (this->v[1].row - this->v[0].row + 1);
+    }
+
+    int Crit3DRasterWindow::nrCols() const
+    {
+        return (this->v[1].col - this->v[0].col + 1);
+    }
+
 
     Crit3DUtmPoint::Crit3DUtmPoint(double myX, double myY)
     {

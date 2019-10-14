@@ -79,7 +79,10 @@
             Crit3DRasterCell v[2];
 
             Crit3DRasterWindow();
-            Crit3DRasterWindow(int row1, int col1, int row2, int col2);
+            Crit3DRasterWindow(int row0, int col0, int row1, int col1);
+
+            int nrRows() const;
+            int nrCols() const;
         };
 
         class Crit3DGridHeader

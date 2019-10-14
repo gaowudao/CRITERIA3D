@@ -1,6 +1,6 @@
 #include "dialogXMLComputation.h"
 
-int DialogXMLComputation::getIndex() const
+unsigned int DialogXMLComputation::getIndex() const
 {
     return index;
 }
