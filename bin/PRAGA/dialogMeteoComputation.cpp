@@ -1416,14 +1416,18 @@ void DialogMeteoComputation::copyDataFromXML()
 
 void DialogMeteoComputation::saveDataToXML()
 {
-    Crit3DElabList *listXMLElab = new Crit3DElabList();
-    Crit3DAnomalyList *listXMLAnomaly = new Crit3DAnomalyList();
-    QString *myError = new QString();
     QString xmlName = QFileDialog::getOpenFileName(this, tr("Open XML"), "", tr("xml files (*.xml)"));
-    if (xmlName != "")
+    QString *myError = new QString();
+    if (xmlName == "")
     {
-        parseXMLElaboration(listXMLElab, listXMLAnomaly, xmlName, myError);
+        return;
     }
-    // TO DO
+    if (!checkDataType(xmlName, isMeteoGrid, myError))
+    {
+        QMessageBox::information(nullptr, "Error", *myError);
+        return;
+    }
+
+
 }
 

@@ -3285,3 +3285,73 @@ bool checkElabParam(QString elab, QString param)
     return true;
 }
 
+bool checkDataType(QString xmlFileName, bool isMeteoGrid, QString *myError)
+{
+
+    QDomDocument xmlDoc;
+
+    QFile myFile(xmlFileName);
+    if (!myFile.open(QIODevice::ReadOnly))
+    {
+        *myError = "Open XML failed:\n" + xmlFileName + "\n" + myFile.errorString();
+        return (false);
+    }
+
+    int myErrLine, myErrColumn;
+    if (!xmlDoc.setContent(&myFile, myError, &myErrLine, &myErrColumn))
+    {
+       *myError = "Parse xml failed:" + xmlFileName
+                + " Row: " + QString::number(myErrLine)
+                + " - Column: " + QString::number(myErrColumn)
+                + "\n" + myError;
+        myFile.close();
+        return(false);
+    }
+
+    myFile.close();
+    QDomNode ancestor = xmlDoc.documentElement().firstChild();
+
+    while(!ancestor.isNull())
+    {
+        if (ancestor.toElement().tagName().toUpper() == "ELABORATION" || ancestor.toElement().tagName().toUpper() == "ANOMALY")
+        {
+            QString dataTypeAttribute = ancestor.toElement().attribute("Datatype").toUpper();
+            if ( dataTypeAttribute == "GRID")
+            {
+                if (isMeteoGrid)
+                {
+                    xmlDoc.clear();
+                    return true;
+                }
+                else
+                {
+                    xmlDoc.clear();
+                    *myError = "XML Datatype is GRID";
+                    return false;
+                }
+            }
+            else if (dataTypeAttribute == "POINT")
+            {
+                if (isMeteoGrid)
+                {
+                    xmlDoc.clear();
+                    *myError = "XML Datatype is POINT";
+                    return false;
+                }
+                else
+                {
+                    xmlDoc.clear();
+                    return true;
+                }
+            }
+            else if (dataTypeAttribute.isEmpty() || (dataTypeAttribute != "GRID" && dataTypeAttribute != "POINT"))
+            {
+                ancestor = ancestor.nextSibling(); // something is wrong, go to next elab
+                continue;
+            }
+        }
+        ancestor = ancestor.nextSibling();
+    }
+    return false;
+
+}
