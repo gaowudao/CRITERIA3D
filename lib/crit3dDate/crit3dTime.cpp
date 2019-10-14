@@ -109,7 +109,7 @@ bool Crit3DTime::isEqual(const Crit3DTime& myTime) const
     return ((this->date == myTime.date) && (this->time == myTime.time));
 }
 
-Crit3DTime Crit3DTime::addSeconds(int mySeconds) const
+Crit3DTime Crit3DTime::addSeconds(long mySeconds) const
 {
     Crit3DTime myTime = *this;
     myTime.time += mySeconds;

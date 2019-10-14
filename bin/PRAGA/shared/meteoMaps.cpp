@@ -86,7 +86,7 @@ bool Crit3DDailyMeteoMaps::computeHSET0Map(gis::Crit3DGisSettings* gisSettings, 
             {
                 gis::getUtmXYFromRowCol(*mapDailyET0HS->header, row, col, &X, &Y);
                 gis::getLatLonFromUtm(*gisSettings, X, Y, &latitude, &longitude);
-                mapDailyET0HS->value[row][col] = ET0_Hargreaves(double(TRANSMISSIVITY_SAMANI_COEFF_DEFAULT), latitude, getDoyFromDate(myDate), double(airTmax), double(airTmin));
+                mapDailyET0HS->value[row][col] = float(ET0_Hargreaves(TRANSMISSIVITY_SAMANI_COEFF_DEFAULT, latitude, getDoyFromDate(myDate), double(airTmax), double(airTmin)));
             }
         }
     }

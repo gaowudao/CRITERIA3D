@@ -51,7 +51,7 @@
         friend bool operator == (const Crit3DTime& myFirstTime, const Crit3DTime& mySecondTime);
         friend bool operator != (const Crit3DTime& myFirstTime, const Crit3DTime& mySecondTime);
 
-        Crit3DTime addSeconds(int mySeconds) const;
+        Crit3DTime addSeconds(long mySeconds) const;
         bool isEqual(const Crit3DTime&) const;
 
         int getHour() const;

@@ -192,8 +192,11 @@ std::string NetCDFHandler::getDateTimeStr(int timeIndex)
     else if (isHourly)
     {
         int nrHours = int(time[timeIndex]);
-        Crit3DTime myTime = Crit3DTime(firstDate, 0);
-        myTime.addSeconds(nrHours*3600);
+        int nrDays = int(floor(nrHours/24));
+        int residualTime = (nrHours - nrDays*24) * HOUR_SECONDS;
+
+        Crit3DDate myDate = Crit3DTime(firstDate, 0).date.addDays(nrDays);
+        Crit3DTime myTime = Crit3DTime(myDate, residualTime);
         s << myTime.toStdString();
     }
     else
@@ -373,7 +376,7 @@ bool NetCDFHandler::readProperties(string fileName, stringstream *buffer)
                         else if (lowerCase(myString).substr(0, 11) == "hours since")
                         {
                             isHourly = true;
-                            std::string dateStr = lowerCase(myString).substr(13, 22);
+                            std::string dateStr = lowerCase(myString).substr(12, 21);
                             firstDate = Crit3DDate(dateStr);
                         }
                     }
