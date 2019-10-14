@@ -9,6 +9,18 @@
     {
         enum mapActionType {actionDrag, actionSelect, actionZoom, actionNone};
 
+
+        class  Crit3DRasterWindow {
+        public:
+            Crit3DRasterCell v[2];
+
+            Crit3DRasterWindow();
+            Crit3DRasterWindow(int row0, int col0, int row1, int col1);
+
+            int nrRows() const;
+            int nrCols() const;
+        };
+
         class Crit3DUtmWindow
         {
         public:
@@ -46,6 +58,11 @@
 
             Crit3DGeoMap();
         };
+
+
+        bool updateColorScale(Crit3DRasterGrid* myGrid, const Crit3DRasterWindow& myWindow);
+        bool getUtmWindow(const Crit3DGridHeader &latLonHeader, const Crit3DRasterHeader &utmHeader,
+                          const Crit3DRasterWindow &latLonWindow, Crit3DRasterWindow *UtmWindow, int utmZone);
 
     }
 

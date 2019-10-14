@@ -66,56 +66,16 @@ namespace gis
         this->y = y0;
     }
 
-    Crit3DUtmPoint::Crit3DUtmPoint()
-    {
-        this->x = NODATA;
-        this->y = NODATA;
-    }
-
     Crit3DRasterCell::Crit3DRasterCell()
     {
         this->row = NODATA;
         this->col = NODATA;
     }
 
-    Crit3DRasterWindow::Crit3DRasterWindow()
+    Crit3DUtmPoint::Crit3DUtmPoint()
     {
-        this->v[0].row = NODATA;
-        this->v[0].col = NODATA;
-        this->v[1].row = NODATA;
-        this->v[1].col = NODATA;
-    }
-
-    Crit3DRasterWindow::Crit3DRasterWindow(int row0, int col0, int row1, int col1)
-    {
-        if (row0 > row1)
-        {
-            int tmp = row0;
-            row0 = row1;
-            row1 = tmp;
-        }
-
-        if (col0 > col1)
-        {
-            int tmp = col0;
-            col0 = col1;
-            col1 = tmp;
-        }
-
-        this->v[0].row = row0;
-        this->v[0].col = col0;
-        this->v[1].row = row1;
-        this->v[1].col = col1;
-    }
-
-    int Crit3DRasterWindow::nrRows() const
-    {
-        return (this->v[1].row - this->v[0].row + 1);
-    }
-
-    int Crit3DRasterWindow::nrCols() const
-    {
-        return (this->v[1].col - this->v[0].col + 1);
+        this->x = NODATA;
+        this->y = NODATA;
     }
 
 
@@ -454,10 +414,6 @@ namespace gis
         return(true);
     }
 
-    bool updateColorScale(Crit3DRasterGrid* myGrid, const Crit3DRasterWindow& myWindow)
-    {
-        return updateColorScale(myGrid, myWindow.v[0].row, myWindow.v[0].col, myWindow.v[1].row, myWindow.v[1].col);
-    }
 
     bool updateColorScale(Crit3DRasterGrid* myGrid, int row0, int col0, int row1, int col1)
     {
