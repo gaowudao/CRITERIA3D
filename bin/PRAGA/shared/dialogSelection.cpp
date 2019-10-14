@@ -277,7 +277,7 @@ meteoVariable chooseMeteoVariable(Project* myProject)
             QMessageBox::information(nullptr, "No data", "Load NetCDF before");
             return false;
         }
-        if (! netCDF->isStandardTime)
+        if (! netCDF->isStandardTime && ! netCDF->isHourly)
         {
             QMessageBox::information(nullptr, "Wrong time", "Reads only POSIX standard (seconds since 1970-01-01)");
             return false;

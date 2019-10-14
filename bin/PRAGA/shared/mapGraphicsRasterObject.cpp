@@ -347,10 +347,12 @@ bool RasterObject::drawRaster(gis::Crit3DRasterGrid *myRaster, QPainter* myPaint
         for (int col = window.v[0].col; col <= window.v[1].col; col += step)
         {
             p0.setX(lowerLeft.x() + (col - window.v[0].col) * latLonHeader.dx);
-            if (p0.x() > 180) p0.setX(p0.x() - 360);
-
             p1.setX(p0.x() + step * latLonHeader.dx);
-            if (p1.x() > 180) p1.setX(p1.x() - 360);
+            if (p0.x() > 180)
+            {
+                p0.setX(p0.x() - 360);
+                p1.setX(p1.x() - 360);
+            }
 
             pixel = getPixel(p0);
             x0 = int(pixel.x());
