@@ -201,7 +201,7 @@ std::string NetCDFHandler::getDateTimeStr(int timeIndex)
     }
     else
     {
-        s << "ERROR: time is not standard (std: seconds since 1970)";
+        s << "ERROR: time is not standard (std: seconds since 1970-01-01)";
     }
 
     return s.str();
@@ -368,7 +368,7 @@ bool NetCDFHandler::readProperties(string fileName, stringstream *buffer)
                 {
                     if (lowerCase(string(attrName)) == "units")
                     {
-                        if (lowerCase(myString).substr(0, 24) == "seconds since 1970-01-01")
+                        if (lowerCase(myString).substr(0, 18) == "seconds since 1970")
                         {
                             isStandardTime = true;
                             firstDate = Crit3DDate(1970,1,1);
