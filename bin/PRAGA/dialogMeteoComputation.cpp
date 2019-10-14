@@ -1430,6 +1430,7 @@ void DialogMeteoComputation::saveDataToXML()
     if(!isAnomaly)
     {
         Crit3DElabList *listXMLElab = new Crit3DElabList();
+        listXMLElab->setIsMeteoGrid(isMeteoGrid);
         listXMLElab->insertYearStart(firstYearEdit.text().toInt());
         listXMLElab->insertYearEnd(lastYearEdit.text().toInt());
         QString value = variableList.currentText();
@@ -1494,6 +1495,7 @@ void DialogMeteoComputation::saveDataToXML()
     else
     {
         Crit3DAnomalyList *listXMLAnomaly = new Crit3DAnomalyList();
+        listXMLAnomaly->setIsMeteoGrid(isMeteoGrid);
         listXMLAnomaly->insertYearStart(firstYearEdit.text().toInt());
         listXMLAnomaly->insertYearEnd(lastYearEdit.text().toInt());
         QString value = variableList.currentText();
