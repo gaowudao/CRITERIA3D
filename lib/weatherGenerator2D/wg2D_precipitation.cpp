@@ -622,7 +622,7 @@ void weatherGenerator2D::precipitationMultiDistributionParameterization()
                {
                    if (moranArrayPrec[j] >= bins[i] && moranArrayPrec[j] < bins[i+1]) nrBinsFrequency[i]++;
                }
-               if (moranArrayPrec[indexMoranArrayPrec] >= bins[i] && moranArrayPrec[indexMoranArrayPrec] < bins[i+1]) nrBinsFrequency[i]++;
+               if (moranArrayPrec[indexMoranArrayPrec-1] >= bins[i] && moranArrayPrec[indexMoranArrayPrec-1] < bins[i+1]) nrBinsFrequency[i]++;
            }
            int nrTotal = 0;
            //double frequencyBins[12];
@@ -636,9 +636,9 @@ void weatherGenerator2D::precipitationMultiDistributionParameterization()
            for(int i=0; i<counterBins-1;i++)
            {
                frequencyBins[i]= (double)(nrBinsFrequency[i])/(double)(nrTotal);
-               //printf("frequency %f\n", frequencyBins[i]);
+               printf("frequency %f\n", frequencyBins[i]);
            }
-           //pressEnterToContinue();
+           pressEnterToContinue();
            int numberOfDaysAbovePrecThreshold=0;
            double precipitationMean=0.0;
            for(int i=0; i<numberObservedMax ;i++)
@@ -681,10 +681,10 @@ void weatherGenerator2D::precipitationMultiDistributionParameterization()
                {
                    occurrenceIndexSeasonal[ijk].parMultiexp[qq][i][0]=meanPFit[i]*meanPFit[i]/(PstdDev[i]*PstdDev[i]);
                    occurrenceIndexSeasonal[ijk].parMultiexp[qq][i][1]=(PstdDev[i]*PstdDev[i])/meanPFit[i];
-                   //printf("lambda %f\t%f\n",occurrenceIndexSeasonal[ijk].parMultiexp[qq][i][0],occurrenceIndexSeasonal[ijk].parMultiexp[qq][i][1]);
+                   printf("lambda %f\t%f\n",occurrenceIndexSeasonal[ijk].parMultiexp[qq][i][0],occurrenceIndexSeasonal[ijk].parMultiexp[qq][i][1]);
 
                }
-               //pressEnterToContinue();
+               pressEnterToContinue();
            }
 
            for (int i=0;i<nrBincenter;i++)
@@ -1077,7 +1077,7 @@ void weatherGenerator2D::precipitationMultisiteAmountsGeneration()
 
 
 
-    //printf("parte 5 fine\n");
+    printf("parte 5 fine\n");
    // free the memory step 5
    for (int i=0;i<nrStations;i++)
    {
