@@ -17,6 +17,7 @@
 #include "commonConstants.h"
 #include "dialogSelection.h"
 #include "color.h"
+#include "utilities.h"
 
 
 QString editValue(QString windowsTitle, QString defaultValue)
@@ -269,7 +270,7 @@ meteoVariable chooseMeteoVariable(Project* myProject)
 
 
 #ifdef NETCDF
-    bool chooseNetCDFVariable(NetCDFHandler* netCDF, int* varId, QDateTime* firstDate, QDateTime* lastDate)
+    bool chooseNetCDFVariable(NetCDFHandler* netCDF, int* varId, QDateTime* firstDateTime, QDateTime* lastDateTime)
     {
         // check
         if (! netCDF->isLoaded)
@@ -295,10 +296,10 @@ meteoVariable chooseMeteoVariable(Project* myProject)
         QLabel *VariableLabel = new QLabel("<b>Variable:</b>");
         layoutVariable.addWidget(VariableLabel);
 
-        int nrVariables = netCDF->getNrVariables();
+        unsigned int nrVariables = netCDF->getNrVariables();
         std::vector<QRadioButton*> buttonVars;
 
-        for (int i = 0; i < nrVariables; i++)
+        for (unsigned int i = 0; i < nrVariables; i++)
         {
             QString varName = QString::fromStdString(netCDF->variables[i].getVarName());
             buttonVars.push_back(new QRadioButton(varName));
@@ -310,21 +311,21 @@ meteoVariable chooseMeteoVariable(Project* myProject)
         layoutVariable.addWidget(new QLabel());
 
         //Date widgets
-        *firstDate = QDateTime::fromTime_t(netCDF->getFirstTime(), Qt::UTC);
-        *lastDate = QDateTime::fromTime_t(netCDF->getLastTime(), Qt::UTC);
+        *firstDateTime = getQDateTime(netCDF->getFirstTime());
+        *lastDateTime = getQDateTime(netCDF->getLastTime());
 
         QDateTimeEdit *firstYearEdit = new QDateTimeEdit;
-        firstYearEdit->setDateTimeRange(*firstDate, *lastDate);
+        firstYearEdit->setDateTimeRange(*firstDateTime, *lastDateTime);
         firstYearEdit->setTimeSpec(Qt::UTC);
-        firstYearEdit->setDateTime(*firstDate);
+        firstYearEdit->setDateTime(*lastDateTime);
 
         QLabel *firstDateLabel = new QLabel("<b>First Date:</b>");
         firstDateLabel->setBuddy(firstYearEdit);
 
         QDateTimeEdit *lastYearEdit = new QDateTimeEdit;
-        lastYearEdit->setDateTimeRange(*firstDate, *lastDate);
+        lastYearEdit->setDateTimeRange(*firstDateTime, *lastDateTime);
         lastYearEdit->setTimeSpec(Qt::UTC);
-        lastYearEdit->setDateTime(*lastDate);
+        lastYearEdit->setDateTime(*lastDateTime);
 
         QLabel *lastDateLabel = new QLabel("<b>Last Date:</b>");
         lastDateLabel->setBuddy(lastYearEdit);
@@ -356,11 +357,11 @@ meteoVariable chooseMeteoVariable(Project* myProject)
             return false;
 
         // assing values
-        *firstDate = firstYearEdit->dateTime();
-        *lastDate = lastYearEdit->dateTime();
+        *firstDateTime = firstYearEdit->dateTime();
+        *lastDateTime = lastYearEdit->dateTime();
 
         bool isVarSelected = false;
-        int i = 0;
+        unsigned int i = 0;
         while (i < nrVariables && ! isVarSelected)
         {
             if (buttonVars[i]->isChecked())
@@ -373,6 +374,7 @@ meteoVariable chooseMeteoVariable(Project* myProject)
 
         return isVarSelected;
     }
+
 #endif
 
 

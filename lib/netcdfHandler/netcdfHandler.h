@@ -50,14 +50,14 @@
         int getDimensionIndex(char* dimName);
         std::string getDateTimeStr(int timeIndex);
         std::string getVarName(int idVar);
-        inline int getNrVariables() {return int(variables.size());}
+        inline unsigned int getNrVariables() {return unsigned(variables.size());}
 
-        time_t getTime(int timeIndex);
-        inline time_t getFirstTime() {return getTime(0);}
-        inline time_t getLastTime() {return getTime(nrTime-1);}
+        Crit3DTime getTime(int timeIndex);
+        inline Crit3DTime getFirstTime() { return getTime(0); }
+        inline Crit3DTime getLastTime() { return getTime(nrTime-1); }
 
         bool readProperties(std::string fileName, std::stringstream *buffer);
-        bool exportDataSeries(int idVar, gis::Crit3DGeoPoint geoPoint, time_t firstTime, time_t lastTime, std::stringstream *buffer);
+        bool exportDataSeries(int idVar, gis::Crit3DGeoPoint geoPoint, Crit3DTime firstTime, Crit3DTime lastTime, std::stringstream *buffer);
 
     private:
 

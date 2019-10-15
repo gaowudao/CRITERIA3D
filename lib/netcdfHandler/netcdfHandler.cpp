@@ -182,36 +182,49 @@ bool NetCDFHandler::isPointInside(gis::Crit3DGeoPoint geoPoint)
 std::string NetCDFHandler::getDateTimeStr(int timeIndex)
 {
     if (timeIndex < 0 || timeIndex >= nrTime)
-        return "ERROR: time index out of range";
-
-    std::stringstream s;
-    if (isStandardTime)
     {
-        time_t myTime = time_t(time[timeIndex]);
-        s << std::put_time(std::gmtime(&myTime), "%Y-%m-%d %H:%M:%S");
-    }
-    else if (isHourly)
-    {
-        int nrHours = int(time[timeIndex]);
-        int nrDays = int(floor(nrHours/24));
-        int residualTime = (nrHours - nrDays*24) * HOUR_SECONDS;
-
-        Crit3DDate myDate = Crit3DTime(firstDate, 0).date.addDays(nrDays);
-        Crit3DTime myTime = Crit3DTime(myDate, residualTime);
-        s << myTime.toStdString();
-    }
-    else
-    {
-        s << "ERROR: time is not standard (std: seconds since 1970-01-01)";
+        return "ERROR: time index is out of range";
     }
 
-    return s.str();
+    Crit3DTime myTime = getTime(timeIndex);
+    if (myTime == NO_DATETIME)
+    {
+        return "ERROR: time is not standard (std: seconds since 1970-01-01)";
+    }
+
+    return myTime.toStdString();
 }
 
 
-time_t NetCDFHandler::getTime(int timeIndex)
+Crit3DTime NetCDFHandler::getTime(int timeIndex)
 {
-    return time_t(time[timeIndex]);
+    if (timeIndex < 0 || timeIndex >= nrTime)
+    {
+        return NO_DATETIME;
+    }
+
+    int nrDays, residualTime;
+
+    if (isStandardTime)
+    {
+        long nrSeconds = long(time[timeIndex]);
+        nrDays = int(floor(nrSeconds / DAY_SECONDS));
+        residualTime = nrSeconds - (nrDays * DAY_SECONDS);
+    }
+    else if (isHourly)
+    {
+        long nrHours = long(time[timeIndex]);
+        nrDays = int(floor(nrHours / 24));
+        residualTime = (nrHours - nrDays*24) * HOUR_SECONDS;
+    }
+    else
+    {
+        return NO_DATETIME;
+    }
+
+    Crit3DDate myDate = Crit3DTime(firstDate, 0).date.addDays(nrDays);
+
+    return Crit3DTime(myDate, residualTime);
 }
 
 
@@ -522,10 +535,10 @@ bool NetCDFHandler::readProperties(string fileName, stringstream *buffer)
 }
 
 
-bool NetCDFHandler::exportDataSeries(int idVar, gis::Crit3DGeoPoint geoPoint, time_t firstTime, time_t lastTime, stringstream *buffer)
+bool NetCDFHandler::exportDataSeries(int idVar, gis::Crit3DGeoPoint geoPoint, Crit3DTime firstTime, Crit3DTime lastTime, stringstream *buffer)
 {
     // check
-    if (! isStandardTime)
+    if (getFirstTime() == NO_DATETIME)
     {
         *buffer << "Wrong time! Praga reads only POSIX standard (seconds since 1970-01-01)." << endl;
         return false;
@@ -564,9 +577,9 @@ bool NetCDFHandler::exportDataSeries(int idVar, gis::Crit3DGeoPoint geoPoint, ti
     int i = 0;
     while ((i < nrTime) && (t1 == NODATA || t2 == NODATA))
     {
-        if (time_t(time[i]) == firstTime)
+        if (getTime(i) == firstTime)
             t1 = i;
-        if (time_t(time[i]) == lastTime)
+        if (getTime(i) == lastTime)
             t2 = i;
         i++;
     }
