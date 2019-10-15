@@ -595,7 +595,7 @@ bool NetCDFHandler::exportDataSeries(int idVar, gis::Crit3DGeoPoint geoPoint, Cr
     }
 
     // write variable
-     *buffer << "variable: " << getVarName(idVar) <<endl;
+     *buffer << "variable: " << getVarName(idVar) << endl;
 
     // write position
     if (isLatLon)
@@ -621,7 +621,7 @@ bool NetCDFHandler::exportDataSeries(int idVar, gis::Crit3DGeoPoint geoPoint, Cr
     {
         index[0] = unsigned(t);
         nc_get_var1_float(ncId, idVar, index, &value);
-        *buffer << getDateTimeStr(t) << "," << value << endl;
+        *buffer << getDateTimeStr(t) << ", " << value << endl;
     }
 
     return true;
