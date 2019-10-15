@@ -112,7 +112,6 @@ void NetCDFHandler::clear()
     idLon = NODATA;
     idTime = NODATA;
 
-    isLoaded = false;
     isLatLon = false;
     isLatDecreasing = false;
     isStandardTime = false;
@@ -189,8 +188,6 @@ bool NetCDFHandler::setVarLongName(std::string varName, std::string varLongName)
 
 bool NetCDFHandler::isPointInside(gis::Crit3DGeoPoint geoPoint)
 {
-    if (! isLoaded) return false;
-
     if (isLatLon)
     {
         return geoPoint.isInsideGrid(latLonHeader);
@@ -572,8 +569,6 @@ bool NetCDFHandler::readProperties(string fileName)
 
     metadata << endl << "first date: " << getDateTimeStr(0) << endl;
     metadata << "last date: " << getDateTimeStr(nrTime-1) << endl;
-
-    isLoaded = true;
 
     metadata << endl << "VARIABLES list:" << endl;
     for (unsigned int i = 0; i < variables.size(); i++)

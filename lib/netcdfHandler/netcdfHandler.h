@@ -26,8 +26,6 @@
     class NetCDFHandler
     {
     private:
-        std::vector<NetCDFVariable> variables;
-
         int utmZone;
         int nrX, nrY, nrLat, nrLon, nrTime;
         int idTime, idX, idY, idLat, idLon;
@@ -48,9 +46,10 @@
 
     public:
         int ncId;
-        bool isLoaded;
+       // bool isLoaded;
         bool isLatLon;
 
+        std::vector<NetCDFVariable> variables;
         gis::Crit3DRasterGrid dataGrid;
         gis::Crit3DGridHeader latLonHeader;
 
