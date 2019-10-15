@@ -1077,7 +1077,7 @@ void weatherGenerator2D::precipitationMultisiteAmountsGeneration()
 
 
 
-    printf("parte 5 fine\n");
+    //printf("parte 5 fine\n");
    // free the memory step 5
    for (int i=0;i<nrStations;i++)
    {
