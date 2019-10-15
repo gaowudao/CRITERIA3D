@@ -772,7 +772,7 @@ void MainWindow::on_timeEdit_timeChanged(const QTime &time)
             if (chooseNetCDFVariable(&(myProject.netCDF), &idVar, &firstTime, &lastTime))
             {
                 std::stringstream buffer;
-                if (! myProject.netCDF.exportDataSeries(idVar, geoPoint, firstTime.toTime_t(), lastTime.toTime_t(), &buffer))
+                if (! myProject.netCDF.exportDataSeries(idVar, geoPoint, getCrit3DTime(firstTime), getCrit3DTime(lastTime), &buffer))
                     QMessageBox::information(nullptr, "ERROR", QString::fromStdString(buffer.str()));
                 else
                 {

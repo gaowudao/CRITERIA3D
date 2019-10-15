@@ -2575,7 +2575,7 @@ bool parseXMLElaboration(Crit3DElabList *listXMLElab, Crit3DAnomalyList *listXML
                 }
                 if (myTag == "REFPERIOD")
                 {
-                    if (parseXMLPeriodTag(child, listXMLElab, listXMLAnomaly, true, true, period, firstYear, myError) == false)
+                    if (parseXMLPeriodTag(child, listXMLElab, listXMLAnomaly, true, true, period, refFirstYear, myError) == false)
                     {
                         listXMLAnomaly->eraseElement(nAnomaly);
                         errorAnomaly = true;
@@ -3353,5 +3353,69 @@ bool checkDataType(QString xmlFileName, bool isMeteoGrid, QString *myError)
         ancestor = ancestor.nextSibling();
     }
     return false;
+
+}
+
+bool appendXMLElaboration(Crit3DElabList *listXMLElab, QString xmlFileName, QString *myError)
+{
+
+    QDomDocument xmlDoc;
+
+    // check
+    if (xmlFileName == "")
+    {
+        *myError = "Missing XML file.";
+        return false;
+    }
+
+    QFile myFile(xmlFileName);
+    if (!myFile.open(QIODevice::ReadOnly))
+    {
+        *myError = "Open XML failed:\n" + xmlFileName + "\n" + myFile.errorString();
+        return (false);
+    }
+//    if (!myFile.open(QIODevice::ReadWrite))
+//    {
+//        *myError = "Open XML failed:\n" + xmlFileName + "\n" + myFile.errorString();
+//        myFile.close();
+//        return false;
+//    }
+
+    int myErrLine, myErrColumn;
+    if (!xmlDoc.setContent(&myFile, myError, &myErrLine, &myErrColumn))
+    {
+       *myError = "Parse xml failed:" + xmlFileName
+                + " Row: " + QString::number(myErrLine)
+                + " - Column: " + QString::number(myErrColumn)
+                + "\n" + myError;
+        myFile.close();
+        return false;
+    }
+
+    myFile.close();
+
+    QDomElement root = xmlDoc.documentElement();
+
+    if( root.tagName() != "xml" )
+    {
+        *myError = "missing xml root tag";
+        myFile.close();
+        return false;
+    }
+    QDomElement newCategoriaTag = xmlDoc.createElement(QString("provaNewCategory"));
+    QDomElement newNomeTag = xmlDoc.createElement(QString("nomeTag"));
+    QDomText newNomeText = xmlDoc.createTextNode(QString("nomeText"));
+    newNomeTag.appendChild(newNomeText);
+    newCategoriaTag.appendChild(newNomeTag);
+    root.appendChild(newCategoriaTag);
+    // Save the modified data
+    QFile newFile(xmlFileName);
+    newFile.open(QIODevice::WriteOnly);
+    newFile.write(xmlDoc.toByteArray());
+    newFile.close();
+//    QTextStream output(&myFile);
+//    output << xmlDoc.toString();
+//    myFile.close();
+    return true;
 
 }

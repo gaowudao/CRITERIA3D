@@ -1489,6 +1489,7 @@ void DialogMeteoComputation::saveDataToXML()
 
         }
         // TO DO append to XML
+        appendXMLElaboration(listXMLElab, xmlName, myError);
         delete listXMLElab;
 
     }

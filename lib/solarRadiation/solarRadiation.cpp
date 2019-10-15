@@ -992,20 +992,6 @@ bool computeRadiationPointRsun(Crit3DRadiationSettings* mySettings, float myTemp
     }
 
 
-    void getTime(double decimalTime, int* myHour, int* myMinute, int* mySecond)
-    {
-       int mySign = 1;
-       if (decimalTime < 0.0)
-       {
-          mySign = -1;
-          decimalTime *= -1;
-       }
-
-       *myHour = mySign * (int)floor(decimalTime);
-       *myMinute = mySign * (int)floor((decimalTime - (*myHour)) * 60);
-       *mySecond =mySign * (int)floor((decimalTime - (*myHour) - (*myMinute) / 60) * 3600);
-    }
-
     bool preConditionsRadiationGrid(Crit3DRadiationMaps* radiationMaps)
     {
         if (! radiationMaps->latMap->isLoaded || ! radiationMaps->lonMap->isLoaded) return false;

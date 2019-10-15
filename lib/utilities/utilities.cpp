@@ -245,8 +245,8 @@ void intervalDecade(int decade, int year, int* dayStart, int* dayEnd, int* month
 
 int getSeasonFromDate(QDate date)
 {
-
     int month = date.month();
+
     switch (month) {
     case 3: case 4: case 5:
         return 1;

@@ -6,7 +6,8 @@
         #include <string>
     #endif
 
-    #define NO_DATE Crit3DDate(0,0,0);
+    #define NO_DATE Crit3DDate(0,0,0)
+    #define NO_DATETIME Crit3DTime(NO_DATE,0)
 
     class Crit3DDate
     {
