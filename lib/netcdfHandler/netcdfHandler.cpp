@@ -132,6 +132,7 @@ void NetCDFHandler::clear()
     dataGrid.clear();
     dimensions.clear();
     variables.clear();
+    metadata.clear();
 }
 
 
@@ -189,6 +190,12 @@ bool NetCDFHandler::setVarLongName(std::string varName, std::string varLongName)
     }
 
     return false;
+}
+
+
+std::string NetCDFHandler::getMetadata()
+{
+    return metadata.str();
 }
 
 

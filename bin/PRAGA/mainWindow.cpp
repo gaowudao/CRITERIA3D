@@ -281,7 +281,7 @@ void MainWindow::mousePressEvent(QMouseEvent *event)
             Position geoPos = mapView->mapToScene(mapPos);
             gis::Crit3DGeoPoint geoPoint = gis::Crit3DGeoPoint(geoPos.latitude(), geoPos.longitude());
 
-            exportNetCDFDataSeries(geoPoint);
+            netCDF_exportDataSeries(geoPoint);
         }
         #endif
     }
@@ -720,7 +720,6 @@ void MainWindow::on_timeEdit_timeChanged(const QTime &time)
 
         myProject.netCDF.initialize(myProject.gisSettings.utmZone);
 
-        std::stringstream buffer;
         myProject.netCDF.readProperties(fileName.toStdString());
 
         if (myProject.netCDF.isLatLon)
@@ -730,16 +729,20 @@ void MainWindow::on_timeEdit_timeChanged(const QTime &time)
 
         myProject.netCDF.dataGrid.emptyGrid();
         updateMaps();
+    }
+
+
+    void MainWindow::netCDF_ShowMetadata()
+    {
+        if (! myProject.netCDF.isLoaded()) return;
 
         QDialog myDialog;
-        QVBoxLayout mainLayout;
-
-        myDialog.setWindowTitle("NetCDF file info  ");
+        myDialog.setWindowTitle("NetCDF metadata");
 
         QTextBrowser textBrowser;
-        textBrowser.setText(QString::fromStdString(buffer.str()));
-        buffer.clear();
+        textBrowser.setText(QString::fromStdString(myProject.netCDF.getMetadata()));
 
+        QVBoxLayout mainLayout;
         mainLayout.addWidget(&textBrowser);
 
         myDialog.setLayout(&mainLayout);
@@ -747,22 +750,9 @@ void MainWindow::on_timeEdit_timeChanged(const QTime &time)
         myDialog.exec();
     }
 
-    // deactivated
-    void MainWindow::on_actionExtract_NetCDF_series_triggered()
-    {
-        int idVar;
-        QDateTime firstDate, lastDate;
 
-        if (chooseNetCDFVariable(&(myProject.netCDF), &idVar, &firstDate, &lastDate))
-        {
-            QMessageBox::information(nullptr, "Variable",
-                                     "Variable: " + QString::number(idVar)
-                                     + "\nfirst date: " + firstDate.toString()
-                                     + "\nLast Date: " + lastDate.toString());
-        }
-    }
-
-    void exportNetCDFDataSeries(gis::Crit3DGeoPoint geoPoint)
+    // extract data series
+    void MainWindow::netCDF_exportDataSeries(gis::Crit3DGeoPoint geoPoint)
     {
         if (myProject.netCDF.isPointInside(geoPoint))
         {

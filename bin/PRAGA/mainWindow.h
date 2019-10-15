@@ -115,7 +115,8 @@
 
         #ifdef NETCDF
             void on_actionOpen_NetCDF_grid_triggered();
-            void on_actionExtract_NetCDF_series_triggered();
+            void netCDF_ShowMetadata();
+            void netCDF_exportDataSeries(gis::Crit3DGeoPoint geoPoint);
         #endif
 
         protected:

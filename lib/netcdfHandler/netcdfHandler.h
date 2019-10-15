@@ -41,7 +41,6 @@
         Crit3DDate firstDate;
 
         std::stringstream metadata;
-
         std::vector<NetCDFVariable> dimensions;
 
     public:
@@ -65,6 +64,7 @@
         int getDimensionIndex(char* dimName);
         std::string getDateTimeStr(int timeIndex);
         std::string getVarName(int idVar);
+        std::string getMetadata();
 
         Crit3DTime getTime(int timeIndex);
         NetCDFVariable getVariable(int idVar);
