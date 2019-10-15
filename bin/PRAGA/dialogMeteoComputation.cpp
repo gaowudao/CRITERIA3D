@@ -1416,14 +1416,216 @@ void DialogMeteoComputation::copyDataFromXML()
 
 void DialogMeteoComputation::saveDataToXML()
 {
-    Crit3DElabList *listXMLElab = new Crit3DElabList();
-    Crit3DAnomalyList *listXMLAnomaly = new Crit3DAnomalyList();
-    QString *myError = new QString();
     QString xmlName = QFileDialog::getOpenFileName(this, tr("Open XML"), "", tr("xml files (*.xml)"));
-    if (xmlName != "")
+    QString *myError = new QString();
+    if (xmlName == "")
     {
-        parseXMLElaboration(listXMLElab, listXMLAnomaly, xmlName, myError);
+        return;
     }
-    // TO DO
+    if (!checkDataType(xmlName, isMeteoGrid, myError))
+    {
+        QMessageBox::information(nullptr, "Error", *myError);
+        return;
+    }
+    if(!isAnomaly)
+    {
+        Crit3DElabList *listXMLElab = new Crit3DElabList();
+        listXMLElab->setIsMeteoGrid(isMeteoGrid);
+        listXMLElab->insertYearStart(firstYearEdit.text().toInt());
+        listXMLElab->insertYearEnd(lastYearEdit.text().toInt());
+        QString value = variableList.currentText();
+        meteoVariable var = getKeyMeteoVarMeteoMap(MapDailyMeteoVarToString, value.toStdString());
+        listXMLElab->insertVariable(var);
+        listXMLElab->insertElab1(elaborationList.currentText());
+        if (!elab1Parameter.isReadOnly())
+        {
+            listXMLElab->insertParam1(elab1Parameter.text().toFloat());
+            listXMLElab->insertParam1IsClimate(false);
+        }
+        else if (readParam.isChecked())
+        {
+            listXMLElab->insertParam1IsClimate(true);
+            listXMLElab->insertParam1(NODATA);
+            listXMLElab->insertParam1ClimateField(climateDbElabList.currentText());
+        }
+        else
+        {
+            listXMLElab->insertParam1IsClimate(false);
+            listXMLElab->insertParam1(NODATA);
+        }
+        if (secondElabList.currentText() == "None" || secondElabList.currentText() == "No elaboration available" || secondElabList.currentText().isEmpty())
+        {
+            listXMLElab->insertElab2("");
+            listXMLElab->insertParam2(NODATA);
+        }
+        else
+        {
+            listXMLElab->insertElab2(secondElabList.currentText());
+            if (!elab2Parameter.isReadOnly())
+            {
+                listXMLElab->insertParam2(elab2Parameter.text().toFloat());
+            }
+            else
+            {
+                listXMLElab->insertParam2(NODATA);
+            }
+        }
+        listXMLElab->insertPeriodStr(periodTypeList.currentText());
+        if (periodTypeList.currentText() == "Generic")
+        {
+            listXMLElab->insertDateStart(genericPeriodStart.date());
+            listXMLElab->insertDateEnd(genericPeriodEnd.date());
+            listXMLElab->insertNYears(nrYear.text().toInt());
+        }
+        else
+        {
+            QDate start;
+            QDate end;
+            getPeriodDates(periodTypeList.currentText(), firstYearEdit.text().toInt(), currentDay.date(), &start, &end);
+
+            listXMLElab->insertNYears(start.year() - firstYearEdit.text().toInt());
+            listXMLElab->insertDateStart(start);
+            listXMLElab->insertDateEnd(end);
+
+        }
+        // TO DO append to XML
+        delete listXMLElab;
+
+    }
+    else
+    {
+        Crit3DAnomalyList *listXMLAnomaly = new Crit3DAnomalyList();
+        listXMLAnomaly->setIsMeteoGrid(isMeteoGrid);
+        listXMLAnomaly->insertYearStart(firstYearEdit.text().toInt());
+        listXMLAnomaly->insertYearEnd(lastYearEdit.text().toInt());
+        QString value = variableList.currentText();
+        meteoVariable var = getKeyMeteoVarMeteoMap(MapDailyMeteoVarToString, value.toStdString());
+        listXMLAnomaly->insertVariable(var);
+        listXMLAnomaly->insertElab1(elaborationList.currentText());
+        if (!elab1Parameter.isReadOnly())
+        {
+            listXMLAnomaly->insertParam1(elab1Parameter.text().toFloat());
+            listXMLAnomaly->insertParam1IsClimate(false);
+        }
+        else if (readParam.isChecked())
+        {
+            listXMLAnomaly->insertParam1IsClimate(true);
+            listXMLAnomaly->insertParam1(NODATA);
+            listXMLAnomaly->insertParam1ClimateField(climateDbElabList.currentText());
+        }
+        else
+        {
+            listXMLAnomaly->insertParam1IsClimate(false);
+            listXMLAnomaly->insertParam1(NODATA);
+        }
+        if (secondElabList.currentText() == "None" || secondElabList.currentText() == "No elaboration available" || secondElabList.currentText().isEmpty())
+        {
+            listXMLAnomaly->insertElab2("");
+            listXMLAnomaly->insertParam2(NODATA);
+        }
+        else
+        {
+            listXMLAnomaly->insertElab2(secondElabList.currentText());
+            if (!elab2Parameter.isReadOnly())
+            {
+                listXMLAnomaly->insertParam2(elab2Parameter.text().toFloat());
+            }
+            else
+            {
+                listXMLAnomaly->insertParam2(NODATA);
+            }
+        }
+        listXMLAnomaly->insertPeriodStr(periodTypeList.currentText());
+        if (periodTypeList.currentText() == "Generic")
+        {
+            listXMLAnomaly->insertDateStart(genericPeriodStart.date());
+            listXMLAnomaly->insertDateEnd(genericPeriodEnd.date());
+            listXMLAnomaly->insertNYears(nrYear.text().toInt());
+        }
+        else
+        {
+            QDate start;
+            QDate end;
+            getPeriodDates(periodTypeList.currentText(), firstYearEdit.text().toInt(), currentDay.date(), &start, &end);
+
+            listXMLAnomaly->insertNYears(start.year() - firstYearEdit.text().toInt());
+            listXMLAnomaly->insertDateStart(start);
+            listXMLAnomaly->insertDateEnd(end);
+
+        }
+        // reference
+        if (anomaly.AnomalyGetReadReferenceState())
+        {
+            listXMLAnomaly->insertIsAnomalyFromDb(true);
+            listXMLAnomaly->insertAnomalyClimateField(anomaly.AnomalyGetClimateDb());
+        }
+        else
+        {
+            listXMLAnomaly->insertIsAnomalyFromDb(false);
+            listXMLAnomaly->insertAnomalyClimateField("");
+            listXMLAnomaly->insertRefYearStart(anomaly.AnomalyGetYearStart());
+            listXMLAnomaly->insertRefYearEnd(anomaly.AnomalyGetYearLast());
+            listXMLAnomaly->insertRefElab1(anomaly.AnomalyGetElaboration());
+            QString AnomalyPeriodSelected = anomaly.AnomalyGetPeriodTypeList();
+            listXMLAnomaly->insertRefPeriodStr(AnomalyPeriodSelected);
+            if (AnomalyPeriodSelected == "Generic")
+            {
+                listXMLAnomaly->insertRefDateStart(anomaly.AnomalyGetGenericPeriodStart());
+                listXMLAnomaly->insertRefDateEnd(anomaly.AnomalyGetGenericPeriodEnd());
+                listXMLAnomaly->insertRefNYears(anomaly.AnomalyGetNyears());
+            }
+            else
+            {
+                QDate start;
+                QDate end;
+                getPeriodDates(AnomalyPeriodSelected, anomaly.AnomalyGetYearStart(), anomaly.AnomalyGetCurrentDay(), &start, &end);
+
+                listXMLAnomaly->insertRefNYears(start.year() - anomaly.AnomalyGetYearStart());
+                listXMLAnomaly->insertRefDateStart(start);
+                listXMLAnomaly->insertRefDateEnd(end);
+
+            }
+            if (!anomaly.AnomalyReadParamIsChecked())
+            {
+                listXMLAnomaly->insertRefParam1IsClimate(false);
+                if (anomaly.AnomalyGetParam1() != "")
+                {
+                    listXMLAnomaly->insertRefParam1(anomaly.AnomalyGetParam1().toFloat());
+                }
+                else
+                {
+                    listXMLAnomaly->insertRefParam1(NODATA);
+                }
+            }
+            else
+            {
+                listXMLAnomaly->insertRefParam1IsClimate(true);
+                listXMLAnomaly->insertRefParam1ClimateField(anomaly.AnomalyGetClimateDbElab());
+            }
+            if (anomaly.AnomalyGetSecondElaboration() == "None" || anomaly.AnomalyGetSecondElaboration() == "No elaboration available" || anomaly.AnomalyGetSecondElaboration().isEmpty())
+            {
+                listXMLAnomaly->insertRefElab2("");
+                listXMLAnomaly->insertRefParam2(NODATA);
+            }
+            else
+            {
+                listXMLAnomaly->insertRefElab2(anomaly.AnomalyGetSecondElaboration());
+                if (anomaly.AnomalyGetParam2() != "")
+                {
+                    listXMLAnomaly->insertRefParam2(anomaly.AnomalyGetParam2().toFloat());
+                }
+                else
+                {
+                    listXMLAnomaly->insertRefParam2(NODATA);
+                }
+            }
+
+        }
+        // TO DO append to XML
+        delete listXMLAnomaly;
+    }
+
+
+
 }
 

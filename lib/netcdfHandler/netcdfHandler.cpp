@@ -34,6 +34,7 @@
 #include "commonConstants.h"
 #include "basicMath.h"
 #include "netcdfHandler.h"
+#include "crit3dDate.h"
 
 using namespace std;
 
@@ -102,6 +103,8 @@ void NetCDFHandler::clear()
     isLatLon = false;
     isLatDecreasing = false;
     isStandardTime = false;
+    isHourly = false;
+    firstDate = NO_DATE;
     timeType = NODATA;
 
     x = nullptr;
@@ -177,16 +180,29 @@ bool NetCDFHandler::isPointInside(gis::Crit3DGeoPoint geoPoint)
 
 std::string NetCDFHandler::getDateTimeStr(int timeIndex)
 {
-    // check
-    if (! isStandardTime)
-        return "ERROR: time is not standard (std: seconds since 1970)";
-
     if (timeIndex < 0 || timeIndex >= nrTime)
         return "ERROR: time index out of range";
 
-    time_t myTime = time_t(time[timeIndex]);
     std::stringstream s;
-    s << std::put_time(std::gmtime(&myTime), "%Y-%m-%d %H:%M:%S");
+    if (isStandardTime)
+    {
+        time_t myTime = time_t(time[timeIndex]);
+        s << std::put_time(std::gmtime(&myTime), "%Y-%m-%d %H:%M:%S");
+    }
+    else if (isHourly)
+    {
+        int nrHours = int(time[timeIndex]);
+        int nrDays = int(floor(nrHours/24));
+        int residualTime = (nrHours - nrDays*24) * HOUR_SECONDS;
+
+        Crit3DDate myDate = Crit3DTime(firstDate, 0).date.addDays(nrDays);
+        Crit3DTime myTime = Crit3DTime(myDate, residualTime);
+        s << myTime.toStdString();
+    }
+    else
+    {
+        s << "ERROR: time is not standard (std: seconds since 1970-01-01)";
+    }
 
     return s.str();
 }
@@ -350,10 +366,19 @@ bool NetCDFHandler::readProperties(string fileName, stringstream *buffer)
 
                 if (v == idTime)
                 {
-                    if ((lowerCase(string(attrName)) == "units"
-                       && lowerCase(myString).substr(0, 18) == "seconds since 1970"))
+                    if (lowerCase(string(attrName)) == "units")
                     {
-                           isStandardTime = true;
+                        if (lowerCase(myString).substr(0, 18) == "seconds since 1970")
+                        {
+                            isStandardTime = true;
+                            firstDate = Crit3DDate(1970,1,1);
+                        }
+                        else if (lowerCase(myString).substr(0, 11) == "hours since")
+                        {
+                            isHourly = true;
+                            std::string dateStr = lowerCase(myString).substr(12, 21);
+                            firstDate = Crit3DDate(dateStr);
+                        }
                     }
                 }
                 if (lowerCase(string(attrName)) == "long_name")
@@ -459,7 +484,7 @@ bool NetCDFHandler::readProperties(string fileName, stringstream *buffer)
     }
 
     // TIME
-    if (isStandardTime)
+    if (isStandardTime || isHourly)
     {
         time = new double[unsigned(nrTime)];
 
@@ -473,6 +498,14 @@ bool NetCDFHandler::readProperties(string fileName, stringstream *buffer)
             for (int i = 0; i < nrTime; i++)
                 time[i] = double(floatTime[i]);
         }
+        else if (timeType == NC_INT)
+        {
+            int* intTime = new int[unsigned(nrTime)];
+            retval = nc_get_var_int(ncId, idTime, intTime);
+            for (int i = 0; i < nrTime; i++)
+                time[i] = double(intTime[i]);
+        }
+
     }
 
     *buffer << endl << "first date: " << getDateTimeStr(0) << endl;

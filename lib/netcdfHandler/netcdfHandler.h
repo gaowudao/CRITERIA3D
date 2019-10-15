@@ -34,6 +34,8 @@
 
         bool isLatLon;
         bool isStandardTime;
+        bool isHourly;
+        Crit3DDate firstDate;
         bool isLoaded;
 
         NetCDFHandler();

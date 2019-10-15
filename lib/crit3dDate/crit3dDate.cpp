@@ -29,6 +29,7 @@
 */
 
 #include <math.h>
+#include <stdio.h>
 
 #include "crit3dDate.h"
 #include "commonConstants.h"
@@ -57,6 +58,13 @@ Crit3DDate::Crit3DDate()
 Crit3DDate::Crit3DDate(int myDay, int myMonth, int myYear)
 {
     day = myDay; month = myMonth; year = myYear;
+}
+
+
+// myDate have to be in standard form (YYYY-MM-DD)
+Crit3DDate::Crit3DDate(std::string myDate)
+{
+    sscanf(myDate.data(), "%d-%02d-%02d", &year, &month, &day);
 }
 
 

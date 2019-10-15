@@ -77,7 +77,7 @@ bool computeTransmissivity(Crit3DRadiationSettings* mySettings, Crit3DMeteoPoint
             {
                 myObsRad[myIndex] = meteoPoints[i].getMeteoPointValueH(myCurrentTime.date, myCurrentTime.getHour(),
                                                                        myCurrentTime.getMinutes(), globalIrradiance);
-                myCurrentTime = myCurrentTime.addSeconds(float(deltaSeconds));
+                myCurrentTime = myCurrentTime.addSeconds(deltaSeconds);
                 myIndex++;
             }
 
@@ -124,7 +124,7 @@ bool computeTransmissivityFromTRange(Crit3DMeteoPoint* meteoPoints, int nrMeteoP
 
         while (mySeconds < DAY_SECONDS)
         {
-            timeTmp = timeTmp.addSeconds(float(deltaSeconds));
+            timeTmp = timeTmp.addSeconds(deltaSeconds);
             temp = meteoPoints[i].getMeteoPointValueH(timeTmp.date, timeTmp.getHour(), timeTmp.getMinutes(), airTemperature);
             if (temp != NODATA)
             {

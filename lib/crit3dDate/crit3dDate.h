@@ -17,6 +17,7 @@
 
         Crit3DDate();
         Crit3DDate(int myDay, int myMonth, int myYear);
+        Crit3DDate(std::string myDate);
 
         friend bool operator == (const Crit3DDate& myFirstDate, const Crit3DDate& mySecondDate);
         friend bool operator != (const Crit3DDate& myFirstDate, const Crit3DDate& mySecondDate);
@@ -38,10 +39,10 @@
     {
     public:
         Crit3DDate date;
-        float time;
+        int time;
 
         Crit3DTime();
-        Crit3DTime(Crit3DDate myDate, float myTime);
+        Crit3DTime(Crit3DDate myDate, int myTime);
 
         friend bool operator > (const Crit3DTime& myFirstTime, const Crit3DTime& mySecondTime);
         friend bool operator < (const Crit3DTime& myFirstTime, const Crit3DTime& mySecondTime);
@@ -50,12 +51,12 @@
         friend bool operator == (const Crit3DTime& myFirstTime, const Crit3DTime& mySecondTime);
         friend bool operator != (const Crit3DTime& myFirstTime, const Crit3DTime& mySecondTime);
 
-        Crit3DTime addSeconds(float mySeconds) const;
+        Crit3DTime addSeconds(long mySeconds) const;
         bool isEqual(const Crit3DTime&) const;
 
         int getHour() const;
         int getMinutes() const;
-        float getSeconds() const;
+        int getSeconds() const;
         std::string toStdString();
     };
 
