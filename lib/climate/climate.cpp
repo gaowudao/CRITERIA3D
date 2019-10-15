@@ -3369,17 +3369,13 @@ bool appendXMLElaboration(Crit3DElabList *listXMLElab, QString xmlFileName, QStr
     }
 
     QFile myFile(xmlFileName);
-    if (!myFile.open(QIODevice::ReadOnly))
+
+    if (!myFile.open(QIODevice::ReadWrite))
     {
         *myError = "Open XML failed:\n" + xmlFileName + "\n" + myFile.errorString();
-        return (false);
+        myFile.close();
+        return false;
     }
-//    if (!myFile.open(QIODevice::ReadWrite))
-//    {
-//        *myError = "Open XML failed:\n" + xmlFileName + "\n" + myFile.errorString();
-//        myFile.close();
-//        return false;
-//    }
 
     int myErrLine, myErrColumn;
     if (!xmlDoc.setContent(&myFile, myError, &myErrLine, &myErrColumn))
@@ -3392,30 +3388,48 @@ bool appendXMLElaboration(Crit3DElabList *listXMLElab, QString xmlFileName, QStr
         return false;
     }
 
-    myFile.close();
-
     QDomElement root = xmlDoc.documentElement();
-
     if( root.tagName() != "xml" )
     {
         *myError = "missing xml root tag";
         myFile.close();
         return false;
     }
-    QDomElement newCategoriaTag = xmlDoc.createElement(QString("provaNewCategory"));
-    QDomElement newNomeTag = xmlDoc.createElement(QString("nomeTag"));
-    QDomText newNomeText = xmlDoc.createTextNode(QString("nomeText"));
-    newNomeTag.appendChild(newNomeText);
-    newCategoriaTag.appendChild(newNomeTag);
-    root.appendChild(newCategoriaTag);
-    // Save the modified data
-    QFile newFile(xmlFileName);
-    newFile.open(QIODevice::WriteOnly);
-    newFile.write(xmlDoc.toByteArray());
-    newFile.close();
-//    QTextStream output(&myFile);
-//    output << xmlDoc.toString();
-//    myFile.close();
+
+    QString dataType;
+    if (listXMLElab->isMeteoGrid())
+    {
+        dataType = "Grid";
+    }
+    else
+    {
+        dataType = "Point";
+    }
+    meteoVariable var = listXMLElab->listVariable()[0];
+    std::string variableString = MapDailyMeteoVarToString.at(var);
+    QDomElement elaborationTag = xmlDoc.createElement(QString("Elaboration"));
+    elaborationTag.setAttribute("Datatype", dataType);
+    elaborationTag.setAttribute("PeriodType", listXMLElab->listPeriodStr()[0]);
+    QDomElement variableTag = xmlDoc.createElement(QString("Variable"));
+    QDomText variableText = xmlDoc.createTextNode(QString::fromStdString(variableString));
+
+    QDomElement yearIntervalTag = xmlDoc.createElement(QString("YearInterval"));
+    yearIntervalTag.setAttribute("ini", listXMLElab->listYearStart()[0]);
+    yearIntervalTag.setAttribute("fin", listXMLElab->listYearEnd()[0]);
+
+
+    variableTag.appendChild(variableText);
+    elaborationTag.appendChild(variableTag);
+
+    elaborationTag.appendChild(yearIntervalTag);
+    root.appendChild(elaborationTag);
+    // Remove old file and save the new one with same name
+    myFile.remove();
+    QFile outputFile(xmlFileName);
+    outputFile.open(QIODevice::ReadWrite);
+    QTextStream output(&outputFile);
+    output << xmlDoc.toString();
+    outputFile.close();
     return true;
 
 }
