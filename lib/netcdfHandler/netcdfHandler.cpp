@@ -91,9 +91,12 @@ void clearArray(float* a)
 
 void NetCDFHandler::clear()
 {
-    // CLOSE file, freeing all resources
-    if (ncId != NODATA) nc_close(ncId);
-    ncId = NODATA;
+    if (ncId != NODATA)
+    {
+        // Close file
+        nc_close(ncId);
+        ncId = NODATA;
+    }
 
     utmZone = NODATA;
 
@@ -116,7 +119,6 @@ void NetCDFHandler::clear()
     isHourly = false;
     isDaily = false;
     firstDate = NO_DATE;
-    timeType = NODATA;
 
     clearArray(x);
     clearArray(y);
@@ -256,7 +258,7 @@ Crit3DTime NetCDFHandler::getTime(int timeIndex)
 }
 
 
-bool NetCDFHandler::readProperties(string fileName, stringstream *buffer)
+bool NetCDFHandler::readProperties(string fileName)
 {
     int retval;
     //char name[NC_MAX_NAME+1];
@@ -269,11 +271,12 @@ bool NetCDFHandler::readProperties(string fileName, stringstream *buffer)
     double value;
     size_t length;
     nc_type ncTypeId;
+    int timeType = NC_DOUBLE;
 
     //NC_NOWRITE tells netCDF we want read-only access
     if ((retval = nc_open(fileName.data(), NC_NOWRITE, &ncId)))
     {
-        *buffer << nc_strerror(retval) << endl;
+        metadata << nc_strerror(retval) << endl;
         return false;
     }
 
@@ -282,13 +285,13 @@ bool NetCDFHandler::readProperties(string fileName, stringstream *buffer)
     int nrDimensions, nrVariables, nrGlobalAttributes, unlimDimensionId;
     if ((retval = nc_inq(ncId, &nrDimensions, &nrVariables, &nrGlobalAttributes, &unlimDimensionId)))
     {
-        *buffer << nc_strerror(retval) << endl;
+        metadata << nc_strerror(retval) << endl;
         return false;
     }
 
     // GLOBAL ATTRIBUTES
-    *buffer << fileName << endl << endl;
-    *buffer << "Global attributes:" << endl;
+    metadata << fileName << endl << endl;
+    metadata << "Global attributes:" << endl;
 
     for (int a = 0; a < nrGlobalAttributes; a++)
     {
@@ -299,7 +302,7 @@ bool NetCDFHandler::readProperties(string fileName, stringstream *buffer)
         nc_get_att_text(ncId, NC_GLOBAL, attrName, valueStr);
 
         string myString = string(valueStr).substr(0, length);
-        *buffer << attrName << " = " << myString << endl;
+        metadata << attrName << " = " << myString << endl;
 
         delete [] valueStr;
    }
@@ -308,7 +311,7 @@ bool NetCDFHandler::readProperties(string fileName, stringstream *buffer)
    int varDimIds[NC_MAX_VAR_DIMS];
    int nrVarDimensions, nrVarAttributes;
 
-   *buffer << "\nDimensions: " << endl;
+   metadata << "\nDimensions: " << endl;
    for (int i = 0; i < nrDimensions; i++)
    {
        nc_inq_dim(ncId, i, name, &length);
@@ -340,20 +343,20 @@ bool NetCDFHandler::readProperties(string fileName, stringstream *buffer)
            isLatLon = true;
        }
 
-       *buffer << i << " - " << name << "\t values: " << length << endl;
+       metadata << i << " - " << name << "\t values: " << length << endl;
    }
 
    if (isLatLon)
    {
-       *buffer <<"\n(lon,lat) = "<< nrLon << "," <<nrLat << endl;
+       metadata <<"\n(lon,lat) = "<< nrLon << "," <<nrLat << endl;
    }
    else
    {
-       *buffer <<"\n(x,y) = "<< nrX << "," << nrY << endl;
+       metadata <<"\n(x,y) = "<< nrX << "," << nrY << endl;
    }
 
    // VARIABLES
-   *buffer << "\nVariables: " << endl;
+   metadata << "\nVariables: " << endl;
    for (int v = 0; v < nrVariables; v++)
    {
        nc_inq_var(ncId, v, varName, &ncTypeId, &nrVarDimensions, varDimIds, &nrVarAttributes);
@@ -370,7 +373,7 @@ bool NetCDFHandler::readProperties(string fileName, stringstream *buffer)
             if (i != NODATA)
                 dimensions[unsigned(i)].type = ncTypeId;
             else
-                *buffer << endl << "ERROR: dimension not found: " << varName << endl;
+                metadata << endl << "ERROR: dimension not found: " << varName << endl;
        }
 
        if (lowerCase(string(varName)) == "time")
@@ -387,13 +390,13 @@ bool NetCDFHandler::readProperties(string fileName, stringstream *buffer)
        else if (lowerCase(string(varName)) == "lon" || lowerCase(string(varName)) == "longitude")
            idLon = v;
 
-       *buffer << endl << v  << "\t" << varName << "\t" << typeName << "\t dims: ";
+       metadata << endl << v  << "\t" << varName << "\t" << typeName << "\t dims: ";
        for (int d = 0; d < nrVarDimensions; d++)
        {
            nc_inq_dim(ncId, varDimIds[d], name, &length);
-           *buffer << name << " ";
+           metadata << name << " ";
        }
-       *buffer << endl;
+       metadata << endl;
 
        // ATTRIBUTES
        for (int a = 0; a < nrVarAttributes; a++)
@@ -408,7 +411,7 @@ bool NetCDFHandler::readProperties(string fileName, stringstream *buffer)
                 nc_get_att_text(ncId, v, attrName, valueStr);
 
                 string myString = string(valueStr).substr(0, length);
-                *buffer << attrName << " = " << myString << endl;
+                metadata << attrName << " = " << myString << endl;
 
                 if (v == idTime)
                 {
@@ -427,7 +430,7 @@ bool NetCDFHandler::readProperties(string fileName, stringstream *buffer)
                         }
                         else if (lowerCase(myString).substr(0, 10) == "days since")
                         {
-                            isHourly = true;
+                            isDaily = true;
                             std::string dateStr = lowerCase(myString).substr(11, 20);
                             firstDate = Crit3DDate(dateStr);
                         }
@@ -441,12 +444,12 @@ bool NetCDFHandler::readProperties(string fileName, stringstream *buffer)
             else if (ncTypeId == NC_INT)
             {
                 nc_get_att(ncId, v, attrName, &valueInt);
-                *buffer << attrName << " = " << valueInt << endl;
+                metadata << attrName << " = " << valueInt << endl;
             }
             else if (ncTypeId == NC_DOUBLE)
             {
                 nc_get_att(ncId, v, attrName, &value);
-                *buffer << attrName << " = " << value << endl;
+                metadata << attrName << " = " << value << endl;
             }
         }
     }
@@ -459,18 +462,18 @@ bool NetCDFHandler::readProperties(string fileName, stringstream *buffer)
             lon = new float[unsigned(nrLon)];
 
             if ((retval = nc_get_var_float(ncId, idLon, lon)))
-                *buffer << "\nERROR in reading longitude:" << nc_strerror(retval);
+                metadata << "\nERROR in reading longitude:" << nc_strerror(retval);
 
             if ((retval = nc_get_var_float(ncId, idLat, lat)))
-                *buffer << "\nERROR in reading latitude:" << nc_strerror(retval);
+                metadata << "\nERROR in reading latitude:" << nc_strerror(retval);
 
-            *buffer << endl << "lat:" << endl;
+            metadata << endl << "lat:" << endl;
             for (int i = 0; i < nrLat; i++)
-                *buffer << lat[i] << ", ";
-            *buffer << endl << "lon:" << endl;
+                metadata << lat[i] << ", ";
+            metadata << endl << "lon:" << endl;
             for (int i = 0; i < nrLon; i++)
-                *buffer << lon[i] << ", ";
-            *buffer << endl;
+                metadata << lon[i] << ", ";
+            metadata << endl;
 
             latLonHeader.nrRows = nrLat;
             latLonHeader.nrCols = nrLon;
@@ -507,7 +510,7 @@ bool NetCDFHandler::readProperties(string fileName, stringstream *buffer)
             x = new float[unsigned(nrX)];
             if ((retval = nc_get_var_float(ncId, idX, x)))
             {
-                *buffer << endl << "ERROR in reading x: " << nc_strerror(retval);
+                metadata << endl << "ERROR in reading x: " << nc_strerror(retval);
                 nc_close(ncId);
                 return false;
             }
@@ -515,13 +518,13 @@ bool NetCDFHandler::readProperties(string fileName, stringstream *buffer)
             y = new float[unsigned(nrY)];
             if ((retval = nc_get_var_float(ncId, idY, y)))
             {
-                *buffer << endl << "ERROR in reading y: " << nc_strerror(retval);
+                metadata << endl << "ERROR in reading y: " << nc_strerror(retval);
                 nc_close(ncId);
                 return false;
             }
 
             if (! isEqual(x[1]-x[0], y[1]-y[0]))
-                *buffer << "\nWarning! dx != dy" << endl;
+                metadata << "\nWarning! dx != dy" << endl;
 
             dataGrid.header->cellSize = double(x[1]-x[0]);
             dataGrid.header->llCorner->x = double(x[0]) - dataGrid.header->cellSize*0.5;
@@ -533,7 +536,7 @@ bool NetCDFHandler::readProperties(string fileName, stringstream *buffer)
             dataGrid.initializeGrid(0);
         }
         else
-            *buffer << endl << "ERROR: missing x,y data" << endl;
+            metadata << endl << "ERROR: missing x,y data" << endl;
     }
 
     // TIME
@@ -567,15 +570,15 @@ bool NetCDFHandler::readProperties(string fileName, stringstream *buffer)
         }
     }
 
-    *buffer << endl << "first date: " << getDateTimeStr(0) << endl;
-    *buffer << "last date: " << getDateTimeStr(nrTime-1) << endl;
+    metadata << endl << "first date: " << getDateTimeStr(0) << endl;
+    metadata << "last date: " << getDateTimeStr(nrTime-1) << endl;
 
     isLoaded = true;
 
-    *buffer << endl << "VARIABLES list:" << endl;
+    metadata << endl << "VARIABLES list:" << endl;
     for (unsigned int i = 0; i < variables.size(); i++)
     {
-        *buffer << variables[i].getVarName() << endl;
+        metadata << variables[i].getVarName() << endl;
     }
 
    return true;
@@ -645,6 +648,7 @@ bool NetCDFHandler::exportDataSeries(int idVar, gis::Crit3DGeoPoint geoPoint, Cr
         *buffer << "Wrong variable!" << endl;
         return false;
     }
+
     *buffer << "variable: " << var.getVarName() << endl;
 
     // write position

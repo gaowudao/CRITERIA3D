@@ -7,6 +7,7 @@
     #ifndef _CTIME_
         #include <ctime>
     #endif
+    #include <sstream>
 
     class NetCDFVariable
     {
@@ -24,21 +25,34 @@
 
     class NetCDFHandler
     {
-    public:
-        int ncId;
-
-        gis::Crit3DRasterGrid dataGrid;
-        gis::Crit3DGridHeader latLonHeader;
-
+    private:
         std::vector<NetCDFVariable> variables;
 
-        bool isLoaded;
-        bool isLatLon;
+        int utmZone;
+        int nrX, nrY, nrLat, nrLon, nrTime;
+        int idTime, idX, idY, idLat, idLon;
+
+        float *x, *y;
+        float *lat, *lon;
+        double *time;
+        bool isLatDecreasing;
 
         bool isStandardTime;
         bool isHourly;
         bool isDaily;
         Crit3DDate firstDate;
+
+        std::stringstream metadata;
+
+        std::vector<NetCDFVariable> dimensions;
+
+    public:
+        int ncId;
+        bool isLoaded;
+        bool isLatLon;
+
+        gis::Crit3DRasterGrid dataGrid;
+        gis::Crit3DGridHeader latLonHeader;
 
         NetCDFHandler();
 
@@ -61,21 +75,10 @@
         inline bool isTimeReadable() { return (getFirstTime() != NO_DATETIME); }
         inline unsigned int getNrVariables() { return unsigned(variables.size()); }
 
-        bool readProperties(std::string fileName, std::stringstream *buffer);
+        bool readProperties(std::string fileName);
         bool exportDataSeries(int idVar, gis::Crit3DGeoPoint geoPoint, Crit3DTime firstTime, Crit3DTime lastTime, std::stringstream *buffer);
 
-    private:
 
-        int utmZone;
-        int nrX, nrY, nrLat, nrLon, nrTime;
-        int idTime, idX, idY, idLat, idLon;
-        bool isLatDecreasing;
-        float *x, *y;
-        float *lat, *lon;
-        double *time;
-        int timeType;
-
-        std::vector<NetCDFVariable> dimensions;
     };
 
 

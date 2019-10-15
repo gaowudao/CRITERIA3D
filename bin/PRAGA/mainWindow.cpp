@@ -710,7 +710,6 @@ void MainWindow::on_timeEdit_timeChanged(const QTime &time)
 }
 
 
-
 #ifdef NETCDF
     void MainWindow::on_actionOpen_NetCDF_grid_triggered()
     {
@@ -721,7 +720,7 @@ void MainWindow::on_timeEdit_timeChanged(const QTime &time)
         myProject.netCDF.initialize(myProject.gisSettings.utmZone);
 
         std::stringstream buffer;
-        myProject.netCDF.readProperties(fileName.toStdString(), &buffer);
+        myProject.netCDF.readProperties(fileName.toStdString());
 
         if (myProject.netCDF.isLatLon)
             meteoGridObj->initializeLatLon(&(myProject.netCDF.dataGrid), myProject.gisSettings, myProject.netCDF.latLonHeader, true);
