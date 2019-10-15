@@ -534,6 +534,7 @@ bool NetCDFHandler::readProperties(string fileName, stringstream *buffer)
             {
                 time[i] = double(floatTime[i]);
             }
+            delete [] floatTime;
         }
         else if (timeType == NC_INT)
         {
@@ -543,6 +544,7 @@ bool NetCDFHandler::readProperties(string fileName, stringstream *buffer)
             {
                 time[i] = double(intTime[i]);
             }
+            delete [] intTime;
         }
     }
 

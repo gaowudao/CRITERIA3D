@@ -282,7 +282,7 @@ meteoVariable chooseMeteoVariable(Project* myProject)
         }
         if (! netCDF->isTimeReadable())
         {
-            QMessageBox::information(nullptr, "Wrong time", "Reads only POSIX standard (seconds since 1970-01-01)");
+            QMessageBox::information(nullptr, "Wrong time", "Needs POSIX time (seconds since 1970-01-01)");
             return false;
         }
 
