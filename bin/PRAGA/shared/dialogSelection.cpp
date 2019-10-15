@@ -314,28 +314,34 @@ meteoVariable chooseMeteoVariable(Project* myProject)
         layoutVariable.addWidget(new QLabel());
 
         // date widgets
-        firstTime = getQDateTime(netCDF->getFirstTime());
-        lastTime = getQDateTime(netCDF->getLastTime());
+        Crit3DTime t0, t1;
+        t0 = netCDF->getFirstTime();
+        t1 = netCDF->getLastTime();
+        firstTime = getQDateTime(t0);
+        lastTime = getQDateTime(t1);
+        QString str1, str2;
+        str1 = firstTime.toString();
+        str2 = lastTime.toString();
 
-        QDateTimeEdit *firstYearEdit = new QDateTimeEdit;
-        firstYearEdit->setDateTimeRange(firstTime, lastTime);
-        firstYearEdit->setDateTime(firstTime);
+        QDateTimeEdit *firstDateEdit = new QDateTimeEdit;
+        firstDateEdit->setDateTimeRange(firstTime, lastTime);
+        firstDateEdit->setDateTime(firstTime);
 
         QLabel *firstDateLabel = new QLabel("<b>First Date:</b>");
-        firstDateLabel->setBuddy(firstYearEdit);
+        firstDateLabel->setBuddy(firstDateEdit);
 
-        QDateTimeEdit *lastYearEdit = new QDateTimeEdit;
-        lastYearEdit->setDateTimeRange(firstTime, lastTime);
-        lastYearEdit->setDateTime(lastTime);
+        QDateTimeEdit *lastDateEdit = new QDateTimeEdit;
+        lastDateEdit->setDateTimeRange(firstTime, lastTime);
+        lastDateEdit->setDateTime(lastTime);
 
         QLabel *lastDateLabel = new QLabel("<b>Last Date:</b>");
-        lastDateLabel->setBuddy(lastYearEdit);
+        lastDateLabel->setBuddy(lastDateEdit);
 
         layoutDate.addWidget(firstDateLabel);
-        layoutDate.addWidget(firstYearEdit);
+        layoutDate.addWidget(firstDateEdit);
 
         layoutDate.addWidget(lastDateLabel);
-        layoutDate.addWidget(lastYearEdit);
+        layoutDate.addWidget(lastDateEdit);
 
         //void space
         layoutDate.addWidget(new QLabel());
@@ -358,8 +364,8 @@ meteoVariable chooseMeteoVariable(Project* myProject)
             return false;
 
         // assing values
-        *firstDateTime = firstYearEdit->dateTime();
-        *lastDateTime = lastYearEdit->dateTime();
+        *firstDateTime = firstDateEdit->dateTime();
+        *lastDateTime = lastDateEdit->dateTime();
 
         bool isVarSelected = false;
         unsigned int i = 0;

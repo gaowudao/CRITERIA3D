@@ -316,9 +316,13 @@ bool NetCDFHandler::readProperties(string fileName, stringstream *buffer)
    }
 
    if (isLatLon)
-       *buffer <<"\n(lon,lat) = "<<nrLon << "," <<nrLat << endl;
+   {
+       *buffer <<"\n(lon,lat) = "<< nrLon << "," <<nrLat << endl;
+   }
    else
-       *buffer <<"\n(x,y) = "<<nrX << "," <<nrY << endl; 
+   {
+       *buffer <<"\n(x,y) = "<< nrX << "," << nrY << endl;
+   }
 
    // VARIABLES
    *buffer << "\nVariables: " << endl;
@@ -550,7 +554,7 @@ bool NetCDFHandler::exportDataSeries(int idVar, gis::Crit3DGeoPoint geoPoint, Cr
 
     if (firstTime < getFirstTime() || lastTime > getLastTime())
     {
-        *buffer << "Wron time index!" << endl;
+        *buffer << "Wrong time index!" << endl;
         return false;
     }
 
@@ -595,9 +599,15 @@ bool NetCDFHandler::exportDataSeries(int idVar, gis::Crit3DGeoPoint geoPoint, Cr
 
     // write position
     if (isLatLon)
-        *buffer << "lat: " << y[row] << "\tlon: " << x[col] << endl;
+     {
+        double lat, lon;
+        gis::getLatLonFromRowCol(latLonHeader, row, col, &lat, &lon);
+        *buffer << "lat: " << lat << "\tlon: " << lon << endl;
+    }
     else
+    {
         *buffer << "utm x: " << x[col] << "\tutm y: " << y[row] << endl;
+    }
 
     *buffer << endl;
 
