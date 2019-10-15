@@ -135,6 +135,8 @@
 
     bool checkDataType(QString xmlFileName, bool isMeteoGrid, QString *myError);
 
+    bool appendXMLElaboration(Crit3DElabList *listXMLElab, QString xmlFileName, QString *myError);
+
     //int getClimateIndexFromDate(QDate myDate, period periodType);
 
 #endif // CLIMATE_H

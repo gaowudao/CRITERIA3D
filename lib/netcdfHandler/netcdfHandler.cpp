@@ -29,6 +29,7 @@
 #include <algorithm>
 #include <iomanip>
 
+#include <math.h>
 #include <netcdf.h>
 
 #include "commonConstants.h"
