@@ -114,6 +114,7 @@ void NetCDFHandler::clear()
     isLatDecreasing = false;
     isStandardTime = false;
     isHourly = false;
+    isDaily = false;
     firstDate = NO_DATE;
     timeType = NODATA;
 
@@ -152,13 +153,20 @@ int NetCDFHandler::getDimensionIndex(char* dimName)
 }
 
 
-std::string NetCDFHandler::getVarName(int idVar)
+NetCDFVariable NetCDFHandler::getVariable(int idVar)
 {
     for (unsigned int i = 0; i < variables.size(); i++)
         if (variables[i].id == idVar)
-            return variables[i].getVarName();
+            return variables[i];
 
-    return "";
+    return NetCDFVariable();
+}
+
+
+std::string NetCDFHandler::getVarName(int idVar)
+{
+    NetCDFVariable var = getVariable(idVar);
+    return var.getVarName();
 }
 
 
@@ -231,6 +239,11 @@ Crit3DTime NetCDFHandler::getTime(int timeIndex)
         long nrHours = long(time[timeIndex]);
         nrDays = int(floor(nrHours / 24));
         residualTime = (nrHours - nrDays*24) * HOUR_SECONDS;
+    }
+    else if (isDaily)
+    {
+        nrDays = int(time[timeIndex]);
+        residualTime = 0;
     }
     else
     {
@@ -412,6 +425,12 @@ bool NetCDFHandler::readProperties(string fileName, stringstream *buffer)
                             std::string dateStr = lowerCase(myString).substr(12, 21);
                             firstDate = Crit3DDate(dateStr);
                         }
+                        else if (lowerCase(myString).substr(0, 10) == "days since")
+                        {
+                            isHourly = true;
+                            std::string dateStr = lowerCase(myString).substr(11, 20);
+                            firstDate = Crit3DDate(dateStr);
+                        }
                     }
                 }
                 if (lowerCase(string(attrName)) == "long_name")
@@ -518,7 +537,7 @@ bool NetCDFHandler::readProperties(string fileName, stringstream *buffer)
     }
 
     // TIME
-    if (isStandardTime || isHourly)
+    if (isStandardTime || isHourly || isDaily)
     {
         time = new double[unsigned(nrTime)];
 
@@ -619,8 +638,14 @@ bool NetCDFHandler::exportDataSeries(int idVar, gis::Crit3DGeoPoint geoPoint, Cr
         return false;
     }
 
-    // write variable
-     *buffer << "variable: " << getVarName(idVar) << endl;
+    // check variable
+    NetCDFVariable var = getVariable(idVar);
+    if (var.getVarName() == "")
+    {
+        *buffer << "Wrong variable!" << endl;
+        return false;
+    }
+    *buffer << "variable: " << var.getVarName() << endl;
 
     // write position
     if (isLatLon)
@@ -639,12 +664,27 @@ bool NetCDFHandler::exportDataSeries(int idVar, gis::Crit3DGeoPoint geoPoint, Cr
     index[1] = size_t(row);
     index[2] = size_t(col);
 
-    float value;
     for (int t = t1; t <= t2; t++)
     {
         index[0] = unsigned(t);
-        nc_get_var1_float(ncId, idVar, index, &value);
-        *buffer << getDateTimeStr(t) << ", " << value << endl;
+        if (var.type == NC_DOUBLE)
+        {
+            double value;
+            nc_get_var1_double(ncId, idVar, index, &value);
+            *buffer << getDateTimeStr(t) << ", " << value << endl;
+        }
+        if (var.type == NC_FLOAT)
+        {
+            float value;
+            nc_get_var1_float(ncId, idVar, index, &value);
+            *buffer << getDateTimeStr(t) << ", " << value << endl;
+        }
+        if (var.type <= NC_INT)
+        {
+            int value;
+            nc_get_var1_int(ncId, idVar, index, &value);
+            *buffer << getDateTimeStr(t) << ", " << value << endl;
+        }
     }
 
     return true;

@@ -32,17 +32,18 @@
 
         std::vector<NetCDFVariable> variables;
 
+        bool isLoaded;
         bool isLatLon;
+
         bool isStandardTime;
         bool isHourly;
+        bool isDaily;
         Crit3DDate firstDate;
-        bool isLoaded;
 
         NetCDFHandler();
 
         void clear();
         void initialize(int _utmZone);
-
 
         bool isPointInside(gis::Crit3DGeoPoint geoPoint);
 
@@ -53,6 +54,7 @@
         std::string getVarName(int idVar);
 
         Crit3DTime getTime(int timeIndex);
+        NetCDFVariable getVariable(int idVar);
 
         inline Crit3DTime getFirstTime() { return getTime(0); }
         inline Crit3DTime getLastTime() { return getTime(nrTime-1); }
