@@ -161,14 +161,15 @@ gis::Crit3DGeoPoint* RasterObject::getRasterCenter()
 
 void RasterObject::freeIndexesMatrix()
 {
-    if (this->matrix == nullptr) return;
+    if (matrix == nullptr) return;
 
-    for (int row = 0; row < this->latLonHeader.nrRows; row++)
-        if (this->matrix[row] != nullptr) ::free(this->matrix[row]);
+    for (int row = 0; row < latLonHeader.nrRows; row++)
+        if (matrix[row] != nullptr)
+            delete [] matrix[row];
 
-    if (this->latLonHeader.nrRows != 0) ::free(this->matrix);
+    if (latLonHeader.nrRows != 0) delete [] matrix;
 
-    this->matrix = nullptr;
+    matrix = nullptr;
 }
 
 

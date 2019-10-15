@@ -733,9 +733,12 @@ void MainWindow::on_timeEdit_timeChanged(const QTime &time)
 
     void MainWindow::on_actionNetCDF_Close_triggered()
     {
-        meteoGridObj->clear();
+        if (! myProject.netCDF.isLoaded()) return;
+
         myProject.netCDF.clear();
-        updateMaps();
+        meteoGridObj->clear();
+        meteoGridObj->redrawRequested();
+        meteoGridLegend->setVisible(false);
     }
 
     void MainWindow::on_actionNetCDF_ShowMetadata_triggered()
