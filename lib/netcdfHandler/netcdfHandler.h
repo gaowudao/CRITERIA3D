@@ -46,7 +46,6 @@
 
     public:
         int ncId;
-       // bool isLoaded;
         bool isLatLon;
 
         std::vector<NetCDFVariable> variables;
@@ -58,6 +57,7 @@
         void clear();
         void initialize(int _utmZone);
 
+        bool isLoaded();
         bool isPointInside(gis::Crit3DGeoPoint geoPoint);
 
         bool setVarLongName(std::string varName, std::string varLongName);

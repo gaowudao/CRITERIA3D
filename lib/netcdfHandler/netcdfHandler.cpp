@@ -171,6 +171,12 @@ std::string NetCDFHandler::getVarName(int idVar)
 }
 
 
+bool NetCDFHandler::isLoaded()
+{
+    return (variables.size() > 0);
+}
+
+
 bool NetCDFHandler::setVarLongName(std::string varName, std::string varLongName)
 {
     for (unsigned int i = 0; i < variables.size(); i++)

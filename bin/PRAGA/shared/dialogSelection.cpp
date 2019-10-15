@@ -275,7 +275,7 @@ meteoVariable chooseMeteoVariable(Project* myProject)
     bool chooseNetCDFVariable(NetCDFHandler* netCDF, int* varId, QDateTime* firstDateTime, QDateTime* lastDateTime)
     {
         // check
-        if (! netCDF->isLoaded)
+        if (! netCDF->isLoaded())
         {
             QMessageBox::information(nullptr, "No data", "Load NetCDF before");
             return false;

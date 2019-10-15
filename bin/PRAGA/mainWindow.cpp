@@ -276,7 +276,7 @@ void MainWindow::mousePressEvent(QMouseEvent *event)
         }
 
         #ifdef NETCDF
-        if (myProject.netCDF.isLoaded)
+        if (myProject.netCDF.isLoaded())
         {
             Position geoPos = mapView->mapToScene(mapPos);
             gis::Crit3DGeoPoint geoPoint = gis::Crit3DGeoPoint(geoPos.latitude(), geoPos.longitude());
@@ -708,6 +708,7 @@ void MainWindow::on_timeEdit_timeChanged(const QTime &time)
     redrawMeteoPoints(currentPointsVisualization, true);
     redrawMeteoGrid(currentGridVisualization, false);
 }
+
 
 
 #ifdef NETCDF
