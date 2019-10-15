@@ -519,7 +519,6 @@ bool NetCDFHandler::readProperties(string fileName, stringstream *buffer)
             for (int i = 0; i < nrTime; i++)
                 time[i] = double(intTime[i]);
         }
-
     }
 
     *buffer << endl << "first date: " << getDateTimeStr(0) << endl;
@@ -538,20 +537,20 @@ bool NetCDFHandler::readProperties(string fileName, stringstream *buffer)
 bool NetCDFHandler::exportDataSeries(int idVar, gis::Crit3DGeoPoint geoPoint, Crit3DTime firstTime, Crit3DTime lastTime, stringstream *buffer)
 {
     // check
-    if (getFirstTime() == NO_DATETIME)
+    if (! isTimeReadable())
     {
-        *buffer << "Wrong time! Praga reads only POSIX standard (seconds since 1970-01-01)." << endl;
+        *buffer << "Wrong time dimension! Use standard POSIX (seconds since 1970-01-01)." << endl;
         return false;
     }
     if (! isPointInside(geoPoint))
     {
-        *buffer << "Wrong Position!" << endl;
+        *buffer << "Wrong position!" << endl;
         return false;
     }
 
     if (firstTime < getFirstTime() || lastTime > getLastTime())
     {
-        *buffer << "Time out of range!" << endl;
+        *buffer << "Wron time index!" << endl;
         return false;
     }
 

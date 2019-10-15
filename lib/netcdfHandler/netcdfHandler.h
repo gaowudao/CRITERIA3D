@@ -43,6 +43,7 @@
         void clear();
         void initialize(int _utmZone);
 
+
         bool isPointInside(gis::Crit3DGeoPoint geoPoint);
 
         bool setVarLongName(std::string varName, std::string varLongName);
@@ -50,11 +51,13 @@
         int getDimensionIndex(char* dimName);
         std::string getDateTimeStr(int timeIndex);
         std::string getVarName(int idVar);
-        inline unsigned int getNrVariables() {return unsigned(variables.size());}
 
         Crit3DTime getTime(int timeIndex);
+
         inline Crit3DTime getFirstTime() { return getTime(0); }
         inline Crit3DTime getLastTime() { return getTime(nrTime-1); }
+        inline bool isTimeReadable() { return (getFirstTime() != NO_DATETIME); }
+        inline unsigned int getNrVariables() { return unsigned(variables.size()); }
 
         bool readProperties(std::string fileName, std::stringstream *buffer);
         bool exportDataSeries(int idVar, gis::Crit3DGeoPoint geoPoint, Crit3DTime firstTime, Crit3DTime lastTime, std::stringstream *buffer);

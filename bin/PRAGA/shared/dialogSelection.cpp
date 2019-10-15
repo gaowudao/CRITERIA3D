@@ -280,7 +280,7 @@ meteoVariable chooseMeteoVariable(Project* myProject)
             QMessageBox::information(nullptr, "No data", "Load NetCDF before");
             return false;
         }
-        if (! netCDF->isStandardTime && ! netCDF->isHourly)
+        if (! netCDF->isTimeReadable())
         {
             QMessageBox::information(nullptr, "Wrong time", "Reads only POSIX standard (seconds since 1970-01-01)");
             return false;
@@ -319,15 +319,13 @@ meteoVariable chooseMeteoVariable(Project* myProject)
 
         QDateTimeEdit *firstYearEdit = new QDateTimeEdit;
         firstYearEdit->setDateTimeRange(firstTime, lastTime);
-        firstYearEdit->setTimeSpec(Qt::UTC);
-        firstYearEdit->setDateTime(lastTime);
+        firstYearEdit->setDateTime(firstTime);
 
         QLabel *firstDateLabel = new QLabel("<b>First Date:</b>");
         firstDateLabel->setBuddy(firstYearEdit);
 
         QDateTimeEdit *lastYearEdit = new QDateTimeEdit;
         lastYearEdit->setDateTimeRange(firstTime, lastTime);
-        lastYearEdit->setTimeSpec(Qt::UTC);
         lastYearEdit->setDateTime(lastTime);
 
         QLabel *lastDateLabel = new QLabel("<b>Last Date:</b>");
