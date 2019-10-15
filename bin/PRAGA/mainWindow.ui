@@ -2472,7 +2472,7 @@
      <x>0</x>
      <y>0</y>
      <width>1392</width>
-     <height>21</height>
+     <height>26</height>
     </rect>
    </property>
    <property name="palette">
@@ -2933,6 +2933,14 @@
      <addaction name="actionMeteoPointsCSV"/>
      <addaction name="separator"/>
     </widget>
+    <widget class="QMenu" name="menuNetCDF_grid">
+     <property name="title">
+      <string>NetCDF grid</string>
+     </property>
+     <addaction name="actionNetCDF_Open"/>
+     <addaction name="actionNetCDF_Close"/>
+     <addaction name="actionNetCDF_ShowMetadata"/>
+    </widget>
     <addaction name="actionOpen_project"/>
     <addaction name="actionClose_project"/>
     <addaction name="actionSave_project"/>
@@ -2948,7 +2956,7 @@
     <addaction name="actionOpen_meteo_grid"/>
     <addaction name="actionClose_meteo_grid"/>
     <addaction name="separator"/>
-    <addaction name="actionOpen_NetCDF_grid"/>
+    <addaction name="menuNetCDF_grid"/>
    </widget>
    <widget class="QMenu" name="menuVariable">
     <property name="title">
@@ -3155,11 +3163,6 @@
     <string>Spatial quality control</string>
    </property>
   </action>
-  <action name="actionExtract_NetCDF_series">
-   <property name="text">
-    <string>Extract NetCDF series</string>
-   </property>
-  </action>
   <action name="actionOpen_meteo_grid">
    <property name="text">
     <string>Open meteo grid...</string>
@@ -3178,26 +3181,6 @@
   <action name="actionInterpolation_to_DEM">
    <property name="text">
     <string>Interpolation to DEM</string>
-   </property>
-  </action>
-  <action name="actionAnomaly_meteo_points_bk">
-   <property name="text">
-    <string>meteo points</string>
-   </property>
-  </action>
-  <action name="actionAnomaly_meteo_grid_bk">
-   <property name="text">
-    <string>meteo grid</string>
-   </property>
-  </action>
-  <action name="actionClimate_meteo_points_bk">
-   <property name="text">
-    <string>meteo points</string>
-   </property>
-  </action>
-  <action name="actionClimate_meteo_grid_bk">
-   <property name="text">
-    <string>meteo grid</string>
    </property>
   </action>
   <action name="actionInterpolationSettings">
@@ -3447,9 +3430,19 @@
     <string>Save current data</string>
    </property>
   </action>
-  <action name="actionOpen_NetCDF_grid">
+  <action name="actionNetCDF_Open">
    <property name="text">
-    <string>Open NetCDF grid</string>
+    <string>Open</string>
+   </property>
+  </action>
+  <action name="actionNetCDF_Close">
+   <property name="text">
+    <string>Close</string>
+   </property>
+  </action>
+  <action name="actionNetCDF_ShowMetadata">
+   <property name="text">
+    <string>Show metadata</string>
    </property>
   </action>
  </widget>

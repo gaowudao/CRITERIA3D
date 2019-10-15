@@ -712,10 +712,10 @@ void MainWindow::on_timeEdit_timeChanged(const QTime &time)
 
 
 #ifdef NETCDF
-    void MainWindow::on_actionOpen_NetCDF_grid_triggered()
+
+    void MainWindow::on_actionNetCDF_Open_triggered()
     {
         QString fileName = QFileDialog::getOpenFileName(this, tr("Open NetCDF data"), "", tr("NetCDF files (*.nc)"));
-
         if (fileName == "") return;
 
         myProject.netCDF.initialize(myProject.gisSettings.utmZone);
@@ -731,8 +731,14 @@ void MainWindow::on_timeEdit_timeChanged(const QTime &time)
         updateMaps();
     }
 
+    void MainWindow::on_actionNetCDF_Close_triggered()
+    {
+        meteoGridObj->clear();
+        myProject.netCDF.clear();
+        updateMaps();
+    }
 
-    void MainWindow::netCDF_ShowMetadata()
+    void MainWindow::on_actionNetCDF_ShowMetadata_triggered()
     {
         if (! myProject.netCDF.isLoaded()) return;
 
@@ -749,7 +755,6 @@ void MainWindow::on_timeEdit_timeChanged(const QTime &time)
         myDialog.setFixedSize(800,600);
         myDialog.exec();
     }
-
 
     // extract data series
     void MainWindow::netCDF_exportDataSeries(gis::Crit3DGeoPoint geoPoint)
@@ -775,6 +780,7 @@ void MainWindow::on_timeEdit_timeChanged(const QTime &time)
             }
         }
     }
+
 #endif
 
 
@@ -2104,5 +2110,4 @@ void MainWindow::on_actionInterpolateSaveGridPeriod_triggered()
     myVariables.push_back(myVar);
     myProject.interpolationMeteoGridPeriod(myFirstTime.date(), myLastTime.date(), myVariables, false);
 }
-
 

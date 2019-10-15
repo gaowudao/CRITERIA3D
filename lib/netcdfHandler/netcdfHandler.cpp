@@ -695,7 +695,7 @@ bool NetCDFHandler::exportDataSeries(int idVar, gis::Crit3DGeoPoint geoPoint, Cr
         {
             int value;
             nc_get_var1_int(ncId, idVar, index, &value);
-            *buffer << getDateTimeStr(t) << ", " << value << endl;
+            *buffer << getDateTimeStr(t) << ", " << double(value)/100 << endl;
         }
     }
 
