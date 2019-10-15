@@ -291,6 +291,7 @@ meteoVariable chooseMeteoVariable(Project* myProject)
         QVBoxLayout layoutVariable;
         QHBoxLayout layoutDate;
         QHBoxLayout layoutOk;
+        QDateTime firstTime, lastTime;
 
         myDialog.setWindowTitle("Export NetCDF data series");
 
@@ -309,12 +310,12 @@ meteoVariable chooseMeteoVariable(Project* myProject)
             layoutVariable.addWidget(buttonVars[i]);
         }
 
-        //void space
+        // void space
         layoutVariable.addWidget(new QLabel());
 
-        //Date widgets
-        QDateTime firstTime = getQDateTime(netCDF->getFirstTime());
-        QDateTime lastTime = getQDateTime(netCDF->getLastTime());
+        // date widgets
+        firstTime = getQDateTime(netCDF->getFirstTime());
+        lastTime = getQDateTime(netCDF->getLastTime());
 
         QDateTimeEdit *firstYearEdit = new QDateTimeEdit;
         firstYearEdit->setDateTimeRange(firstTime, lastTime);
