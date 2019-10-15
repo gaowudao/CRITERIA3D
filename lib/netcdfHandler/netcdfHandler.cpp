@@ -80,15 +80,6 @@ NetCDFHandler::NetCDFHandler()
 }
 
 
-void clearArray(float* a)
-{
-    if (a != nullptr)
-    {
-        delete [] a;
-        a = nullptr;
-    }
-}
-
 void NetCDFHandler::clear()
 {
     if (ncId != NODATA)
@@ -119,15 +110,17 @@ void NetCDFHandler::clear()
     isDaily = false;
     firstDate = NO_DATE;
 
-    clearArray(x);
-    clearArray(y);
-    clearArray(lat);
-    clearArray(lon);
-    if (time != nullptr)
-    {
-        delete [] time;
-        time = nullptr;
-    }
+    if (x != nullptr) delete [] x;
+    if (y != nullptr) delete [] y;
+    if (lat != nullptr) delete [] lat;
+    if (lon != nullptr) delete [] lon;
+    if (time != nullptr) delete [] time;
+
+    x = nullptr;
+    y = nullptr;
+    lon = nullptr;
+    lat = nullptr;
+    time = nullptr;
 
     dataGrid.clear();
     dimensions.clear();
