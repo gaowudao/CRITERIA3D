@@ -154,13 +154,11 @@ QDate getQDate(const Crit3DDate& d)
 
 QDateTime getQDateTime(const Crit3DTime& t)
 {
-    QDateTime myTime;
-    QDate myQDate = QDate(t.date.year, t.date.month, t.date.day);
-    myTime.setDate(myQDate);
-    QTime myQTime = QTime(t.getHour(), t.getMinutes(), int(t.getSeconds()), 0);
-    myTime.setTime(myQTime);
+    QDate myDate = QDate(t.date.year, t.date.month, t.date.day);
+    QDateTime myDateTime = QDateTime(myDate);
+    myDateTime.addSecs(t.time);
 
-    return myTime;
+    return myDateTime;
 }
 
 
