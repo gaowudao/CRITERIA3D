@@ -385,7 +385,7 @@ bool NetCDFHandler::readProperties(string fileName, stringstream *buffer)
                         if (lowerCase(myString).substr(0, 18) == "seconds since 1970")
                         {
                             isStandardTime = true;
-                            firstDate = Crit3DDate(1970,1,1);
+                            firstDate = Crit3DDate(1, 1, 1970);
                         }
                         else if (lowerCase(myString).substr(0, 11) == "hours since")
                         {
