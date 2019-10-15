@@ -225,7 +225,9 @@ meteoVariable chooseMeteoVariable(Project* myProject)
     myDialog.exec();
 
     if (myDialog.result() != QDialog::Accepted)
+    {
         return noMeteoVar;
+    }
 
    if (myProject->getCurrentFrequency() == daily)
    {
@@ -248,7 +250,8 @@ meteoVariable chooseMeteoVariable(Project* myProject)
        else if (Wind.isChecked())
            return (dailyWindIntensityAvg);
    }
-   else if (myProject->getCurrentFrequency() == hourly)
+
+   if (myProject->getCurrentFrequency() == hourly)
    {
        if (Tavg.isChecked())
            return (airTemperature);
@@ -263,9 +266,8 @@ meteoVariable chooseMeteoVariable(Project* myProject)
        else if (DewT.isChecked())
            return (airDewTemperature);
    }
-   else
-       return noMeteoVar;
 
+   return noMeteoVar;
 }
 
 
