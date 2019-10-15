@@ -80,6 +80,15 @@ NetCDFHandler::NetCDFHandler()
 }
 
 
+void clearArray(float* a)
+{
+    if (a != nullptr)
+    {
+        delete [] a;
+        a = nullptr;
+    }
+}
+
 void NetCDFHandler::clear()
 {
     // CLOSE file, freeing all resources
@@ -108,9 +117,15 @@ void NetCDFHandler::clear()
     firstDate = NO_DATE;
     timeType = NODATA;
 
-    x = nullptr;
-    y = nullptr;
-    time = nullptr;
+    clearArray(x);
+    clearArray(y);
+    clearArray(lat);
+    clearArray(lon);
+    if (time != nullptr)
+    {
+        delete [] time;
+        time = nullptr;
+    }
 
     dataGrid.clear();
     dimensions.clear();
@@ -421,8 +436,8 @@ bool NetCDFHandler::readProperties(string fileName, stringstream *buffer)
     {
         if (idLat != NODATA && idLon != NODATA)
         {
-            float* lat = new float[unsigned(nrLat)];
-            float* lon = new float[unsigned(nrLon)];
+            lat = new float[unsigned(nrLat)];
+            lon = new float[unsigned(nrLon)];
 
             if ((retval = nc_get_var_float(ncId, idLon, lon)))
                 *buffer << "\nERROR in reading longitude:" << nc_strerror(retval);
@@ -448,6 +463,7 @@ bool NetCDFHandler::readProperties(string fileName, stringstream *buffer)
             {
                 latLonHeader.llCorner->latitude = double(lat[0]);
                 latLonHeader.dy = double(lat[nrLat-1]-lat[0]) / double(nrLat-1);
+                isLatDecreasing = false;
             }
             else
             {
@@ -507,21 +523,26 @@ bool NetCDFHandler::readProperties(string fileName, stringstream *buffer)
         time = new double[unsigned(nrTime)];
 
         if (timeType == NC_DOUBLE)
+        {
             retval = nc_get_var(ncId, idTime, time);
-
+        }
         else if (timeType == NC_FLOAT)
         {
             float* floatTime = new float[unsigned(nrTime)];
             retval = nc_get_var_float(ncId, idTime, floatTime);
             for (int i = 0; i < nrTime; i++)
+            {
                 time[i] = double(floatTime[i]);
+            }
         }
         else if (timeType == NC_INT)
         {
             int* intTime = new int[unsigned(nrTime)];
             retval = nc_get_var_int(ncId, idTime, intTime);
             for (int i = 0; i < nrTime; i++)
+            {
                 time[i] = double(intTime[i]);
+            }
         }
     }
 
@@ -532,7 +553,9 @@ bool NetCDFHandler::readProperties(string fileName, stringstream *buffer)
 
     *buffer << endl << "VARIABLES list:" << endl;
     for (unsigned int i = 0; i < variables.size(); i++)
+    {
         *buffer << variables[i].getVarName() << endl;
+    }
 
    return true;
 }
@@ -600,9 +623,7 @@ bool NetCDFHandler::exportDataSeries(int idVar, gis::Crit3DGeoPoint geoPoint, Cr
     // write position
     if (isLatLon)
      {
-        double lat, lon;
-        gis::getLatLonFromRowCol(latLonHeader, row, col, &lat, &lon);
-        *buffer << "lat: " << lat << "\tlon: " << lon << endl;
+        *buffer << "lat: " << lat[row] << "\tlon: " << lon[col] << endl;
     }
     else
     {

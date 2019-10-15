@@ -69,6 +69,7 @@
         int idTime, idX, idY, idLat, idLon;
         bool isLatDecreasing;
         float *x, *y;
+        float *lat, *lon;
         double *time;
         int timeType;
 
