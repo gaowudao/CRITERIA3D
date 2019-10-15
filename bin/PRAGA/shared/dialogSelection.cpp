@@ -313,21 +313,21 @@ meteoVariable chooseMeteoVariable(Project* myProject)
         layoutVariable.addWidget(new QLabel());
 
         //Date widgets
-        *firstDateTime = getQDateTime(netCDF->getFirstTime());
-        *lastDateTime = getQDateTime(netCDF->getLastTime());
+        QDateTime firstTime = getQDateTime(netCDF->getFirstTime());
+        QDateTime lastTime = getQDateTime(netCDF->getLastTime());
 
         QDateTimeEdit *firstYearEdit = new QDateTimeEdit;
-        firstYearEdit->setDateTimeRange(*firstDateTime, *lastDateTime);
+        firstYearEdit->setDateTimeRange(firstTime, lastTime);
         firstYearEdit->setTimeSpec(Qt::UTC);
-        firstYearEdit->setDateTime(*lastDateTime);
+        firstYearEdit->setDateTime(lastTime);
 
         QLabel *firstDateLabel = new QLabel("<b>First Date:</b>");
         firstDateLabel->setBuddy(firstYearEdit);
 
         QDateTimeEdit *lastYearEdit = new QDateTimeEdit;
-        lastYearEdit->setDateTimeRange(*firstDateTime, *lastDateTime);
+        lastYearEdit->setDateTimeRange(firstTime, lastTime);
         lastYearEdit->setTimeSpec(Qt::UTC);
-        lastYearEdit->setDateTime(*lastDateTime);
+        lastYearEdit->setDateTime(lastTime);
 
         QLabel *lastDateLabel = new QLabel("<b>Last Date:</b>");
         lastDateLabel->setBuddy(lastYearEdit);
