@@ -1212,7 +1212,12 @@ void DialogMeteoComputation::copyDataFromXML()
                         readParam.setChecked(true);
                         climateDbElabList.setVisible(true);
                         adjustSize();
-                        climateDbElabList.setCurrentText(listXMLElab->listParam1ClimateField()[index]);
+                        int index = climateDbElabList.findText(listXMLElab->listParam1ClimateField()[index], Qt::MatchFixedString);
+                        if (index == -1)
+                        {
+                            QMessageBox::information(nullptr, "climate field not found", "Check param1 climate field");
+                        }
+                        climateDbElabList.setCurrentIndex(index);
 
                     }
                     else
@@ -1292,7 +1297,12 @@ void DialogMeteoComputation::copyDataFromXML()
                         climateDbElabList.setVisible(true);
                         adjustSize();
 
-                        climateDbElabList.setCurrentText(listXMLAnomaly->listParam1ClimateField()[index]);
+                        int index = climateDbElabList.findText(listXMLAnomaly->listParam1ClimateField()[index], Qt::MatchFixedString);
+                        if (index == -1)
+                        {
+                            QMessageBox::information(nullptr, "climate field not found", "Check param1 climate field");
+                        }
+                        climateDbElabList.setCurrentIndex(index);
 
                     }
                     else
@@ -1327,7 +1337,10 @@ void DialogMeteoComputation::copyDataFromXML()
                     if (listXMLAnomaly->isAnomalyFromDb()[index])
                     {
                         anomaly.AnomalyReadReferenceState(1);
-                        anomaly.AnomalySetClimateDb(listXMLAnomaly->listAnomalyClimateField()[index]);
+                        if (!anomaly.AnomalySetClimateDb(listXMLAnomaly->listAnomalyClimateField()[index]))
+                        {
+                            QMessageBox::information(nullptr, "climate field not found", "Check anomaly climate");
+                        }
                     }
                     else
                     {
@@ -1343,7 +1356,12 @@ void DialogMeteoComputation::copyDataFromXML()
                         else if (listXMLAnomaly->listRefParam1IsClimate()[index])
                         {
                             anomaly.AnomalyReadParameter(1);
-                            climateDbElabList.setCurrentText(listXMLAnomaly->listRefParam1ClimateField()[index]);
+                            int index = climateDbElabList.findText(listXMLAnomaly->listRefParam1ClimateField()[index], Qt::MatchFixedString);
+                            if (index == -1)
+                            {
+                                QMessageBox::information(nullptr, "climate field not found", "Check reference param1 climate field");
+                            }
+                            climateDbElabList.setCurrentIndex(index);
                         }
                         else
                         {

@@ -103,7 +103,7 @@ class DialogAnomaly : public QDialog
         void AnomalySetReadParamIsChecked(bool set);
         QString AnomalyGetClimateDbElab() const;
         QString AnomalyGetClimateDb() const;
-        void AnomalySetClimateDb(QString clima);
+        bool AnomalySetClimateDb(QString clima);
         void AnomalySetClimateDbElab(QString elab);
         void AnomalySetAllEnable(bool set);
         void AnomalyFillClimateDbList(QComboBox *dbList);

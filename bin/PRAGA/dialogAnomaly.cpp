@@ -778,9 +778,15 @@ QString DialogAnomaly::AnomalyGetClimateDb() const
     return climateDbClimaList.currentText();
 }
 
-void DialogAnomaly::AnomalySetClimateDb(QString clima)
+bool DialogAnomaly::AnomalySetClimateDb(QString clima)
 {
-    climateDbClimaList.setCurrentText(clima);
+    int index = climateDbClimaList.findText(clima, Qt::MatchFixedString);
+    if (index == -1)
+    {
+        return false;
+    }
+    climateDbClimaList.setCurrentIndex(index);
+    return true;
 }
 
 
