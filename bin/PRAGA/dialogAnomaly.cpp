@@ -710,10 +710,15 @@ QString DialogAnomaly::AnomalyGetElaboration() const
     return elaborationList.currentText();
 }
 
-void DialogAnomaly::AnomalySetElaboration(QString elab)
+bool DialogAnomaly::AnomalySetElaboration(QString elab)
 {
-    int elabIndex = elaborationList.findText(elab, Qt::MatchFixedString);
-    elaborationList.setCurrentIndex(elabIndex);
+    int index = elaborationList.findText(elab, Qt::MatchFixedString);
+    if (index == -1)
+    {
+        return false;
+    }
+    elaborationList.setCurrentIndex(index);
+    return true;
 }
 
 QString DialogAnomaly::AnomalyGetSecondElaboration() const
@@ -721,10 +726,15 @@ QString DialogAnomaly::AnomalyGetSecondElaboration() const
     return secondElabList.currentText();
 }
 
-void DialogAnomaly::AnomalySetSecondElaboration(QString elab)
+bool DialogAnomaly::AnomalySetSecondElaboration(QString elab)
 {
     int index = secondElabList.findText(elab, Qt::MatchFixedString);
+    if (index == -1)
+    {
+        return false;
+    }
     secondElabList.setCurrentIndex(index);
+    return true;
 }
 
 QString DialogAnomaly::AnomalyGetParam1() const

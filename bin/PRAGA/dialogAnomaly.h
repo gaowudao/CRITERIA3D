@@ -91,9 +91,9 @@ class DialogAnomaly : public QDialog
         QDate AnomalyGetCurrentDay() const;
         void AnomalySetCurrentDay(QDate date);
         QString AnomalyGetElaboration() const;
-        void AnomalySetElaboration(QString elab);
+        bool AnomalySetElaboration(QString elab);
         QString AnomalyGetSecondElaboration() const;
-        void AnomalySetSecondElaboration(QString elab);
+        bool AnomalySetSecondElaboration(QString elab);
         QString AnomalyGetParam1() const;
         void AnomalySetParam1(QString param);
         void AnomalySetParam1ReadOnly(bool visible);

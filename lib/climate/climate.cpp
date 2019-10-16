@@ -2252,6 +2252,7 @@ bool parseXMLElaboration(Crit3DElabList *listXMLElab, Crit3DAnomalyList *listXML
     QString refFirstYear;
     QString variable;
     QString period;
+    QString refPeriod;
 
     QString elab;
     QString elabParam1;
@@ -2520,7 +2521,7 @@ bool parseXMLElaboration(Crit3DElabList *listXMLElab, Crit3DAnomalyList *listXML
             }
             else
             {
-                if (parseXMLPeriodType(ancestor, "RefPeriodType", listXMLElab, listXMLAnomaly, true, true, &period, myError) == false)
+                if (parseXMLPeriodType(ancestor, "RefPeriodType", listXMLElab, listXMLAnomaly, true, true, &refPeriod, myError) == false)
                 {
                     ancestor = ancestor.nextSibling(); // something is wrong, go to next elab/anomaly
                     continue;
@@ -2598,7 +2599,7 @@ bool parseXMLElaboration(Crit3DElabList *listXMLElab, Crit3DAnomalyList *listXML
                 {
                     if (myTag == "REFPERIOD")
                     {
-                        if (parseXMLPeriodTag(child, listXMLElab, listXMLAnomaly, true, true, period, refFirstYear, myError) == false)
+                        if (parseXMLPeriodTag(child, listXMLElab, listXMLAnomaly, true, true, refPeriod, refFirstYear, myError) == false)
                         {
                             listXMLAnomaly->eraseElement(nAnomaly);
                             errorAnomaly = true;
@@ -3455,8 +3456,49 @@ bool appendXMLElaboration(Crit3DElabList *listXMLElab, QString xmlFileName, QStr
     QDate dateEnd = listXMLElab->listDateEnd()[0];
     if (periodElab == "Generic")
     {
-        periodTag.setAttribute("ini", QString::number(dateStart.day())+"/"+QString::number(dateStart.month()));
-        periodTag.setAttribute("fin", QString::number(dateEnd.day())+"/"+QString::number(dateEnd.month()));
+        int month = dateStart.month();
+        int day = dateStart.day();
+        QString monthStr;
+        QString dayStr;
+        if (month < 10)
+        {
+            monthStr = "0"+QString::number(month);
+        }
+        else
+        {
+            monthStr = QString::number(month);
+        }
+        if (day < 10)
+        {
+            dayStr = "0"+QString::number(day);
+        }
+        else
+        {
+            dayStr = QString::number(day);
+        }
+
+        periodTag.setAttribute("ini", dayStr+"/"+monthStr);
+
+        month = dateEnd.month();
+        day = dateEnd.day();
+        if (month < 10)
+        {
+            monthStr = "0"+QString::number(month);
+        }
+        else
+        {
+            monthStr = QString::number(month);
+        }
+        if (day < 10)
+        {
+            dayStr = "0"+QString::number(day);
+        }
+        else
+        {
+            dayStr = QString::number(day);
+        }
+
+        periodTag.setAttribute("fin", dayStr+"/"+monthStr);
         periodTag.setAttribute("nyears", QString::number(listXMLElab->listNYears()[0]));
     }
     else if (periodElab == "Daily")
@@ -3600,8 +3642,49 @@ bool appendXMLAnomaly(Crit3DAnomalyList *listXMLAnomaly, QString xmlFileName, QS
     QDate dateEnd = listXMLAnomaly->listDateEnd()[0];
     if (periodElab == "Generic")
     {
-        periodTag.setAttribute("ini", QString::number(dateStart.day())+"/"+QString::number(dateStart.month()));
-        periodTag.setAttribute("fin", QString::number(dateEnd.day())+"/"+QString::number(dateEnd.month()));
+        int month = dateStart.month();
+        int day = dateStart.day();
+        QString monthStr;
+        QString dayStr;
+        if (month < 10)
+        {
+            monthStr = "0"+QString::number(month);
+        }
+        else
+        {
+            monthStr = QString::number(month);
+        }
+        if (day < 10)
+        {
+            dayStr = "0"+QString::number(day);
+        }
+        else
+        {
+            dayStr = QString::number(day);
+        }
+
+        periodTag.setAttribute("ini", dayStr+"/"+monthStr);
+
+        month = dateEnd.month();
+        day = dateEnd.day();
+        if (month < 10)
+        {
+            monthStr = "0"+QString::number(month);
+        }
+        else
+        {
+            monthStr = QString::number(month);
+        }
+        if (day < 10)
+        {
+            dayStr = "0"+QString::number(day);
+        }
+        else
+        {
+            dayStr = QString::number(day);
+        }
+
+        periodTag.setAttribute("fin", dayStr+"/"+monthStr);
         periodTag.setAttribute("nyears", QString::number(listXMLAnomaly->listNYears()[0]));
     }
     else if (periodElab == "Daily")
@@ -3660,8 +3743,50 @@ bool appendXMLAnomaly(Crit3DAnomalyList *listXMLAnomaly, QString xmlFileName, QS
         QDate refdateEnd = listXMLAnomaly->listRefDateEnd()[0];
         if (periodRefElab == "Generic")
         {
-            refPeriodTag.setAttribute("ini", QString::number(refDateStart.day())+"/"+QString::number(refDateStart.month()));
-            refPeriodTag.setAttribute("fin", QString::number(refdateEnd.day())+"/"+QString::number(refdateEnd.month()));
+
+            int month = refDateStart.month();
+            int day = refDateStart.day();
+            QString monthStr;
+            QString dayStr;
+            if (month < 10)
+            {
+                monthStr = "0"+QString::number(month);
+            }
+            else
+            {
+                monthStr = QString::number(month);
+            }
+            if (day < 10)
+            {
+                dayStr = "0"+QString::number(day);
+            }
+            else
+            {
+                dayStr = QString::number(day);
+            }
+
+            refPeriodTag.setAttribute("ini", dayStr+"/"+monthStr);
+
+            month = refdateEnd.month();
+            day = refdateEnd.day();
+            if (month < 10)
+            {
+                monthStr = "0"+QString::number(month);
+            }
+            else
+            {
+                monthStr = QString::number(month);
+            }
+            if (day < 10)
+            {
+                dayStr = "0"+QString::number(day);
+            }
+            else
+            {
+                dayStr = QString::number(day);
+            }
+
+            refPeriodTag.setAttribute("fin", dayStr+"/"+monthStr);
             refPeriodTag.setAttribute("nyears", QString::number(listXMLAnomaly->listRefNYears()[0]));
         }
         else if (periodRefElab == "Daily")

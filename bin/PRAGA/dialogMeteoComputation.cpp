@@ -1347,7 +1347,10 @@ void DialogMeteoComputation::copyDataFromXML()
                         anomaly.AnomalyReadReferenceState(0);
                         anomaly.AnomalySetYearStart(QString::number(listXMLAnomaly->listRefYearStart()[index]));
                         anomaly.AnomalySetYearLast(QString::number(listXMLAnomaly->listRefYearEnd()[index]));
-                        anomaly.AnomalySetElaboration(listXMLAnomaly->listRefElab1()[index]);
+                        if (!anomaly.AnomalySetElaboration(listXMLAnomaly->listRefElab1()[index]))
+                        {
+                            QMessageBox::information(nullptr, "ref primary elaboration not found", "Check ref primary elaboration");
+                        }
                         if ( (listXMLAnomaly->listRefParam1()[index] != NODATA) && (!listXMLAnomaly->listRefParam1IsClimate()[index]) )
                         {
                             anomaly.AnomalySetParam1ReadOnly(false);
@@ -1369,7 +1372,10 @@ void DialogMeteoComputation::copyDataFromXML()
                         }
                         if (listXMLAnomaly->listRefElab2()[index] != "")
                         {
-                            anomaly.AnomalySetSecondElaboration(listXMLAnomaly->listRefElab2()[index]);
+                            if (!anomaly.AnomalySetSecondElaboration(listXMLAnomaly->listRefElab2()[index]))
+                            {
+                                QMessageBox::information(nullptr, "ref secondary elaboration not found", "Check ref secondary elaboration");
+                            }
                             if ( listXMLAnomaly->listRefParam2()[index] != NODATA)
                             {
                                 anomaly.AnomalySetParam2(QString::number(listXMLAnomaly->listRefParam2()[index]));
@@ -1398,6 +1404,10 @@ void DialogMeteoComputation::copyDataFromXML()
 
 void DialogMeteoComputation::saveDataToXML()
 {
+    if (!checkValidData())
+    {
+        return;
+    }
     QString xmlName = QFileDialog::getOpenFileName(this, tr("Open XML"), "", tr("xml files (*.xml)"));
     QString *myError = new QString();
     if (xmlName == "")
