@@ -3397,6 +3397,7 @@ bool appendXMLElaboration(Crit3DElabList *listXMLElab, QString xmlFileName, QStr
     }
 
     QString dataType;
+    QString periodElab = listXMLElab->listPeriodStr()[0];
     if (listXMLElab->isMeteoGrid())
     {
         dataType = "Grid";
@@ -3409,19 +3410,72 @@ bool appendXMLElaboration(Crit3DElabList *listXMLElab, QString xmlFileName, QStr
     std::string variableString = MapDailyMeteoVarToString.at(var);
     QDomElement elaborationTag = xmlDoc.createElement(QString("Elaboration"));
     elaborationTag.setAttribute("Datatype", dataType);
-    elaborationTag.setAttribute("PeriodType", listXMLElab->listPeriodStr()[0]);
+    elaborationTag.setAttribute("PeriodType", periodElab);
     QDomElement variableTag = xmlDoc.createElement(QString("Variable"));
     QDomText variableText = xmlDoc.createTextNode(QString::fromStdString(variableString));
+    variableTag.appendChild(variableText);
 
     QDomElement yearIntervalTag = xmlDoc.createElement(QString("YearInterval"));
     yearIntervalTag.setAttribute("ini", listXMLElab->listYearStart()[0]);
     yearIntervalTag.setAttribute("fin", listXMLElab->listYearEnd()[0]);
 
+    QDomElement periodTag = xmlDoc.createElement(QString("period"));
 
-    variableTag.appendChild(variableText);
+    QDate dateStart = listXMLElab->listDateStart()[0];
+    QDate dateEnd = listXMLElab->listDateEnd()[0];
+    if (periodElab == "Generic")
+    {
+        periodTag.setAttribute("ini", QString::number(dateStart.day())+"/"+QString::number(dateStart.month()));
+        periodTag.setAttribute("fin", QString::number(dateEnd.day())+"/"+QString::number(dateEnd.month()));
+        periodTag.setAttribute("nyears", QString::number(listXMLElab->listNYears()[0]));
+    }
+    else if (periodElab == "Daily")
+    {
+        periodTag.setAttribute("doy", QString::number(dateStart.dayOfYear()));
+    }
+    else if (periodElab == "Monthly")
+    {
+        periodTag.setAttribute("month", QString::number(dateStart.month()));
+    }
+    else if (periodElab == "Decadal")
+    {
+        periodTag.setAttribute("decade", QString::number(decadeFromDate(dateStart)));
+    }
+    else if (periodElab == "Seasonal")
+    {
+        periodTag.setAttribute("season", QString::number(getSeasonFromDate(dateStart)));
+    }
+
+    QDomElement elab1Tag = xmlDoc.createElement(QString("PrimaryElaboration"));
+    if (listXMLElab->listParam1()[0] != NODATA)
+    {
+        elab1Tag.setAttribute("Param1", QString::number(listXMLElab->listParam1()[0]));
+    }
+    else if (listXMLElab->listParam1IsClimate()[0])
+    {
+        elab1Tag.setAttribute("readParamFromClimate", "TRUE");
+        elab1Tag.setAttribute("Param1", listXMLElab->listParam1ClimateField()[0]);
+    }
+    QDomText elab1Text = xmlDoc.createTextNode(listXMLElab->listElab1()[0]);
+    elab1Tag.appendChild(elab1Text);
+
     elaborationTag.appendChild(variableTag);
-
     elaborationTag.appendChild(yearIntervalTag);
+    elaborationTag.appendChild(periodTag);
+    elaborationTag.appendChild(elab1Tag);
+
+    if (!listXMLElab->listElab2()[0].isEmpty())
+    {
+        QDomElement elab2Tag = xmlDoc.createElement(QString("SecondaryElaboration"));
+        if (listXMLElab->listParam2()[0] != NODATA)
+        {
+            elab2Tag.setAttribute("Param2", QString::number(listXMLElab->listParam2()[0]));
+        }
+        QDomText elab2Text = xmlDoc.createTextNode(listXMLElab->listElab2()[0]);
+        elab2Tag.appendChild(elab2Text);
+        elaborationTag.appendChild(elab2Tag);
+    }
+
     root.appendChild(elaborationTag);
     // Remove old file and save the new one with same name
     myFile.remove();

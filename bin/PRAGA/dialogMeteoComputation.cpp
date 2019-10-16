@@ -1488,8 +1488,14 @@ void DialogMeteoComputation::saveDataToXML()
             listXMLElab->insertDateEnd(end);
 
         }
-        // TO DO append to XML
-        appendXMLElaboration(listXMLElab, xmlName, myError);
+        if (appendXMLElaboration(listXMLElab, xmlName, myError))
+        {
+            QMessageBox::information(nullptr, "Done", "elaboration has been appended");
+        }
+        else
+        {
+            QMessageBox::information(nullptr, "Error", "append XML error");
+        }
         delete listXMLElab;
 
     }
