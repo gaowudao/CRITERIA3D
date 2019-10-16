@@ -1072,7 +1072,7 @@ void weatherGenerator2D::precipitationMultisiteAmountsGeneration()
           //printf("\n");
       }
       free(arrayRandomNormalNumbers);
-      pressEnterToContinue();
+      //pressEnterToContinue();
       // fine parte da togliere
 
       printf("modulo precipitazione fase 9/9 sottofase %d/4\n",iSeason+1);
@@ -1388,11 +1388,11 @@ void weatherGenerator2D::spatialIterationAmounts(double** correlationMatrixSimul
    {
        for (int j=0;j<nrStations;j++)
        {
-            printf("%.4f ",amountsCorrelationMatrix[i][j]);
+            //printf("%.4f ",amountsCorrelationMatrix[i][j]);
        }
-       printf("mat \n");
+       //printf("mat \n");
    }
-   pressEnterToContinue();
+   //pressEnterToContinue();
 
    double minimalValueToExitFromCycle = NODATA;
    int counterConvergence=0;
@@ -1467,21 +1467,21 @@ void weatherGenerator2D::spatialIterationAmounts(double** correlationMatrixSimul
        {
            for (int j=0;j<nrStations;j++)
            {
-                printf("%.4f ",dummyMatrix[i][j]);
+                //printf("%.4f ",dummyMatrix[i][j]);
            }
-           printf(" cholesky \n");
+           //printf(" cholesky \n");
        }
-       pressEnterToContinue();
+       //pressEnterToContinue();
        matricial::matrixProduct(dummyMatrix,randomMatrix,nrStations,nrStations,lengthSeries,nrStations,dummyMatrix3);
        for (int i=0;i<lengthSeries;i++)
        {
            for (int j=0;j<nrStations;j++)
            {
-                printf("%.4f ",dummyMatrix3[j][i]);
+                //printf("%.4f ",dummyMatrix3[j][i]);
            }
-           printf(" corr_random \n");
+           //printf(" corr_random \n");
        }
-       pressEnterToContinue();
+       //pressEnterToContinue();
        double meanValue,stdDevValue;
        for (int i=0;i<nrStations;i++)
        {
@@ -1525,6 +1525,7 @@ void weatherGenerator2D::spatialIterationAmounts(double** correlationMatrixSimul
            }
            printf("\n");
        }
+       printf("%d\n", ii);
        pressEnterToContinue();
        for (int i=0;i<nrStations;i++)
        {
@@ -1532,11 +1533,11 @@ void weatherGenerator2D::spatialIterationAmounts(double** correlationMatrixSimul
            {
                statistics::correlationsMatrix(nrStations,simulatedPrecipitationAmountsSeasonal,lengthSeries,correlationMatrixSimulatedData);
                // da verificare dovrebbe esserci correlazione solo per i dati diversi da zero
-               printf("%.4f ",correlationMatrixSimulatedData[i][j]);
+               //printf("%.4f ",correlationMatrixSimulatedData[i][j]);
            }
-           printf("\n");
+           //printf("\n");
        }
-       pressEnterToContinue();
+       //pressEnterToContinue();
        val = 0;
        for (int i=0;i<nrStations;i++)
        {
