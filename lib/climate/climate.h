@@ -137,6 +137,8 @@
 
     bool appendXMLElaboration(Crit3DElabList *listXMLElab, QString xmlFileName, QString *myError);
 
+    bool appendXMLAnomaly(Crit3DAnomalyList *listXMLAnomaly, QString xmlFileName, QString *myError);
+
     //int getClimateIndexFromDate(QDate myDate, period periodType);
 
 #endif // CLIMATE_H

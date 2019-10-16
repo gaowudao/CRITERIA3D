@@ -1628,7 +1628,14 @@ void DialogMeteoComputation::saveDataToXML()
             }
 
         }
-        // TO DO append to XML
+        if (appendXMLAnomaly(listXMLAnomaly, xmlName, myError))
+        {
+            QMessageBox::information(nullptr, "Done", "anomaly has been appended");
+        }
+        else
+        {
+            QMessageBox::information(nullptr, "Error", "append XML error");
+        }
         delete listXMLAnomaly;
     }
 
