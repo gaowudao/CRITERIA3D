@@ -1212,19 +1212,8 @@ void DialogMeteoComputation::copyDataFromXML()
                         readParam.setChecked(true);
                         climateDbElabList.setVisible(true);
                         adjustSize();
-                        QStringList itemsClimateDbElabList;
-                        for (int pos = 0; pos < climateDbElabList.count(); pos++)
-                        {
-                            itemsClimateDbElabList << climateDbElabList.itemText(pos);
-                        }
-                        if (itemsClimateDbElabList.contains(listXMLElab->listParam1ClimateField()[index], Qt::CaseInsensitive))
-                        {
-                            climateDbElabList.setCurrentText(listXMLElab->listParam1ClimateField()[index]);
-                        }
-                        else
-                        {
-                            QMessageBox::information(nullptr, "Wrong Climate", "param1 climate fields does not exists");
-                        }
+                        climateDbElabList.setCurrentText(listXMLElab->listParam1ClimateField()[index]);
+
                     }
                     else
                     {
@@ -1290,11 +1279,6 @@ void DialogMeteoComputation::copyDataFromXML()
                     int elabIndex = elaborationList.findText(listXMLAnomaly->listElab1()[index], Qt::MatchFixedString);
                     elaborationList.setCurrentIndex(elabIndex);
 
-                    QStringList itemsClimateDbElabList;
-                    for (int pos = 0; pos < climateDbElabList.count(); pos++)
-                    {
-                        itemsClimateDbElabList << climateDbElabList.itemText(pos);
-                    }
                     if ( (listXMLAnomaly->listParam1()[index] != NODATA) && (!listXMLAnomaly->listParam1IsClimate()[index]) )
                     {
                         elab1Parameter.setReadOnly(false);
@@ -1308,14 +1292,8 @@ void DialogMeteoComputation::copyDataFromXML()
                         climateDbElabList.setVisible(true);
                         adjustSize();
 
-                        if (itemsClimateDbElabList.contains(listXMLAnomaly->listParam1ClimateField()[index], Qt::CaseInsensitive))
-                        {
-                            climateDbElabList.setCurrentText(listXMLAnomaly->listParam1ClimateField()[index]);
-                        }
-                        else
-                        {
-                            QMessageBox::information(nullptr, "Wrong Climate", "param1 climate fields does not exists");
-                        }
+                        climateDbElabList.setCurrentText(listXMLAnomaly->listParam1ClimateField()[index]);
+
                     }
                     else
                     {
@@ -1349,14 +1327,7 @@ void DialogMeteoComputation::copyDataFromXML()
                     if (listXMLAnomaly->isAnomalyFromDb()[index])
                     {
                         anomaly.AnomalyReadReferenceState(1);
-                        if (itemsClimateDbElabList.contains(listXMLAnomaly->listAnomalyClimateField()[index], Qt::CaseInsensitive))
-                        {
-                            anomaly.AnomalySetClimateDb(listXMLAnomaly->listAnomalyClimateField()[index]);
-                        }
-                        else
-                        {
-                            QMessageBox::information(nullptr, "Wrong Climate", "climate does not exists");
-                        }
+                        anomaly.AnomalySetClimateDb(listXMLAnomaly->listAnomalyClimateField()[index]);
                     }
                     else
                     {
@@ -1372,14 +1343,7 @@ void DialogMeteoComputation::copyDataFromXML()
                         else if (listXMLAnomaly->listRefParam1IsClimate()[index])
                         {
                             anomaly.AnomalyReadParameter(1);
-                            if (itemsClimateDbElabList.contains(listXMLAnomaly->listRefParam1ClimateField()[index], Qt::CaseInsensitive))
-                            {
-                                climateDbElabList.setCurrentText(listXMLAnomaly->listRefParam1ClimateField()[index]);
-                            }
-                            else
-                            {
-                                QMessageBox::information(nullptr, "Wrong Climate", "param1 climate fields does not exists");
-                            }
+                            climateDbElabList.setCurrentText(listXMLAnomaly->listRefParam1ClimateField()[index]);
                         }
                         else
                         {
