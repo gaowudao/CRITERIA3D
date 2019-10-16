@@ -590,6 +590,7 @@ void DialogAnomaly::AnomalyReadReferenceState(int state)
 
     if (state!= 0)
     {
+        readReference.setChecked(true);
         climateDbClimaList.clear();
         climateDbElab.clear();
         climateDbClimaList.setVisible(true);
@@ -600,6 +601,7 @@ void DialogAnomaly::AnomalyReadReferenceState(int state)
     }
     else
     {
+        readReference.setChecked(false);
         AnomalySetAllEnable(true);
         climateDbElabList.setVisible(readParam.isChecked());
         climateDbClimaList.setVisible(false);
