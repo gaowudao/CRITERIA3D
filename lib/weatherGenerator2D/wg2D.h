@@ -161,6 +161,7 @@
         TrandomMatrix *randomMatrix;
         ToccurrenceIndexSeasonal* occurrenceIndexSeasonal;
         TsimulatedPrecipitationAmounts *simulatedPrecipitationAmounts;
+        //double** tagDoyPrec;
 
         // create the seasonal correlation matrices
         double** occurrenceMatrixSeasonDJF;

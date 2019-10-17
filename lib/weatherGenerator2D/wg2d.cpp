@@ -687,7 +687,7 @@ void weatherGenerator2D::precipitationMultisiteOccurrenceGeneration()
         {
             for (int j=0;j<nrDaysIterativeProcessMonthly[iMonth];j++)
             {
-                normalizedRandomMatrix[i][j] = arrayRandomNormalNumbers[countRandom];
+                //normalizedRandomMatrix[i][j] = arrayRandomNormalNumbers[countRandom];
                 countRandom++;
                 //printf("%f  ",normalizedRandomMatrix[i][j]);
             }
@@ -844,8 +844,8 @@ void weatherGenerator2D::spatialIterationOccurrence(double ** M, double** K,doub
     double minimalValueToExitFromCycle = NODATA;
     int counterConvergence=0;
     bool exitWhileCycle = false;
-    //while ((val>TOLERANCE_MULGETS) && (ii<MAX_ITERATION_MULGETS) && (!exitWhileCycle))
-    while (ii<2)
+    while ((val>TOLERANCE_MULGETS) && (ii<MAX_ITERATION_MULGETS) && (!exitWhileCycle))
+    //while (ii<2)
     {
         ii++;
         int nrEigenvaluesLessThan0 = 0;
@@ -1008,8 +1008,8 @@ void weatherGenerator2D::spatialIterationOccurrence(double ** M, double** K,doub
         {
             M[i][i]= 1.;
         }
-        //if ((ii != MAX_ITERATION_MULGETS) && (val > TOLERANCE_MULGETS)  && (!exitWhileCycle))
-        if (ii <2)
+        if ((ii != MAX_ITERATION_MULGETS) && (val > TOLERANCE_MULGETS)  && (!exitWhileCycle))
+        //if (ii <2)
         {
             for (int i=0; i<nrStations;i++)
             {
