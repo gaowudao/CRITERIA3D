@@ -743,7 +743,11 @@ void MainWindow::on_timeEdit_timeChanged(const QTime &time)
 
     void MainWindow::on_actionNetCDF_ShowMetadata_triggered()
     {
-        if (! myProject.netCDF.isLoaded()) return;
+        if (! myProject.netCDF.isLoaded())
+        {
+            myProject.logError("Open NetCDF grid before.");
+            return;
+        }
 
         QDialog myDialog;
         myDialog.setWindowTitle("NetCDF metadata");
