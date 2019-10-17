@@ -2113,3 +2113,17 @@ void MainWindow::on_actionInterpolateSaveGridPeriod_triggered()
     myVariables.push_back(myVar);
     myProject.interpolationMeteoGridPeriod(myFirstTime.date(), myLastTime.date(), myVariables, false);
 }
+
+
+void MainWindow::on_actionMeteoGrid_Export_NetCDF_triggered()
+{
+    gis::Crit3DRasterGrid *dataGrid = meteoGridObj->getRaster();
+
+   /* TODO
+    * choose file
+    * new netcdf
+    * write metadata (latLonHeader)
+    * write data
+    * */
+
+}
