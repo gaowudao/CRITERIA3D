@@ -1065,7 +1065,7 @@ void weatherGenerator2D::precipitationMultisiteAmountsGeneration()
       {
           for (int j=0;j<lengthSeason[iSeason]*parametersModel.yearOfSimulation;j++)
           {
-              randomMatrixNormalDistribution[i][j] = arrayRandomNormalNumbers[countRandom];
+              //randomMatrixNormalDistribution[i][j] = arrayRandomNormalNumbers[countRandom];
               countRandom++;
               //printf("%f  ",randomMatrixNormalDistribution[i][j]);
           }
@@ -1093,6 +1093,30 @@ void weatherGenerator2D::precipitationMultisiteAmountsGeneration()
            }
 
       }
+    // to verify
+      if (iSeason == 0)
+      {
+           double dummy[31];
+           for (int i=0;i<nrStations;i++)
+           {
+               for (int j=0;j<parametersModel.yearOfSimulation;j++)
+               {
+                   for (int k=0;k<31;k++)
+                   {
+                        dummy[k] = simulatedPrecipitationAmounts[iSeason].matrixAmounts[i][j*lengthSeason[iSeason]+k];
+                   }
+                   for (int k=31;k<lengthSeason[iSeason];k++)
+                   {
+                       simulatedPrecipitationAmounts[iSeason].matrixAmounts[i][j*lengthSeason[iSeason]-31+k]=simulatedPrecipitationAmounts[iSeason].matrixAmounts[i][j*lengthSeason[iSeason]+k];
+                   }
+                   for (int k=0;k<31;k++)
+                   {
+                        simulatedPrecipitationAmounts[iSeason].matrixAmounts[i][(j+1)*lengthSeason[iSeason]-32+k] = dummy[k];
+                   }
+               }
+           }
+
+      }
 
 
 
@@ -1115,6 +1139,8 @@ void weatherGenerator2D::precipitationMultisiteAmountsGeneration()
       free(simulatedPrecipitationAmountsSeasonal);
 
    }
+
+
 
 
 
@@ -1274,6 +1300,7 @@ void weatherGenerator2D::initializePrecipitationOutputs(int lengthSeason[])
                simulatedPrecipitationAmounts[iSeason].matrixAmounts[i][j] = NODATA;
            }
        }
+
    }
 }
 
@@ -1521,12 +1548,12 @@ void weatherGenerator2D::spatialIterationAmounts(double** correlationMatrixSimul
        {
            for (int j=0;j<nrStations;j++)
            {
-              printf("%.4f ",simulatedPrecipitationAmountsSeasonal[j][i]);
+              //printf("%.4f ",simulatedPrecipitationAmountsSeasonal[j][i]);
            }
-           printf("\n");
+           //printf("\n");
        }
        printf("%d\n", ii);
-       pressEnterToContinue();
+       //pressEnterToContinue();
        for (int i=0;i<nrStations;i++)
        {
            for (int j=0;j<nrStations;j++)
@@ -1582,7 +1609,7 @@ void weatherGenerator2D::spatialIterationAmounts(double** correlationMatrixSimul
 
 
    }
-
+   //pressEnterToContinue();
    // free memory
    for (int i=0;i<nrStations;i++)
    {
