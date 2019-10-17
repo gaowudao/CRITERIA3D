@@ -164,7 +164,10 @@ bool MapGraphicsShapeObject::initializeUTM(Crit3DShapeHandler* shapePtr)
     geoBounds.resize(nrShapes);
     geoPoints.resize(nrShapes);
     double refLatitude = geoMap->referencePoint.latitude;
+
     int zoneNumber = shapePtr->getUtmZone();
+    if (zoneNumber < 1 || zoneNumber > 60)
+        return false;
 
     for (unsigned int i = 0; i < nrShapes; i++)
     {

@@ -60,12 +60,12 @@ bool GisProject::loadRaster(QString fileNameWithPath)
     if (! gis::readEsriGrid(fnWithoutExt, myRaster, myError))
     {
         qDebug("Load raster failed!");
-        return (false);
+        return false;
     }
 
     setDefaultDEMScale(myRaster->colorScale);
     addRaster(myRaster, fileNameWithPath);
-    return (true);
+    return true;
 }
 
 
@@ -75,11 +75,11 @@ bool GisProject::loadShapefile(QString fileNameWithPath)
     if (!myShape->open(fileNameWithPath.toStdString()))
     {
         qDebug("Load shapefile failed!");
-        return (false);
+        return false;
     }
 
     addShapeFile(myShape, fileNameWithPath);
-    return (true);
+    return true;
 }
 
 

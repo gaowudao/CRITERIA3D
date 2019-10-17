@@ -235,7 +235,7 @@ void MainWindow::addRasterObject(GisObject* myObject)
 }
 
 
-void MainWindow::addShapeObject(GisObject* myObject)
+bool MainWindow::addShapeObject(GisObject* myObject)
 {
     QListWidgetItem* item = new QListWidgetItem("[SHAPE] " + myObject->fileName);
     item->setFlags(item->flags() | Qt::ItemIsUserCheckable);
@@ -243,12 +243,22 @@ void MainWindow::addShapeObject(GisObject* myObject)
     ui->checkList->addItem(item);
 
     MapGraphicsShapeObject* newShapeObj = new MapGraphicsShapeObject(this->mapView);
-    newShapeObj->setOpacity(0.5);
+
+    // check zoneNumber
+    int zoneNumber = myObject->getShapeHandler()->getUtmZone();
+    if (zoneNumber < 1 || zoneNumber > 60)
+    {
+        QMessageBox::critical(nullptr, "ERROR!", "Wrong UTM zone.");
+        return false;
+    }
+
     newShapeObj->initializeUTM(myObject->getShapeHandler());
+    newShapeObj->setOpacity(0.5);
     this->shapeObjList.push_back(newShapeObj);
 
     this->mapView->scene()->addObject(newShapeObj);
     this->updateMaps();
+    return true;
 }
 
 
@@ -280,9 +290,8 @@ void MainWindow::on_actionLoadShapefile_triggered()
         return;
 
     this->addShapeObject(myProject.objectList.back());
-
-    // TODO resize and center map
 }
+
 
 void MainWindow::itemClicked(QListWidgetItem* item)
 {
