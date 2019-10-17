@@ -107,6 +107,7 @@ class DialogAnomaly : public QDialog
         void AnomalySetClimateDbElab(QString elab);
         void AnomalySetAllEnable(bool set);
         void AnomalyFillClimateDbList(QComboBox *dbList);
+        bool AnomalyCheckValidData();
 };
 
 

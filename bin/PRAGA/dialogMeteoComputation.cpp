@@ -417,6 +417,10 @@ void DialogMeteoComputation::done(bool res)
         {
             return;
         }
+        else if (isAnomaly && !anomaly.AnomalyCheckValidData())
+        {
+            return;
+        }
         else  // validate the data
         {
             // store elaboration values
@@ -1405,6 +1409,10 @@ void DialogMeteoComputation::copyDataFromXML()
 void DialogMeteoComputation::saveDataToXML()
 {
     if (!checkValidData())
+    {
+        return;
+    }
+    if (isAnomaly && !anomaly.AnomalyCheckValidData())
     {
         return;
     }

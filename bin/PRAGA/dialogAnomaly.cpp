@@ -799,4 +799,61 @@ bool DialogAnomaly::AnomalySetClimateDb(QString clima)
     return true;
 }
 
+bool DialogAnomaly::AnomalyCheckValidData()
+{
+    if (readReference.isChecked())
+    {
+        return true;
+    }
+    if (firstYearEdit.text().size() != 4)
+    {
+        QMessageBox::information(nullptr, "Anomaly missing year", "Insert first year");
+        return false;
+    }
+    if (lastYearEdit.text().size() != 4)
+    {
+        QMessageBox::information(nullptr, "Anomaly missing year", "Insert last year");
+        return false;
+    }
 
+    if (firstYearEdit.text().toInt() > lastYearEdit.text().toInt())
+    {
+        QMessageBox::information(nullptr, "Anomaly invalid year", "first year greater than last year");
+        return false;
+    }
+    if (elaborationList.currentText().toStdString() == "huglin" || elaborationList.currentText().toStdString() == "winkler" || elaborationList.currentText().toStdString() == "fregoni")
+    {
+        if (secondElabList.currentText().toStdString() == "None")
+        {
+            QMessageBox::information(nullptr, "Anomaly second Elaboration missing", elaborationList.currentText() + " requires second elaboration");
+            return false;
+        }
+
+    }
+    if ( MapElabWithParam.find(elaborationList.currentText().toStdString()) != MapElabWithParam.end())
+    {
+        if ( (!readParam.isChecked() && elab1Parameter.text().isEmpty()) || (readParam.isChecked() && climateDbElabList.currentText() == "No saved elaborations found" ))
+        {
+            QMessageBox::information(nullptr, "Anomaly missing Parameter", "insert parameter");
+            return false;
+        }
+    }
+    if ( MapElabWithParam.find(secondElabList.currentText().toStdString()) != MapElabWithParam.end())
+    {
+        if (elab2Parameter.text().isEmpty())
+        {
+            QMessageBox::information(nullptr, "Anomaly missing Parameter", "insert second elaboration parameter");
+            return false;
+        }
+    }
+    if (periodTypeList.currentText() == "Generic")
+    {
+        if (nrYear.text().isEmpty())
+        {
+            QMessageBox::information(nullptr, "Anomaly missing Parameter", "insert Nr Years");
+            return false;
+        }
+    }
+    return true;
+
+}
