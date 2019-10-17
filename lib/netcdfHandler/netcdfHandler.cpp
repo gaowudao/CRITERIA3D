@@ -586,6 +586,7 @@ bool NetCDFHandler::readProperties(string fileName)
 }
 
 
+
 bool NetCDFHandler::exportDataSeries(int idVar, gis::Crit3DGeoPoint geoPoint, Crit3DTime firstTime, Crit3DTime lastTime, stringstream *buffer)
 {
     // check

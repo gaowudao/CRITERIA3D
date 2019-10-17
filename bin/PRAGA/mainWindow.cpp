@@ -355,7 +355,7 @@ void MainWindow::on_actionOpen_DEM_triggered()
 
 }
 
-void MainWindow::on_actionOpen_meteo_points_DB_triggered()
+void MainWindow::on_actionOpen_meteo_points_triggered()
 {
     QString dbName = QFileDialog::getOpenFileName(this, tr("Open DB meteo points"), "", tr("DB files (*.db)"));
     if (dbName != "") this->loadMeteoPoints(dbName);
@@ -2113,4 +2113,3 @@ void MainWindow::on_actionInterpolateSaveGridPeriod_triggered()
     myVariables.push_back(myVar);
     myProject.interpolationMeteoGridPeriod(myFirstTime.date(), myLastTime.date(), myVariables, false);
 }
-

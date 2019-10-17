@@ -2472,7 +2472,7 @@
      <x>0</x>
      <y>0</y>
      <width>1392</width>
-     <height>26</height>
+     <height>21</height>
     </rect>
    </property>
    <property name="palette">
@@ -2941,6 +2941,22 @@
      <addaction name="actionNetCDF_Close"/>
      <addaction name="actionNetCDF_ShowMetadata"/>
     </widget>
+    <widget class="QMenu" name="menuMeteo_grid">
+     <property name="title">
+      <string>Meteo grid</string>
+     </property>
+     <addaction name="actionOpen_meteo_grid"/>
+     <addaction name="actionClose_meteo_grid"/>
+     <addaction name="actionMeteoGrid_Export_NetCDF"/>
+    </widget>
+    <widget class="QMenu" name="actionOpen_meteo_points_DB_2">
+     <property name="title">
+      <string>Meteo points</string>
+     </property>
+     <addaction name="actionOpen_meteo_points"/>
+     <addaction name="actionClose_meteo_points"/>
+     <addaction name="actionDownload_meteo_data"/>
+    </widget>
     <addaction name="actionOpen_project"/>
     <addaction name="actionClose_project"/>
     <addaction name="actionSave_project"/>
@@ -2948,13 +2964,10 @@
     <addaction name="separator"/>
     <addaction name="actionOpen_DEM"/>
     <addaction name="separator"/>
-    <addaction name="actionOpen_meteo_points_DB"/>
+    <addaction name="actionOpen_meteo_points_DB_2"/>
     <addaction name="menu_New_meteo_points_DB"/>
-    <addaction name="actionDownload_meteo_data"/>
-    <addaction name="actionClose_meteo_points"/>
     <addaction name="separator"/>
-    <addaction name="actionOpen_meteo_grid"/>
-    <addaction name="actionClose_meteo_grid"/>
+    <addaction name="menuMeteo_grid"/>
     <addaction name="separator"/>
     <addaction name="menuNetCDF_grid"/>
    </widget>
@@ -3124,16 +3137,6 @@
     <string>&amp;Stamen - Terrain</string>
    </property>
   </action>
-  <action name="actionOpen_meteo_points_DB">
-   <property name="text">
-    <string>&amp;Open meteo points DB...</string>
-   </property>
-  </action>
-  <action name="actionDownload_meteo_data">
-   <property name="text">
-    <string>&amp;Download meteo data...</string>
-   </property>
-  </action>
   <action name="actionNewMeteoPointsArkimet">
    <property name="text">
     <string>from Arkimet...</string>
@@ -3161,21 +3164,6 @@
    </property>
    <property name="text">
     <string>Spatial quality control</string>
-   </property>
-  </action>
-  <action name="actionOpen_meteo_grid">
-   <property name="text">
-    <string>Open meteo grid...</string>
-   </property>
-  </action>
-  <action name="actionClose_meteo_points">
-   <property name="text">
-    <string>Close meteo points...</string>
-   </property>
-  </action>
-  <action name="actionClose_meteo_grid">
-   <property name="text">
-    <string>Close meteo grid...</string>
    </property>
   </action>
   <action name="actionInterpolation_to_DEM">
@@ -3443,6 +3431,36 @@
   <action name="actionNetCDF_ShowMetadata">
    <property name="text">
     <string>Show metadata</string>
+   </property>
+  </action>
+  <action name="actionOpen_meteo_grid">
+   <property name="text">
+    <string>Open</string>
+   </property>
+  </action>
+  <action name="actionClose_meteo_grid">
+   <property name="text">
+    <string>Close</string>
+   </property>
+  </action>
+  <action name="actionMeteoGrid_Export_NetCDF">
+   <property name="text">
+    <string>Export current data to NetCDF</string>
+   </property>
+  </action>
+  <action name="actionOpen_meteo_points">
+   <property name="text">
+    <string>Open</string>
+   </property>
+  </action>
+  <action name="actionClose_meteo_points">
+   <property name="text">
+    <string>Close</string>
+   </property>
+  </action>
+  <action name="actionDownload_meteo_data">
+   <property name="text">
+    <string>Download data</string>
    </property>
   </action>
  </widget>

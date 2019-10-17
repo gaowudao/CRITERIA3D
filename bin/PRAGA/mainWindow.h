@@ -41,7 +41,7 @@
 
         void on_actionOpen_DEM_triggered();
         void on_actionNewMeteoPointsArkimet_triggered();
-        void on_actionOpen_meteo_points_DB_triggered();
+        void on_actionOpen_meteo_points_triggered();
         void on_actionOpen_meteo_grid_triggered();
         void on_actionDownload_meteo_data_triggered();
         void on_actionClose_meteo_points_triggered();
@@ -119,7 +119,6 @@
             void on_actionNetCDF_ShowMetadata_triggered();
             void netCDF_exportDataSeries(gis::Crit3DGeoPoint geoPoint);
         #endif
-
 
         protected:
         /*!
