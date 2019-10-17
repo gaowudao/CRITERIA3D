@@ -2117,13 +2117,26 @@ void MainWindow::on_actionInterpolateSaveGridPeriod_triggered()
 
 void MainWindow::on_actionMeteoGrid_Export_NetCDF_triggered()
 {
-    gis::Crit3DRasterGrid *dataGrid = meteoGridObj->getRaster();
+    if (! myProject.meteoGridLoaded || myProject.meteoGridDbHandler == nullptr)
+    {
+        myProject.logError("Open meteo grid before.");
+        return;
+    }
+
+    if (myProject.meteoGridDbHandler->meteoGrid()->gridStructure().isUTM() ||
+        myProject.meteoGridDbHandler->meteoGrid()->gridStructure().isTIN())
+    {
+        myProject.logError("Geographic (lat/lon) grid requested.");
+        return;
+    }
+
 
    /* TODO
     * choose file
-    * new netcdf
+    * new netcdf file
     * write metadata (latLonHeader)
     * write data
     * */
 
+    gis::Crit3DRasterGrid *dataGrid = &(myProject.meteoGridDbHandler->meteoGrid()->dataMeteoGrid);
 }
