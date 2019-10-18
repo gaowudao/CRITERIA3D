@@ -92,9 +92,10 @@ void Crit3DMeteoPoint::initializeObsDataH(int myHourlyFraction, int numberOfDays
     unsigned int nrDailyValues = unsigned(hourlyFraction * 24 + 1);
     obsDataH = new TObsDataH[unsigned(numberOfDays)];
 
+    Crit3DDate myDate = firstDate;
     for (int i = 0; i < numberOfDays; i++)
     {
-        obsDataH[i].date = firstDate.addDays(i);
+        obsDataH[i].date = myDate;
         obsDataH[i].tAir = new float[nrDailyValues];
         obsDataH[i].prec = new float[nrDailyValues];
         obsDataH[i].rhAir = new float[nrDailyValues];
@@ -117,6 +118,7 @@ void Crit3DMeteoPoint::initializeObsDataH(int myHourlyFraction, int numberOfDays
             obsDataH[i].leafW[j] = NODATA;
             obsDataH[i].transmissivity[j] = NODATA;
         }
+        ++myDate;
     }
 }
 
@@ -131,9 +133,10 @@ void Crit3DMeteoPoint::initializeObsDataD(int numberOfDays, const Crit3DDate& fi
     quality = quality::missing_data;
     residual = NODATA;
 
+    Crit3DDate myDate = firstDate;
     for (int i = 0; i < numberOfDays; i++)
     {
-        obsDataD[i].date = firstDate.addDays(i);
+        obsDataD[i].date = myDate;
         obsDataD[i].tMax = NODATA;
         obsDataD[i].tMin = NODATA;
         obsDataD[i].tAvg = NODATA;
@@ -147,6 +150,7 @@ void Crit3DMeteoPoint::initializeObsDataD(int numberOfDays, const Crit3DDate& fi
         obsDataD[i].windIntAvg = NODATA;
         obsDataD[i].windDirPrev = NODATA;
         obsDataD[i].waterTable = NODATA;
+        ++myDate;
     }
 }
 
@@ -294,11 +298,11 @@ void Crit3DMeteoPoint::emptyVarObsDataD(meteoVariable myVar, const Crit3DDate& d
 bool Crit3DMeteoPoint::isDateLoadedH(const Crit3DDate& myDate)
 {
     if (nrObsDataDaysH == 0)
-        return (false);
-    else if (myDate < obsDataH->date || myDate > (obsDataH->date.addDays(nrObsDataDaysH - 1)))
-        return (false);
+        return false;
+    else if (myDate < obsDataH[0].date || myDate > obsDataH[nrObsDataDaysH - 1].date)
+        return false;
     else
-        return (true);
+        return true;
 }
 
 bool Crit3DMeteoPoint::isDateIntervalLoadedH(const Crit3DDate& date1, const Crit3DDate& date2)
@@ -307,10 +311,10 @@ bool Crit3DMeteoPoint::isDateIntervalLoadedH(const Crit3DDate& date1, const Crit
         return false;
     else if (date1 > date2)
         return false;
-    else if (date1 < obsDataH->date || date2 > (obsDataH->date.addDays(nrObsDataDaysH - 1)))
-        return (false);
+    else if (date1 < obsDataH[0].date || date2 > obsDataH[nrObsDataDaysH - 1].date)
+        return false;
     else
-        return (true);
+        return true;
 }
 
 bool Crit3DMeteoPoint::isDateLoadedD(const Crit3DDate& myDate)

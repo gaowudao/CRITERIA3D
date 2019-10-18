@@ -666,9 +666,10 @@ bool makeSeasonalForecast(QString outputFileName, char separator, TXMLSeasonalAn
     // copy the last 9 months before wgDoy1
     float lastTmax = NODATA;
     float lastTmin = NODATA;
+    Crit3DDate myDate = myFirstDatePrediction;
     for (int tmp = 0; tmp < nrDaysBeforeWgDoy1; tmp++)
     {
-        myDailyPredictions[tmp].date = myFirstDatePrediction.addDays(tmp);
+        myDailyPredictions[tmp].date = myDate;
         obsIndex = difference(lastYearDailyObsData->inputFirstDate, myDailyPredictions[tmp].date);
         myDailyPredictions[tmp].minTemp = lastYearDailyObsData->inputTMin[obsIndex];
         myDailyPredictions[tmp].maxTemp = lastYearDailyObsData->inputTMax[obsIndex];
@@ -702,6 +703,7 @@ bool makeSeasonalForecast(QString outputFileName, char separator, TXMLSeasonalAn
             lastTmax = myDailyPredictions[tmp].maxTemp;
             lastTmin = myDailyPredictions[tmp].minTemp;
         }
+        ++myDate;
     }
 
     qDebug() << "...Observed OK";
