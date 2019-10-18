@@ -1676,7 +1676,6 @@ bool Crit3DMeteoGridDbHandler::saveCellGridDailyData(QString *myError, QString m
     }
     else
     {
-
         statement =  QString(("REPLACE INTO `%1` VALUES")).arg(tableD);
         int nrDays = firstDate.daysTo(lastDate) + 1;
         for (int i = 0; i < nrDays; i++)
