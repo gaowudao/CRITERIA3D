@@ -1120,16 +1120,19 @@ void weatherGenerator2D::initializeTemperaturesOutput(int length)
     maxTGenerated = (double **) calloc(length, sizeof(double *));
     minTGenerated = (double **) calloc(length, sizeof(double *));
     occurrencePrecGenerated = (double **) calloc(length, sizeof(double *));
+    amountsPrecGenerated = (double **) calloc(length, sizeof(double *));
     for (int i=0;i<length;i++)
     {
         maxTGenerated[i] = (double *) calloc(nrStations, sizeof(double));
         minTGenerated[i] = (double *) calloc(nrStations, sizeof(double));
         occurrencePrecGenerated[i] = (double *) calloc(nrStations, sizeof(double));
+        amountsPrecGenerated[i] = (double *) calloc(nrStations, sizeof(double));
         for(int j=0;j<nrStations;j++)
         {
             maxTGenerated[i][j] = NODATA;
             minTGenerated[i][j] = NODATA;
             occurrencePrecGenerated[i][j] = NODATA;
+            amountsPrecGenerated[i][j] = NODATA;
         }
 
     }

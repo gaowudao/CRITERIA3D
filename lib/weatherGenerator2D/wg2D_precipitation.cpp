@@ -1090,11 +1090,13 @@ void weatherGenerator2D::precipitationMultisiteAmountsGeneration()
            for (int j=0;j<lengthSeason[iSeason]*parametersModel.yearOfSimulation;j++)
            {
                simulatedPrecipitationAmounts[iSeason].matrixAmounts[i][j]= simulatedPrecipitationAmountsSeasonal[i][j];
+               printf("%f  ",simulatedPrecipitationAmountsSeasonal[i][j]);
            }
-
+           printf("\n");
       }
+      //pressEnterToContinue();
     // to verify
-      if (iSeason == 0)
+      /*if (iSeason == 0)
       {
            double dummy[31];
            for (int i=0;i<nrStations;i++)
@@ -1116,7 +1118,7 @@ void weatherGenerator2D::precipitationMultisiteAmountsGeneration()
                }
            }
 
-      }
+      }*/
 
 
 
@@ -1141,7 +1143,7 @@ void weatherGenerator2D::precipitationMultisiteAmountsGeneration()
    }
 
 
-
+    weatherGenerator2D::createAmountOutputSerie();
 
 
 
@@ -1753,4 +1755,169 @@ int weatherGenerator2D::bestParametersNonLinearFit(double *par, double*x, double
    if ((par[0] >= maxPar[0]) || (par[1] >= maxPar[1])) return 0;
    else return 1;
 
+}
+
+void weatherGenerator2D::createAmountOutputSerie()
+{
+    int dayOfYear;
+    int iSeason;
+    int day,month;
+    double* january =(double*)calloc(31*parametersModel.yearOfSimulation, sizeof(double));
+    double* february =(double*)calloc(28*parametersModel.yearOfSimulation, sizeof(double));
+    double* march =(double*)calloc(31*parametersModel.yearOfSimulation, sizeof(double));
+    double* april =(double*)calloc(30*parametersModel.yearOfSimulation, sizeof(double));
+    double* may =(double*)calloc(31*parametersModel.yearOfSimulation, sizeof(double));
+    double* june =(double*)calloc(30*parametersModel.yearOfSimulation, sizeof(double));
+    double* july =(double*)calloc(31*parametersModel.yearOfSimulation, sizeof(double));
+    double* august =(double*)calloc(31*parametersModel.yearOfSimulation, sizeof(double));
+    double* september =(double*)calloc(30*parametersModel.yearOfSimulation, sizeof(double));
+    double* october =(double*)calloc(31*parametersModel.yearOfSimulation, sizeof(double));
+    double* november =(double*)calloc(30*parametersModel.yearOfSimulation, sizeof(double));
+    double* december =(double*)calloc(31*parametersModel.yearOfSimulation, sizeof(double));
+
+    for(int j=0;j<nrStations;j++)
+    {
+            for (int k=0;k<31*parametersModel.yearOfSimulation;k++)
+            {
+                december[k] = simulatedPrecipitationAmounts[0].matrixAmounts[j][k];
+                //printf("%f\n",december[k]);
+            }
+            //pressEnterToContinue();
+            for (int k=0;k<31*parametersModel.yearOfSimulation;k++)
+            {
+                january[k] = simulatedPrecipitationAmounts[0].matrixAmounts[j][31*parametersModel.yearOfSimulation+k];
+                //printf("%f\n",january[k]);
+            }
+            //pressEnterToContinue();
+            for (int k=0;k<28*parametersModel.yearOfSimulation;k++)
+            {
+                february[k] = simulatedPrecipitationAmounts[0].matrixAmounts[j][2*31*parametersModel.yearOfSimulation+k];
+            }
+
+            for (int k=0;k<31*parametersModel.yearOfSimulation;k++)
+            {
+                march[k] = simulatedPrecipitationAmounts[1].matrixAmounts[j][k];
+            }
+            for (int k=0;k<30*parametersModel.yearOfSimulation;k++)
+            {
+                april[k] = simulatedPrecipitationAmounts[1].matrixAmounts[j][31*parametersModel.yearOfSimulation+k];
+            }
+            for (int k=0;k<31*parametersModel.yearOfSimulation;k++)
+            {
+                may[k] = simulatedPrecipitationAmounts[1].matrixAmounts[j][(30+31)*parametersModel.yearOfSimulation+k];
+            }
+
+            for (int k=0;k<30*parametersModel.yearOfSimulation;k++)
+            {
+                june[k] = simulatedPrecipitationAmounts[2].matrixAmounts[j][k];
+            }
+            for (int k=0;k<31*parametersModel.yearOfSimulation;k++)
+            {
+                july[k] = simulatedPrecipitationAmounts[2].matrixAmounts[j][30*parametersModel.yearOfSimulation+k];
+            }
+            for (int k=0;k<31*parametersModel.yearOfSimulation;k++)
+            {
+                august[k] = simulatedPrecipitationAmounts[2].matrixAmounts[j][(30+31)*parametersModel.yearOfSimulation+k];
+            }
+
+            for (int k=0;k<30*parametersModel.yearOfSimulation;k++)
+            {
+                september[k] = simulatedPrecipitationAmounts[3].matrixAmounts[j][k];
+            }
+            for (int k=0;k<31*parametersModel.yearOfSimulation;k++)
+            {
+                october[k] = simulatedPrecipitationAmounts[3].matrixAmounts[j][30*parametersModel.yearOfSimulation+k];
+            }
+            for (int k=0;k<30*parametersModel.yearOfSimulation;k++)
+            {
+                november[k] = simulatedPrecipitationAmounts[3].matrixAmounts[j][(30+31)*parametersModel.yearOfSimulation+k];
+            }
+
+
+            int count[12];
+            for (int counterMonth=0;counterMonth<12;counterMonth++)
+            {
+                count[counterMonth]=0;
+            }
+
+            for(int i=0;i<parametersModel.yearOfSimulation*365;i++)
+            {
+                dateFromDoy(i%365+1,1,&day,&month);
+                if ( month == 1)
+                {
+                    amountsPrecGenerated[i][j] = january[count[month-1]];
+                    ++count[month-1];
+                }
+                if ( month == 2)
+                {
+                    amountsPrecGenerated[i][j] = february[count[month-1]];
+                    ++count[month-1];
+                }
+                if ( month == 3)
+                {
+                    amountsPrecGenerated[i][j] = march[count[month-1]];
+                    ++count[month-1];
+                }
+                if ( month == 4)
+                {
+                    amountsPrecGenerated[i][j] = april[count[month-1]];
+                    ++count[month-1];
+                }
+                if ( month == 5)
+                {
+                    amountsPrecGenerated[i][j] = may[count[month-1]];
+                    ++count[month-1];
+                }
+                if ( month == 6)
+                {
+                    amountsPrecGenerated[i][j] = june[count[month-1]];
+                    ++count[month-1];
+                }
+                if ( month == 7)
+                {
+                    amountsPrecGenerated[i][j] = july[count[month-1]];
+                    ++count[month-1];
+                }
+                if ( month == 8)
+                {
+                    amountsPrecGenerated[i][j] = august[count[month-1]];
+                    ++count[month-1];
+                }
+                if ( month == 9)
+                {
+                    amountsPrecGenerated[i][j] = september[count[month-1]];
+                    ++count[month-1];
+                }
+                if ( month == 10)
+                {
+                    amountsPrecGenerated[i][j] = october[count[month-1]];
+                    ++count[month-1];
+                }
+                if ( month == 11)
+                {
+                    amountsPrecGenerated[i][j] = november[count[month-1]];
+                    ++count[month-1];
+                }
+                if ( month == 12)
+                {
+                    amountsPrecGenerated[i][j] = december[count[month-1]];
+                    ++count[month-1];
+                }
+
+                printf("occ %.1f amount %.4f\n", occurrencePrecGenerated[i][j],amountsPrecGenerated[i][j]);
+            }
+            //pressEnterToContinue();
+    }
+    free(january);
+    free(february);
+    free(march);
+    free(april);
+    free(may);
+    free(june);
+    free(july);
+    free(august);
+    free(september);
+    free(october);
+    free(november);
+    free(december);
 }

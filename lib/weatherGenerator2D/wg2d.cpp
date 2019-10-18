@@ -413,7 +413,7 @@ void weatherGenerator2D::precipitationP00P10()
         }
     }
     // parte da togliere una volta finito il check
-    int contatore = 0;
+    /*int contatore = 0;
     precOccurence[0][contatore].p00=0.8610;
     precOccurence[0][contatore].p10=0.5549;
     precOccurence[1][contatore].p00=0.8623;
@@ -488,6 +488,7 @@ void weatherGenerator2D::precipitationP00P10()
     //printf("parte da togliere una volta finito il check");
     //pressEnterToContinue();
     // fine parte da togliere una volta finito il check
+*/
 }
 
 

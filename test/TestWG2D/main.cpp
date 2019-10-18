@@ -324,7 +324,7 @@ int main()
     if (computeTemperature) printf("compute temperature\n");
 
     int distributionType = 2; // 1 multiexponential 2 multigamma
-    int yearsOfSimulations = 50;
+    int yearsOfSimulations = 3000;
     WG2D.initializeParameters(NODATA, yearsOfSimulations, distributionType,
                               computePrecipitation, computeTemperature);
     WG2D.computeWeatherGenerator2D();

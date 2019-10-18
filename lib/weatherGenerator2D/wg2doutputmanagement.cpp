@@ -103,16 +103,16 @@ void weatherGenerator2D::getWeatherGeneratorOutput()
                 if (isPrecWG2D)
                 {
                     //simulatedPrecipitationAmounts[iSeason].matrixAmounts[i][j]
-                    int iSeason;
+                    /*int iSeason;
                     if (month == 1 || month == 2 || month == 12) iSeason = 0;
                     else if (month == 3 || month == 4 || month == 5) iSeason = 1;
                     else if (month == 6 || month == 7 || month == 8) iSeason = 2;
-                    else iSeason = 3;
+                    else iSeason = 3;*/
                     /*outputWeatherData[iStation].precipitation[counter] = simulatedPrecipitationAmounts[iSeason].matrixAmounts[iStation][counterSeason[iSeason]];
                     printf("%.2f %.1f\n",outputWeatherData[iStation].precipitation[counter],occurrencePrecGenerated[counter][iStation]);
                     (counterSeason[iSeason])++;
                     */
-                    if (month == 1 || month == 2 || month == 12)
+                    /*if (month == 1 || month == 2 || month == 12)
                     {
                         iSeason = 0;
                         outputWeatherData[iStation].precipitation[counter] = simulatedPrecipitationAmounts[iSeason].matrixAmounts[iStation][counterSeason[iSeason]];
@@ -135,8 +135,8 @@ void weatherGenerator2D::getWeatherGeneratorOutput()
                       iSeason = 2;
                       outputWeatherData[iStation].precipitation[counter] = simulatedPrecipitationAmounts[iSeason].matrixAmounts[iStation][counterSeason[iSeason]];
                       (counterSeason[iSeason])++;
-                    }
-
+                    }*/
+                    outputWeatherData[iStation].precipitation[counter] = amountsPrecGenerated[counter][iStation];
                 }
                 else
                 {

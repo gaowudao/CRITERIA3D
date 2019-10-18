@@ -185,6 +185,7 @@
         double** maxTGenerated;
         double** minTGenerated;
         double** occurrencePrecGenerated;
+        double** amountsPrecGenerated;
 
         ToutputWeatherData *outputWeatherData;
 
@@ -229,6 +230,7 @@
         void multisiteTemperatureGeneration();
         void initializeMultiOccurrenceTemperature(int length);
         void initializeTemperaturesOutput(int length);
+        void createAmountOutputSerie();
 
         void getWeatherGeneratorOutput();
         void initializeOutputData(int* nrDays);
