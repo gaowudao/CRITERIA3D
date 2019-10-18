@@ -586,17 +586,17 @@ void weatherGenerator2D::precipitationCorrelationMatrices()
 
         for (int iStation=0;iStation<nrStations;iStation++)
         {
-            for (int jStation=0;jStation<nrStations;jStation++)
+            /*for (int jStation=0;jStation<nrStations;jStation++)
             {
                 printf("%.4f ", correlationMatrix[iMonth].occurrence[jStation][iStation]);
             }
-            printf("\n");
+            printf("\n");*/
         }
 
         //pressEnterToContinue();
 
     }
-    printf("parte da togliere una volta finito il check");
+    // printf("parte da togliere una volta finito il check");
 }
 
 void weatherGenerator2D::precipitationMultisiteOccurrenceGeneration()

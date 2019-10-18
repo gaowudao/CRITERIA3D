@@ -25,61 +25,62 @@ bool computeWGClimate(int nrDays, Crit3DDate inputFirstDate, float *inputTMin, f
                       float *inputPrec, float precThreshold, float minPrecData,
                       TweatherGenClimate* wGen, bool writeOutput, QString outputFileName)
 {
-    int nValidData = 0;
+    long nValidData = 0;
     float dataPresence = 0;
-    float sumTMin[12] = {0};
-    float sumTMax[12] = {0};
-    float sumPrec[12] = {0};
-    float sumTMin2[12] = {0};
-    float sumTMax2[12] = {0};
-    int nWetDays[12] = {0};
-    int nWetWetDays[12] = {0};
-    int nDryDays[12] = {0};
-    int nrData[12] = {0};
-    float sumTmaxWet[12] = {0};
-    float sumTmaxDry[12] = {0};
-    float sumTminWet[12] = {0};
-    float sumTminDry[12] = {0};
+    double sumTMin[12] = {0};
+    double sumTMax[12] = {0};
+    double sumPrec[12] = {0};
+    double sumTMin2[12] = {0};
+    double sumTMax2[12] = {0};
+    long nWetDays[12] = {0};
+    long nWetWetDays[12] = {0};
+    long nDryDays[12] = {0};
+    long nrData[12] = {0};
+    double sumTmaxWet[12] = {0};
+    double sumTmaxDry[12] = {0};
+    double sumTminWet[12] = {0};
+    double sumTminDry[12] = {0};
     int daysInMonth;
     bool isPreviousDayWet = false;
 
-    //read data
-    Crit3DDate tmpCurrentDate;
+    // read data
     int m;
+    Crit3DDate myDate = inputFirstDate;
     for (int n = 0; n < nrDays; n++)
     {
-        tmpCurrentDate = inputFirstDate.addDays(n);
-        m = tmpCurrentDate.month-1;
+        m = myDate.month - 1;
 
         // the day is valid if all values are different from nodata
         if (int(inputTMin[n]) != int(NODATA)
             && int(inputTMax[n]) != int(NODATA)
             && int(inputPrec[n]) != int(NODATA))
         {
-            nValidData = nValidData + 1;
-            nrData[m] = nrData[m] + 1;
-            sumTMin[m] = sumTMin[m] + inputTMin[n];
-            sumTMin2[m] = sumTMin2[m] + (inputTMin[n] * inputTMin[n]);
-            sumTMax[m] = sumTMax[m] + inputTMax[n];
-            sumTMax2[m] = sumTMax2[m] + (inputTMax[n] * inputTMax[n]);
-            sumPrec[m] = sumPrec[m] + inputPrec[n];
+            nValidData++;
+            nrData[m]++;
+            sumTMin[m] += double(inputTMin[n]);
+            sumTMin2[m] += double(inputTMin[n] * inputTMin[n]);
+            sumTMax[m] += double(inputTMax[n]);
+            sumTMax2[m] += double(inputTMax[n] * inputTMax[n]);
+            sumPrec[m] += double(inputPrec[n]);
 
             if (inputPrec[n] > precThreshold)
             {
                 if (isPreviousDayWet) nWetWetDays[m]++;
-                nWetDays[m] = nWetDays[m] + 1;
-                sumTmaxWet[m] += inputTMax[n];
-                sumTminWet[m] += inputTMin [n];
+                nWetDays[m]++;
+                sumTmaxWet[m] += double(inputTMax[n]);
+                sumTminWet[m] += double(inputTMin[n]);
                 isPreviousDayWet = true;
             }
             else
             {
-                nDryDays[m] = nDryDays[m] + 1;
-                sumTmaxDry[m] += inputTMax[n];
-                sumTminDry[m] += inputTMin[n];
+                nDryDays[m]++;
+                sumTmaxDry[m] += double(inputTMax[n]);
+                sumTminDry[m] += double(inputTMin[n]);
                 isPreviousDayWet = false;
             }
         }
+
+        ++myDate;
     }
 
     dataPresence = float(nValidData) / float(nrDays);
@@ -110,8 +111,8 @@ bool computeWGClimate(int nrDays, Crit3DDate inputFirstDate, float *inputTMin, f
             else
                 wGen->monthly.dw_Tmax[m] = 0;
 
-            wGen->monthly.stDevTmax[m] = sqrt(std::max(nrData[m]*sumTMax2[m]-(sumTMax[m]*sumTMax[m]), 0.f) / (nrData[m]*(nrData[m]-1)));
-            wGen->monthly.stDevTmin[m] = sqrt(std::max(nrData[m]*sumTMin2[m]-(sumTMin[m]*sumTMin[m]), 0.f) / (nrData[m]*(nrData[m]-1)));
+            wGen->monthly.stDevTmax[m] = sqrt(MAXVALUE(nrData[m]*sumTMax2[m]-(sumTMax[m]*sumTMax[m]), 0) / (nrData[m]*(nrData[m]-1)));
+            wGen->monthly.stDevTmin[m] = sqrt(MAXVALUE(nrData[m]*sumTMin2[m]-(sumTMin[m]*sumTMin[m]), 0) / (nrData[m]*(nrData[m]-1)));
         }
         else
         {

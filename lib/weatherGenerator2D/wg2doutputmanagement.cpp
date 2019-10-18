@@ -174,8 +174,8 @@ void weatherGenerator2D::getWeatherGeneratorOutput()
             counter++;
         }
         computeWGClimate(nrDays,inputFirstDate,inputTMin,inputTMax,inputPrec,precThreshold,minPrecData,&weatherGenClimate,writeOutput,outputFileName);
-        //pressEnterToContinue();
     }
+
     free(inputTMin);
     free(inputTMax);
     free(inputPrec);
