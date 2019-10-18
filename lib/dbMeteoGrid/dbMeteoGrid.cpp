@@ -896,7 +896,6 @@ bool Crit3DMeteoGridDbHandler::updateGridDate(QString *myError)
 
     QDate temp;
 
-
     if (!_meteoGrid->findFirstActiveMeteoPoint(&id, &row, &col))
     {
         *myError = "active cell not found";
@@ -1143,7 +1142,7 @@ bool Crit3DMeteoGridDbHandler::loadGridDailyDataFixedFields(QString *myError, QS
     unsigned col;
     bool initialize = true;
 
-    int numberOfDays = first.daysTo(last) + 1;
+    int numberOfDays = int(first.daysTo(last) + 1);
 
     if (!_meteoGrid->findMeteoPointFromId(&row, &col, meteoPoint.toStdString()) )
     {
@@ -1177,10 +1176,8 @@ bool Crit3DMeteoGridDbHandler::loadGridDailyDataFixedFields(QString *myError, QS
 
                 meteoVariable variable = getDailyVarEnum(varCode);
 
-                if (_meteoGrid->fillMeteoPointDailyValue(row, col, numberOfDays, initialize, Crit3DDate(date.day(), date.month(), date.year()), variable, value))
-                {
-                    initialize = 0;
-                }
+                _meteoGrid->fillMeteoPointDailyValue(row, col, numberOfDays, initialize, Crit3DDate(date.day(), date.month(), date.year()), variable, value);
+                initialize = false;
 
             }
 
@@ -1241,10 +1238,8 @@ bool Crit3DMeteoGridDbHandler::loadGridHourlyData(QString *myError, QString mete
 
             meteoVariable variable = getHourlyVarEnum(varCode);
 
-            if ( _meteoGrid->fillMeteoPointHourlyValue(row, col, numberOfDays, initialize, Crit3DDate(date.date().day(), date.date().month(), date.date().year()), date.time().hour(), date.time().minute(), variable, value) )
-            {
-                initialize = false;
-            }
+            _meteoGrid->fillMeteoPointHourlyValue(row, col, numberOfDays, initialize, Crit3DDate(date.date().day(), date.date().month(), date.date().year()), date.time().hour(), date.time().minute(), variable, value);
+            initialize = false;
 
         }
 

@@ -177,6 +177,9 @@
         bool interpolateDemRadiation(const Crit3DTime& myTime, gis::Crit3DRasterGrid *myRaster, bool showInfo);
         frequencyType getCurrentFrequency() const;
         void setCurrentFrequency(const frequencyType &value);
+
+        bool checkMeteoGridForExport();
+        bool exportMeteoGridToNetCDF(QString fileName);
     };
 
 

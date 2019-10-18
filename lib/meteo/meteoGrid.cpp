@@ -274,7 +274,10 @@ void Crit3DMeteoGrid::fillMeteoPoint(int row, int col, std::string code, std::st
 
 bool Crit3DMeteoGrid::fillMeteoPointDailyValue(unsigned row, unsigned col, int numberOfDays, bool initialize, Crit3DDate date, meteoVariable variable, float value)
 {
-    if (initialize) _meteoPoints[row][col]->initializeObsDataD(numberOfDays, date);
+    if (initialize)
+    {
+        _meteoPoints[row][col]->initializeObsDataD(numberOfDays, date);
+    }
     return _meteoPoints[row][col]->setMeteoPointValueD(date, variable, value);
 }
 
@@ -282,7 +285,10 @@ bool Crit3DMeteoGrid::fillMeteoPointHourlyValue(unsigned row, unsigned col, int 
 {
     int myHourlyFraction = 1;
 
-    if (initialize) _meteoPoints[row][col]->initializeObsDataH(myHourlyFraction, numberOfDays, date);
+    if (initialize)
+    {
+        _meteoPoints[row][col]->initializeObsDataH(myHourlyFraction, numberOfDays, date);
+    }
     return _meteoPoints[row][col]->setMeteoPointValueH(date, hour, minute, variable, value);
 }
 

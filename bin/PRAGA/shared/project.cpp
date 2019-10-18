@@ -1946,6 +1946,41 @@ bool Project::loadProject()
 }
 
 
+bool Project::checkMeteoGridForExport()
+{
+    if (! meteoGridLoaded || meteoGridDbHandler == nullptr)
+    {
+        logError("Open meteo grid before.");
+        return false;
+    }
+
+    if (meteoGridDbHandler->meteoGrid()->gridStructure().isUTM() ||
+        meteoGridDbHandler->meteoGrid()->gridStructure().isTIN())
+    {
+        logError("latlon grid requested.");
+        return false;
+    }
+
+    return true;
+}
+
+
+bool Project::exportMeteoGridToNetCDF(QString fileName)
+{
+    if (! checkMeteoGridForExport()) return false;
+
+    /* TODO
+        * new netcdf file
+        * write metadata (latLonHeader)
+        * write data
+        * */
+
+    gis::Crit3DRasterGrid* dataGrid = &(meteoGridDbHandler->meteoGrid()->dataMeteoGrid);
+
+    return true;
+}
+
+
 /* ---------------------------------------------
  * LOG functions
  * --------------------------------------------*/

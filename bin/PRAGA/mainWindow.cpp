@@ -961,10 +961,11 @@ void MainWindow::drawMeteoGrid()
     meteoGridLegend->colorScale = myProject.meteoGridDbHandler->meteoGrid()->dataMeteoGrid.colorScale;
     ui->meteoGridOpacitySlider->setEnabled(true);
 
+    myProject.setCurrentDate(myProject.meteoGridDbHandler->lastDate());
+    updateDateTime();
+
     if (myProject.loadGridDataAtStart)
     {
-        myProject.setCurrentDate(myProject.meteoGridDbHandler->lastDate());
-        updateDateTime();
         myProject.loadMeteoGridData(myProject.getCurrentDate(), myProject.getCurrentDate(), true);
     }
 
@@ -2121,26 +2122,10 @@ void MainWindow::on_actionInterpolateSaveGridPeriod_triggered()
 
 void MainWindow::on_actionMeteoGrid_Export_NetCDF_triggered()
 {
-    if (! myProject.meteoGridLoaded || myProject.meteoGridDbHandler == nullptr)
-    {
-        myProject.logError("Open meteo grid before.");
-        return;
-    }
+    if (! myProject.checkMeteoGridForExport()) return;
 
-    if (myProject.meteoGridDbHandler->meteoGrid()->gridStructure().isUTM() ||
-        myProject.meteoGridDbHandler->meteoGrid()->gridStructure().isTIN())
-    {
-        myProject.logError("Geographic (lat/lon) grid requested.");
-        return;
-    }
+    QString fileName = QFileDialog::getSaveFileName(this, tr("Save current data of meteo grid"), "", tr("NetCDF files (*.nc)"));
 
-
-   /* TODO
-    * choose file
-    * new netcdf file
-    * write metadata (latLonHeader)
-    * write data
-    * */
-
-    gis::Crit3DRasterGrid *dataGrid = &(myProject.meteoGridDbHandler->meteoGrid()->dataMeteoGrid);
+    if (fileName != "")
+        myProject.exportMeteoGridToNetCDF(fileName);
 }
