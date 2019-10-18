@@ -493,13 +493,13 @@ void weatherGenerator2D::precipitationMultiDistributionParameterization()
               meanPFit[i]=Pmean[i];
               stdDevFit[i]=PstdDev[i];
               binCenter[i]= bincenter[i];
-              printf("Pmean %f  PstdDev %f bincenter %f \n",Pmean[i], PstdDev[i], bincenter[i]);
+              //printf("Pmean %f  PstdDev %f bincenter %f \n",Pmean[i], PstdDev[i], bincenter[i]);
            }
             //pressEnterToContinue();
            interpolation::fittingMarquardt(parMin,parMax,par,nrPar,parDelta,maxIterations,epsilon,functionCode,binCenter,meanPFit,nrBincenter);
            //weatherGenerator2D::bestParametersNonLinearFit(par,nrPar,binCenter,meanPFit,nrBincenter);
            //for (int i=0;i<3;i++) printf("marquardt %f\n",par[i]);
-           for (int i=0;i<nrBincenter;i++) printf("marquardt %f %f \n",Pmean[i],par[0]+par[1]* pow(binCenter[i],par[2])); //pressEnterToContinue();
+           //for (int i=0;i<nrBincenter;i++) printf("marquardt %f %f \n",Pmean[i],par[0]+par[1]* pow(binCenter[i],par[2])); //pressEnterToContinue();
            // con marquardt stimo già tutti i parametri compreso l'esponente quindi il ciclo
            // for da 2 a 20 (presente nel codice originale) risulta inutile nel codice tradotto
            for (int i=0;i<nrBincenter;i++)
@@ -528,7 +528,7 @@ void weatherGenerator2D::precipitationMultiDistributionParameterization()
                }
            }
            //for (int i=0;i<3;i++) printf("marquardt %f\n",par[i]);
-           for (int i=0;i<nrBincenter;i++) printf("marquardt %f %f \n",PstdDev[i],stdDevFit[i]); //pressEnterToContinue();
+           //for (int i=0;i<nrBincenter;i++) printf("marquardt %f %f \n",PstdDev[i],stdDevFit[i]); //pressEnterToContinue();
            // !!! da togliere il seguente for
            /*for (int i=0;i<nrBincenter;i++)
            {
@@ -636,7 +636,7 @@ void weatherGenerator2D::precipitationMultiDistributionParameterization()
            for(int i=0; i<counterBins-1;i++)
            {
                frequencyBins[i]= (double)(nrBinsFrequency[i])/(double)(nrTotal);
-               printf("frequency %f\n", frequencyBins[i]);
+               //printf("frequency %f\n", frequencyBins[i]);
            }
            //pressEnterToContinue();
            int numberOfDaysAbovePrecThreshold=0;
@@ -681,7 +681,7 @@ void weatherGenerator2D::precipitationMultiDistributionParameterization()
                {
                    occurrenceIndexSeasonal[ijk].parMultiexp[qq][i][0]=meanPFit[i]*meanPFit[i]/(PstdDev[i]*PstdDev[i]);
                    occurrenceIndexSeasonal[ijk].parMultiexp[qq][i][1]=(PstdDev[i]*PstdDev[i])/meanPFit[i];
-                   printf("lambda %f\t%f\n",occurrenceIndexSeasonal[ijk].parMultiexp[qq][i][0],occurrenceIndexSeasonal[ijk].parMultiexp[qq][i][1]);
+                   //printf("lambda %f\t%f\n",occurrenceIndexSeasonal[ijk].parMultiexp[qq][i][0],occurrenceIndexSeasonal[ijk].parMultiexp[qq][i][1]);
 
                }
                //pressEnterToContinue();
@@ -1090,9 +1090,9 @@ void weatherGenerator2D::precipitationMultisiteAmountsGeneration()
            for (int j=0;j<lengthSeason[iSeason]*parametersModel.yearOfSimulation;j++)
            {
                simulatedPrecipitationAmounts[iSeason].matrixAmounts[i][j]= simulatedPrecipitationAmountsSeasonal[i][j];
-               printf("%f  ",simulatedPrecipitationAmountsSeasonal[i][j]);
+               //printf("%f  ",simulatedPrecipitationAmountsSeasonal[i][j]);
            }
-           printf("\n");
+           //printf("\n");
       }
       //pressEnterToContinue();
     // to verify
@@ -1538,7 +1538,7 @@ void weatherGenerator2D::spatialIterationAmounts(double** correlationMatrixSimul
                    else
                    {
 
-                       simulatedPrecipitationAmountsSeasonal[i][j] = weatherGenerator2D::inverseGammaFunction(uniformRandomVar,phatAlpha[i][j],phatBeta[i][j],0.0001) + parametersModel.precipitationThreshold;
+                       simulatedPrecipitationAmountsSeasonal[i][j] = weatherGenerator2D::inverseGammaFunction(uniformRandomVar,phatAlpha[i][j],phatBeta[i][j],0.001) + parametersModel.precipitationThreshold;
                        //printf("%.4f ",simulatedPrecipitationAmountsSeasonal[i][j]);
                        // check uniformRandom phatAlpha e phatBeta i dati non vanno bene
                    }
@@ -1904,7 +1904,7 @@ void weatherGenerator2D::createAmountOutputSerie()
                     ++count[month-1];
                 }
 
-                printf("occ %.1f amount %.4f\n", occurrencePrecGenerated[i][j],amountsPrecGenerated[i][j]);
+                //printf("occ %.1f amount %.4f\n", occurrencePrecGenerated[i][j],amountsPrecGenerated[i][j]);
             }
             //pressEnterToContinue();
     }

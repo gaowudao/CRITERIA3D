@@ -360,7 +360,7 @@ void weatherGenerator2D::initializeRandomNumbers(double *vector)
     for (int i=0;i<10000;i++)
     {
         normalRandomNumbers[i] = vector[i];
-        printf("%f\n",normalRandomNumbers[i]);
+        //printf("%f\n",normalRandomNumbers[i]);
     }
 }
 void weatherGenerator2D::precipitationP00P10()
