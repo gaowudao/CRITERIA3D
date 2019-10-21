@@ -727,25 +727,26 @@ bool NetCDFHandler::createNewFile(std::string fileName)
 bool NetCDFHandler::writeGeoDimensions(const gis::Crit3DGridHeader& latLonHeader)
 {
     if (ncId == NODATA) return false;
+
     nrLat = latLonHeader.nrRows;
     nrLon = latLonHeader.nrCols;
+    int varLat, varLon;
 
-    // dimensions
+    // def dimensions (lat/lon)
     int status = nc_def_dim(ncId, "latitude", unsigned(nrLat), &idLat);
     if (status != NC_NOERR) return false;
 
     status = nc_def_dim(ncId, "longitude", unsigned(nrLon), &idLon);
     if (status != NC_NOERR) return false;
 
-    // geo variables (lat/lon)
-    int varLat, varLon;
+    // def geo variables (lat/lon)
     status = nc_def_var (ncId, "latitude", NC_FLOAT, 1, &idLat, &varLat);
     if (status != NC_NOERR) return false;
 
     status = nc_def_var (ncId, "longitude", NC_FLOAT, 1, &idLon, &varLon);
     if (status != NC_NOERR) return false;
 
-    // variable
+    // def generic variable
     variables.resize(1);
     int varDimId[2];
     varDimId[0] = idLat;
@@ -753,11 +754,16 @@ bool NetCDFHandler::writeGeoDimensions(const gis::Crit3DGridHeader& latLonHeader
     status = nc_def_var (ncId, "var", NC_FLOAT, 2, varDimId, &(variables[0].id));
     if (status != NC_NOERR) return false;
 
+    // set valid range
+    float range[] = {-1000.0, 1000.0};
+    status = nc_put_att_float(ncId, variables[0].id, "valid_range", NC_FLOAT, 2, range);
+    if (status != NC_NOERR) return false;
+
     // end of metadata
     status = nc_enddef(ncId);
     if (status != NC_NOERR) return false;
 
-    // geo variables data
+    // set lat/lon arrays
     lat = new float[unsigned(nrLat)];
     lon = new float[unsigned(nrLon)];
 
@@ -770,6 +776,7 @@ bool NetCDFHandler::writeGeoDimensions(const gis::Crit3DGridHeader& latLonHeader
         lon[col] = float(latLonHeader.llCorner->longitude + latLonHeader.dx * (col + 0.5));
     }
 
+    // write lat/lon vectors
     status = nc_put_var_float(ncId, varLat, lat);
     if (status != NC_NOERR) return false;
 
