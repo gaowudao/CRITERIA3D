@@ -53,6 +53,7 @@
 
         NetCDFHandler();
 
+        void close();
         void clear();
         void initialize(int _utmZone);
 

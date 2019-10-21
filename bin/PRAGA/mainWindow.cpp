@@ -735,7 +735,7 @@ void MainWindow::on_timeEdit_timeChanged(const QTime &time)
     {
         if (! myProject.netCDF.isLoaded()) return;
 
-        myProject.netCDF.clear();
+        myProject.netCDF.close();
         meteoGridObj->clear();
         meteoGridObj->redrawRequested();
         meteoGridLegend->setVisible(false);

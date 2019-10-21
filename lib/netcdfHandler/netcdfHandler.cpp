@@ -87,7 +87,7 @@ NetCDFHandler::NetCDFHandler()
 }
 
 
-void NetCDFHandler::clear()
+void NetCDFHandler::close()
 {
     if (ncId != NODATA)
     {
@@ -96,6 +96,12 @@ void NetCDFHandler::clear()
         ncId = NODATA;
     }
 
+    clear();
+}
+
+
+void NetCDFHandler::clear()
+{
     if (x != nullptr) delete [] x;
     if (y != nullptr) delete [] y;
     if (lat != nullptr) delete [] lat;
