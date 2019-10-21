@@ -117,10 +117,11 @@
             void on_actionNetCDF_Open_triggered();
             void on_actionNetCDF_Close_triggered();
             void on_actionNetCDF_ShowMetadata_triggered();
+            void on_actionMeteoGrid_Export_NetCDF_triggered();
+
             void netCDF_exportDataSeries(gis::Crit3DGeoPoint geoPoint);
         #endif
 
-            void on_actionMeteoGrid_Export_NetCDF_triggered();
 
         protected:
         /*!

@@ -76,6 +76,13 @@ std::string NetCDFVariable::getVarName()
 NetCDFHandler::NetCDFHandler()
 {
     ncId = NODATA;
+
+    x = nullptr;
+    y = nullptr;
+    lat = nullptr;
+    lon = nullptr;
+    time = nullptr;
+
     this->clear();
 }
 
@@ -88,6 +95,12 @@ void NetCDFHandler::clear()
         nc_close(ncId);
         ncId = NODATA;
     }
+
+    if (x != nullptr) delete [] x;
+    if (y != nullptr) delete [] y;
+    if (lat != nullptr) delete [] lat;
+    if (lon != nullptr) delete [] lon;
+    if (time != nullptr) delete [] time;
 
     utmZone = NODATA;
 
@@ -109,12 +122,6 @@ void NetCDFHandler::clear()
     isHourly = false;
     isDaily = false;
     firstDate = NO_DATE;
-
-    if (x != nullptr) delete [] x;
-    if (y != nullptr) delete [] y;
-    if (lat != nullptr) delete [] lat;
-    if (lon != nullptr) delete [] lon;
-    if (time != nullptr) delete [] time;
 
     x = nullptr;
     y = nullptr;
@@ -694,4 +701,13 @@ bool NetCDFHandler::exportDataSeries(int idVar, gis::Crit3DGeoPoint geoPoint, Cr
     }
 
     return true;
+}
+
+
+bool NetCDFHandler::createNewFile(std::string fileName)
+{
+    clear();
+
+    int status = nc_create(fileName.data(), NC_NOCLOBBER, &ncId);
+    return (status == NC_NOERR);
 }

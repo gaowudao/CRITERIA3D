@@ -12,8 +12,13 @@
 #include "transmissivity.h"
 #include "utilities.h"
 
+#ifdef NETCDF
+    #include "netcdfHandler.h"
+#endif
+
 #include <iostream> //debug
 #include <QtSql>
+
 
 Project::Project()
 {
@@ -1965,20 +1970,31 @@ bool Project::checkMeteoGridForExport()
 }
 
 
-bool Project::exportMeteoGridToNetCDF(QString fileName)
-{
-    if (! checkMeteoGridForExport()) return false;
+#ifdef NETCDF
 
-    /* TODO
-        * new netcdf file
-        * write metadata (latLonHeader)
-        * write data
-        * */
+    bool Project::exportMeteoGridToNetCDF(QString fileName)
+    {
+        if (! checkMeteoGridForExport()) return false;
 
-    gis::Crit3DRasterGrid* dataGrid = &(meteoGridDbHandler->meteoGrid()->dataMeteoGrid);
+        NetCDFHandler* netcdf = new NetCDFHandler();
 
-    return true;
-}
+        if (! netcdf->createNewFile(fileName.toStdString()))
+        {
+            logError("Wrong filename: " + fileName);
+            return false;
+        }
+
+        /* TODO
+            * write metadata (latLonHeader)
+            * write data
+            * */
+
+        gis::Crit3DRasterGrid* dataGrid = &(meteoGridDbHandler->meteoGrid()->dataMeteoGrid);
+
+        return true;
+    }
+
+#endif
 
 
 /* ---------------------------------------------

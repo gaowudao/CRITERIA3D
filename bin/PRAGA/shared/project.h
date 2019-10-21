@@ -179,7 +179,11 @@
         void setCurrentFrequency(const frequencyType &value);
 
         bool checkMeteoGridForExport();
-        bool exportMeteoGridToNetCDF(QString fileName);
+
+        #ifdef NETCDF
+            bool exportMeteoGridToNetCDF(QString fileName);
+        #endif
+
     };
 
 

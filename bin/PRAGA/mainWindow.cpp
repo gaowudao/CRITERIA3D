@@ -788,6 +788,18 @@ void MainWindow::on_timeEdit_timeChanged(const QTime &time)
         }
     }
 
+    void MainWindow::on_actionMeteoGrid_Export_NetCDF_triggered()
+    {
+        if (! myProject.checkMeteoGridForExport()) return;
+
+        QString fileName = QFileDialog::getSaveFileName(this, tr("Save current data of meteo grid"), "", tr("NetCDF files (*.nc)"));
+
+        if (fileName != "")
+        {
+            myProject.exportMeteoGridToNetCDF(fileName);
+        }
+    }
+
 #endif
 
 
@@ -2119,13 +2131,3 @@ void MainWindow::on_actionInterpolateSaveGridPeriod_triggered()
     myProject.interpolationMeteoGridPeriod(myFirstTime.date(), myLastTime.date(), myVariables, false);
 }
 
-
-void MainWindow::on_actionMeteoGrid_Export_NetCDF_triggered()
-{
-    if (! myProject.checkMeteoGridForExport()) return;
-
-    QString fileName = QFileDialog::getSaveFileName(this, tr("Save current data of meteo grid"), "", tr("NetCDF files (*.nc)"));
-
-    if (fileName != "")
-        myProject.exportMeteoGridToNetCDF(fileName);
-}

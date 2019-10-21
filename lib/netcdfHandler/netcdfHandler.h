@@ -77,6 +77,7 @@
         bool readProperties(std::string fileName);
         bool exportDataSeries(int idVar, gis::Crit3DGeoPoint geoPoint, Crit3DTime firstTime, Crit3DTime lastTime, std::stringstream *buffer);
 
+        bool createNewFile(std::string fileName);
 
     };
 
