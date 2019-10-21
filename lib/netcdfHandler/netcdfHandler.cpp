@@ -730,29 +730,34 @@ bool NetCDFHandler::writeGeoDimensions(const gis::Crit3DGridHeader& latLonHeader
     nrLat = latLonHeader.nrRows;
     nrLon = latLonHeader.nrCols;
 
+    // dimensions
     int status = nc_def_dim(ncId, "latitude", unsigned(nrLat), &idLat);
     if (status != NC_NOERR) return false;
 
     status = nc_def_dim(ncId, "longitude", unsigned(nrLon), &idLon);
     if (status != NC_NOERR) return false;
 
-    int varLat, varLon, varId;
+    // geo variables (lat/lon)
+    int varLat, varLon;
     status = nc_def_var (ncId, "latitude", NC_FLOAT, 1, &idLat, &varLat);
     if (status != NC_NOERR) return false;
 
     status = nc_def_var (ncId, "longitude", NC_FLOAT, 1, &idLon, &varLon);
     if (status != NC_NOERR) return false;
 
+    // variable
+    variables.resize(1);
     int varDimId[2];
     varDimId[0] = idLat;
     varDimId[1] = idLon;
-
-    status = nc_def_var (ncId, "var", NC_FLOAT, 2, varDimId, &varId);
+    status = nc_def_var (ncId, "var", NC_FLOAT, 2, varDimId, &(variables[0].id));
     if (status != NC_NOERR) return false;
 
+    // end of metadata
     status = nc_enddef(ncId);
     if (status != NC_NOERR) return false;
 
+    // geo variables data
     lat = new float[unsigned(nrLat)];
     lon = new float[unsigned(nrLon)];
 
@@ -775,9 +780,21 @@ bool NetCDFHandler::writeGeoDimensions(const gis::Crit3DGridHeader& latLonHeader
 }
 
 
-bool NetCDFHandler::writeData_NoTime(const gis::Crit3DRasterGrid& dataGrid)
+bool NetCDFHandler::writeData_NoTime(const gis::Crit3DRasterGrid& myDataGrid)
 {
     if (ncId == NODATA) return false;
+
+    float* var = new float[unsigned(nrLat*nrLon)];
+    for (int row = 0; row < nrLat; row++)
+    {
+        for (int col = 0; col < nrLon; col++)
+        {
+            var[row*nrLon + col] = myDataGrid.value[row][col];
+        }
+    }
+
+    int status = nc_put_var_float(ncId, variables[0].id, var);
+    if (status != NC_NOERR) return false;
 
     return true;
 }

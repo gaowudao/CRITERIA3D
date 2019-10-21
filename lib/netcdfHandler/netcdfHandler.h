@@ -27,7 +27,7 @@
     {
     private:
         int utmZone;
-        int nrX, nrY, nrLat, nrLon, nrTime;
+        long nrX, nrY, nrLat, nrLon, nrTime;
         int idTime, idX, idY, idLat, idLon;
 
         float *x, *y;
@@ -80,7 +80,7 @@
 
         bool createNewFile(std::string fileName);
         bool writeGeoDimensions(const gis::Crit3DGridHeader& latLonHeader);
-        bool writeData_NoTime(const gis::Crit3DRasterGrid& dataGrid);
+        bool writeData_NoTime(const gis::Crit3DRasterGrid& myDataGrid);
     };
 
 
