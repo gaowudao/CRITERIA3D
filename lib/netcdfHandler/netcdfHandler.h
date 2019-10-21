@@ -80,7 +80,7 @@
 
         bool createNewFile(std::string fileName);
         bool writeGeoDimensions(const gis::Crit3DGridHeader& latLonHeader);
-        bool writeData(const gis::Crit3DRasterGrid& dataGrid);
+        bool writeData_NoTime(const gis::Crit3DRasterGrid& dataGrid);
     };
 
 

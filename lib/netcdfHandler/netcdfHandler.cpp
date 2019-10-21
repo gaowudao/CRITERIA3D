@@ -727,27 +727,44 @@ bool NetCDFHandler::createNewFile(std::string fileName)
 bool NetCDFHandler::writeGeoDimensions(const gis::Crit3DGridHeader& latLonHeader)
 {
     if (ncId == NODATA) return false;
+    nrLat = latLonHeader.nrRows;
+    nrLon = latLonHeader.nrCols;
 
-    int status = nc_def_dim(ncId, "latitude", unsigned(latLonHeader.nrRows), &idLat);
+    int status = nc_def_dim(ncId, "latitude", unsigned(nrLat), &idLat);
     if (status != NC_NOERR) return false;
 
-    status = nc_def_dim(ncId, "longitude", unsigned(latLonHeader.nrCols), &idLon);
+    status = nc_def_dim(ncId, "longitude", unsigned(nrLon), &idLon);
     if (status != NC_NOERR) return false;
 
-    int varLat, varLon, dimId[1];
-    dimId[0] = idLat;
-    status = nc_def_var (ncId, "latitude", NC_FLOAT, 1, dimId, &varLat);
+    int varLat, varLon;
+    status = nc_def_var (ncId, "latitude", NC_FLOAT, 1, &idLat, &varLat);
     if (status != NC_NOERR) return false;
 
-    dimId[0] = idLon;
-    status = nc_def_var (ncId, "longitude", NC_FLOAT, 1, dimId, &varLon);
+    status = nc_def_var (ncId, "longitude", NC_FLOAT, 1, &idLon, &varLon);
+    if (status != NC_NOERR) return false;
+
+    lat = new float[unsigned(nrLat)];
+    lon = new float[unsigned(nrLon)];
+    for (int row = 0; row < nrLat; row++)
+    {
+        lat[row] = float(latLonHeader.llCorner->latitude + latLonHeader.dy * (latLonHeader.nrRows - row - 0.5));
+    }
+    for (int col = 0; col < nrLon; col++)
+    {
+        lon[col] = float(latLonHeader.llCorner->longitude + latLonHeader.dx * (col + 0.5));
+    }
+
+    status = nc_put_var(ncId, varLat, &lat);
+    if (status != NC_NOERR) return false;
+
+    status = nc_put_var(ncId, varLon, &lon);
     if (status != NC_NOERR) return false;
 
     return true;
 }
 
 
-bool NetCDFHandler::writeData(const gis::Crit3DRasterGrid& dataGrid)
+bool NetCDFHandler::writeData_NoTime(const gis::Crit3DRasterGrid& dataGrid)
 {
     if (ncId == NODATA) return false;
 

@@ -1990,7 +1990,7 @@ bool Project::checkMeteoGridForExport()
             return false;
         }
 
-        if (! netcdf->writeData(meteoGridDbHandler->meteoGrid()->dataMeteoGrid))
+        if (! netcdf->writeData_NoTime(meteoGridDbHandler->meteoGrid()->dataMeteoGrid))
         {
             logError("Error in writing data.");
             return false;
