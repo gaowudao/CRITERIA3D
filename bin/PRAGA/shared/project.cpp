@@ -1993,7 +1993,7 @@ bool Project::checkMeteoGridForExport()
             * write data
             * */
 
-        netcdf->clear();
+        netcdf->close();
         delete netcdf;
 
         return true;

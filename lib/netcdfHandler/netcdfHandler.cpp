@@ -144,7 +144,7 @@ void NetCDFHandler::clear()
 
 void NetCDFHandler::initialize(int _utmZone)
 {
-    this->clear();
+    this->close();
     utmZone = _utmZone;
 }
 
