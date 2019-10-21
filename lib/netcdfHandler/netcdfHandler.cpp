@@ -222,9 +222,14 @@ bool NetCDFHandler::isPointInside(gis::Crit3DGeoPoint geoPoint)
 
 std::string NetCDFHandler::getDateTimeStr(int timeIndex)
 {
+    if (idTime == NODATA)
+    {
+        return "time dimension is not defined.";
+    }
+
     if (timeIndex < 0 || timeIndex >= nrTime)
     {
-        return "ERROR: time index is out of range";
+        return "ERROR: time index is out of range.";
     }
 
     Crit3DTime myTime = getTime(timeIndex);
@@ -723,13 +728,19 @@ bool NetCDFHandler::writeGeoDimensions(const gis::Crit3DGridHeader& latLonHeader
 {
     if (ncId == NODATA) return false;
 
-    int status;
-    status = nc_def_dim(ncId, "latitude", 18L, &idLat);
+    int status, idVar;
+
+    status = nc_def_dim(ncId, "latitude", unsigned(latLonHeader.nrRows), &idLat);
     if (status != NC_NOERR) return false;
 
-    status = nc_def_dim(ncId, "longitude", 18L, &idLon);
+    status = nc_def_dim(ncId, "longitude", unsigned(latLonHeader.nrCols), &idLon);
     if (status != NC_NOERR) return false;
 
-    // TODO write data
+    int  varDimId[2];
+    varDimId[0] = idLat;
+    varDimId[1] = idLon;
+    status = nc_def_var (ncId, "variable", NC_FLOAT, 2, varDimId, &idVar);
+    if (status != NC_NOERR) return false;
+
     return true;
 }
