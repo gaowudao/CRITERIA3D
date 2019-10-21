@@ -358,14 +358,14 @@ void MainWindow::on_actionOpen_DEM_triggered()
 void MainWindow::on_actionOpen_meteo_points_triggered()
 {
     QString dbName = QFileDialog::getOpenFileName(this, tr("Open DB meteo points"), "", tr("DB files (*.db)"));
-    if (dbName != "") this->loadMeteoPoints(dbName);
+    if (dbName != "") loadMeteoPoints(dbName);
 }
 
 
 void MainWindow::on_actionOpen_meteo_grid_triggered()
 {
     QString xmlName = QFileDialog::getOpenFileName(this, tr("Open XML DB meteo grid"), "", tr("xml files (*.xml)"));
-    if (xmlName != "") this->loadMeteoGrid(xmlName);
+    if (xmlName != "") loadMeteoGrid(xmlName);
 }
 
 
@@ -1106,6 +1106,10 @@ void MainWindow::redrawMeteoGrid(visualizationType showType, bool showInterpolat
 
 bool MainWindow::loadMeteoGrid(QString xmlName)
 {
+    #ifdef NETCDF
+        closeNetCDF();
+    #endif
+
     if (myProject.loadMeteoGridDB(xmlName))
     {
         drawMeteoGrid();
