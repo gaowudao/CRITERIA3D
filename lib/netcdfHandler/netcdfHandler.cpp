@@ -708,6 +708,6 @@ bool NetCDFHandler::createNewFile(std::string fileName)
 {
     clear();
 
-    int status = nc_create(fileName.data(), NC_NOCLOBBER, &ncId);
+    int status = nc_create(fileName.data(), NC_CLOBBER, &ncId);
     return (status == NC_NOERR);
 }
