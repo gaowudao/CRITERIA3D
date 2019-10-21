@@ -1984,14 +1984,17 @@ bool Project::checkMeteoGridForExport()
             return false;
         }
 
-        gis::Crit3DGridHeader latLonHeader = meteoGridDbHandler->gridStructure().header();
-        netcdf->writeGeoDimensions(latLonHeader);
+        if (! netcdf->writeGeoDimensions(meteoGridDbHandler->gridStructure().header()))
+        {
+            logError("Error in writing geo dimensions.");
+            return false;
+        }
 
-        gis::Crit3DRasterGrid* dataGrid = &(meteoGridDbHandler->meteoGrid()->dataMeteoGrid);
-
-        /* TODO
-            * write data
-            * */
+        if (! netcdf->writeData(meteoGridDbHandler->meteoGrid()->dataMeteoGrid))
+        {
+            logError("Error in writing data.");
+            return false;
+        }
 
         netcdf->close();
         delete netcdf;

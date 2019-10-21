@@ -728,18 +728,34 @@ bool NetCDFHandler::writeGeoDimensions(const gis::Crit3DGridHeader& latLonHeader
 {
     if (ncId == NODATA) return false;
 
-    int status, idVar;
-
-    status = nc_def_dim(ncId, "latitude", unsigned(latLonHeader.nrRows), &idLat);
+    int status = nc_def_dim(ncId, "latitude", unsigned(latLonHeader.nrRows), &idLat);
     if (status != NC_NOERR) return false;
 
     status = nc_def_dim(ncId, "longitude", unsigned(latLonHeader.nrCols), &idLon);
     if (status != NC_NOERR) return false;
 
-    int  varDimId[2];
+    int varLat, varLon, dimId[1];
+    dimId[0] = idLat;
+    status = nc_def_var (ncId, "latitude", NC_FLOAT, 1, dimId, &varLat);
+    if (status != NC_NOERR) return false;
+
+    dimId[0] = idLon;
+    status = nc_def_var (ncId, "longitude", NC_FLOAT, 1, dimId, &varLon);
+    if (status != NC_NOERR) return false;
+
+    return true;
+}
+
+
+bool NetCDFHandler::writeData(const gis::Crit3DRasterGrid& dataGrid)
+{
+    if (ncId == NODATA) return false;
+
+    int varId, varDimId[2];
     varDimId[0] = idLat;
     varDimId[1] = idLon;
-    status = nc_def_var (ncId, "variable", NC_FLOAT, 2, varDimId, &idVar);
+
+    int status = nc_def_var (ncId, "var", NC_FLOAT, 2, varDimId, &varId);
     if (status != NC_NOERR) return false;
 
     return true;
