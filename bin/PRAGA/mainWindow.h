@@ -118,8 +118,6 @@
             void on_actionNetCDF_Close_triggered();
             void on_actionNetCDF_ShowMetadata_triggered();
             void on_actionMeteoGrid_Export_NetCDF_triggered();
-
-            void netCDF_exportDataSeries(gis::Crit3DGeoPoint geoPoint);
         #endif
 
 
@@ -192,12 +190,12 @@
         void interpolateDemGUI();
         void interpolateGridGUI();
         void showElabResult(bool updateColorSCale, bool isMeteoGrid, bool isAnomaly, bool isAnomalyPerc, bool isClima, QString index);
+
+        #ifdef NETCDF
+            void netCDF_exportDataSeries(gis::Crit3DGeoPoint geoPoint);
+            void closeNetCDF();
+        #endif
     };
-
-
-    #ifdef NETCDF
-        void exportNetCDFDataSeries(gis::Crit3DGeoPoint geoPoint);
-    #endif
 
 
     class KeyboardFilter : public QObject
