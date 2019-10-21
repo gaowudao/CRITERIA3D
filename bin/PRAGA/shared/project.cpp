@@ -1986,10 +1986,13 @@ bool Project::checkMeteoGridForExport()
 
         /* TODO
             * write metadata (latLonHeader)
-            * write data
             * */
 
         gis::Crit3DRasterGrid* dataGrid = &(meteoGridDbHandler->meteoGrid()->dataMeteoGrid);
+
+        /* TODO
+            * write data
+            * */
 
         return true;
     }
