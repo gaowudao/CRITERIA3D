@@ -1985,8 +1985,7 @@ bool Project::checkMeteoGridForExport()
         }
 
         gis::Crit3DGridHeader latLonHeader = meteoGridDbHandler->gridStructure().header();
-
-
+        netcdf->writeGeoDimensions(latLonHeader);
 
         gis::Crit3DRasterGrid* dataGrid = &(meteoGridDbHandler->meteoGrid()->dataMeteoGrid);
 

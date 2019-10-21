@@ -78,7 +78,7 @@
         bool exportDataSeries(int idVar, gis::Crit3DGeoPoint geoPoint, Crit3DTime firstTime, Crit3DTime lastTime, std::stringstream *buffer);
 
         bool createNewFile(std::string fileName);
-        bool defineGeoDimensions(const gis::Crit3DGridHeader& latLonHeader);
+        bool writeGeoDimensions(const gis::Crit3DGridHeader& latLonHeader);
     };
 
 

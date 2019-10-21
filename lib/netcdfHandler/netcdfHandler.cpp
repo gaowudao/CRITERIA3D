@@ -713,7 +713,7 @@ bool NetCDFHandler::createNewFile(std::string fileName)
 }
 
 
-bool NetCDFHandler::defineGeoDimensions(const gis::Crit3DGridHeader& latLonHeader)
+bool NetCDFHandler::writeGeoDimensions(const gis::Crit3DGridHeader& latLonHeader)
 {
     if (ncId == NODATA) return false;
 
