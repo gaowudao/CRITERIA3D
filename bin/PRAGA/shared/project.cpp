@@ -1984,13 +1984,11 @@ bool Project::checkMeteoGridForExport()
             return false;
         }
 
-        //gis::Crit3DGridHeader latLonHeader = meteoGridDbHandler->gridStructure().header();
+        gis::Crit3DGridHeader latLonHeader = meteoGridDbHandler->gridStructure().header();
 
-        /* TODO
-            * write metadata
-            * */
 
-        //gis::Crit3DRasterGrid dataGrid = meteoGridDbHandler->meteoGrid()->dataMeteoGrid;
+
+        gis::Crit3DRasterGrid* dataGrid = &(meteoGridDbHandler->meteoGrid()->dataMeteoGrid);
 
         /* TODO
             * write data

@@ -711,3 +711,19 @@ bool NetCDFHandler::createNewFile(std::string fileName)
     int status = nc_create(fileName.data(), NC_CLOBBER, &ncId);
     return (status == NC_NOERR);
 }
+
+
+bool NetCDFHandler::defineGeoDimensions(const gis::Crit3DGridHeader& latLonHeader)
+{
+    if (ncId == NODATA) return false;
+
+    int status;
+    status = nc_def_dim(ncId, "latitude", 18L, &idLat);
+    if (status != NC_NOERR) return false;
+
+    status = nc_def_dim(ncId, "longitude", 18L, &idLon);
+    if (status != NC_NOERR) return false;
+
+    // TODO write data
+    return true;
+}

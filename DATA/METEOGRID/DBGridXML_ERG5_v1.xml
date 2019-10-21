@@ -2,7 +2,7 @@
 
 	<connection>
 		<provider>mysql</provider>
-		<server>172.20.7.116</server>
+		<server>agroper2-smr.arpa.emr.net</server>
 		<name>GIAS</name>
 		<user>root</user>
 		<password>Praga</password>
