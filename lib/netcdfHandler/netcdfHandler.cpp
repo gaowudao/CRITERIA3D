@@ -745,6 +745,7 @@ bool NetCDFHandler::writeGeoDimensions(const gis::Crit3DGridHeader& latLonHeader
 
     lat = new float[unsigned(nrLat)];
     lon = new float[unsigned(nrLon)];
+
     for (int row = 0; row < nrLat; row++)
     {
         lat[row] = float(latLonHeader.llCorner->latitude + latLonHeader.dy * (latLonHeader.nrRows - row - 0.5));
@@ -754,10 +755,10 @@ bool NetCDFHandler::writeGeoDimensions(const gis::Crit3DGridHeader& latLonHeader
         lon[col] = float(latLonHeader.llCorner->longitude + latLonHeader.dx * (col + 0.5));
     }
 
-    status = nc_put_var(ncId, varLat, &lat);
+    status = nc_put_var(ncId, varLat, lat);
     if (status != NC_NOERR) return false;
 
-    status = nc_put_var(ncId, varLon, &lon);
+    status = nc_put_var(ncId, varLon, lon);
     if (status != NC_NOERR) return false;
 
     return true;
