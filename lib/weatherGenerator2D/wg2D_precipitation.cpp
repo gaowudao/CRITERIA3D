@@ -618,14 +618,14 @@ void weatherGenerator2D::precipitationMultiDistributionParameterization()
            }
            for(int i=0; i<counterBins-1;i++)
            {
-               for (int j=0;j<indexMoranArrayPrec-1;j++)
+               for (int j=0;j<indexMoranArrayPrec;j++)
                {
                    if (moranArrayPrec[j] >= bins[i] && moranArrayPrec[j] < bins[i+1]) nrBinsFrequency[i]++;
                }
-               if (moranArrayPrec[indexMoranArrayPrec-1] >= bins[i] && moranArrayPrec[indexMoranArrayPrec-1] < bins[i+1]) nrBinsFrequency[i]++;
+               //if (moranArrayPrec[indexMoranArrayPrec-1] >= bins[i] && moranArrayPrec[indexMoranArrayPrec-1] < bins[i+1]) nrBinsFrequency[i]++;
            }
            int nrTotal = 0;
-           //double frequencyBins[12];
+
            for(int i=0; i<counterMoranPrec;i++)
            {
                nrTotal += nrBinsFrequency[i];
@@ -1483,7 +1483,7 @@ void weatherGenerator2D::spatialIterationAmounts(double** correlationMatrixSimul
                     //}
                }
             }
-           dummyMatrix[nrStations-1][nrStations-1]=1.;
+            dummyMatrix[nrStations-1][nrStations-1]=1.;
        }
        else
        {
@@ -1492,24 +1492,24 @@ void weatherGenerator2D::spatialIterationAmounts(double** correlationMatrixSimul
                     dummyMatrix[i][j] = amountsCorrelationMatrix[i][j];
        }
        matricial::choleskyDecompositionTriangularMatrix(dummyMatrix,nrStations,true);
-       for (int i=0;i<nrStations;i++)
+       /*for (int i=0;i<nrStations;i++)
        {
            for (int j=0;j<nrStations;j++)
            {
                 //printf("%.4f ",dummyMatrix[i][j]);
            }
            //printf(" cholesky \n");
-       }
+       }*/
        //pressEnterToContinue();
        matricial::matrixProduct(dummyMatrix,randomMatrix,nrStations,nrStations,lengthSeries,nrStations,dummyMatrix3);
-       for (int i=0;i<lengthSeries;i++)
+       /*for (int i=0;i<lengthSeries;i++)
        {
            for (int j=0;j<nrStations;j++)
            {
                 //printf("%.4f ",dummyMatrix3[j][i]);
            }
            //printf(" corr_random \n");
-       }
+       }*/
        //pressEnterToContinue();
        double meanValue,stdDevValue;
        for (int i=0;i<nrStations;i++)
@@ -1526,8 +1526,8 @@ void weatherGenerator2D::spatialIterationAmounts(double** correlationMatrixSimul
 
            for (int j=0;j<lengthSeries;j++)
            {
-               normRandomVar= (dummyMatrix3[i][j]-meanValue)/stdDevValue;
-               uniformRandomVar =0.5*statistics::tabulatedERFC(-normRandomVar/SQRT_2);
+               //normRandomVar= (dummyMatrix3[i][j]-meanValue)/stdDevValue;
+               uniformRandomVar =0.5*statistics::tabulatedERFC(-(dummyMatrix3[i][j]-meanValue)/stdDevValue/SQRT_2);
                simulatedPrecipitationAmountsSeasonal[i][j]=0.;
                if (occurrences[i][j] > EPSILON)
                {
@@ -1537,8 +1537,7 @@ void weatherGenerator2D::spatialIterationAmounts(double** correlationMatrixSimul
                    }
                    else
                    {
-
-                       simulatedPrecipitationAmountsSeasonal[i][j] = weatherGenerator2D::inverseGammaFunction(uniformRandomVar,phatAlpha[i][j],phatBeta[i][j],0.001) + parametersModel.precipitationThreshold;
+                       simulatedPrecipitationAmountsSeasonal[i][j] = weatherGenerator2D::inverseGammaFunction(uniformRandomVar,phatAlpha[i][j],phatBeta[i][j],0.01) + parametersModel.precipitationThreshold;
                        //printf("%.4f ",simulatedPrecipitationAmountsSeasonal[i][j]);
                        // check uniformRandom phatAlpha e phatBeta i dati non vanno bene
                    }
@@ -1546,14 +1545,14 @@ void weatherGenerator2D::spatialIterationAmounts(double** correlationMatrixSimul
            }
            //printf("\n");
        }
-       for (int i=0;i<lengthSeries;i++)
+       /*for (int i=0;i<lengthSeries;i++)
        {
            for (int j=0;j<nrStations;j++)
            {
               //printf("%.4f ",simulatedPrecipitationAmountsSeasonal[j][i]);
            }
            //printf("\n");
-       }
+       }*/
        printf("%d\n", ii);
        //pressEnterToContinue();
        for (int i=0;i<nrStations;i++)
@@ -1921,3 +1920,4 @@ void weatherGenerator2D::createAmountOutputSerie()
     free(november);
     free(december);
 }
+
