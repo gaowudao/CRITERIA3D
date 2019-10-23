@@ -625,7 +625,7 @@ void weatherGenerator2D::precipitationMultiDistributionParameterization()
                //if (moranArrayPrec[indexMoranArrayPrec-1] >= bins[i] && moranArrayPrec[indexMoranArrayPrec-1] < bins[i+1]) nrBinsFrequency[i]++;
            }
            int nrTotal = 0;
-
+           // counterMoranPrec = 11;
            for(int i=0; i<counterMoranPrec;i++)
            {
                nrTotal += nrBinsFrequency[i];
