@@ -302,11 +302,9 @@ void Crit3DMeteoGrid::fillMeteoPointCurrentDailyValue(unsigned row, unsigned col
 
 void Crit3DMeteoGrid::fillCurrentDailyValue(Crit3DDate date, meteoVariable variable)
 {
-    unsigned row, col;
-
-    for (row = 0; row < _gridStructure.header().nrRows; row++)
-        for (col = 0; col < _gridStructure.header().nrCols; col++)
-            fillMeteoPointCurrentDailyValue(row, col, date, variable);
+    for (int row = 0; row < _gridStructure.header().nrRows; row++)
+        for (int col = 0; col < _gridStructure.header().nrCols; col++)
+            fillMeteoPointCurrentDailyValue(unsigned(row), unsigned(col), date, variable);
 }
 
 void Crit3DMeteoGrid::fillMeteoPointCurrentHourlyValue(unsigned row, unsigned col, Crit3DDate date, int hour, int minute, meteoVariable variable)
@@ -319,11 +317,9 @@ void Crit3DMeteoGrid::fillMeteoPointCurrentHourlyValue(unsigned row, unsigned co
 
 void Crit3DMeteoGrid::fillCurrentHourlyValue(Crit3DDate date, int hour, int minute, meteoVariable variable)
 {
-    unsigned row, col;
-
-    for (row = 0; row < _gridStructure.header().nrRows; row++)
-        for (col = 0; col < _gridStructure.header().nrCols; col++)
-            fillMeteoPointCurrentHourlyValue(row, col, date, hour, minute, variable);
+    for (int row = 0; row < _gridStructure.header().nrRows; row++)
+        for(int col = 0; col < _gridStructure.header().nrCols; col++)
+            fillMeteoPointCurrentHourlyValue(unsigned(row), unsigned(col), date, hour, minute, variable);
 }
 
 void Crit3DMeteoGrid::fillMeteoRaster()

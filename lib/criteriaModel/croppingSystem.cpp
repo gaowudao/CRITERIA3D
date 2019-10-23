@@ -417,10 +417,9 @@ double cropTranspiration(CriteriaModel* myCase, bool getWaterStress)
     double totRootDensityWithoutStress = 0.0;       // [-]
     double stress = 0.0;                            // [-]
     double redistribution = 0.0;                    // [mm]
-    int i;
 
     // initialize layer transpiration
-    for (i=0; i < myCase->nrLayers; i++)
+    for (int i = 0; i < myCase->nrLayers; i++)
         myCase->myCrop.roots.transpiration[i] = 0.0;
 
     if (myCase->output.dailyMaxTranspiration < EPSILON)
@@ -428,7 +427,7 @@ double cropTranspiration(CriteriaModel* myCase, bool getWaterStress)
 
     // initialize stressed layers
     bool* isLayerStressed = (bool*) calloc(unsigned(myCase->nrLayers), sizeof(bool));
-    for (i=0; i < myCase->nrLayers; i++)
+    for (int i = 0; i < myCase->nrLayers; i++)
         isLayerStressed[i] = false;
 
     // deactivated water surplus
@@ -437,7 +436,7 @@ double cropTranspiration(CriteriaModel* myCase, bool getWaterStress)
     else
         WSS = 0.0;
 
-    for (i = myCase->myCrop.roots.firstRootLayer; i <= myCase->myCrop.roots.lastRootLayer; i++)
+    for (int i = myCase->myCrop.roots.firstRootLayer; i <= myCase->myCrop.roots.lastRootLayer; i++)
     {
         surplusThreshold = myCase->layer[i].SAT - (WSS * (myCase->layer[i].SAT - myCase->layer[i].FC));
 
@@ -527,7 +526,7 @@ double cropTranspiration(CriteriaModel* myCase, bool getWaterStress)
 
     // update water content
     double dailyTranspiration = 0.0;
-    for (i = myCase->myCrop.roots.firstRootLayer; i <= myCase->myCrop.roots.lastRootLayer; i++)
+    for (int i = myCase->myCrop.roots.firstRootLayer; i <= myCase->myCrop.roots.lastRootLayer; i++)
     {
         myCase->layer[i].waterContent -= myCase->myCrop.roots.transpiration[i];
         dailyTranspiration += myCase->myCrop.roots.transpiration[i];

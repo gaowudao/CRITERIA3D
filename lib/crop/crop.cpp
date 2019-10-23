@@ -83,6 +83,7 @@ Crit3DCrop::Crit3DCrop()
     doyStartIrrigation = NODATA;
     doyEndIrrigation = NODATA;
     maxSurfacePuddle = NODATA;
+    daysSinceIrrigation = NODATA;
 
     degreeDays = NODATA;
     LAI = NODATA;
@@ -157,12 +158,13 @@ bool Crit3DCrop::needReset(Crit3DDate myDate, float latitude, float waterTableDe
         {
             // naked soil: check sowing
             int sowingDoyPeriod = 30;
-            float waterTableThreshold = 0.2f;
             int daysFromSowing = getDaysFromTypicalSowing(currentDoy);
 
             // is sowing possible? (check period and watertable depth)
             if (daysFromSowing >= 0 && daysFromSowing <= sowingDoyPeriod)
             {
+                float waterTableThreshold = 0.2f;
+
                 if (isWaterSurplusResistant()
                         || int(waterTableDepth) == int(NODATA)
                         || waterTableDepth >= waterTableThreshold)

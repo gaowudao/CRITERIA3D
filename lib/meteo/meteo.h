@@ -190,8 +190,9 @@
     double ET0_Penman_hourly(double heigth, double clearSkyIndex, double globalSWRadiation,
                     double airTemp, double airHum, double windSpeed10);
 
-    double ET0_Penman_daily(int myDOY, double myLatitude, double myPressure, double myTmin, double myTmax,
-                            double myTminDayAfter, double myUmed, double myVmed10, double mySWGlobRad);
+    double ET0_Penman_daily(int myDOY, double myElevation, double myLatitude,
+                            double myTmin, double myTmax, double myTminDayAfter,
+                            double myUmed, double myVmed10, double mySWGlobRad);
 
     double ET0_Hargreaves(double KT, double myLat, int myDoy, double tmax, double tmin);
 

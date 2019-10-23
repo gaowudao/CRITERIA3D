@@ -204,7 +204,7 @@ bool CriteriaModel::loadMeteo(QString idMeteo, QString idForecast, QString *myEr
 
         if (! query.isValid())
         {
-            if (query.lastError().number() > 0)
+            if (query.lastError().text() != "")
                 *myError = "dbMeteo error: " + query.lastError().text();
             else
                 *myError = "Missing meteo location:" + idMeteo;
@@ -232,7 +232,7 @@ bool CriteriaModel::loadMeteo(QString idMeteo, QString idForecast, QString *myEr
 
     if (! query.isValid())
     {
-        if (query.lastError().number() > 0)
+        if (query.lastError().text() != "")
             *myError = "dbMeteo error: " + query.lastError().text();
         else
             *myError = "Missing meteo table:" + tableName;
@@ -272,24 +272,24 @@ bool CriteriaModel::loadMeteo(QString idMeteo, QString idForecast, QString *myEr
 
             if (! query.isValid())
             {
-                if (query.lastError().number() > 0)
+                if (query.lastError().text() != "")
                     *myError = "dbForecast error: " + query.lastError().text();
                 else
                     *myError = "Missing forecast location:" + idForecast;
                 return false;
             }
         }
-        QString tableName = query.value("table_name").toString();
+        QString tableNameForecast = query.value("table_name").toString();
 
         query.clear();
-        queryString = "SELECT * FROM " + tableName + " ORDER BY [date]";
+        queryString = "SELECT * FROM " + tableNameForecast + " ORDER BY [date]";
         query = this->dbForecast.exec(queryString);
         query.last();
 
-        //check query
+        // check query
         if (! query.isValid())
         {
-            if (query.lastError().number() > 0)
+            if (query.lastError().text() != "")
                 *myError = "dbForecast error: " + query.lastError().text();
             else
                 *myError = "Missing forecast table:" + tableName;
@@ -373,7 +373,7 @@ bool CriteriaModel::createOutputTable(QString* myError)
     QString queryString = "DROP TABLE '" + this->idCase + "'";
     QSqlQuery myQuery = this->dbOutput.exec(queryString);
 
-    if (myQuery.lastError().number() > 0)
+    if (! myQuery.isValid())
     {
         *myError = "Error in dropping table: " + this->idCase + "\n" + myQuery.lastError().text();
     }
@@ -384,7 +384,7 @@ bool CriteriaModel::createOutputTable(QString* myError)
             + " TRANSP_MAX, TRANSP REAL, EVAP_MAX REAL, EVAP REAL, LAI REAL, KC REAL, ROOTDEPTH REAL )";
     myQuery = this->dbOutput.exec(queryString);
 
-    if (myQuery.lastError().number() > 0)
+    if (! myQuery.isValid())
     {
         *myError = "Error in creating table: " + this->idCase + "\n" + myQuery.lastError().text();
         return false;

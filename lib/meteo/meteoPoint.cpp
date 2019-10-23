@@ -60,6 +60,7 @@ Crit3DMeteoPoint::Crit3DMeteoPoint()
 
     this->obsDataH = nullptr;
     this->obsDataD = nullptr;
+    this->obsDataM = nullptr;
 
     this->currentValue = NODATA;
     this->residual = NODATA;
@@ -273,7 +274,7 @@ void Crit3DMeteoPoint::emptyVarObsDataD(meteoVariable myVar, const Crit3DDate& d
             obsDataD[i].tMax = NODATA;
         else if (myVar == dailyAirTemperatureMin)
             obsDataD[i].tMin = NODATA;
-        else if (myVar == dailyAirTemperatureMin)
+        else if (myVar == dailyAirTemperatureAvg)
             obsDataD[i].tAvg = NODATA;
         else if (myVar == dailyPrecipitation)
             obsDataD[i].prec = NODATA;
@@ -367,7 +368,7 @@ float Crit3DMeteoPoint::obsDataConsistencyH(meteoVariable myVar, const Crit3DTim
     {
         Crit3DTime myTime = timeIni;
         float myValue;
-        float myDeltaSeconds = 3600.f / float(hourlyFraction);
+        int deltaSeconds = 3600 / hourlyFraction;
         int counter=0, counterAll=0;
         while (myTime <= timeFin)
         {
@@ -376,7 +377,7 @@ float Crit3DMeteoPoint::obsDataConsistencyH(meteoVariable myVar, const Crit3DTim
                 counter++;
 
             counterAll++;
-            myTime = myTime.addSeconds(myDeltaSeconds);
+            myTime = myTime.addSeconds(deltaSeconds);
         }
         return (float(counter)/float(counterAll));
     }
@@ -391,16 +392,16 @@ void Crit3DMeteoPoint::cleanObsDataH()
     {
         for (int i = 0; i < nrObsDataDaysH; i++)
         {
-            free(obsDataH[i].tAir);
-            free(obsDataH[i].prec);
-            free(obsDataH[i].rhAir);
-            free(obsDataH[i].tDew);
-            free(obsDataH[i].irradiance);
-            free(obsDataH[i].windInt);
-            free(obsDataH[i].leafW);
-            free(obsDataH[i].transmissivity);
+            delete [] obsDataH[i].tAir;
+            delete [] obsDataH[i].prec;
+            delete [] obsDataH[i].rhAir;
+            delete [] obsDataH[i].tDew;
+            delete [] obsDataH[i].irradiance;
+            delete [] obsDataH[i].windInt;
+            delete [] obsDataH[i].leafW;
+            delete [] obsDataH[i].transmissivity;
         }
-        free (obsDataH);
+        delete [] obsDataH;
     }
 }
 
@@ -410,7 +411,7 @@ void Crit3DMeteoPoint::cleanObsDataD()
     quality = quality::missing_data;
 
     if (nrObsDataDaysD > 0)
-        free (obsDataD);
+        delete [] obsDataD;
 }
 
 void Crit3DMeteoPoint::cleanObsDataM()
@@ -418,7 +419,7 @@ void Crit3DMeteoPoint::cleanObsDataM()
     quality = quality::missing_data;
 
     if (nrObsDataDaysM > 0)
-        free (obsDataM);
+        delete [] obsDataM;
 }
 
 bool Crit3DMeteoPoint::setMeteoPointValueH(const Crit3DDate& myDate, int myHour, int myMinutes, meteoVariable myVar, float myValue)
