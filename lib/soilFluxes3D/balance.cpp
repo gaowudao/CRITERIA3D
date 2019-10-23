@@ -60,20 +60,6 @@ void halveTimeStep()
 }
 
 
-/*!
- * \brief check if the link corresponds to the n node
- * \param n
- * \param myLink TlinkedNode pointer
- * \return true/false
- */
-inline bool link_uguali(long n, TlinkedNode *myLink)
-{
-     if ((myLink != nullptr) && ((*myLink).index == n)) return (true);
-     else return (false);
-}
-
-
-
 void InitializeBalanceWater()
 {
      bestMBRerror = 100.;

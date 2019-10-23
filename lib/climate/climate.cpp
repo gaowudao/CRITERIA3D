@@ -1326,7 +1326,7 @@ float computeFregoni(Crit3DMeteoPoint* meteoPoint, Crit3DDate firstDate, Crit3DD
 
 float computeCorrectedSum(Crit3DMeteoPoint* meteoPoint, Crit3DDate firstDate, Crit3DDate finishDate, float param, float minimumPercentage)
 {
-    float computeCorrectedSum;
+    float sum = 0;
 
     Crit3DQuality qualityCheck;
     int index;
@@ -1335,17 +1335,16 @@ float computeCorrectedSum(Crit3DMeteoPoint* meteoPoint, Crit3DDate firstDate, Cr
     float tMin, tMax, tAvg;
     float numTmp, numerator, denominator;
 
-
-    int numberOfDays = difference(firstDate, finishDate) +1;
+    int numberOfDays = difference(firstDate, finishDate)+1;
 
     Crit3DDate presentDate = firstDate;
+    index = difference(meteoPoint->obsDataD[0].date, presentDate);
+
     for (int i = 0; i < numberOfDays; i++)
     {
-        index = difference(meteoPoint->obsDataD[0].date, presentDate);
         checkData = false;
-        if ( index < meteoPoint->nrObsDataDaysD)
+        if (index < meteoPoint->nrObsDataDaysD)
         {
-
             // TO DO nella versione vb il check prevede anche l'immissione del parametro height
             quality::qualityType qualityTmin = qualityCheck.syntacticQualitySingleValue(dailyAirTemperatureMin, meteoPoint->obsDataD[index].tMin);
             quality::qualityType qualityTmax = qualityCheck.syntacticQualitySingleValue(dailyAirTemperatureMax, meteoPoint->obsDataD[index].tMax);
@@ -1355,8 +1354,8 @@ float computeCorrectedSum(Crit3DMeteoPoint* meteoPoint, Crit3DDate firstDate, Cr
                 tMin = meteoPoint->obsDataD[index].tMin;
                 checkData = true;
             }
-
         }
+
         if (checkData)
         {
             if (param < tMax)
@@ -1364,7 +1363,7 @@ float computeCorrectedSum(Crit3DMeteoPoint* meteoPoint, Crit3DDate firstDate, Cr
                 if (param <= tMin)
                 {
                     tAvg = (tMax + tMin) / 2;
-                    computeCorrectedSum = computeCorrectedSum + (tAvg - param);
+                    sum += (tAvg - param);
                 }
                 else
                 {
@@ -1373,24 +1372,25 @@ float computeCorrectedSum(Crit3DMeteoPoint* meteoPoint, Crit3DDate firstDate, Cr
                     denominator = 2 * (tMax - tMin);
                     if (denominator != 0)
                     {
-                        computeCorrectedSum = computeCorrectedSum + numerator/denominator;
+                        sum += (numerator/denominator);
                     }
                 }
             }
             count = count + 1;
         }
-        presentDate = presentDate.addDays(1);
+        ++presentDate;
+        index++;
     }
+
     if (numberOfDays != 0)
     {
         if ( (float(count) / float(numberOfDays) * 100.f) < minimumPercentage )
         {
-            computeCorrectedSum = NODATA;
+            sum = NODATA;
         }
     }
 
-
-    return computeCorrectedSum;
+    return sum;
 }
 
 

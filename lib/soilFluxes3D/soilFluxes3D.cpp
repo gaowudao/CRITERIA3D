@@ -112,7 +112,7 @@ namespace soilFluxes3D {
 		myNode[i].Soil = nullptr;
 		myNode[i].boundary = nullptr;
 		myNode[i].up.index = NOLINK;
-		myNode[i].down.index = myNode[i].up.index = NOLINK;
+        myNode[i].down.index = NOLINK;
 
         myNode[i].lateral = (TlinkedNode *) calloc(myStructure.nrLateralLinks, sizeof(TlinkedNode));
         for (short l = 0; l < myStructure.nrLateralLinks; l++)
@@ -860,21 +860,19 @@ namespace soilFluxes3D {
   */
  void DLL_EXPORT __STDCALL computePeriod(double myPeriod)
     {
-		double deltaT, ResidualTime, sumTime = 0.0;
+        double sumTime = 0.0;
 
         balanceCurrentPeriod.sinkSourceWater = 0.;
         balanceCurrentPeriod.sinkSourceHeat = 0.;
 
-		while (sumTime < myPeriod)
+        while (sumTime < myPeriod)
         {
-			ResidualTime = myPeriod - sumTime;
-			deltaT = computeStep(ResidualTime);
-			sumTime += deltaT;
+            double ResidualTime = myPeriod - sumTime;
+            sumTime += computeStep(ResidualTime);
         }
 
         if (myStructure.computeWater) updateBalanceWaterWholePeriod();
         if (myStructure.computeHeat) updateBalanceHeatWholePeriod();
-
     }
 
 
@@ -943,7 +941,7 @@ int DLL_EXPORT __STDCALL setTemperature(long nodeIndex, double myT)
 
    if ((nodeIndex < 0) || (nodeIndex >= myStructure.nrNodes)) return(INDEX_ERROR);
 
-   if ((myT < 200) && (myT > 500)) return(PARAMETER_ERROR);
+   if ((myT < 200) || (myT > 500)) return(PARAMETER_ERROR);
 
    if (! isHeatNode(nodeIndex)) return(MEMORY_ERROR);
 
@@ -984,7 +982,7 @@ int DLL_EXPORT __STDCALL setHeatBoundaryWindSpeed(long nodeIndex, double myWindS
 {
    if (myNode == nullptr) return(MEMORY_ERROR);
    if ((nodeIndex < 0) || (nodeIndex >= myStructure.nrNodes)) return(INDEX_ERROR);
-   if ((myWindSpeed < 0) && (myWindSpeed > 1000)) return(PARAMETER_ERROR);
+   if ((myWindSpeed < 0) || (myWindSpeed > 1000)) return(PARAMETER_ERROR);
 
    if (myNode[nodeIndex].boundary == nullptr || myNode[nodeIndex].boundary->Heat == nullptr)
        return (BOUNDARY_ERROR);
@@ -1179,7 +1177,6 @@ float DLL_EXPORT __STDCALL getHeatFlux(long nodeIndex, short myDirection, int fl
     if (! isHeatNode(nodeIndex)) return (MEMORY_ERROR);
 
     float myMaxFlux = 0.;
-    float myFlux;
 
     switch (myDirection)
     {
@@ -1192,7 +1189,7 @@ float DLL_EXPORT __STDCALL getHeatFlux(long nodeIndex, short myDirection, int fl
     case LATERAL:
         for (short i = 0; i < myStructure.nrLateralLinks; i++)
         {
-            myFlux = readHeatFlux(&(myNode[nodeIndex].lateral[i]), fluxType);
+            float myFlux = readHeatFlux(&(myNode[nodeIndex].lateral[i]), fluxType);
             if (myFlux != NODATA && myFlux > fabs(myMaxFlux))
                 myMaxFlux = myFlux;
         }

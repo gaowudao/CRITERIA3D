@@ -30,7 +30,8 @@
         friend Crit3DDate& operator ++ (Crit3DDate& myFirstDate);
         friend Crit3DDate& operator -- (Crit3DDate& myFirstDate);
 
-        Crit3DDate addDays(int myLong) const;
+        void setDate(int myDay, int myMonth, int myYear);
+        Crit3DDate addDays(long myDays) const;
         int daysTo(const Crit3DDate& myDate) const;
         std::string toStdString();
     };
@@ -77,6 +78,6 @@
     Crit3DDate max(const Crit3DDate& myDate1, const Crit3DDate& myDate2);
     Crit3DDate min(const Crit3DDate& myDate1, const Crit3DDate& myDate2);
 
-    int difference(Crit3DDate myDate1, Crit3DDate myDate2);
+    int difference(Crit3DDate firstDate, Crit3DDate lastDate);
 
 #endif // CRIT3DDATE_H

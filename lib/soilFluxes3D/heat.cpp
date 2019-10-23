@@ -646,7 +646,6 @@ bool computeHeatFlux(long i, int myMatrixIndex, TlinkedNode *myLink, double time
 
     if (! isHeatNode(myLinkIndex)) return false;
 
-    myConduction = 0.;
     myAdvectiveFlux = 0.;
     myLatentFlux = 0.;
     fluxCourant = 0.;

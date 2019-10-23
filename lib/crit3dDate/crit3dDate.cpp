@@ -68,6 +68,12 @@ Crit3DDate::Crit3DDate(std::string myDate)
 }
 
 
+void Crit3DDate::setDate(int myDay, int myMonth, int myYear)
+{
+    day = myDay; month = myMonth; year = myYear;
+}
+
+
 bool operator == (const Crit3DDate& myDate1, const Crit3DDate& myDate2)
 {
     return ( myDate1.year == myDate2.year && myDate1.month == myDate2.month && myDate1.day == myDate2.day );
@@ -91,8 +97,8 @@ bool operator > (const Crit3DDate& myDate1, const Crit3DDate& myDate2)
 bool operator >= (const Crit3DDate& myDate1, const Crit3DDate& myDate2)
 {
     return ( myDate1.year > myDate2.year ||
-            ( myDate1.year == myDate2.year && myDate1.month > myDate2.month ) ||
-            ( myDate1.year == myDate2.year && myDate1.month == myDate2.month && myDate1.day >= myDate2.day ));
+           ( myDate1.year == myDate2.year && myDate1.month > myDate2.month ) ||
+           ( myDate1.year == myDate2.year && myDate1.month == myDate2.month && myDate1.day >= myDate2.day ));
 }
 
 
@@ -114,13 +120,13 @@ bool operator <= (const Crit3DDate& myDate1, const Crit3DDate& myDate2)
 
 Crit3DDate& operator ++ (Crit3DDate& myDate)
 {
-    if( myDate.day < getDaysInMonth(myDate.month, myDate.year))
+    if (myDate.day < getDaysInMonth(myDate.month, myDate.year))
     {
         myDate.day++;
     }
     else
     {
-        if( myDate.month < 12)
+        if (myDate.month < 12)
         {
             myDate.month++;
         }
@@ -138,13 +144,13 @@ Crit3DDate& operator ++ (Crit3DDate& myDate)
 
 Crit3DDate& operator -- (Crit3DDate& myDate)
 {
-    if( myDate.day > 1 )
+    if (myDate.day > 1)
     {
         myDate.day--;
     }
     else
     {
-        if( myDate.month > 1 )
+        if (myDate.month > 1)
         {
             myDate.month--;
         }
@@ -153,24 +159,37 @@ Crit3DDate& operator -- (Crit3DDate& myDate)
             myDate.year--;
             myDate.month = 12;
         }
-         myDate.day = getDaysInMonth(myDate.month, myDate.year);
+        myDate.day = getDaysInMonth(myDate.month, myDate.year);
     }
 
     return myDate;
 }
 
 
-Crit3DDate Crit3DDate::addDays(int nrDays) const
+Crit3DDate Crit3DDate::addDays(long nrDays) const
 {
     Crit3DDate myDate = *this;
+
     if (nrDays >= 0)
     {
-        for (int i=0; i<nrDays; i++)
+        while (nrDays > 365)
+        {
+            int currentDoy = getDoyFromDate(myDate);
+            int endYearDoy = getDoyFromDate(Crit3DDate(31, 12, myDate.year));
+            nrDays -= (endYearDoy - currentDoy + 1);
+            myDate.setDate(1, 1, myDate.year + 1);
+        }
+        for (int i = 0; i < nrDays; i++)
             ++myDate;
     }
     else
     {
-        for (int i=0; i>nrDays; i--)
+        while (abs(nrDays) > 365)
+        {
+            nrDays += getDoyFromDate(myDate);
+            myDate.setDate(31, 12, myDate.year - 1);
+        }
+        for (int i = 0; i > nrDays; i--)
             --myDate;
     }
 
@@ -180,21 +199,29 @@ Crit3DDate Crit3DDate::addDays(int nrDays) const
 
 int Crit3DDate::daysTo(const Crit3DDate& myDate) const
 {
-    Crit3DDate myDateMin = min(*this, myDate);
-    Crit3DDate myDateMax = max(*this, myDate);
+    Crit3DDate first = min(*this, myDate);
+    Crit3DDate last = max(*this, myDate);
 
-    int myDiff = 0;
-    while (myDateMin < myDateMax)
+    int delta = 0;
+    while (first.year < last.year)
     {
-        myDiff++;
-        ++myDateMin;
+        int currentDoy = getDoyFromDate(first);
+        int endYearDoy = getDoyFromDate(Crit3DDate(31, 12, first.year));
+        delta += (endYearDoy - currentDoy + 1);
+        first.setDate(1, 1, first.year + 1);
+    }
+    while (first < last)
+    {
+        delta++;
+        ++first;
     }
 
-    if (myDateMax == myDate)
-        return myDiff;
+    if (last == myDate)
+        return delta;
     else
-        return -myDiff;
+        return -delta;
 }
+
 
 Crit3DDate max(const Crit3DDate& myDate1, const Crit3DDate& myDate2)
 {
@@ -246,16 +273,24 @@ bool isNullDate(Crit3DDate myDate)
 }
 
 
-int difference(Crit3DDate myDatefirst, Crit3DDate myDatelast)
+int difference(Crit3DDate firstDate, Crit3DDate lastDate)
 {
-    int myDiff = 0;
-    while (myDatefirst < myDatelast)
+    int delta = 0;
+
+    while (firstDate.year < lastDate.year)
     {
-        myDiff++;
-        ++myDatefirst;
+        int currentDoy = getDoyFromDate(firstDate);
+        int endYearDoy = getDoyFromDate(Crit3DDate(31, 12, firstDate.year));
+        delta += (endYearDoy - currentDoy + 1);
+        firstDate.setDate(1, 1, firstDate.year + 1);
+    }
+    while (firstDate < lastDate)
+    {
+        delta++;
+        ++firstDate;
     }
 
-    return myDiff;
+    return delta;
 }
 
 

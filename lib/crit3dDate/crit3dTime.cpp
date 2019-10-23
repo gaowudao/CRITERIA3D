@@ -36,12 +36,15 @@
 
 Crit3DTime::Crit3DTime()
 {
-    time = 0; date.day = 0; date.month = 0; date.year = 0;
+    date.day = 0;
+    date.month = 0;
+    date.year = 0;
+    time = 0;
 }
 
 Crit3DTime::Crit3DTime(Crit3DDate myDate, int mySeconds)
+    : date{myDate}
 {
-    date = myDate;
     time = 0;
     *this = addSeconds(mySeconds);
 }
@@ -63,14 +66,14 @@ int Crit3DTime::getSeconds() const
 
 bool operator < (const Crit3DTime& time1, const Crit3DTime& time2)
 {
-    return time1.date < time2.date ||
-            (time1.date == time2.date && time1.time < time2.time);
+    return (time1.date < time2.date ||
+           (time1.date == time2.date && time1.time < time2.time));
 }
 
 bool operator > (const Crit3DTime& time1, const Crit3DTime& time2)
 {
-    return time1.date > time2.date ||
-            (time1.date == time2.date && time1.time > time2.time);
+    return (time1.date > time2.date ||
+           (time1.date == time2.date && time1.time > time2.time));
 }
 
 bool operator <= (const Crit3DTime& time1, const Crit3DTime& time2)
@@ -85,29 +88,30 @@ bool operator >= (const Crit3DTime& time1, const Crit3DTime& time2)
 
 bool operator == (const Crit3DTime& time1, const Crit3DTime& time2)
 {
-    return (time1.isEqual(time2));
+    return time1.isEqual(time2);
 }
 
 bool operator != (const Crit3DTime& time1, const Crit3DTime& time2)
 {
-    return (! time1.isEqual(time2));
+    return ! time1.isEqual(time2);
 }
 
 Crit3DTime getNullTime()
 {
     Crit3DTime* nullTime = new Crit3DTime();
-    return (*nullTime);
+    return *nullTime;
 }
 
 bool isNullTime(const Crit3DTime& myTime)
 {
-    return (myTime.isEqual(getNullTime()));
+    return myTime.isEqual(getNullTime());
 }
 
 bool Crit3DTime::isEqual(const Crit3DTime& myTime) const
 {
-    return ((this->date == myTime.date) && (this->time == myTime.time));
+    return (date == myTime.date && time == myTime.time);
 }
+
 
 Crit3DTime Crit3DTime::addSeconds(long mySeconds) const
 {
@@ -127,8 +131,10 @@ Crit3DTime Crit3DTime::addSeconds(long mySeconds) const
             myTime.time += DAY_SECONDS;
         }
     }
+
     return myTime;
 }
+
 
 std::string Crit3DTime::toStdString()
 {

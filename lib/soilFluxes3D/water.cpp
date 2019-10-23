@@ -223,8 +223,7 @@ bool computeFlux(long i, int matrixIndex, TlinkedNode *link, double deltaT, unsi
 bool waterFlowComputation(double deltaT)
  {
      bool isValidStep;
-     long i = 0;
-     short j = 0;
+     long i;
      double dThetadH, dthetavdh;
      double avgTemperature;
 
@@ -246,15 +245,15 @@ bool waterFlowComputation(double deltaT)
             invariantFlux[i] = 0.;
             if (!myNode[i].isSurface)
             {
-                 myNode[i].k = computeK(i);
-                 dThetadH = dTheta_dH(i);
+                myNode[i].k = computeK(unsigned(i));
+                dThetadH = dTheta_dH(unsigned(i));
                  C[i] = myNode[i].volume_area  * dThetadH;
 
                  // vapor capacity term
                  if (myStructure.computeHeat && myStructure.computeHeatVapor)
                  {
                      avgTemperature = getTMean(i);
-                     dthetavdh = dThetav_dH(i, avgTemperature, dThetadH);
+                     dthetavdh = dThetav_dH(unsigned(i), avgTemperature, dThetadH);
                      C[i] += myNode[i].volume_area  * dthetavdh;
                  }
             }
@@ -266,7 +265,7 @@ bool waterFlowComputation(double deltaT)
         /*! computes the matrix elements */
         for (i = 0; i < myStructure.nrNodes; i++)
         {
-            j = 1;
+            short j = 1;
             if (computeFlux(i, j, &(myNode[i].up), deltaT, approximationNr, UP)) j++;
             for (short l = 0; l < myStructure.nrLateralLinks; l++)
                     if (computeFlux(i, j, &(myNode[i].lateral[l]), deltaT, approximationNr, LATERAL)) j++;
@@ -318,7 +317,7 @@ bool waterFlowComputation(double deltaT)
         {
             myNode[i].H = X[i];
             if (!myNode[i].isSurface)
-                myNode[i].Se = computeSe(i);
+                myNode[i].Se = computeSe(unsigned(i));
         }
 
         /*! water balance */
@@ -339,12 +338,12 @@ bool waterFlowComputation(double deltaT)
   * \param acceptedTime [s] current seconds for simulation step
   * \return
   */
- bool computeWater(double maxTime, double *acceptedTime)
+bool computeWater(double maxTime, double *acceptedTime)
 {
- bool isStepOK = false;
+     bool isStepOK = false;
 
- while (!isStepOK)
- {
+     while (!isStepOK)
+     {
         *acceptedTime = MINVALUE(myParameters.current_delta_t, maxTime);
 
         /*! save the instantaneous H values - Prepare the solutions vector (X = H) */
@@ -361,7 +360,7 @@ bool waterFlowComputation(double deltaT)
             if (myNode[n].isSurface)
                 C[n] = myNode[n].volume_area;
             else
-                myNode[n].Se = computeSe(n);
+                myNode[n].Se = computeSe(unsigned(n));
         }
 
         /*! update boundary conditions */
@@ -370,18 +369,14 @@ bool waterFlowComputation(double deltaT)
 
         isStepOK = waterFlowComputation(*acceptedTime);
 
-		if (!isStepOK) restoreWater();
-  }
-
- return (isStepOK);
-
+        if (!isStepOK) restoreWater();
+    }
+    return (isStepOK);
 }
 
 
 void restoreWater()
 {
-
     for (long n = 0; n < myStructure.nrNodes; n++)
          myNode[n].H = myNode[n].oldH;
-
 }

@@ -36,28 +36,32 @@
 
 double distance(unsigned long i, unsigned long j)
 {
-    return (sqrt(square(fabs(myNode[i].x - myNode[j].x))
-        + square(fabs(myNode[i].y - myNode[j].y))
-        + square(fabs(myNode[i].z - myNode[j].z))));
+    return sqrt(square(fabs(double(myNode[i].x - myNode[j].x)))
+                + square(fabs(double(myNode[i].y - myNode[j].y)))
+                + square(fabs(double(myNode[i].z - myNode[j].z))));
 }
 
 
 double distance2D(unsigned long i, unsigned long j)
 {
-    return sqrt(square(fabs(myNode[i].x - myNode[j].x)) + square(fabs(myNode[i].y - myNode[j].y)));
+    return sqrt(square(fabs(double(myNode[i].x - myNode[j].x))) + square(fabs(double(myNode[i].y - myNode[j].y))));
 }
 
 double arithmeticMean(double v1, double v2)
 {
-    return ((v1 + v2)/2.);
+    return (v1 + v2) /2;
 }
 
 double logarithmicMean(double v1, double v2)
 {
     if (v1 == v2)
-        return(v1);
+    {
+        return v1;
+    }
     else
-        return((v1 - v2) / log(v1/v2));
+    {
+        return (v1 - v2) / log(v1/v2);
+    }
 }
 
 double geometricMean(double v1, double v2)
@@ -85,9 +89,12 @@ TlinkedNode* getLink(long i, long j)
     if (myNode[i].down.index == j) return &(myNode[i].down);
 
     for (short l = 0; l < myStructure.nrLateralLinks; l++)
-         if (myNode[i].lateral[l].index == j) return &(myNode[i].lateral[l]);
+    {
+         if (myNode[i].lateral[l].index == j)
+             return &(myNode[i].lateral[l]);
+    }
 
-    return(nullptr);
+    return nullptr;
 }
 
 
@@ -100,11 +107,8 @@ int calcola_iterazioni_max(int num_approssimazione)
 
 
 double GaussSeidelIterationWater(short direction)
- {
-    double psi = 0.0, newX = 0.0;
-    double norm = 0.0, infinityNorm = 0.0;
-    short j;
-    long i, firstIndex, lastIndex;
+{
+    long firstIndex, lastIndex;
 
     if (direction == UP)
     {
@@ -117,11 +121,13 @@ double GaussSeidelIterationWater(short direction)
         lastIndex = -1;
     }
 
-    i = firstIndex;
+    double currentNorm, infinityNorm = 0;
+    long i = firstIndex;
+
     while (i != lastIndex)
     {
-        newX = b[i];
-        j = 1;
+        double newX = b[i];
+        short j = 1;
         while ((A[i][j].index != NOLINK) && (j < myStructure.maxNrColumns))
         {
             newX -= A[i][j].val * X[A[i][j].index];
@@ -130,26 +136,28 @@ double GaussSeidelIterationWater(short direction)
 
         /*! surface check */
         if (myNode[i].isSurface)
-            if (newX < myNode[i].z)
-                newX = myNode[i].z;
+            if (newX < double(myNode[i].z))
+                newX = double(myNode[i].z);
 
         /*! water potential [m] */
-        psi = fabs(newX - myNode[i].z);
+        double psi = fabs(newX - double(myNode[i].z));
 
         /*! infinity norm (normalized if psi > 1m) */
-        if (psi > 1.0)
-            norm = (fabs(newX - X[i])) / psi;
+        if (psi > 1)
+            currentNorm = (fabs(newX - X[i])) / psi;
         else
-            norm = fabs(newX - X[i]);
+            currentNorm = fabs(newX - X[i]);
 
-        if (norm > infinityNorm) infinityNorm = norm;
+        if (currentNorm > infinityNorm) infinityNorm = currentNorm;
 
         X[i] = newX;
 
         (direction == UP)? i++ : i--;
     }
-    return(infinityNorm);
- }
+
+    return infinityNorm;
+}
+
 
 double GaussSeidelIterationHeat()
 {
@@ -178,31 +186,40 @@ double GaussSeidelIterationHeat()
     return(norma_inf);
  }
 
+
 bool GaussSeidelRelaxation (int approximation, double residualTolerance, int process)
 {
     const double MAX_NORM = 1.0;
-    double norm = MAX_NORM;
+    double currentNorm = MAX_NORM;
     double bestNorm = MAX_NORM;
     int iteration = 0;
 
     int maxIterationsNr = calcola_iterazioni_max(approximation);
 
-    while ((norm > residualTolerance) && (iteration < maxIterationsNr))
+    while ((currentNorm > residualTolerance) && (iteration < maxIterationsNr))
 	{
         if (process == PROCESS_HEAT)
-            norm = GaussSeidelIterationHeat();
+            currentNorm = GaussSeidelIterationHeat();
 
         else if (process == PROCESS_WATER)
         {
             if (iteration%2 == 0)
-                norm = GaussSeidelIterationWater(DOWN);
+            {
+                currentNorm = GaussSeidelIterationWater(DOWN);
+            }
             else
-                norm = GaussSeidelIterationWater(UP);
+            {
+                currentNorm = GaussSeidelIterationWater(UP);
+            }
 
-            if (norm > (bestNorm * 10.0))
+            if (currentNorm > (bestNorm * 10.0))
+            {
                 return(false);                    //not converging
-            else if (norm < bestNorm)
-                bestNorm = norm;
+            }
+            else if (currentNorm < bestNorm)
+            {
+                bestNorm = currentNorm;
+            }
         }
 
         iteration++;
