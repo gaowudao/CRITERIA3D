@@ -99,6 +99,7 @@
         bool drawBorder;
         RowCol **matrix;
         gis::Crit3DGridHeader latLonHeader;
+        double longitudeShift;
 
         bool isLatLon;
         bool isDrawing;

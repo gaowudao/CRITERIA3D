@@ -36,20 +36,22 @@
 RasterObject::RasterObject(MapGraphicsView* _view, MapGraphicsObject *parent) :
     MapGraphicsObject(true, parent)
 {
-    this->setFlag(MapGraphicsObject::ObjectIsSelectable, false);
-    this->setFlag(MapGraphicsObject::ObjectIsMovable, false);
-    this->setFlag(MapGraphicsObject::ObjectIsFocusable, false);
-    this->view = _view;
+    setFlag(MapGraphicsObject::ObjectIsSelectable, false);
+    setFlag(MapGraphicsObject::ObjectIsMovable, false);
+    setFlag(MapGraphicsObject::ObjectIsFocusable, false);
+    view = _view;
 
-    this->matrix = nullptr;
-    this->rasterPointer = nullptr;
-    this->colorScaleLegend = nullptr;
-    this->isLatLon = false;
-    this->isGrid = false;
-    this->geoMap = new gis::Crit3DGeoMap();
-    this->referencePixel = QPointF(NODATA, NODATA);
-    this->isDrawing = false;
-    this->drawBorder = false;
+    matrix = nullptr;
+    rasterPointer = nullptr;
+    colorScaleLegend = nullptr;
+    isLatLon = false;
+    isGrid = false;
+    geoMap = new gis::Crit3DGeoMap();
+    referencePixel = QPointF(NODATA, NODATA);
+    isDrawing = false;
+    drawBorder = false;
+
+    longitudeShift = 0;
 }
 
 
@@ -58,34 +60,34 @@ void RasterObject::clear()
     setDrawing(false);
     setDrawBorders(false);
     freeIndexesMatrix();
-    this->latLonHeader.nrCols = 0;
-    this->latLonHeader.nrRows = 0;
-    this->colorScaleLegend = nullptr;
+    latLonHeader.nrCols = 0;
+    latLonHeader.nrRows = 0;
+    colorScaleLegend = nullptr;
 }
 
 
 void RasterObject::setDrawing(bool value)
 {
-    this->isDrawing = value;
+    isDrawing = value;
 }
 
 
 void RasterObject::setDrawBorders(bool value)
 {
-    this->drawBorder = value;
+    drawBorder = value;
 }
 
 
 void RasterObject::setColorLegend(ColorLegend* myLegend)
 {
-    this->colorScaleLegend = myLegend;
+    colorScaleLegend = myLegend;
 }
 
 
 QPointF RasterObject::getPixel(const QPointF &latLonPoint)
 {
-    QPointF pixel = this->view->tileSource()->ll2qgs(latLonPoint, this->view->zoomLevel());
-    pixel.setX(pixel.x() - this->referencePixel.x());
+    QPointF pixel = view->tileSource()->ll2qgs(latLonPoint, view->zoomLevel());
+    pixel.setX(pixel.x() - referencePixel.x());
     pixel.setY(this->referencePixel.y() - pixel.y());
     return pixel;
 }
@@ -98,8 +100,8 @@ QPointF RasterObject::getPixel(const QPointF &latLonPoint)
 */
  QRectF RasterObject::boundingRect() const
 {
-    int widthPixels = this->view->width() - MAPBORDER*2;
-    int heightPixels = this->view->height() - MAPBORDER*2;
+    int widthPixels = view->width() - MAPBORDER*2;
+    int heightPixels = view->height() - MAPBORDER*2;
 
     return QRectF( -widthPixels, -heightPixels, widthPixels*2, heightPixels*2);
 }
@@ -110,28 +112,28 @@ void RasterObject::paint(QPainter *painter, const QStyleOptionGraphicsItem *opti
     Q_UNUSED(option)
     Q_UNUSED(widget)
 
-    if (this->isDrawing)
+    if (isDrawing)
     {
         setMapExtents();
 
-        if (this->rasterPointer != nullptr)
-            drawRaster(this->rasterPointer, painter, this->drawBorder);
+        if (rasterPointer != nullptr)
+            drawRaster(rasterPointer, painter, drawBorder);
 
-        if (this->colorScaleLegend != nullptr)
-            this->colorScaleLegend->update();
+        if (colorScaleLegend != nullptr)
+            colorScaleLegend->update();
     }
 }
 
 
 void RasterObject::setRaster(gis::Crit3DRasterGrid* rasterPtr)
 {
-    this->rasterPointer = rasterPtr;
+    rasterPointer = rasterPtr;
 }
 
 
 gis::Crit3DRasterGrid* RasterObject::getRaster()
 {
-    return this->rasterPointer;
+    return rasterPointer;
 }
 
 
@@ -141,8 +143,8 @@ gis::Crit3DRasterGrid* RasterObject::getRaster()
  */
 float RasterObject::getRasterMaxSize()
 {
-    return float(MAXVALUE(this->latLonHeader.nrRows * this->latLonHeader.dy,
-                          this->latLonHeader.nrCols * this->latLonHeader.dx));
+    return float(MAXVALUE(latLonHeader.nrRows * latLonHeader.dy,
+                          latLonHeader.nrCols * latLonHeader.dx));
 }
 
 
@@ -153,8 +155,8 @@ float RasterObject::getRasterMaxSize()
 gis::Crit3DGeoPoint* RasterObject::getRasterCenter()
 {
     gis::Crit3DGeoPoint* center = new(gis::Crit3DGeoPoint);
-    center->latitude = this->latLonHeader.llCorner->latitude + (this->latLonHeader.nrRows * this->latLonHeader.dy) * 0.5;
-    center->longitude = this->latLonHeader.llCorner->longitude + (this->latLonHeader.nrCols * this->latLonHeader.dx) * 0.5;
+    center->latitude = latLonHeader.llCorner->latitude + (latLonHeader.nrRows * latLonHeader.dy) * 0.5;
+    center->longitude = latLonHeader.llCorner->longitude + (latLonHeader.nrCols * latLonHeader.dx) * 0.5;
     return center;
 }
 
@@ -175,16 +177,16 @@ void RasterObject::freeIndexesMatrix()
 
 void RasterObject::initializeIndexesMatrix()
 {
-    this->matrix = new RowCol*[unsigned(latLonHeader.nrRows)];
+    matrix = new RowCol*[unsigned(latLonHeader.nrRows)];
 
-    for (int row = 0; row < this->latLonHeader.nrRows; row++)
-        this->matrix[row] = new RowCol[unsigned(latLonHeader.nrCols)];
+    for (int row = 0; row < latLonHeader.nrRows; row++)
+        matrix[row] = new RowCol[unsigned(latLonHeader.nrCols)];
 
-    for (int row = 0; row < this->latLonHeader.nrRows; row++)
-        for (int col = 0; col < this->latLonHeader.nrCols; col++)
+    for (int row = 0; row < latLonHeader.nrRows; row++)
+        for (int col = 0; col < latLonHeader.nrCols; col++)
         {
-            this->matrix[row][col].row = NODATA;
-            this->matrix[row][col].col = NODATA;
+            matrix[row][col].row = NODATA;
+            matrix[row][col].col = NODATA;
         }
 }
 
@@ -230,20 +232,29 @@ bool RasterObject::initializeUTM(gis::Crit3DRasterGrid* myRaster, const gis::Cri
 }
 
 
-bool RasterObject::initializeLatLon(gis::Crit3DRasterGrid* myRaster, const gis::Crit3DGisSettings& gisSettings, const gis::Crit3DGridHeader &latLonHeader_, bool isGrid_)
+bool RasterObject::initializeLatLon(gis::Crit3DRasterGrid* myRaster, const gis::Crit3DGisSettings& gisSettings,
+                                    const gis::Crit3DGridHeader &latLonHeader_, bool isGrid_)
 {
     if (myRaster == nullptr) return false;
     if (! myRaster->isLoaded) return false;
 
-    this->isLatLon = true;
+    isLatLon = true;
 
-    this->isGrid = isGrid_;
-    this->utmZone = gisSettings.utmZone;
-    this->rasterPointer = myRaster;
+    isGrid = isGrid_;
+    utmZone = gisSettings.utmZone;
+    rasterPointer = myRaster;
 
     freeIndexesMatrix();
 
-    this->latLonHeader = latLonHeader_;
+    latLonHeader = latLonHeader_;
+
+    // TODO improve management of 0-360 netcdf grid
+    double maxLongitude = latLonHeader.llCorner->longitude + latLonHeader.nrCols * latLonHeader.dx;
+    if (maxLongitude > 180)
+    {
+        longitudeShift = maxLongitude - 180;
+        latLonHeader.llCorner->longitude -= longitudeShift;
+    }
 
     setDrawing(true);
     setDrawBorders(isGrid_);
