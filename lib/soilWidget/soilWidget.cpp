@@ -68,7 +68,7 @@ Crit3DSoilWidget::Crit3DSoilWidget()
     QFileInfo triangleFile(picPath);
     if (! triangleFile.exists())
     {
-        picPath = "./textural_soil.png";
+        picPath = "../img/textural_soil.png";
     }
 
     pic.load(picPath);
@@ -80,7 +80,7 @@ Crit3DSoilWidget::Crit3DSoilWidget()
     QFileInfo savePath(saveButtonPath);
     if (! savePath.exists())
     {
-        saveButtonPath = "./saveButton.png";
+        saveButtonPath = "../img/saveButton.png";
     }
 
     QPixmap pixmap(saveButtonPath);
