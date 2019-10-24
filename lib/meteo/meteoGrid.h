@@ -14,9 +14,6 @@
 
     #define GRID_MIN_COVERAGE 0
 
-    std::string getKeyStringAggregationMethod(aggregationMethod value);
-    aggregationMethod getKeyGridAggregationMethod(std::string value);
-
     class Crit3DMeteoGridStructure
     {
         public:

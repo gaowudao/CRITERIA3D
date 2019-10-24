@@ -204,12 +204,15 @@
 
     std::string getVariableString(meteoVariable myVar);
     std::string getKeyStringMeteoMap(std::map<std::string, meteoVariable> map, meteoVariable value);
-    meteoVariable getKeyMeteoVarMeteoMap(std::map<meteoVariable,std::string> map, std::string value);
+    meteoVariable getKeyMeteoVarMeteoMap(std::map<meteoVariable,std::string> map, const std::string &value);
     meteoVariable getMeteoVar(std::string varString);
 
     std::string getKeyStringAggregationMethod(aggregationMethod value);
 
     bool checkLapseRateCode(lapseRateCodeType myType, bool useLapseRateCode, bool useSupplemental);
+
+    aggregationMethod getKeyGridAggregationMethod(const std::string& value);
+    std::string getKeyStringAggregationMethod(aggregationMethod value);
 
 
 #endif // METEO_H
