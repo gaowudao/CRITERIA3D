@@ -34,7 +34,6 @@
 #include "commonConstants.h"
 #include "furtherMathFunctions.h"
 
-//#include <iostream> //debug
 
 namespace soil
 {
@@ -146,7 +145,7 @@ namespace soil
         this->cleanSoil();
     }
 
-    void Crit3DSoil::initialize(std::string soilCode, int nrHorizons)
+    void Crit3DSoil::initialize(const std::string& soilCode, int nrHorizons)
     {
         this->cleanSoil();
         this->code = soilCode;
