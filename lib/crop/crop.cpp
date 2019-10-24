@@ -40,8 +40,8 @@
 
 
 Crit3DCrop::Crit3DCrop()
+    : idCrop{""}
 {
-    idCrop = "";
     type = HERBACEOUS_ANNUAL;
 
     /*!

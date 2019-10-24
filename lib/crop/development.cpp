@@ -114,8 +114,7 @@ namespace leafDevelopment
 
     double getLAICriteria(Crit3DCrop* myCrop, double myDegreeDays)
     {
-        double n4 = 4.0;
-
+        // decreasing parameter
         double c4;
         if (myCrop->type == FRUIT_TREE)
             c4 = 15.0;
@@ -123,10 +122,18 @@ namespace leafDevelopment
             c4 = 10.0;
 
         if (myDegreeDays <= myCrop->degreeDaysIncrease)
+        {
+            // LAI increasing curve
             return myCrop->LAImin + (myCrop->LAImax - myCrop->LAImin) / (1 + exp(myCrop->LAIcurve_a + myCrop->LAIcurve_b * myDegreeDays));
+        }
         else
-            return myCrop->LAImin + (myCrop->LAImax - myCrop->LAImin) / (1 + pow(10 * ((myDegreeDays - myCrop->degreeDaysIncrease)
-                                                                                       / MAXVALUE(myCrop->degreeDaysDecrease, 1)) / c4, n4));
+        {
+            // LAI decreasing curve
+            double n4 = 4.0;
+            return myCrop->LAImin + (myCrop->LAImax - myCrop->LAImin) /
+                                     (1 + pow(10 * ((myDegreeDays - myCrop->degreeDaysIncrease)
+                                      / MAXVALUE(myCrop->degreeDaysDecrease, 1)) / c4, n4));
+        }
     }
 
     double getLAISenescence(double LaiMin, double LAIStartSenescence, int daysFromStartSenescence)

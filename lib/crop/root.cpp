@@ -372,7 +372,7 @@ namespace root
 
     bool computeRootDensity(Crit3DCrop* myCrop, soil::Crit3DLayer* layers, int nrLayers, double soilDepth)
     {
-        int i, j, layer;
+        int i, layer;
 
         // Initialize
         for (i = 0; i < nrLayers; i++)
@@ -410,7 +410,8 @@ namespace root
             int counter=0;
             for (layer=0; layer<nrLayers; layer++)
             {
-                for (j=counter; j<counter + atoms[layer]; j++)
+                int j;
+                for (j = counter; j < (counter + atoms[layer]); j++)
                 {
                     if (j < totalLayers)
                         myCrop->roots.rootDensity[layer] += densityThinLayers[j];
@@ -459,16 +460,14 @@ namespace root
             myCrop->roots.firstRootLayer = 0;
             layer = 0;
 
-            while ((myCrop->roots.rootDensity[layer] == 0.0)
-                   && (layer < nrLayers))
+            while (layer < nrLayers && myCrop->roots.rootDensity[layer] == 0.0)
             {
                 layer++;
                 (myCrop->roots.firstRootLayer)++;
             }
 
             myCrop->roots.lastRootLayer = myCrop->roots.firstRootLayer;
-            while ((myCrop->roots.rootDensity[layer] != 0.0)
-                && (layer < nrLayers))
+            while (layer < nrLayers && myCrop->roots.rootDensity[layer] != 0.0)
             {
                 (myCrop->roots.lastRootLayer) = layer;
                 layer++;
