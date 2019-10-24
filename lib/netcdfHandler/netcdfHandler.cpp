@@ -48,21 +48,14 @@ string lowerCase(string myStr)
 
 
 NetCDFVariable::NetCDFVariable()
-{
-    name = "";
-    longName = "";
-    id = NODATA;
-    type = NODATA;
-}
+    : name{""}, longName{""}, id{NODATA}, type{NODATA}
+{ }
 
 
 NetCDFVariable::NetCDFVariable(char* myName, int myId, int myType)
-{
-    name = myName;
-    longName = myName;
-    id = myId;
-    type = myType;
-}
+    : name{myName}, longName{myName}, id{myId}, type{myType}
+{ }
+
 
 std::string NetCDFVariable::getVarName()
 {
@@ -184,7 +177,7 @@ bool NetCDFHandler::isLoaded()
 }
 
 
-bool NetCDFHandler::setVarLongName(std::string varName, std::string varLongName)
+bool NetCDFHandler::setVarLongName(const std::string& varName, const string &varLongName)
 {
     for (unsigned int i = 0; i < variables.size(); i++)
     {
@@ -282,11 +275,16 @@ Crit3DTime NetCDFHandler::getTime(int timeIndex)
 bool NetCDFHandler::readProperties(string fileName)
 {
     int retval;
-    //char name[NC_MAX_NAME+1];
-    char* name = new char[NC_MAX_NAME+1];
+
+    char name[NC_MAX_NAME+1];
+    char attrName[NC_MAX_NAME+1];
+    char varName[NC_MAX_NAME+1];
+    char typeName[NC_MAX_NAME+1];
+    /*char* name = new char[NC_MAX_NAME+1];
     char* attrName = new char[NC_MAX_NAME+1];
     char* varName = new char[NC_MAX_NAME+1];
-    char* typeName = new char[NC_MAX_NAME+1];
+    char* typeName = new char[NC_MAX_NAME+1];*/
+
     char* valueStr;
     int valueInt;
     double value;
@@ -604,7 +602,6 @@ bool NetCDFHandler::readProperties(string fileName)
 }
 
 
-
 bool NetCDFHandler::exportDataSeries(int idVar, gis::Crit3DGeoPoint geoPoint, Crit3DTime firstTime, Crit3DTime lastTime, stringstream *buffer)
 {
     // check
@@ -809,6 +806,54 @@ bool NetCDFHandler::writeData_NoTime(const gis::Crit3DRasterGrid& myDataGrid)
 
     int status = nc_put_var_float(ncId, variables[0].id, var);
     if (status != NC_NOERR) return false;
+
+    return true;
+}
+
+
+bool NetCDFHandler::extractVariableMap(int idVar, Crit3DTime myTime, gis::Crit3DRasterGrid* myDataGrid, string *error)
+{
+    // check variable
+    NetCDFVariable var = getVariable(idVar);
+    if (var.getVarName() == "")
+    {
+        *error = "Wrong variable!";
+        return false;
+    }
+
+    // check time
+    int timeIndex = NODATA;
+    if (isTimeReadable())
+    {
+        if (myTime < getFirstTime() || myTime > getLastTime())
+        {
+            *error = "Time is out of range.";
+            return false;
+        }
+
+        // search time index
+        int i = 0;
+        while (i < nrTime && timeIndex == NODATA)
+        {
+            if (getTime(i) == myTime)
+                timeIndex = i;
+            i++;
+        }
+        if  (timeIndex == NODATA)
+        {
+            *error = "Data not found for this time.";
+            return false;
+        }
+    }
+
+    // read data
+    // todo:  nc_get_vara_float
+    int retval = nc_get_var_float(ncId, idVar, &myDataGrid->value[0][0]);
+    if (retval != NC_NOERR)
+    {
+        error->append(nc_strerror(retval));
+        return false;
+    }
 
     return true;
 }
