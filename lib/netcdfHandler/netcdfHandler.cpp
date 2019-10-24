@@ -754,7 +754,14 @@ bool NetCDFHandler::writeGeoDimensions(const gis::Crit3DGridHeader& latLonHeader
     status = nc_def_var (ncId, "var", NC_FLOAT, 2, varDimId, &(variables[0].id));
     if (status != NC_NOERR) return false;
 
-    // set valid range
+    // attributes
+    status = nc_put_att_text(ncId, varLat, "units", 1, "degrees_north");
+    if (status != NC_NOERR) return false;
+
+    status = nc_put_att_text(ncId, varLon, "units", 1, "degrees_east");
+    if (status != NC_NOERR) return false;
+
+    // valid range
     float range[] = {-1000.0, 1000.0};
     status = nc_put_att_float(ncId, variables[0].id, "valid_range", NC_FLOAT, 2, range);
     if (status != NC_NOERR) return false;
