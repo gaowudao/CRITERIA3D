@@ -1158,7 +1158,7 @@ namespace gis
     }
 
 
-    float prevailingValue(const std::vector<float> valueList)
+    float prevailingValue(const std::vector<float>& valueList)
     {
         std::vector <float> values;
         std::vector <unsigned int> counters;
