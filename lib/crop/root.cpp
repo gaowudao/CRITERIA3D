@@ -407,10 +407,9 @@ namespace root
                                         numberOfTopUnrootedLayers, totalLayers, densityThinLayers);
             }
 
-            int counter=0;
+            int j, counter=0;
             for (layer=0; layer<nrLayers; layer++)
             {
-                int j;
                 for (j = counter; j < (counter + atoms[layer]); j++)
                 {
                     if (j < totalLayers)
