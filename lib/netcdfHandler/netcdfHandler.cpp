@@ -755,10 +755,10 @@ bool NetCDFHandler::writeGeoDimensions(const gis::Crit3DGridHeader& latLonHeader
     if (status != NC_NOERR) return false;
 
     // attributes
-    status = nc_put_att_text(ncId, varLat, "units", 1, "degrees_north");
+    status = nc_put_att_text(ncId, varLat, "units", 13, "degrees_north");
     if (status != NC_NOERR) return false;
 
-    status = nc_put_att_text(ncId, varLon, "units", 1, "degrees_east");
+    status = nc_put_att_text(ncId, varLon, "units", 12, "degrees_east");
     if (status != NC_NOERR) return false;
 
     // valid range
