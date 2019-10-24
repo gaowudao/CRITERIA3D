@@ -1982,15 +1982,17 @@ bool Crit3DMeteoGridDbHandler::saveCellGridHourlyDataFF(QString *myError, QStrin
     else
     {
         statement =  QString(("REPLACE INTO `%1` VALUES")).arg(tableH);
-        int nrDayTime = firstDate.msecsTo(lastDate.addDays(1)) /(1000*3600);
+        int nrDayTime = firstDate.msecsTo(lastDate.addDays(1))/(1000*3600);
         for (int i = 0; i < nrDayTime; i++)
         {
             QDateTime dateTime = firstDate.addSecs(i*3600);
             statement += QString(" ('%1',").arg(dateTime.toString("yyyy-MM-dd hh:mm"));
             for (unsigned int j = 0; j < _tableHourly.varcode.size(); j++)
             {
-                float value = meteoGrid()->meteoPoint(row,col).getMeteoPointValueH(getCrit3DDate(dateTime.date()), dateTime.time().hour(), dateTime.time().minute(), getHourlyVarFieldEnum(_tableHourly.varcode[j].varField));
-                QString valueS = QString("'%1'").arg(value);
+                float value = meteoGrid()->meteoPoint(row,col).getMeteoPointValueH(getCrit3DDate(dateTime.date()),
+                                            dateTime.time().hour(), dateTime.time().minute(),
+                                            getHourlyVarFieldEnum(_tableHourly.varcode[j].varField));
+                QString valueS = QString("'%1'").arg(double(value));
                 if (value == NODATA)
                     valueS = "NULL";
 
