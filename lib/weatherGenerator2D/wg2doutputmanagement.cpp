@@ -186,7 +186,7 @@ void weatherGenerator2D::getWeatherGeneratorOutput()
     inputTMin = (float*)calloc(nrDays, sizeof(float));
     inputTMax = (float*)calloc(nrDays, sizeof(float));
     inputPrec = (float*)calloc(nrDays, sizeof(float));
-    /*
+    // compute climate statistics from observed data
     for (int iStation=0;iStation<nrStations;iStation++)
     {
         outputFileName = "wgClimate_station_" + QString::number(iStation) + ".txt";
@@ -202,7 +202,7 @@ void weatherGenerator2D::getWeatherGeneratorOutput()
         }
         computeWGClimate(nrDays,inputFirstDate,inputTMin,inputTMax,inputPrec,precThreshold,minPrecData,&weatherGenClimate,writeOutput,outputFileName);
 
-    }*/
+    }
 
 }
 
