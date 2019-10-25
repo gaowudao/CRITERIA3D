@@ -60,7 +60,7 @@
         bool isLoaded();
         bool isPointInside(gis::Crit3DGeoPoint geoPoint);
 
-        bool setVarLongName(std::string varName, std::string varLongName);
+        bool setVarLongName(const std::string &varName, const std::string& varLongName);
 
         int getDimensionIndex(char* dimName);
         std::string getDateTimeStr(int timeIndex);
@@ -77,6 +77,7 @@
 
         bool readProperties(std::string fileName);
         bool exportDataSeries(int idVar, gis::Crit3DGeoPoint geoPoint, Crit3DTime firstTime, Crit3DTime lastTime, std::stringstream *buffer);
+        bool extractVariableMap(int idVar, Crit3DTime myTime, gis::Crit3DRasterGrid* myDataGrid, std::string *error);
 
         bool createNewFile(std::string fileName);
         bool writeGeoDimensions(const gis::Crit3DGridHeader& latLonHeader);

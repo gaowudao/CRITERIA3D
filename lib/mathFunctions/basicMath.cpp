@@ -221,7 +221,7 @@
                 j=last;
 
                 while(i<j){
-                    while(x[i]<=x[pivot]&&i<last)
+                    while(i<last && x[i] <= x[pivot])
                         i++;
                     while(x[j]>x[pivot])
                         j--;
@@ -252,7 +252,7 @@
                 j=last;
 
                 while(i<j){
-                    while(x[i]<=x[pivot]&&i<last)
+                    while(i<last && x[i]<=x[pivot])
                         i++;
                     while(x[j]>x[pivot])
                         j--;
@@ -271,9 +271,9 @@
         }
 
 
-        void quicksortAscendingFloat(std::vector<float> &values, int first,int last)
+        void quicksortAscendingFloat(std::vector<float> &values, unsigned int first, unsigned int last)
         {
-            int pivot,j,i;
+            unsigned int pivot,j,i;
             float temp;
 
             if(first<last)
@@ -283,7 +283,7 @@
                 j=last;
 
                 while(i<j){
-                    while(values[i]<=values[pivot]&&i<last)
+                    while(i<last && values[i] <= values[pivot])
                         i++;
                     while(values[j]>values[pivot])
                         j--;
@@ -326,8 +326,8 @@
 
             if (sortValues)
             {
-                // clean nodata
-                double* cleanList = (double*) calloc(*nList, sizeof(double));
+                // clean missing data
+                double* cleanList = new double[unsigned(*nList)];
                 int n = 0;
                 for (int i = 0; i < *nList; i++)
                     if (list[i] != NODATA)
@@ -353,7 +353,7 @@
             else if (rank < 0.)
                 return list[0];
             else
-                return ((rank - (int)(rank)) * (list[(int)(rank) + 1] - list[(int)(rank)])) + list[(int)(rank)];
+                return ((rank - int(rank)) * (list[int(rank) + 1] - list[int(rank)])) + list[int(rank)];
         }
 
 

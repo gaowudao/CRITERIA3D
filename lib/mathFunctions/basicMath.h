@@ -32,7 +32,7 @@
         void quicksortAscendingInteger(int *x,int first, int last);
         void quicksortDescendingInteger(int *x, int first,int last);
         void quicksortAscendingDouble(double *x, int first,int last);
-        void quicksortAscendingFloat(std::vector<float> &values, int first,int last);
+        void quicksortAscendingFloat(std::vector<float> &values, unsigned int first, unsigned int last);
         double percentile(double* list, int *nList, double perc, bool sortValues);
         float percentile(std::vector<float> &list, int* nList, float perc, bool sortValues);
     }

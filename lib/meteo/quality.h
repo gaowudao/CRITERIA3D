@@ -50,7 +50,6 @@
         quality::Range* qualityDailyWInt;
         quality::Range* qualityDailyWDir;
         quality::Range* qualityDailyGRad;
-        quality::Range* qualityDailyWaterTable;
         float referenceHeight;
         float deltaTSuspect;
         float deltaTWrong;

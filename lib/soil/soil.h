@@ -149,7 +149,7 @@
             std::vector <Crit3DHorizon> horizon;
 
             Crit3DSoil();
-            void initialize(std::string soilCode, int nrHorizons);
+            void initialize(const std::string &soilCode, int nrHorizons);
             void cleanSoil();
             void addHorizon(int nHorizon, Crit3DHorizon *newHorizon);
             void deleteHorizon(int nHorizon);
@@ -229,5 +229,6 @@
                         Crit3DFittingOptions* fittingOptions);
         bool sortWaterPotential(soil::Crit3DWaterRetention first, soil::Crit3DWaterRetention second);
     }
+
 
 #endif // SOIL_H

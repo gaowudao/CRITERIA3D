@@ -121,7 +121,8 @@ std::string getKeyStringAggregationMethod(aggregationMethod value)
     return key;
 }
 
-aggregationMethod getKeyGridAggregationMethod(std::string value)
+
+aggregationMethod getKeyGridAggregationMethod(const std::string& value)
 {
     std::map<aggregationMethod, std::string>::const_iterator it;
     aggregationMethod key = noAggrMethod;
@@ -627,9 +628,8 @@ std::string getKeyStringMeteoMap(std::map<std::string, meteoVariable> map, meteo
     return key;
 }
 
-meteoVariable getKeyMeteoVarMeteoMap(std::map<meteoVariable,std::string> map, std::string value)
+meteoVariable getKeyMeteoVarMeteoMap(std::map<meteoVariable,std::string> map, const std::string& value)
 {
-
     std::map<meteoVariable, std::string>::const_iterator it;
     meteoVariable key = noMeteoVar;
 
