@@ -2923,8 +2923,15 @@
      <property name="title">
       <string>Input</string>
      </property>
+     <widget class="QMenu" name="menuMeteo_points">
+      <property name="title">
+       <string>Meteo points</string>
+      </property>
+      <addaction name="actionMeteoPointsOpen"/>
+      <addaction name="actionMeteoPointsImport_data"/>
+     </widget>
      <addaction name="actionLoad_DEM"/>
-     <addaction name="actionLoad_meteo_points_DB"/>
+     <addaction name="menuMeteo_points"/>
      <addaction name="actionLoad_soil_map"/>
      <addaction name="actionLoad_soil_data"/>
      <addaction name="actionLoad_model_parameters"/>
@@ -3066,11 +3073,6 @@
    </property>
    <property name="text">
     <string>&amp;Stamen - Terrain</string>
-   </property>
-  </action>
-  <action name="actionLoad_meteo_points_DB">
-   <property name="text">
-    <string>Meteo points DB...</string>
    </property>
   </action>
   <action name="actionVariableQualitySpatial">
@@ -3261,6 +3263,16 @@
   <action name="actionSave_project">
    <property name="text">
     <string>Save project</string>
+   </property>
+  </action>
+  <action name="actionMeteoPointsOpen">
+   <property name="text">
+    <string>Open...</string>
+   </property>
+  </action>
+  <action name="actionMeteoPointsImport_data">
+   <property name="text">
+    <string>Import hourly data...</string>
    </property>
   </action>
  </widget>

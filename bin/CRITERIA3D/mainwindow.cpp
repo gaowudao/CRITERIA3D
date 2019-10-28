@@ -15,7 +15,9 @@
 #include "dialogSettings.h"
 #include "dialogRadiation.h"
 
+#include "utilities.h"
 #include "crit3dProject.h"
+
 
 extern Crit3DProject myProject;
 
@@ -555,6 +557,18 @@ bool MainWindow::loadMeteoPointsDB(QString dbName)
 }
 
 
+void MainWindow::on_opacitySliderRasterInput_sliderMoved(int position)
+{
+    this->rasterObj->setOpacity(position / 100.0);
+}
+
+
+void MainWindow::on_opacitySliderRasterOutput_sliderMoved(int position)
+{
+    this->rasterObj->setOpacity(position / 100.0);
+}
+
+
 void MainWindow::on_variableButton_clicked()
 {
     myProject.setCurrentVariable(chooseMeteoVariable(&myProject));
@@ -1002,13 +1016,6 @@ void MainWindow::contextMenuRequested(QPoint localPos, QPoint globalPos)
 }
 
 
-void MainWindow::on_actionLoad_meteo_points_DB_triggered()
-{
-    QString dbName = QFileDialog::getOpenFileName(this, tr("Open meteo points DB"), "", tr("DB files (*.db)"));
-    if (dbName != "") this->loadMeteoPointsDB(dbName);
-}
-
-
 void MainWindow::on_actionLoad_soil_map_triggered()
 {
     QString fileName = QFileDialog::getOpenFileName(this, tr("Open soil map"), "", tr("ESRI grid files (*.flt)"));
@@ -1041,13 +1048,51 @@ void MainWindow::on_actionLoad_model_parameters_triggered()
 }
 
 
-void MainWindow::on_opacitySliderRasterInput_sliderMoved(int position)
+void MainWindow::on_actionMeteoPointsOpen_triggered()
 {
-    this->rasterObj->setOpacity(position / 100.0);
+    QString dbName = QFileDialog::getOpenFileName(this, tr("Open meteo points DB"), "", tr("DB files (*.db)"));
+    if (dbName != "") loadMeteoPointsDB(dbName);
 }
 
 
-void MainWindow::on_opacitySliderRasterOutput_sliderMoved(int position)
+void MainWindow::on_actionMeteoPointsImport_data_triggered()
 {
-    this->rasterObj->setOpacity(position / 100.0);
+    if (! myProject.meteoPointsLoaded)
+    {
+        myProject.logInfoGUI("Load meteo points database before.");
+        return;
+    }
+
+    QString fileNameComplete = QFileDialog::getOpenFileName(this, tr("Import meteo data (.csv)"), "", tr("csv files (*.csv)"));
+    if (fileNameComplete == "") return;
+
+    QString filePath = getFilePath(fileNameComplete);
+    QStringList fileList;
+
+    QMessageBox::StandardButton reply;
+    reply = QMessageBox::question(this, "Import data", "Do you want to import all .csv files in the directory?", QMessageBox::Yes|QMessageBox::No);
+
+    if (reply == QMessageBox::Yes)
+    {
+        // all files
+        QDir myDir = QDir(filePath);
+        myDir.setNameFilters(QStringList("*.csv"));
+        fileList = myDir.entryList();
+    }
+    else
+    {
+        // single file
+        fileList << getFileName(fileNameComplete);
+    }
+
+    for (int i=0; i < fileList.count(); i++)
+    {
+        QString fileName = fileList[i];
+        QString codeStr = fileName.left(fileName.length()-4) + "_H";
+        fileNameComplete = filePath + fileName;
+        qDebug() << fileNameComplete << codeStr;
+
+        //importData(fileName, codeStr);
+    }
+
 }
