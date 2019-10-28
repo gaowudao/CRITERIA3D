@@ -85,7 +85,7 @@
             Crit3DMeteoPoint meteoPoint(int row, int col);
             Crit3DMeteoPoint* meteoPointPointer(int row, int col);
 
-            void setActive(int row, int col, bool active);
+            void setActive(unsigned int row, unsigned int col, bool active);
 
             bool isAggregationDefined() const;
             void setIsAggregationDefined(bool isAggregationDefined);
@@ -109,7 +109,7 @@
 
             void initMeteoPoints(int nRow, int nCol);
 
-            void fillMeteoPoint(int row, int col, std::string code, std::string name, int height, bool active);
+            void fillMeteoPoint(unsigned int row, unsigned int col, const std::string &code, const std::string &name, int height, bool active);
 
             bool fillMeteoPointDailyValue(unsigned row, unsigned col, int numberOfDays, bool initialize, Crit3DDate date, meteoVariable variable, float value);
             bool fillMeteoPointHourlyValue(unsigned row, unsigned col, int numberOfDays, bool initialize, Crit3DDate date, int  hour, int minute, meteoVariable variable, float value);
@@ -118,13 +118,13 @@
             void fillCurrentDailyValue(Crit3DDate date, meteoVariable variable);
             void fillCurrentHourlyValue(Crit3DDate date, int hour, int minute, meteoVariable variable);
 
-            bool findMeteoPointFromId(unsigned *row, unsigned *col, std::string code);
+            bool findMeteoPointFromId(unsigned *row, unsigned *col, const std::string &code);
 
             bool getMeteoPointActiveId(int row, int col, std::string *id);
 
             bool findFirstActiveMeteoPoint(std::string* id, int* row, int* col);
 
-            bool isActiveMeteoPointFromId(std::string id);
+            bool isActiveMeteoPointFromId(const std::string &id);
 
             void findGridAggregationPoints(gis::Crit3DRasterGrid* myDEM);
 

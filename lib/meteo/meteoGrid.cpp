@@ -233,14 +233,14 @@ void Crit3DMeteoGrid::initMeteoPoints(int nRow, int nCol)
     }
 }
 
-void Crit3DMeteoGrid::setActive(int row, int col, bool active)
+void Crit3DMeteoGrid::setActive(unsigned int row,unsigned int col, bool active)
 {
     _meteoPoints[row][col]->active = active;
 }
 
 
 // for visualization raster
-void Crit3DMeteoGrid::fillMeteoPoint(int row, int col, std::string code, std::string name, int height, bool active)
+void Crit3DMeteoGrid::fillMeteoPoint(unsigned int row, unsigned int col, const std::string& code, const std::string& name, int height, bool active)
 {
 
     _meteoPoints[row][col]->id = code;
@@ -283,10 +283,9 @@ bool Crit3DMeteoGrid::fillMeteoPointDailyValue(unsigned row, unsigned col, int n
 
 bool Crit3DMeteoGrid::fillMeteoPointHourlyValue(unsigned row, unsigned col, int numberOfDays, bool initialize, Crit3DDate date, int  hour, int minute, meteoVariable variable, float value)
 {
-    int myHourlyFraction = 1;
-
     if (initialize)
     {
+        int myHourlyFraction = 1;
         _meteoPoints[row][col]->initializeObsDataH(myHourlyFraction, numberOfDays, date);
     }
     return _meteoPoints[row][col]->setMeteoPointValueH(date, hour, minute, variable, value);
@@ -428,7 +427,7 @@ void Crit3DMeteoGrid::setGisSettings(const gis::Crit3DGisSettings &gisSettings)
 }
 
 
-bool Crit3DMeteoGrid::findMeteoPointFromId(unsigned* row, unsigned* col, std::string id)
+bool Crit3DMeteoGrid::findMeteoPointFromId(unsigned* row, unsigned* col, const std::string& id)
 {
     unsigned i,j;
 
@@ -461,7 +460,7 @@ bool Crit3DMeteoGrid::getMeteoPointActiveId(int row, int col, std::string* id)
     return false;
 }
 
-bool Crit3DMeteoGrid::isActiveMeteoPointFromId(std::string id)
+bool Crit3DMeteoGrid::isActiveMeteoPointFromId(const std::string& id)
 {
 
     for (int i = 0; i < _gridStructure.header().nrRows; i++)
@@ -843,8 +842,4 @@ void Crit3DMeteoGrid::saveRowColfromZone(gis::Crit3DRasterGrid* zoneGrid, std::v
         }
     }
 }
-
-
-
-
 

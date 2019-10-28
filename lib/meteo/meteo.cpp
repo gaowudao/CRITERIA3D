@@ -497,23 +497,23 @@ double ET0_Hargreaves(double KT, double myLat, int myDoy, double tmax, double tm
 // Thom Discomfort Index (physiological thermal stress indicator for people based on dry-bulb and wet-bulb temperature)
 float computeThomIndex(float temp, float relHum)
 {
-    float zT1, es1, delta;
-
-    if (temp != NODATA && relHum != NODATA)
+    if (int(temp) != int(NODATA) && int(relHum) != int(NODATA))
     {
         float zT = temp;
         float zUR = relHum;
         float es = 0.611f * exp(17.27f * zT / (zT + float(ZEROCELSIUS) - 36.f));
         float zTwb = zT;
         float zTwbPrec = -999.f;
+
         while (abs(zTwb - zTwbPrec) > 0.1f)
         {
             zTwbPrec = zTwb;
-            zT1 = (zT + zTwb) / 2;
-            es1 = 0.611f * exp(17.27f * zT1 / (zT1 + float(ZEROCELSIUS) - 36.f));
-            delta = es1 / (zT1 + float(ZEROCELSIUS)) * log(207700000 / es1);
+            float zT1 = (zT + zTwb) / 2;
+            float es1 = 0.611f * exp(17.27f * zT1 / (zT1 + float(ZEROCELSIUS) - 36.f));
+            float delta = es1 / (zT1 + float(ZEROCELSIUS)) * log(207700000 / es1);
             zTwb = zT - es * (1.f - zUR / 100.f) / (delta + 0.06667f);
         }
+
         return 0.4f * (zT + zTwb) + 4.8f;
     }
     else
@@ -671,6 +671,22 @@ meteoVariable getMeteoVar(std::string varString)
 
     return (meteoVar);
 }
+
+
+meteoVariable getHourlyMeteoVar(std::string varString)
+{
+    meteoVariable meteoVar;
+
+    try {
+        meteoVar = MapHourlyMeteoVar.at(varString);
+    }
+    catch (const std::out_of_range& ) {
+        meteoVar = noMeteoVar;
+    }
+
+    return (meteoVar);
+}
+
 
 bool checkLapseRateCode(lapseRateCodeType myType, bool useLapseRateCode, bool useSupplemental)
 {
