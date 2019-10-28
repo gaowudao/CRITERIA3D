@@ -24,6 +24,13 @@ To compile it, use the project `test/Makeall_CRITERIA1D`. An example project is 
 HEAT1D is a graphical interface for testing the soilFluxex3D library in a 1D domain. Users can set fixed or variable atmospheric boundary conditions and soil parameters. Output graph results include soil temperature, soil water content, heat fluxes (diffusive and latent), liquid (isothermal and thermal) and vapor (isothermal and thermal) water fluxes.  
 Graphs are produced using the Qwt plot library (http://qwt.sourceforge.net/) which should be compiled before usage.
 
+## Soil Widget
+
+Soil widget is a tool to show/edit soil data, including water retention and hydrologic conductivity curves, using modified Van Genuchten - Mualem model.
+
+[-->Download soilWidget](https://github.com/ARPA-SIMC/CRITERIA3D/releases/tag/v0.1)
+![](https://github.com/ARPA-SIMC/CRITERIA3D/blob/master/DOC/img/soilWidget.png)
+
 ## criteriaModel library
 Algorithms for 1D water balance: soil water infiltration, drainage and capillary rise, crop water demand, evaporation and crop transpiration. 
 
