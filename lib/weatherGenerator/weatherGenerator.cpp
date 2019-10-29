@@ -290,7 +290,7 @@ bool markov(float pwd,float pww, bool isWetPreviousDay)
 
 
 /*!
-  * \brief weibull distribution uses only avg prec. (computed on wet days)
+  * \brief weibull distribution uses only avg precipitation (computed on wet days)
   * \returns precipitation [mm]
 */
 float weibull (float dailyAvgPrec, float precThreshold)
