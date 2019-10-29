@@ -71,6 +71,37 @@ void weatherGenerator2D::getWeatherGeneratorOutput()
     inputFirstDate.month = 1;
     inputFirstDate.year = 1;
 
+    float** meanAmountsPrecGenerated = nullptr;
+    float** cumulatedOccurrencePrecGenerated = nullptr;
+
+    meanAmountsPrecGenerated = (float**)calloc(nrStations, sizeof(float*));
+    cumulatedOccurrencePrecGenerated = (float**)calloc(nrStations, sizeof(float*));
+    for (int iStation=0;iStation<nrStations;iStation++)
+    {
+        meanAmountsPrecGenerated[iStation] = (float*)calloc(12, sizeof(float));
+        cumulatedOccurrencePrecGenerated[iStation] = (float*)calloc(12, sizeof(float));
+        for (int j=0;j<12;j++)
+        {
+            meanAmountsPrecGenerated[iStation][j] = 0;
+            cumulatedOccurrencePrecGenerated[iStation][j] = 0;
+        }
+    }
+    for (int iStation=0;iStation<nrStations;iStation++)
+    {
+        for (int iDay=0;iDay<nrData;iDay++)
+        {
+            if (obsDataD[iStation][iDay].prec > parametersModel.precipitationThreshold)
+            {
+                meanAmountsPrecGenerated[iStation][obsPrecDataD[iStation][iDay].date.month-1] += obsDataD[iStation][iDay].prec;
+                ++cumulatedOccurrencePrecGenerated[iStation][obsPrecDataD[iStation][iDay].date.month-1];
+            }
+        }
+        for (int jMonth=0;jMonth<12;jMonth++)
+        {
+            meanAmountsPrecGenerated[iStation][jMonth] /= cumulatedOccurrencePrecGenerated[iStation][jMonth];
+            printf("%d  %f %f\n",jMonth,meanAmountsPrecGenerated[iStation][jMonth],cumulatedOccurrencePrecGenerated[iStation][jMonth]);
+        }
+    }
 
     for (int iStation=0;iStation<nrStations;iStation++)
     {
@@ -102,41 +133,9 @@ void weatherGenerator2D::getWeatherGeneratorOutput()
 
                 if (isPrecWG2D)
                 {
-                    //simulatedPrecipitationAmounts[iSeason].matrixAmounts[i][j]
-                    /*int iSeason;
-                    if (month == 1 || month == 2 || month == 12) iSeason = 0;
-                    else if (month == 3 || month == 4 || month == 5) iSeason = 1;
-                    else if (month == 6 || month == 7 || month == 8) iSeason = 2;
-                    else iSeason = 3;*/
-                    /*outputWeatherData[iStation].precipitation[counter] = simulatedPrecipitationAmounts[iSeason].matrixAmounts[iStation][counterSeason[iSeason]];
-                    printf("%.2f %.1f\n",outputWeatherData[iStation].precipitation[counter],occurrencePrecGenerated[counter][iStation]);
-                    (counterSeason[iSeason])++;
-                    */
-                    /*if (month == 1 || month == 2 || month == 12)
-                    {
-                        iSeason = 0;
-                        outputWeatherData[iStation].precipitation[counter] = simulatedPrecipitationAmounts[iSeason].matrixAmounts[iStation][counterSeason[iSeason]];
-                        (counterSeason[iSeason])++;
-                    }
-                    else if (month == 3 || month == 4 || month == 5)
-                    {
-                      iSeason = 1;
-                      outputWeatherData[iStation].precipitation[counter] = simulatedPrecipitationAmounts[iSeason].matrixAmounts[iStation][counterSeason[iSeason]];
-                      (counterSeason[iSeason])++;
-                    }
-                    else if (month == 6 || month == 7 || month == 8)
-                    {
-                      iSeason = 2;
-                      outputWeatherData[iStation].precipitation[counter] = simulatedPrecipitationAmounts[iSeason].matrixAmounts[iStation][counterSeason[iSeason]];
-                      (counterSeason[iSeason])++;
-                    }
-                    else if (month == 9 || month == 10 || month == 11)
-                    {
-                      iSeason = 2;
-                      outputWeatherData[iStation].precipitation[counter] = simulatedPrecipitationAmounts[iSeason].matrixAmounts[iStation][counterSeason[iSeason]];
-                      (counterSeason[iSeason])++;
-                    }*/
                     outputWeatherData[iStation].precipitation[counter] = amountsPrecGenerated[counter][iStation];
+                    //meanAmountsPrecGenerated[iStation][month-1] += amountsPrecGenerated[counter][iStation];
+                    //cumulatedOccurrencePrecGenerated[iStation][month-1] += occurrencePrecGenerated[counter][iStation];
                 }
                 else
                 {
@@ -145,6 +144,9 @@ void weatherGenerator2D::getWeatherGeneratorOutput()
                 counter++;
             }
         }
+        //for (int jMonth=0;jMonth<12;jMonth++)
+            //meanAmountsPrecGenerated[iStation][jMonth] /= cumulatedOccurrencePrecGenerated[iStation][jMonth];
+
 
         for(int i=0;i<parametersModel.yearOfSimulation*365;i++)
         {
