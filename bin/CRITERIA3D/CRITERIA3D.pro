@@ -24,6 +24,9 @@ INCLUDEPATH +=  ./shared ../PRAGA/shared  \
 unix:{
     INCLUDEPATH += /usr/include/qwt/
 }
+macx:{
+    INCLUDEPATH += /usr/local/opt/qwt/lib/qwt.framework/Headers/
+}
 
 CONFIG += debug_and_release
 
@@ -72,6 +75,7 @@ CONFIG(debug, debug|release) {
 
 
 SOURCES += mainwindow.cpp \
+    ../PRAGA/shared/aggregation.cpp \
     ../PRAGA/shared/dialogRadiation.cpp \
     ../PRAGA/shared/dialogSelection.cpp \
     ../PRAGA/shared/stationMarker.cpp \
@@ -91,6 +95,7 @@ SOURCES += mainwindow.cpp \
 
 
 HEADERS += mainwindow.h \
+    ../PRAGA/shared/aggregation.h \
     ../PRAGA/shared/dialogRadiation.h \
     ../PRAGA/shared/dialogSelection.h \
     ../PRAGA/shared/stationMarker.h \
@@ -111,9 +116,14 @@ HEADERS += mainwindow.h \
 FORMS += mainwindow.ui \
     ../PRAGA/shared/formInfo.ui
 
+
+# insert here path of qwt.prf
 win32:{
     include($$(QWT_ROOT)/features/qwt.prf)
 }
 unix:{
     include(/usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/qwt.prf)
+}
+macx:{
+    include(/usr/local/opt/qwt/features/qwt.prf)
 }
