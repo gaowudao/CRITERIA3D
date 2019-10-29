@@ -31,6 +31,9 @@ INCLUDEPATH += ../mathFunctions ../soil ../utilities
 unix:{
     INCLUDEPATH += /usr/include/qwt/
 }
+macx:{
+    INCLUDEPATH += /usr/local/opt/qwt/lib/qwt.framework/Headers/
+}
 
 SOURCES += \
     barHorizon.cpp \
@@ -76,4 +79,6 @@ win32:{
 unix:{
     include(/usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/qwt.prf)
 }
-
+macx:{
+    include(/usr/local/opt/qwt/features/qwt.prf)
+}

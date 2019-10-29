@@ -12,6 +12,7 @@ QT       -= core gui
 
 TEMPLATE = lib
 CONFIG += staticlib
+CONFIG += c++14
 
 CONFIG += debug_and_release
 
