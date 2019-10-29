@@ -32,6 +32,7 @@
     #include "MapGraphics_global.h"
     #include "MapGraphicsObject.h"
     #include "MapGraphicsView.h"
+    #include "Position.h"
     #include "colorLegend.h"
     #include "geoMap.h"
 
@@ -72,6 +73,7 @@
         void setRaster(gis::Crit3DRasterGrid* rasterPtr);
         gis::Crit3DRasterGrid* getRaster();
         void updateCenter();
+        Position getCurrentCenter();
 
     protected:
         //virtual from MapGraphicsObject

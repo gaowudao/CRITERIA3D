@@ -3030,8 +3030,8 @@
      </property>
      <addaction name="actionView_SoilMap"/>
     </widget>
-    <addaction name="menuDEM"/>
     <addaction name="menuPoints"/>
+    <addaction name="menuDEM"/>
     <addaction name="menuSoil"/>
     <addaction name="separator"/>
     <addaction name="menuMeteo_variables"/>
@@ -3130,11 +3130,6 @@
   <action name="actionView_Boundary">
    <property name="text">
     <string>Boundary</string>
-   </property>
-  </action>
-  <action name="actionView_DEM">
-   <property name="text">
-    <string>DEM</string>
    </property>
   </action>
   <action name="actionInterpolationSettings">

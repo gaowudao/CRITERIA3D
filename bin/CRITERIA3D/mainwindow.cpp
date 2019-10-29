@@ -114,6 +114,7 @@ void MainWindow::updateMaps()
 {
     rasterDEM->updateCenter();
     rasterOutput->updateCenter();
+    *startCenter = rasterDEM->getCurrentCenter();
 }
 
 
@@ -620,6 +621,7 @@ void MainWindow::setCurrentRasterOutput(gis::Crit3DRasterGrid *myRaster)
 
     outputRasterColorLegend->repaint();
     rasterOutput->redrawRequested();
+    updateMaps();
 }
 
 
@@ -651,17 +653,20 @@ void MainWindow::on_actionRadiationSettings_triggered()
 
 void MainWindow::on_actionProjectSettings_triggered()
 {
-    DialogSettings* mySettingsDialog = new DialogSettings(&myProject);
-    mySettingsDialog->exec();
-    if (! isEqual(startCenter->latitude(), myProject.gisSettings.startLocation.latitude)
-            || ! isEqual(startCenter->longitude(), myProject.gisSettings.startLocation.longitude))
-    {
-        startCenter->setLatitude(myProject.gisSettings.startLocation.latitude);
-        startCenter->setLongitude(myProject.gisSettings.startLocation.longitude);
-        this->mapView->centerOn(startCenter->lonLat());
-    }
+    DialogSettings* settingsDialog = new DialogSettings(&myProject);
+    int result = settingsDialog->exec();
+    settingsDialog->close();
 
-    mySettingsDialog->close();
+    if (result == QDialog::Accepted)
+    {
+        if (! isEqual(startCenter->latitude(), myProject.gisSettings.startLocation.latitude) ||
+            ! isEqual(startCenter->longitude(), myProject.gisSettings.startLocation.longitude))
+        {
+            startCenter->setLatitude(myProject.gisSettings.startLocation.latitude);
+            startCenter->setLongitude(myProject.gisSettings.startLocation.longitude);
+            this->mapView->centerOn(startCenter->lonLat());
+        }
+    }
 }
 
 
@@ -720,7 +725,6 @@ void MainWindow::on_actionView_SoilMap_triggered()
         setColorScale(airTemperature, myProject.soilMap.colorScale);
         setCurrentRasterOutput(&(myProject.soilMap));
         ui->labelOutputRaster->setText("Soil index");
-        updateMaps();
     }
     else
     {

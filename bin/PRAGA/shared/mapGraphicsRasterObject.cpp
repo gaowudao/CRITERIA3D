@@ -423,6 +423,16 @@ void RasterObject::updateCenter()
 }
 
 
+Position RasterObject::getCurrentCenter()
+{
+    Position center;
+    center.setLongitude(geoMap->referencePoint.longitude);
+    center.setLatitude(geoMap->referencePoint.latitude);
+
+    return center;
+}
+
+
 void RasterObject::setMapExtents()
 {
     int widthPixels = view->width() - MAPBORDER*2;
