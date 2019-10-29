@@ -607,7 +607,8 @@ void MainWindow::setCurrentRasterInput(gis::Crit3DRasterGrid *myRaster)
     rasterDEM->initializeUTM(myRaster, myProject.gisSettings, false);
     inputRasterColorLegend->colorScale = myRaster->colorScale;
 
-    updateMaps();
+    inputRasterColorLegend->repaint();
+    rasterDEM->redrawRequested();
 }
 
 
@@ -617,7 +618,7 @@ void MainWindow::setCurrentRasterOutput(gis::Crit3DRasterGrid *myRaster)
     outputRasterColorLegend->colorScale = myRaster->colorScale;
 
     outputRasterColorLegend->repaint();
-    updateMaps();
+    rasterOutput->redrawRequested();
 }
 
 
@@ -748,7 +749,7 @@ void MainWindow::on_actionView_Slope_triggered()
 {
     if (myProject.DEM.isLoaded)
     {
-        setColorScale(noMeteoTerrain, myProject.radiationMaps->slopeMap->colorScale);
+        setColorScale(precipitation, myProject.radiationMaps->slopeMap->colorScale);
         setCurrentRasterOutput(myProject.radiationMaps->slopeMap);
         ui->labelOutputRaster->setText("Slope °");
     }
