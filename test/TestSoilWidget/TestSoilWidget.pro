@@ -30,7 +30,6 @@ INCLUDEPATH +=  ../../lib/crit3dDate ../../lib/mathFunctions  \
 unix:{
     INCLUDEPATH += /usr/include/qwt/
 }
-
 macx:{
     INCLUDEPATH += /usr/local/opt/qwt/lib/qwt.framework/Headers/
 }
