@@ -402,3 +402,13 @@ bool Crit3DProject::initializeCriteria3DModel()
     return true;
 }
 
+
+void Crit3DProject::setMapsComputed(bool value)
+{
+    if (radiationMaps != nullptr)
+        radiationMaps->isComputed = value;
+
+    if (hourlyMeteoMaps != nullptr)
+        hourlyMeteoMaps->isComputed = value;
+}
+

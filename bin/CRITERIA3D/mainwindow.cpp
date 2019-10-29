@@ -430,8 +430,6 @@ void MainWindow::updateDateTime()
 {
     this->ui->dateEdit->setDate(myProject.getCurrentDate());
     this->ui->timeEdit->setTime(QTime(myProject.getCurrentHour(),0,0));
-    myProject.radiationMaps->isComputed = false;
-    myProject.hourlyMeteoMaps->isComputed = false;
 }
 
 
@@ -442,8 +440,7 @@ void MainWindow::on_dateEdit_dateChanged(const QDate &date)
         myProject.setCurrentDate(date);
         myProject.loadMeteoPointsData(date, date, true);
         myProject.loadMeteoGridData(date, date, true);
-        myProject.radiationMaps->isComputed = false;
-        myProject.hourlyMeteoMaps->isComputed = false;
+        myProject.setMapsComputed(false);
     }
 
     redrawMeteoPoints(currentPointsVisualization, true);
@@ -455,8 +452,7 @@ void MainWindow::on_timeEdit_timeChanged(const QTime &time)
     if (time.hour() != myProject.getCurrentHour())
     {
         myProject.setCurrentHour(time.hour());
-        myProject.radiationMaps->isComputed = false;
-        myProject.hourlyMeteoMaps->isComputed = false;
+        myProject.setMapsComputed(false);
     }
 
     redrawMeteoPoints(currentPointsVisualization, true);
