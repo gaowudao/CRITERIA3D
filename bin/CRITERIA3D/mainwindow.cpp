@@ -69,11 +69,16 @@ MainWindow::MainWindow(QWidget *parent) :
     this->mapView->centerOn(startCenter->lonLat());
     connect(this->mapView, SIGNAL(zoomLevelChanged(quint8)), this, SLOT(updateMaps()));
 
-    // Set raster object
-    this->rasterObj = new RasterObject(this->mapView);
-    this->rasterObj->setOpacity(this->ui->opacitySliderRasterInput->value() / 100.0);
-    this->rasterObj->setColorLegend(this->inputRasterColorLegend);
-    this->mapView->scene()->addObject(this->rasterObj);
+    // Set raster objects
+    this->rasterDEM = new RasterObject(this->mapView);
+    this->rasterDEM->setOpacity(this->ui->opacitySliderRasterInput->value() / 100.0);
+    this->rasterDEM->setColorLegend(this->inputRasterColorLegend);
+    this->mapView->scene()->addObject(this->rasterDEM);
+
+    this->rasterOutput = new RasterObject(this->mapView);
+    this->rasterOutput->setOpacity(this->ui->opacitySliderRasterOutput->value() / 100.0);
+    this->rasterOutput->setColorLegend(this->outputRasterColorLegend);
+    this->mapView->scene()->addObject(this->rasterOutput);
 
     this->updateVariable();
     this->updateDateTime();
@@ -107,7 +112,8 @@ void MainWindow::resizeEvent(QResizeEvent * event)
 
 void MainWindow::updateMaps()
 {
-    rasterObj->updateCenter();
+    rasterDEM->updateCenter();
+    rasterOutput->updateCenter();
 }
 
 
@@ -240,10 +246,12 @@ void MainWindow::drawProject()
 
 void MainWindow::clearDEM()
 {
-    rasterObj->clear();
-    rasterObj->redrawRequested();
+    rasterDEM->clear();
+    rasterOutput->clear();
+
     ui->labelInputRaster->setText("");
     ui->labelOutputRaster->setText("");
+
     setInputRasterVisible(false);
     setOutputRasterVisible(false);
 }
@@ -261,15 +269,14 @@ void MainWindow::clearMeteoPoints()
 void MainWindow::renderDEM()
 {
     setCurrentRasterInput(&(myProject.DEM));
-    setInputRasterVisible(true);
     ui->labelInputRaster->setText(QString::fromStdString(getVariableString(noMeteoTerrain)));
 
     // center map
-    gis::Crit3DGeoPoint* center = this->rasterObj->getRasterCenter();
+    gis::Crit3DGeoPoint* center = this->rasterDEM->getRasterCenter();
     mapView->centerOn(qreal(center->longitude), qreal(center->latitude));
 
     // resize map
-    float size = this->rasterObj->getRasterMaxSize();
+    float size = this->rasterDEM->getRasterMaxSize();
     size = log2(1000.f/size);
     mapView->setZoomLevel(quint8(size));
     mapView->centerOn(qreal(center->longitude), qreal(center->latitude));
@@ -559,13 +566,13 @@ bool MainWindow::loadMeteoPointsDB(QString dbName)
 
 void MainWindow::on_opacitySliderRasterInput_sliderMoved(int position)
 {
-    this->rasterObj->setOpacity(position / 100.0);
+    this->rasterDEM->setOpacity(position / 100.0);
 }
 
 
 void MainWindow::on_opacitySliderRasterOutput_sliderMoved(int position)
 {
-    this->rasterObj->setOpacity(position / 100.0);
+    this->rasterOutput->setOpacity(position / 100.0);
 }
 
 
@@ -595,28 +602,28 @@ void MainWindow::setOutputRasterVisible(bool value)
 void MainWindow::setCurrentRasterInput(gis::Crit3DRasterGrid *myRaster)
 {
     setInputRasterVisible(true);
-    setOutputRasterVisible(false);
+    setOutputRasterVisible(true);
 
-    rasterObj->initializeUTM(myRaster, myProject.gisSettings, false);
-    rasterObj->setColorLegend(inputRasterColorLegend);
-    rasterObj->setOpacity(ui->opacitySliderRasterInput->value() / 100.0);
+    rasterDEM->initializeUTM(myRaster, myProject.gisSettings, false);
+    rasterDEM->setColorLegend(inputRasterColorLegend);
+    rasterDEM->setOpacity(ui->opacitySliderRasterInput->value() / 100.0);
     inputRasterColorLegend->colorScale = myRaster->colorScale;
 
-    rasterObj->redrawRequested();
+    rasterDEM->redrawRequested();
 }
 
 
 void MainWindow::setCurrentRasterOutput(gis::Crit3DRasterGrid *myRaster)
 {
-    setInputRasterVisible(false);
+    setInputRasterVisible(true);
     setOutputRasterVisible(true);
 
-    rasterObj->initializeUTM(myRaster, myProject.gisSettings, false);
-    rasterObj->setColorLegend(outputRasterColorLegend);
-    rasterObj->setOpacity(ui->opacitySliderRasterOutput->value() / 100.0);
+    rasterOutput->initializeUTM(myRaster, myProject.gisSettings, false);
+    rasterOutput->setColorLegend(outputRasterColorLegend);
+    rasterOutput->setOpacity(ui->opacitySliderRasterOutput->value() / 100.0);
     outputRasterColorLegend->colorScale = myRaster->colorScale;
 
-    rasterObj->redrawRequested();
+    rasterOutput->redrawRequested();
 }
 
 
@@ -710,29 +717,13 @@ void MainWindow::on_actionView_3D_triggered()
 }
 
 
-void MainWindow::on_actionView_DEM_triggered()
-{
-    if (myProject.DEM.isLoaded)
-    {
-        setColorScale(noMeteoTerrain, myProject.DEM.colorScale);
-        setCurrentRasterInput(&(myProject.DEM));
-        ui->labelInputRaster->setText(QString::fromStdString(getVariableString(noMeteoTerrain)));
-    }
-    else
-    {
-        myProject.logInfoGUI("Load a Digital Elevation Model before.");
-        return;
-    }
-}
-
-
 void MainWindow::on_actionView_SoilMap_triggered()
 {
     if (myProject.soilMap.isLoaded)
     {
         setColorScale(airTemperature, myProject.soilMap.colorScale);
-        setCurrentRasterInput(&(myProject.soilMap));
-        ui->labelInputRaster->setText("Soil index map");
+        setCurrentRasterOutput(&(myProject.soilMap));
+        ui->labelOutputRaster->setText("Soil index map");
         updateMaps();
     }
     else
@@ -748,8 +739,8 @@ void MainWindow::on_actionView_Boundary_triggered()
     if (myProject.boundaryMap.isLoaded)
     {
         setColorScale(noMeteoTerrain, myProject.boundaryMap.colorScale);
-        setCurrentRasterInput(&(myProject.boundaryMap));
-        ui->labelInputRaster->setText("Boundary map");
+        setCurrentRasterOutput(&(myProject.boundaryMap));
+        ui->labelOutputRaster->setText("Boundary map");
     }
     else
     {
@@ -764,8 +755,8 @@ void MainWindow::on_actionView_Slope_triggered()
     if (myProject.DEM.isLoaded)
     {
         setColorScale(noMeteoTerrain, myProject.radiationMaps->slopeMap->colorScale);
-        setCurrentRasterInput(myProject.radiationMaps->slopeMap);
-        ui->labelInputRaster->setText("Slope °");
+        setCurrentRasterOutput(myProject.radiationMaps->slopeMap);
+        ui->labelOutputRaster->setText("Slope °");
     }
     else
     {
@@ -780,8 +771,8 @@ void MainWindow::on_actionView_Aspect_triggered()
     if (myProject.DEM.isLoaded)
     {
         setColorScale(airTemperature, myProject.radiationMaps->aspectMap->colorScale);
-        setCurrentRasterInput(myProject.radiationMaps->aspectMap);
-        ui->labelInputRaster->setText("Aspect °");
+        setCurrentRasterOutput(myProject.radiationMaps->aspectMap);
+        ui->labelOutputRaster->setText("Aspect °");
     }
     else
     {

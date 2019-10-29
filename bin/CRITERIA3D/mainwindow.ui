@@ -962,7 +962,7 @@
      <bool>true</bool>
     </property>
     <property name="title">
-     <string notr="true">Input Raster</string>
+     <string notr="true">Digital Elevation Model</string>
     </property>
     <property name="alignment">
      <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
@@ -3003,8 +3003,6 @@
      <property name="title">
       <string>Spatial data</string>
      </property>
-     <addaction name="actionView_DEM"/>
-     <addaction name="separator"/>
      <addaction name="actionView_Slope"/>
      <addaction name="actionView_Aspect"/>
      <addaction name="separator"/>

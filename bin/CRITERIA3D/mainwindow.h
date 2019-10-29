@@ -59,7 +59,6 @@
         void on_actionCompute_solar_radiation_triggered();
         void on_actionCompute_AllMeteoMaps_triggered();
 
-        void on_actionView_DEM_triggered();
         void on_actionView_3D_triggered();
         void on_actionView_SoilMap_triggered();
         void on_actionView_Boundary_triggered();
@@ -112,7 +111,8 @@
         MapGraphicsScene* mapScene;
         MapGraphicsView* mapView;
 
-        RasterObject* rasterObj;
+        RasterObject* rasterDEM;
+        RasterObject* rasterOutput;
         QList<StationMarker*> pointList;
 
         ColorLegend *inputRasterColorLegend;
