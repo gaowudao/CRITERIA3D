@@ -452,7 +452,6 @@ void MainWindow::on_dateEdit_dateChanged(const QDate &date)
 
 void MainWindow::on_timeEdit_timeChanged(const QTime &time)
 {
-    //hour
     if (time.hour() != myProject.getCurrentHour())
     {
         myProject.setCurrentHour(time.hour());
