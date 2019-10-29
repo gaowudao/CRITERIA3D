@@ -180,15 +180,7 @@ bool loadSoilData(QSqlDatabase* dbSoil, QString soilCode, soil::Crit3DSoil* mySo
 
     if (! query.isValid())
     {
-        if (query.lastError().number() > 0)
-        {
-            *error = "dbSoil error: " + query.lastError().text();
-        }
-        else
-        {
-            *error = "Empty soil:" + soilCode;
-            mySoil->initialize(soilCode.toStdString(), 0);
-        }
+        *error = "dbSoil error: " + query.lastError().text();
         return false;
     }
 
@@ -247,21 +239,12 @@ bool loadSoilData(QSqlDatabase* dbSoil, QString soilCode, soil::Crit3DSoil* mySo
     queryString = "SELECT * FROM water_retention ";
     queryString += "WHERE soil_code='" + soilCode + "' ORDER BY horizon_nr, water_potential";
     query = dbSoil->exec(queryString);
-    query.last();
 
-    if (! query.isValid())
-    {
-        if (query.lastError().number() > 0)
-        {
-            *error = "water_retention table: " + query.lastError().text();
-            return false;
-        }
-        // no data
-        else return true;
-    }
+    query.last();
+    int nrData = query.at() + 1;     //SQLITE doesn't support SIZE
+    if (nrData <= 0) return true;
 
     soil::Crit3DWaterRetention waterRetention;
-
     query.first();
     do
     {
@@ -521,8 +504,7 @@ QString getIdSoilString(QSqlDatabase* dbSoil, int idSoilNumber, QString *myError
 
     if (! query.isValid())
     {
-        if (query.lastError().number() > 0)
-            *myError = query.lastError().text();
+        *myError = query.lastError().text();
         return "";
     }
 
@@ -531,6 +513,7 @@ QString getIdSoilString(QSqlDatabase* dbSoil, int idSoilNumber, QString *myError
 
     return idSoilStr;
 }
+
 
 bool getSoilList(QSqlDatabase* dbSoil, QStringList* soilList, QString* error)
 {
@@ -541,14 +524,7 @@ bool getSoilList(QSqlDatabase* dbSoil, QStringList* soilList, QString* error)
     query.first();
     if (! query.isValid())
     {
-        if (query.lastError().number() > 0)
-        {
-            *error = query.lastError().text();
-        }
-        else
-        {
-            *error = "Error in reading table soils";
-        }
+        *error = query.lastError().text();
         return false;
     }
 
@@ -599,14 +575,7 @@ bool loadAllSoils(QSqlDatabase* dbSoil, std::vector <soil::Crit3DSoil> *soilList
     query.first();
     if (! query.isValid())
     {
-        if (query.lastError().number() > 0)
-        {
-            *error = query.lastError().text();
-        }
-        else
-        {
-            *error = "Error in reading table soils";
-        }
+        *error = query.lastError().text();
         return false;
     }
 
