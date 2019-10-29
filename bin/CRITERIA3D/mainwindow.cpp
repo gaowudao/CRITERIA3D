@@ -619,9 +619,18 @@ void MainWindow::setCurrentRasterOutput(gis::Crit3DRasterGrid *myRaster)
     rasterOutput->initializeUTM(myRaster, myProject.gisSettings, false);
     outputRasterColorLegend->colorScale = myRaster->colorScale;
 
-    outputRasterColorLegend->repaint();
-    rasterOutput->redrawRequested();
-    updateMaps();
+    redrawRasterOutput();
+}
+
+
+void MainWindow::redrawRasterOutput()
+{
+    if (ui->labelOutputRaster->isVisible())
+    {
+        outputRasterColorLegend->repaint();
+        rasterOutput->redrawRequested();
+        updateMaps();
+    }
 }
 
 
@@ -792,7 +801,7 @@ bool MainWindow::checkMapVariable(bool isComputed)
 
     if (! isComputed)
     {
-        myProject.logInfoGUI("Compute variable before.");
+        myProject.logInfoGUI("Compute hourly variable before.");
         return false;
     }
 
@@ -949,6 +958,8 @@ void MainWindow::on_actionCompute_AllMeteoMaps_triggered()
         myProject.logError();
         return;
     }
+
+    redrawRasterOutput();
 }
 
 

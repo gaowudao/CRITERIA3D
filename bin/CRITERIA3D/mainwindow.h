@@ -142,7 +142,6 @@
         void setCurrentRasterInput(gis::Crit3DRasterGrid *myRaster);
         void setCurrentRasterOutput(gis::Crit3DRasterGrid *myRaster);
         void interpolateDemGUI();
-        void showElabResult(bool updateColorSCale, bool isMeteoGrid, bool isAnomaly);
         bool initializeViewer3D();
         bool checkMapVariable(bool isComputed);
         void setMapVariable(meteoVariable myVar, gis::Crit3DRasterGrid *myGrid);
@@ -159,6 +158,7 @@
         void clearDEM();
         void drawMeteoPoints();
         void clearMeteoPoints();
+        void redrawRasterOutput();
     };
 
 
