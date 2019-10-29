@@ -36,19 +36,19 @@ MainWindow::MainWindow(QWidget *parent) :
     this->mapScene = new MapGraphicsScene(this);
     this->mapView = new MapGraphicsView(mapScene, this->ui->widgetMap);
 
-    this->inputRasterColorLegend = new ColorLegend(this->ui->colorScaleInputRaster);
-    this->inputRasterColorLegend->resize(this->ui->colorScaleInputRaster->size());
+    this->inputRasterColorLegend = new ColorLegend(ui->colorScaleInputRaster);
+    this->inputRasterColorLegend->resize(ui->colorScaleInputRaster->size());
 
     this->outputRasterColorLegend = new ColorLegend(this->ui->colorScaleOutputRaster);
-    this->outputRasterColorLegend->resize(this->ui->colorScaleOutputRaster->size());
+    this->outputRasterColorLegend->resize(ui->colorScaleOutputRaster->size());
 
-    this->meteoPointsLegend = new ColorLegend(this->ui->colorScaleMeteoPoints);
-    this->meteoPointsLegend->resize(this->ui->colorScaleMeteoPoints->size());
+    this->meteoPointsLegend = new ColorLegend(ui->colorScaleMeteoPoints);
+    this->meteoPointsLegend->resize(ui->colorScaleMeteoPoints->size());
     this->meteoPointsLegend->colorScale = myProject.meteoPointsColorScale;
 
     // initialize
-    this->ui->opacitySliderRasterInput->setVisible(false);
-    this->ui->opacitySliderRasterOutput->setVisible(false);
+    ui->opacitySliderRasterInput->setVisible(false);
+    ui->opacitySliderRasterOutput->setVisible(false);
     ui->labelInputRaster->setText("");
     ui->labelOutputRaster->setText("");
     this->currentPointsVisualization = notShown;
@@ -56,9 +56,9 @@ MainWindow::MainWindow(QWidget *parent) :
     // show menu
     showPointsGroup = new QActionGroup(this);
     showPointsGroup->setExclusive(true);
-    showPointsGroup->addAction(this->ui->actionView_PointsHide);
-    showPointsGroup->addAction(this->ui->actionView_PointsLocation);
-    showPointsGroup->addAction(this->ui->actionView_PointsCurrentVariable);
+    showPointsGroup->addAction(ui->actionView_PointsHide);
+    showPointsGroup->addAction(ui->actionView_PointsLocation);
+    showPointsGroup->addAction(ui->actionView_PointsCurrentVariable);
     showPointsGroup->setEnabled(false);
 
     this->setTileMapSource(OSMTileSource::OSMTiles);
@@ -605,25 +605,19 @@ void MainWindow::setCurrentRasterInput(gis::Crit3DRasterGrid *myRaster)
     setOutputRasterVisible(true);
 
     rasterDEM->initializeUTM(myRaster, myProject.gisSettings, false);
-    rasterDEM->setColorLegend(inputRasterColorLegend);
-    rasterDEM->setOpacity(ui->opacitySliderRasterInput->value() / 100.0);
     inputRasterColorLegend->colorScale = myRaster->colorScale;
 
-    rasterDEM->redrawRequested();
+    updateMaps();
 }
 
 
 void MainWindow::setCurrentRasterOutput(gis::Crit3DRasterGrid *myRaster)
 {
-    setInputRasterVisible(true);
-    setOutputRasterVisible(true);
-
     rasterOutput->initializeUTM(myRaster, myProject.gisSettings, false);
-    rasterOutput->setColorLegend(outputRasterColorLegend);
-    rasterOutput->setOpacity(ui->opacitySliderRasterOutput->value() / 100.0);
     outputRasterColorLegend->colorScale = myRaster->colorScale;
 
-    rasterOutput->redrawRequested();
+    outputRasterColorLegend->repaint();
+    updateMaps();
 }
 
 
@@ -808,7 +802,6 @@ void MainWindow::setMapVariable(meteoVariable myVar, gis::Crit3DRasterGrid *myGr
     ui->opacitySliderRasterOutput->setVisible(true);
 
     myProject.setCurrentVariable(myVar);
-    currentPointsVisualization = showCurrentVariable;
     updateVariable();
 }
 
