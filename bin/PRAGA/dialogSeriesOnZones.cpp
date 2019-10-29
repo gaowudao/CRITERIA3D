@@ -1,4 +1,5 @@
 #include "pragaProject.h"
+#include "aggregation.h"
 #include "dialogSeriesOnZones.h"
 
 extern PragaProject myProject;
@@ -144,7 +145,7 @@ bool DialogSeriesOnZones::checkValidData()
 
     QString var = variableList.currentText();
     variable = getKeyMeteoVarMeteoMap(MapDailyMeteoVarToString, var.toStdString());
-    spatialElaboration = getKeyGridAggregationMethod(spatialElab.currentText().toStdString());
+    spatialElaboration = getAggregationMethod(spatialElab.currentText().toStdString());
 
     return true;
 

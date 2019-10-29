@@ -4,6 +4,7 @@
 
 #include "project.h"
 #include "utilities.h"
+#include "aggregation.h"
 #include "dialogInterpolation.h"
 
 DialogInterpolation::DialogInterpolation(Project *myProject)
