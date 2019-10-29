@@ -80,6 +80,7 @@ SOURCES += main.cpp\
     dialogPragaProject.cpp \
     mainWindow.cpp \
     saveClimaLayout.cpp \
+    shared/aggregation.cpp \
     shared/dialogProject.cpp \
     shared/meteoMaps.cpp \
     shared/stationMarker.cpp \
@@ -109,6 +110,7 @@ SOURCES += main.cpp\
 HEADERS  += mainWindow.h \
     dialogPragaProject.h \
     saveClimaLayout.h \
+    shared/aggregation.h \
     shared/dialogProject.h \
     shared/meteoMaps.h \
     shared/stationMarker.h \

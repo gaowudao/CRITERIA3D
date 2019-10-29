@@ -11,6 +11,7 @@
 #include "interpolation.h"
 #include "transmissivity.h"
 #include "utilities.h"
+#include "aggregation.h"
 
 #ifdef NETCDF
     #include "netcdfHandler.h"
@@ -2094,5 +2095,7 @@ void Project::logError()
         std::cout << "ERROR! " << errorString.toStdString() << std::endl;
     }
 }
+
+
 
 

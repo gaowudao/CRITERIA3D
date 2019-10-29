@@ -290,21 +290,21 @@ bool markov(float pwd,float pww, bool isWetPreviousDay)
 
 
 /*!
-  * \brief weibull distribution
+  * \brief weibull distribution uses only avg precipitation (computed on wet days)
   * \returns precipitation [mm]
 */
-float weibull (float mean, float precThreshold)
+float weibull (float dailyAvgPrec, float precThreshold)
 {
     double r = 0;
-    float w;
-
     while (r < EPSILON)
+    {
         r = double(rand()) / double(RAND_MAX);
+    }
 
-    w = 0.84f * mean * float(pow(-log(r), 1.333));
+    double w = 0.84 * double(dailyAvgPrec) * pow(-log(r), 1.3333);
 
-    if (w > precThreshold)
-        return w;
+    if (w > double(precThreshold))
+        return float(w);
     else
         return precThreshold;
 }
@@ -606,15 +606,12 @@ bool makeSeasonalForecast(QString outputFileName, char separator, TXMLSeasonalAn
     Crit3DDate seasonFirstDate;
     Crit3DDate seasonLastDate;
 
-    int modelIndex = 0;
-    int numMembers;     // number of models into xml anomaly file
-    int nrYears;        // number of years of the output series. It is the length of the virtual period where all the previsions (one for each model) are given one after another
-    int myFirstYear;
-    int myLastYear;
-    int myNumValues;    // number of days between the first and the last prediction year
-    int myYear;
-    int obsIndex;
-    int addday = 0;
+    unsigned int nrMembers;         // number of models into xml anomaly file
+    unsigned int nrYears;           // number of years of the output series. It is the length of the virtual period where all the previsions (one for each model) are given one after another
+    unsigned int nrValues;          // number of days between the first and the last prediction year
+    int firstYear, lastYear, myYear;
+    unsigned int obsIndex;
+    unsigned int addday = 0;
     bool isLastMember = false;
 
     // it checks if observed data includes the last 9 months before wgDoy1
@@ -626,19 +623,21 @@ bool makeSeasonalForecast(QString outputFileName, char separator, TXMLSeasonalAn
         return false;
     }
 
-    numMembers = 0;
+    nrMembers = 0;
     for (int i = 0; i<XMLAnomaly->modelMember.size(); i++)
-      numMembers = numMembers +  XMLAnomaly->modelMember[i].toInt();
+    {
+        nrMembers += XMLAnomaly->modelMember[i].toUInt();
+    }
 
-    nrYears = numMembers * nrRepetitions;
+    nrYears = nrMembers * unsigned(nrRepetitions);
 
-    myFirstYear = myPredictionYear;
+    firstYear = myPredictionYear;
 
     // wgDoy1 within myPredictionYear, wgDoy2 within myPredictionYear+1
     if (wgDoy1 < wgDoy2)
-        myLastYear = myFirstYear + nrYears - 1;
+        lastYear = firstYear + signed(nrYears) - 1;
     else
-        myLastYear = myFirstYear + nrYears;
+        lastYear = firstYear + signed(nrYears);
 
     seasonFirstDate = getDateFromDoy (myPredictionYear, wgDoy1);
     if (wgDoy1 < wgDoy2)
@@ -648,20 +647,20 @@ bool makeSeasonalForecast(QString outputFileName, char separator, TXMLSeasonalAn
 
     myFirstDatePrediction = seasonFirstDate.addDays(-nrDaysBeforeWgDoy1);
 
-    for (int i = myPredictionYear; i<=myLastYear; i++)
+    for (int i = myPredictionYear; i <= lastYear; i++)
     {
         if (isLeapYear(i))
-            addday = addday+1;
+            addday++;
     }
 
-    myNumValues = nrYears*365 +addday +1;
-    if (myNumValues <= 0)
+    nrValues = nrYears * 365 + addday +1;
+    if (nrValues <= 0)
     {
         qDebug() << "Error Wrong Date";
         return false;
     }
 
-    myDailyPredictions = (ToutputDailyMeteo*) malloc(unsigned(myNumValues) * sizeof(ToutputDailyMeteo));
+    myDailyPredictions = new ToutputDailyMeteo[nrValues];
 
     // copy the last 9 months before wgDoy1
     float lastTmax = NODATA;
@@ -711,14 +710,14 @@ bool makeSeasonalForecast(QString outputFileName, char separator, TXMLSeasonalAn
 
     // store the climate without anomalies
     wGen = wGenClimate;
-    myYear = myFirstYear;
+    myYear = firstYear;
 
     // first month of my season
     int anomalyMonth1 = seasonFirstDate.month;
     // last month of my season
     int anomalyMonth2 = seasonLastDate.month;
 
-    for (modelIndex = 0; modelIndex < numMembers; modelIndex++)
+    for (unsigned int modelIndex = 0; modelIndex < nrMembers; modelIndex++)
     {
         // assign anomaly
         if ( !assignXMLAnomaly(XMLAnomaly, modelIndex, anomalyMonth1, anomalyMonth2, &wGenClimate, &wGen))
@@ -727,7 +726,7 @@ bool makeSeasonalForecast(QString outputFileName, char separator, TXMLSeasonalAn
                     return false;
         }
 
-        if (modelIndex == numMembers-1 )
+        if (modelIndex == nrMembers-1 )
         {
             isLastMember = true;
         }
