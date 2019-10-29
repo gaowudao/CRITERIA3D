@@ -22,7 +22,7 @@
 
     enum aggregationMethod {noAggrMethod, aggrAverage, aggrMedian, aggrStdDeviation, aggrMin, aggrMax, aggrSum, aggrPrevailing, aggrCenter};
 
-   const std::map<std::string, aggregationMethod> aggregationMethodToString =
+    const std::map<std::string, aggregationMethod> aggregationMethodToString = {
       { "AVG", aggrAverage },
       { "MEDIAN", aggrMedian },
       { "STDDEV", aggrStdDeviation },
