@@ -811,12 +811,13 @@ bool MainWindow::checkMapVariable(bool isComputed)
 
 void MainWindow::setMapVariable(meteoVariable myVar, gis::Crit3DRasterGrid *myGrid)
 {
+    myProject.setCurrentVariable(myVar);
+
     setColorScale(myVar, myGrid->colorScale);
     setCurrentRasterOutput(myGrid);
     ui->labelOutputRaster->setText(QString::fromStdString(getVariableString(myVar)));
     ui->opacitySliderRasterOutput->setVisible(true);
 
-    myProject.setCurrentVariable(myVar);
     updateVariable();
 }
 
@@ -959,6 +960,7 @@ void MainWindow::on_actionCompute_AllMeteoMaps_triggered()
         return;
     }
 
+    setColorScale(myProject.getCurrentVariable(), outputRasterColorLegend->colorScale);
     redrawRasterOutput();
 }
 
