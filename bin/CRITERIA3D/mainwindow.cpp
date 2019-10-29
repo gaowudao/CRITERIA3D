@@ -602,7 +602,6 @@ void MainWindow::setOutputRasterVisible(bool value)
 void MainWindow::setCurrentRasterInput(gis::Crit3DRasterGrid *myRaster)
 {
     setInputRasterVisible(true);
-    setOutputRasterVisible(true);
 
     rasterDEM->initializeUTM(myRaster, myProject.gisSettings, false);
     inputRasterColorLegend->colorScale = myRaster->colorScale;
@@ -614,6 +613,8 @@ void MainWindow::setCurrentRasterInput(gis::Crit3DRasterGrid *myRaster)
 
 void MainWindow::setCurrentRasterOutput(gis::Crit3DRasterGrid *myRaster)
 {
+    setOutputRasterVisible(true);
+
     rasterOutput->initializeUTM(myRaster, myProject.gisSettings, false);
     outputRasterColorLegend->colorScale = myRaster->colorScale;
 
@@ -718,7 +719,7 @@ void MainWindow::on_actionView_SoilMap_triggered()
     {
         setColorScale(airTemperature, myProject.soilMap.colorScale);
         setCurrentRasterOutput(&(myProject.soilMap));
-        ui->labelOutputRaster->setText("Soil index map");
+        ui->labelOutputRaster->setText("Soil index");
         updateMaps();
     }
     else
