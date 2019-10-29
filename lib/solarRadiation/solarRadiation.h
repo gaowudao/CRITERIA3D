@@ -33,7 +33,6 @@
 
         void clean();
 
-        //bool isLoaded;
         bool isComputed;
     };
 
