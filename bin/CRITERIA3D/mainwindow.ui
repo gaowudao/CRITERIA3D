@@ -2936,10 +2936,14 @@
      <addaction name="actionLoad_soil_data"/>
      <addaction name="actionLoad_model_parameters"/>
     </widget>
-    <addaction name="actionNew_Project"/>
-    <addaction name="actionOpen_Project"/>
-    <addaction name="actionSave_project"/>
-    <addaction name="actionClose_Project"/>
+    <widget class="QMenu" name="menuOpen_project">
+     <property name="title">
+      <string>Project</string>
+     </property>
+     <addaction name="actionOpenProject"/>
+     <addaction name="actionCloseProject"/>
+    </widget>
+    <addaction name="menuOpen_project"/>
     <addaction name="separator"/>
     <addaction name="menuInput"/>
     <addaction name="separator"/>
@@ -3235,34 +3239,14 @@
     <string>Wind intensity</string>
    </property>
   </action>
-  <action name="actionOpen_Project">
-   <property name="text">
-    <string>Open project...</string>
-   </property>
-  </action>
   <action name="actionRadiationSettings">
    <property name="text">
     <string>Solar radiation settings...</string>
    </property>
   </action>
-  <action name="actionNew_Project">
-   <property name="text">
-    <string>New project...</string>
-   </property>
-  </action>
-  <action name="actionClose_Project">
-   <property name="text">
-    <string>Close project</string>
-   </property>
-  </action>
   <action name="actionView_SoilMap">
    <property name="text">
     <string>Soil map</string>
-   </property>
-  </action>
-  <action name="actionSave_project">
-   <property name="text">
-    <string>Save project</string>
    </property>
   </action>
   <action name="actionMeteoPointsOpen">
@@ -3273,6 +3257,16 @@
   <action name="actionMeteoPointsImport_data">
    <property name="text">
     <string>Import hourly data...</string>
+   </property>
+  </action>
+  <action name="actionOpenProject">
+   <property name="text">
+    <string>Open...</string>
+   </property>
+  </action>
+  <action name="actionCloseProject">
+   <property name="text">
+    <string>Close</string>
    </property>
   </action>
  </widget>

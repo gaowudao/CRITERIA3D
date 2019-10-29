@@ -34,8 +34,8 @@
 
     private slots:
 
-        void on_actionOpen_Project_triggered();
-        void on_actionClose_Project_triggered();
+        void on_actionOpenProject_triggered();
+        void on_actionCloseProject_triggered();
         void on_actionLoad_DEM_triggered();
         void on_actionLoad_soil_map_triggered();
         void on_actionLoad_model_parameters_triggered();
