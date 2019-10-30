@@ -835,6 +835,7 @@ bool Crit3DMeteoPointsDbHandler::importHourlyMeteoData(QString fileNameComplete,
     if (myStream.atEnd())
     {
         *log += "File is void.";
+        myFile.close();
         return false;
     }
     else
@@ -848,6 +849,7 @@ bool Crit3DMeteoPointsDbHandler::importHourlyMeteoData(QString fileNameComplete,
     if (! createTable(tableName))
     {
         *log += _db.lastError().text();
+        myFile.close();
         return false;
     }
 
@@ -859,14 +861,13 @@ bool Crit3DMeteoPointsDbHandler::importHourlyMeteoData(QString fileNameComplete,
 
     Crit3DQuality dataQuality;
     QString queryStr = "INSERT INTO " + tableName + " VALUES";
-    QStringList line;
     int nrWrongDateTime = 0;
     int nrWrongData = 0;
     int nrMissingData = 0;
 
     while(!myStream.atEnd())
     {
-        line = myStream.readLine().split(',');
+        QStringList line = myStream.readLine().split(',');
 
         // skip void lines
         if (line.length() <= 2) continue;
@@ -899,24 +900,30 @@ bool Crit3DMeteoPointsDbHandler::importHourlyMeteoData(QString fileNameComplete,
         queryStr.append(getNewDataEntry(5, line, dateTimeStr, idRad, globalIrradiance, &nrMissingData, &nrWrongData, &dataQuality));
         queryStr.append(getNewDataEntry(6, line, dateTimeStr, idWind, windIntensity, &nrMissingData, &nrWrongData, &dataQuality));
     }
+    myFile.close();
 
-    queryStr.chop(1); // remove the trailing comma
-    myFile.close ();
+    if (queryStr == "")
+    {
+        *log += "File is void.";
+        return false;
+    }
+    // remove the trailing comma
+    queryStr.chop(1);
 
     // exec query
-    /*QSqlQuery qry(_db);
+    QSqlQuery qry(_db);
     qry.prepare(queryStr);
     if (! qry.exec())
     {
         *log += _db.lastError().text();
         return false;
-    }*/
+    }
 
-    *log += queryStr;
-    *log += "\nData imported successfully.";
+    *log += "Data imported successfully.";
     *log += "\nWrong date/time: " + QString::number(nrWrongDateTime);
     *log += "\nMissing data: " + QString::number(nrMissingData);
     *log += "\nWrong values: " + QString::number(nrWrongData);
+
     return true;
 }
 
