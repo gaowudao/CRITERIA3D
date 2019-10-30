@@ -21,10 +21,6 @@ CONFIG += debug_and_release
 
 DEFINES += NETCDF
 
-
-unix:{
-    LIBS += -L../../mapGraphics/release -lMapGraphics
-}
 win32:{
     CONFIG(debug, debug|release) {
          LIBS += -L../../mapGraphics/debug -lMapGraphics
@@ -32,7 +28,9 @@ win32:{
         LIBS += -L../../mapGraphics/release -lMapGraphics
     }
 }
-
+else:{
+    LIBS += -L../../mapGraphics/release -lMapGraphics
+}
 
 CONFIG(debug, debug|release) {
 
@@ -41,9 +39,10 @@ CONFIG(debug, debug|release) {
     win32:{
         LIBS += -L$$(NC4_INSTALL_DIR)/lib -lnetcdf
     }
-    unix:{
+    else:{
         LIBS += -lnetcdf
     }
+
     LIBS += -L../../lib/dbMeteoGrid/debug -ldbMeteoGrid
     LIBS += -L../../lib/dbMeteoPoints/debug -ldbMeteoPoints
     LIBS += -L../../lib/utilities/debug -lutilities
@@ -64,6 +63,10 @@ CONFIG(debug, debug|release) {
     unix:{
         LIBS += -lnetcdf
     }
+    macx:{
+        LIBS += -L/usr/local/lib/ -lnetcdf
+    }
+
     LIBS += -L../../lib/dbMeteoGrid/release -ldbMeteoGrid
     LIBS += -L../../lib/dbMeteoPoints/release -ldbMeteoPoints
     LIBS += -L../../lib/utilities/release -lutilities

@@ -22,7 +22,7 @@ unix:{
         TARGET = release/netcdfHandler
     }
 }
-win32:{
+else:{
     TARGET = netcdfHandler
 }
 
@@ -32,7 +32,9 @@ INCLUDEPATH += ../mathFunctions ../crit3dDate ../gis
 win32:{
     INCLUDEPATH += $$(NC4_INSTALL_DIR)/include
 }
-
+macx:{
+    INCLUDEPATH += /usr/local/include/
+}
 
 SOURCES += \
     netcdfHandler.cpp
