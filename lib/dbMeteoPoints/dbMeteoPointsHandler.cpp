@@ -781,16 +781,46 @@ bool Crit3DMeteoPointsDbHandler::createTable(const QString& tableName)
 }
 
 
+
+QString Crit3DMeteoPointsDbHandler::getNewDataEntry(int pos, const QStringList& dataStr, const QString& dateTimeStr,
+                                                const QString& idVarStr, meteoVariable myVar,
+                                                int* nrMissingData, int* nrWrongData, Crit3DQuality* dataQuality)
+{
+    if (dataStr.length() <= pos || dataStr.at(pos) == "")
+    {
+        (*nrMissingData)++;
+        return "";
+    }
+
+    bool isNumber = false;
+    float value = dataStr.at(pos).toFloat(&isNumber);
+    if (! isNumber)
+    {
+        (*nrWrongData)++;
+        return "";
+    }
+
+    if (dataQuality->syntacticQualitySingleValue(myVar, value) != quality::accepted)
+    {
+        (*nrWrongData)++;
+        return "";
+    }
+
+    QString newEntry = "(" + dateTimeStr + "," + idVarStr + "," + QString::number(double(value)) + "),";
+    return newEntry;
+}
+
+
 bool Crit3DMeteoPointsDbHandler::importHourlyMeteoData(QString fileNameComplete, QString* log)
 {
     QString fileName = getFileName(fileNameComplete);
-    *log = "Input file = " + fileName + "\n";
+    *log = "\nInput file: " + fileName + "\n";
 
     // check point code
     QString pointCode = fileName.left(fileName.length()-4);
     if (! existId(pointCode))
     {
-        *log += "Wrong ID point: " + pointCode;
+        *log += "Wrong meteo point id: " + pointCode;
         return false;
     }
 
@@ -821,11 +851,11 @@ bool Crit3DMeteoPointsDbHandler::importHourlyMeteoData(QString fileNameComplete,
         return false;
     }
 
-    int idTavg = getIdfromMeteoVar(airTemperature);
-    int idPrec = getIdfromMeteoVar(precipitation);
-    int idRH = getIdfromMeteoVar(airRelHumidity);
-    int idRad = getIdfromMeteoVar(globalIrradiance);
-    int idWind = getIdfromMeteoVar(windIntensity);
+    QString idTavg = QString::number(getIdfromMeteoVar(airTemperature));
+    QString idPrec = QString::number(getIdfromMeteoVar(precipitation));
+    QString idRH = QString::number(getIdfromMeteoVar(airRelHumidity));
+    QString idRad = QString::number(getIdfromMeteoVar(globalIrradiance));
+    QString idWind = QString::number(getIdfromMeteoVar(windIntensity));
 
     Crit3DQuality dataQuality;
     QString queryStr = "INSERT INTO " + tableName + " VALUES";
@@ -833,15 +863,13 @@ bool Crit3DMeteoPointsDbHandler::importHourlyMeteoData(QString fileNameComplete,
     int nrWrongDateTime = 0;
     int nrWrongData = 0;
     int nrMissingData = 0;
-    float value;
-    bool isNumber;
 
     while(!myStream.atEnd())
     {
         line = myStream.readLine().split(',');
 
         // skip void lines
-        if (line.length() <= 1) continue;
+        if (line.length() <= 2) continue;
 
         // check date
         QDate myDate = QDate::fromString(line.at(0),"yyyy-MM-dd");
@@ -852,6 +880,7 @@ bool Crit3DMeteoPointsDbHandler::importHourlyMeteoData(QString fileNameComplete,
         }
 
         // check hour
+        bool isNumber = false;
         int hour = line.at(1).toInt(&isNumber);
         if (! isNumber || hour < 0 || hour > 23)
         {
@@ -859,34 +888,16 @@ bool Crit3DMeteoPointsDbHandler::importHourlyMeteoData(QString fileNameComplete,
             continue;
         }
 
-        // datetime =
+        QDateTime myDateTime;
+        myDateTime.setDate(myDate);
+        myDateTime.setTime(QTime(hour,0,0,0));
+        QString dateTimeStr = myDateTime.toString("yyyy-MM-dd hh:00:00");
 
-        // temperature
-        if (line.at(2) == "")
-        {
-            nrMissingData++;
-        }
-        else
-        {
-            value = line.at(2).toFloat(&isNumber);
-            if (! isNumber)
-            {
-                nrWrongData++;
-            }
-            else
-            {
-                if (dataQuality.syntacticQualitySingleValue(airTemperature, value) != quality::accepted)
-                {
-                    nrWrongData++;
-                }
-                else
-                {
-                    // write idTavg
-                    queryStr.append("(");
-                    queryStr.append("),");
-                }
-            }
-        }
+        queryStr.append(getNewDataEntry(2, line, dateTimeStr, idTavg, airTemperature, &nrMissingData, &nrWrongData, &dataQuality));
+        queryStr.append(getNewDataEntry(3, line, dateTimeStr, idPrec, precipitation, &nrMissingData, &nrWrongData, &dataQuality));
+        queryStr.append(getNewDataEntry(4, line, dateTimeStr, idRH, airRelHumidity, &nrMissingData, &nrWrongData, &dataQuality));
+        queryStr.append(getNewDataEntry(5, line, dateTimeStr, idRad, globalIrradiance, &nrMissingData, &nrWrongData, &dataQuality));
+        queryStr.append(getNewDataEntry(6, line, dateTimeStr, idWind, windIntensity, &nrMissingData, &nrWrongData, &dataQuality));
     }
 
     queryStr.chop(1); // remove the trailing comma
@@ -901,10 +912,11 @@ bool Crit3DMeteoPointsDbHandler::importHourlyMeteoData(QString fileNameComplete,
         return false;
     }*/
 
-    *log += "Data imported successfully.";
+    *log += queryStr;
+    *log += "\nData imported successfully.";
     *log += "\nWrong date/time: " + QString::number(nrWrongDateTime);
     *log += "\nMissing data: " + QString::number(nrMissingData);
-    *log += "\nWrong data: " + QString::number(nrWrongData);
+    *log += "\nWrong values: " + QString::number(nrWrongData);
     return true;
 }
 

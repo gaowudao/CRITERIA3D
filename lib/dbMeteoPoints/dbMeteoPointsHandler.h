@@ -59,8 +59,11 @@
         std::map<int, meteoVariable> getMapIdMeteoVar() const;
 
         bool existId(const QString& idPoint);
-        bool importHourlyMeteoData(QString fileNameComplete, QString *log);
         bool createTable(const QString& tableName);
+        QString getNewDataEntry(int pos, const QStringList& dataStr, const QString& dateTimeStr,
+                            const QString& idVarStr, meteoVariable myVar,
+                            int* nrMissingData, int* nrWrongData, Crit3DQuality* dataQuality);
+        bool importHourlyMeteoData(QString fileNameComplete, QString *log);
 
 
     protected:
