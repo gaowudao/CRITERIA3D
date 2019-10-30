@@ -739,7 +739,6 @@ bool Crit3DMeteoPointsDbHandler::loadVariableProperties()
 
 int Crit3DMeteoPointsDbHandler::getIdfromMeteoVar(meteoVariable meteoVar)
 {
-
     std::map<int, meteoVariable>::const_iterator it;
     int key = NODATA;
 
@@ -812,71 +811,95 @@ bool Crit3DMeteoPointsDbHandler::importHourlyMeteoData(QString fileNameComplete,
         return false;
     }
 
-    /*
+    Crit3DQuality dataQuality;
+    int nrWrongDateTime = 0;
+    int nrWrongData = 0;
+    int nrMissingData = 0;
+    int idTavg = getIdfromMeteoVar(airTemperature);
+    int idPrec = getIdfromMeteoVar(precipitation);
+    int idRH = getIdfromMeteoVar(airRelHumidity);
+    int idRad = getIdfromMeteoVar(globalIrradiance);
+    int idWind = getIdfromMeteoVar(windIntensity);
 
-    QString queryStr, value;
-    queryStr = "INSERT INTO " + tableName + " VALUES";
+    QString queryStr = "INSERT INTO " + tableName + " VALUES";
     QStringList line;
     int nrLine = 0;
-
+    bool isNumber;
+    float value;
     while(!myStream.atEnd())
     {
         line = myStream.readLine().split(',');
+
         // skip header or void lines
-        if ((nrLine > 0) && (line.length()>1))
+        if (nrLine == 0 || line.length() <= 1)
         {
-            queryStr.append("(");
-            for(int i=0; i<7; ++i)
+            nrLine++;
+            continue;
+        }
+
+        // check date
+        QDate myDate = QDate::fromString(line.at(0),"yyyy-MM-dd");
+        if (! myDate.isValid())
+        {
+            nrWrongDateTime++;
+            continue;
+        }
+
+        // check hour
+        int hour = line.at(1).toInt(&isNumber);
+        if (! isNumber || hour < 0 || hour > 23)
+        {
+            nrWrongDateTime++;
+            continue;
+        }
+
+        // temperature
+        if (line.at(2) == "")
+        {
+            nrMissingData++;
+        }
+        else
+        {
+            value = line.at(2).toFloat(&isNumber);
+            if (! isNumber)
             {
-                if (i > 0) queryStr.append(",");
-                if (i == line.length())
+                nrWrongData++;
+            }
+            else
+            {
+                if (dataQuality.syntacticQualitySingleValue(airTemperature, value) != quality::accepted)
                 {
-                    // etp and watertable missing -> void
-                    if (i == 5)
-                    {
-                        value = ",";
-                    }
-                    // watertable missing -> void
-                    else if (i == 6)
-                    {
-                        value = "";
-                    }
-                    else
-                    {
-                        qDebug() << "---Error---\n" << "missing values in line nr:" << nrLine+1;
-                        myFile.close ();
-                        return false;
-                    }
+                    nrWrongData++;
                 }
                 else
                 {
-                    value = line.at(i);
-
-                    if (value.left(1) == "\"")
-                        value = value.mid(1,value.length()-2);
-
-                    if (value == "-9999" || value == "-999.9" || value == " ")
-                        value = "";
+                    // write
+                    queryStr.append("(");
+                    queryStr.append("),");
                 }
-                queryStr.append("'" + value + "'");
             }
-            queryStr.append("),");
         }
+
+
         nrLine++;
     }
+
     queryStr.chop(1); // remove the trailing comma
     myFile.close ();
 
     // exec query
-    QSqlQuery qry(_db);
+    /*QSqlQuery qry(_db);
     qry.prepare(queryStr);
     if (! qry.exec())
     {
         *log += _db.lastError().text();
         return false;
-    }
-*/
-    *log += "Data imported successfully";
+    }*/
+
+    *log += "Data imported successfully.";
+    *log += "\nWrong date/time: " + QString::number(nrWrongDateTime);
+    *log += "\nMissing data: " + QString::number(nrMissingData);
+    *log += "\nWrong data: " + QString::number(nrWrongData);
     return true;
 }
 

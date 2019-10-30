@@ -200,7 +200,7 @@ bool Download::downloadDailyData(QDate startDate, QDate endDate, QString dataset
     int j = 0;
     QUrl url;
     QNetworkRequest request;
-    bool downloadOk;
+    bool downloadOk = false;
     int countStation = 0;
 
     while (countStation < stations.size())

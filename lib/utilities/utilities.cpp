@@ -187,7 +187,6 @@ QString getFilePath(QString fileNameComplete)
 
 int decadeFromDate(QDate date)
 {
-
     int day = date.day();
     int decade;
     if ( day <= 10)
@@ -204,8 +203,8 @@ int decadeFromDate(QDate date)
     }
     decade = decade + (3 * (date.month() - 1));
     return decade;
-
 }
+
 
 void intervalDecade(int decade, int year, int* dayStart, int* dayEnd, int* month)
 {
