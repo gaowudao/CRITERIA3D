@@ -781,14 +781,14 @@ bool Crit3DMeteoPointsDbHandler::createTable(const QString& tableName)
 
 bool Crit3DMeteoPointsDbHandler::importHourlyMeteoData(QString fileNameComplete, QString* log)
 {
-    *log = fileNameComplete + "\n";
+    QString fileName = getFileName(fileNameComplete);
+    *log = "File = " + fileName + "\n";
 
     // check point code
-    QString fileName = getFileName(fileNameComplete);
     QString pointCode = fileName.left(fileName.length()-4);
     if (! existId(pointCode))
     {
-        *log += pointCode + " not exists.";
+        *log += "Wrong ID point = " + pointCode;
         return false;
     }
 
