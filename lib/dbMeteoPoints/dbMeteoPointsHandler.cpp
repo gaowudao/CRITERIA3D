@@ -806,7 +806,7 @@ QString Crit3DMeteoPointsDbHandler::getNewDataEntry(int pos, const QStringList& 
         return "";
     }
 
-    QString newEntry = "(" + dateTimeStr + "," + idVarStr + "," + QString::number(double(value)) + "),";
+    QString newEntry = "('" + dateTimeStr + "','" + idVarStr + "'," + QString::number(double(value)) + "),";
     return newEntry;
 }
 
@@ -916,6 +916,7 @@ bool Crit3DMeteoPointsDbHandler::importHourlyMeteoData(QString fileNameComplete,
     if (! qry.exec())
     {
         *log += _db.lastError().text();
+        *log += queryStr;
         return false;
     }
 
