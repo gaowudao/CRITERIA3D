@@ -802,6 +802,16 @@ bool Crit3DMeteoPointsDbHandler::importHourlyMeteoData(QString fileNameComplete,
         return false;
     }
     QTextStream myStream (&myFile);
+    if (myStream.atEnd())
+    {
+        *log += "File is void.";
+        return false;
+    }
+    else
+    {
+        // skip first row (header)
+        myStream.readLine().split(',');
+    }
 
     // create table (remove previous data)
     QString tableName = pointCode + "_H";
@@ -811,31 +821,27 @@ bool Crit3DMeteoPointsDbHandler::importHourlyMeteoData(QString fileNameComplete,
         return false;
     }
 
-    Crit3DQuality dataQuality;
-    int nrWrongDateTime = 0;
-    int nrWrongData = 0;
-    int nrMissingData = 0;
     int idTavg = getIdfromMeteoVar(airTemperature);
     int idPrec = getIdfromMeteoVar(precipitation);
     int idRH = getIdfromMeteoVar(airRelHumidity);
     int idRad = getIdfromMeteoVar(globalIrradiance);
     int idWind = getIdfromMeteoVar(windIntensity);
 
+    Crit3DQuality dataQuality;
     QString queryStr = "INSERT INTO " + tableName + " VALUES";
     QStringList line;
-    int nrLine = 0;
-    bool isNumber;
+    int nrWrongDateTime = 0;
+    int nrWrongData = 0;
+    int nrMissingData = 0;
     float value;
+    bool isNumber;
+
     while(!myStream.atEnd())
     {
         line = myStream.readLine().split(',');
 
-        // skip header or void lines
-        if (nrLine == 0 || line.length() <= 1)
-        {
-            nrLine++;
-            continue;
-        }
+        // skip void lines
+        if (line.length() <= 1) continue;
 
         // check date
         QDate myDate = QDate::fromString(line.at(0),"yyyy-MM-dd");
@@ -852,6 +858,8 @@ bool Crit3DMeteoPointsDbHandler::importHourlyMeteoData(QString fileNameComplete,
             nrWrongDateTime++;
             continue;
         }
+
+        // datetime =
 
         // temperature
         if (line.at(2) == "")
@@ -873,15 +881,12 @@ bool Crit3DMeteoPointsDbHandler::importHourlyMeteoData(QString fileNameComplete,
                 }
                 else
                 {
-                    // write
+                    // write idTavg
                     queryStr.append("(");
                     queryStr.append("),");
                 }
             }
         }
-
-
-        nrLine++;
     }
 
     queryStr.chop(1); // remove the trailing comma
