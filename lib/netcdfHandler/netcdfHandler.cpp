@@ -759,8 +759,13 @@ bool NetCDFHandler::writeGeoDimensions(const gis::Crit3DGridHeader& latLonHeader
     if (status != NC_NOERR) return false;
 
     // valid range
-    float range[] = {-1000.0, 1000.0};
-    status = nc_put_att_float(ncId, variables[0].id, "valid_range", NC_FLOAT, 2, range);
+//    float range[] = {-1000.0, 1000.0};
+//    status = nc_put_att_float(ncId, variables[0].id, "valid_range", NC_FLOAT, 2, range);
+//    if (status != NC_NOERR) return false;
+
+    // no data
+    float missing[] = {float(NODATA)};
+    status = nc_put_att_float(ncId, variables[0].id, "missing_value", NC_FLOAT, 1, missing);
     if (status != NC_NOERR) return false;
 
     // end of metadata
