@@ -758,8 +758,8 @@ int Crit3DMeteoPointsDbHandler::getIdfromMeteoVar(meteoVariable meteoVar)
 bool Crit3DMeteoPointsDbHandler::existId(const QString& idPoint)
 {
     QSqlQuery qry(_db);
-    qry.prepare("SELECT id_point FROM point_properties WHERE id_point=" + idPoint);
-
+    QString queryStr = "SELECT * FROM point_properties WHERE id_point=" + idPoint;
+    qry.prepare(queryStr);
     return qry.exec();
 }
 
@@ -782,13 +782,13 @@ bool Crit3DMeteoPointsDbHandler::createTable(const QString& tableName)
 bool Crit3DMeteoPointsDbHandler::importHourlyMeteoData(QString fileNameComplete, QString* log)
 {
     QString fileName = getFileName(fileNameComplete);
-    *log = "File = " + fileName + "\n";
+    *log = "Input file = " + fileName + "\n";
 
     // check point code
     QString pointCode = fileName.left(fileName.length()-4);
     if (! existId(pointCode))
     {
-        *log += "Wrong ID point = " + pointCode;
+        *log += "Wrong ID point: " + pointCode;
         return false;
     }
 
