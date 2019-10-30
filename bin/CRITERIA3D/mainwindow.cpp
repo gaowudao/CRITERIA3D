@@ -1091,11 +1091,13 @@ void MainWindow::on_actionMeteoPointsImport_data_triggered()
     for (int i=0; i < fileList.count(); i++)
     {
         QString fileName = fileList[i];
-        QString codeStr = fileName.left(fileName.length()-4) + "_H";
+        QString myLog = "";
         fileNameComplete = filePath + fileName;
-        qDebug() << fileNameComplete << codeStr;
 
-        //importData(fileName, codeStr);
+        if (myProject.meteoPointsDbHandler->importHourlyMeteoData(fileNameComplete, &myLog))
+            myProject.logInfo(myLog);
+        else
+            myProject.logError(myLog);
     }
 
 }

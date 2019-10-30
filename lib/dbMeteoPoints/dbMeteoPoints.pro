@@ -30,10 +30,10 @@ DEFINES += DBMETEOPOINTS_LIBRARY
 INCLUDEPATH += ../crit3dDate ../mathFunctions ../gis ../meteo ../interpolation ../utilities
 
 SOURCES += \
+    dbAggregationsHandler.cpp \
     download.cpp \
     dbArkimet.cpp \
     dbMeteoPointsHandler.cpp \
-    dbAggregationsHandler..cpp \
     variablesList.cpp
 
 HEADERS += \

@@ -235,7 +235,7 @@ std::vector<float> Crit3DAggregationsDbHandler::getAggrData(QString aggrType, QS
 {
 
     int idVariable = getIdfromMeteoVar(variable);
-    int nrDays = int(startDate.daysTo(endDate) + 1);
+    unsigned int nrDays = unsigned(startDate.daysTo(endDate) + 1);
     std::vector<float> values(nrDays, NODATA);
     QDateTime date;
     float value;

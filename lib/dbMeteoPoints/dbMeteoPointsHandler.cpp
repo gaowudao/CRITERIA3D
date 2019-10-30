@@ -578,6 +578,7 @@ bool Crit3DMeteoPointsDbHandler::readPointProxyValues(Crit3DMeteoPoint* myPoint,
     return true;
 }
 
+
 QList<Crit3DMeteoPoint> Crit3DMeteoPointsDbHandler::getPropertiesFromDb(const gis::Crit3DGisSettings& gisSettings, QString *errorString)
 {
     QList<Crit3DMeteoPoint> meteoPointsList;
@@ -647,11 +648,11 @@ QList<Crit3DMeteoPoint> Crit3DMeteoPointsDbHandler::getPropertiesFromDb(const gi
                 meteoPointsList << meteoPoint;
             }
         }
-
     }
 
     return meteoPointsList;
 }
+
 
 bool Crit3DMeteoPointsDbHandler::writePointProperties(Crit3DMeteoPoint *myPoint)
 {
@@ -751,5 +752,125 @@ int Crit3DMeteoPointsDbHandler::getIdfromMeteoVar(meteoVariable meteoVar)
         }
     }
     return key;
+}
+
+
+bool Crit3DMeteoPointsDbHandler::existId(const QString& idPoint)
+{
+    QSqlQuery qry(_db);
+    qry.prepare("SELECT id_point FROM point_properties WHERE id_point=" + idPoint);
+
+    return qry.exec();
+}
+
+
+// warning: remove previous data
+bool Crit3DMeteoPointsDbHandler::createTable(const QString& tableName)
+{
+    // force removal
+    QString queryStr = "DROP TABLE " + tableName;
+    _db.exec(queryStr);
+
+    queryStr = "CREATE TABLE " + tableName + " (date_time TEXT, id_variable INTEGER, value REAL, PRIMARY KEY(date_time, id_variable))";
+    QSqlQuery qry(_db);
+    qry.prepare(queryStr);
+
+    return qry.exec();
+}
+
+
+bool Crit3DMeteoPointsDbHandler::importHourlyMeteoData(QString fileNameComplete, QString* log)
+{
+    *log = fileNameComplete + "\n";
+
+    // check point code
+    QString fileName = getFileName(fileNameComplete);
+    QString pointCode = fileName.left(fileName.length()-4);
+    if (! existId(pointCode))
+    {
+        *log += pointCode + " not exists.";
+        return false;
+    }
+
+    // check input file
+    QFile myFile(fileNameComplete);
+    if(! myFile.open (QIODevice::ReadOnly))
+    {
+        *log += myFile.errorString();
+        return false;
+    }
+    QTextStream myStream (&myFile);
+
+    // create table (remove previous data)
+    QString tableName = pointCode + "_H";
+    if (! createTable(tableName))
+    {
+        *log += _db.lastError().text();
+        return false;
+    }
+
+    QString queryStr, value;
+    queryStr = "INSERT INTO " + tableName + " VALUES";
+    QStringList line;
+    int nrLine = 0;
+
+    while(!myStream.atEnd())
+    {
+        line = myStream.readLine().split(',');
+        // skip header or void lines
+        if ((nrLine > 0) && (line.length()>1))
+        {
+            queryStr.append("(");
+            for(int i=0; i<7; ++i)
+            {
+                if (i > 0) queryStr.append(",");
+                if (i == line.length())
+                {
+                    // etp and watertable missing -> void
+                    if (i == 5)
+                    {
+                        value = ",";
+                    }
+                    // watertable missing -> void
+                    else if (i == 6)
+                    {
+                        value = "";
+                    }
+                    else
+                    {
+                        qDebug() << "---Error---\n" << "missing values in line nr:" << nrLine+1;
+                        myFile.close ();
+                        return false;
+                    }
+                }
+                else
+                {
+                    value = line.at(i);
+
+                    if (value.left(1) == "\"")
+                        value = value.mid(1,value.length()-2);
+
+                    if (value == "-9999" || value == "-999.9" || value == " ")
+                        value = "";
+                }
+                queryStr.append("'" + value + "'");
+            }
+            queryStr.append("),");
+        }
+        nrLine++;
+    }
+    queryStr.chop(1); // remove the trailing comma
+    myFile.close ();
+
+    // exec query
+    QSqlQuery qry(_db);
+    qry.prepare(queryStr);
+    if (! qry.exec())
+    {
+        *log += _db.lastError().text();
+        return false;
+    }
+
+    return true;
 }
 
