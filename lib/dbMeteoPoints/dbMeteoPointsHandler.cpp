@@ -815,13 +815,13 @@ QString Crit3DMeteoPointsDbHandler::getNewDataEntry(int pos, const QStringList& 
 bool Crit3DMeteoPointsDbHandler::importHourlyMeteoData(QString csvFileName, bool deletePreviousData, QString* log)
 {
     QString fileName = getFileName(csvFileName);
-    *log = "\nInput file: " + fileName + "\n";
+    *log = "\nInput file: " + fileName;
 
     // check point code
     QString pointCode = fileName.left(fileName.length()-4);
     if (! existIdPoint(pointCode))
     {
-        *log += "ID " + pointCode + " is not present in the point properties table.";
+        *log += "\nID " + pointCode + " is not present in the point properties table.";
         return false;
     }
 
@@ -835,7 +835,7 @@ bool Crit3DMeteoPointsDbHandler::importHourlyMeteoData(QString csvFileName, bool
     QTextStream myStream (&myFile);
     if (myStream.atEnd())
     {
-        *log += "File is void.";
+        *log += "\nFile is void.";
         myFile.close();
         return false;
     }
@@ -849,7 +849,7 @@ bool Crit3DMeteoPointsDbHandler::importHourlyMeteoData(QString csvFileName, bool
     QString tableName = pointCode + "_H";
     if (! createTable(tableName, deletePreviousData))
     {
-        *log += "Error in create table: " + tableName + _db.lastError().text();
+        *log += "\nError in create table: " + tableName + _db.lastError().text();
         myFile.close();
         return false;
     }
@@ -862,8 +862,8 @@ bool Crit3DMeteoPointsDbHandler::importHourlyMeteoData(QString csvFileName, bool
 
     Crit3DQuality dataQuality;
     QStringList line;
-    QDateTime previousDateTime;
-    QDate currentDate;
+    QDate currentDate, previousDate;
+    int hour, previousHour = 0;
     QString dateTimeStr;
     int nrWrongDateTime = 0;
     int nrWrongData = 0;
@@ -888,7 +888,7 @@ bool Crit3DMeteoPointsDbHandler::importHourlyMeteoData(QString csvFileName, bool
 
         // check hour
         bool isNumber = false;
-        int hour = line.at(1).toInt(&isNumber);
+        hour = line.at(1).toInt(&isNumber);
         if (! isNumber || hour < 0 || hour > 23)
         {
             *log += "\nWrong dateTime: " + line.at(0) + " h" + line.at(1);
@@ -896,27 +896,21 @@ bool Crit3DMeteoPointsDbHandler::importHourlyMeteoData(QString csvFileName, bool
             continue;
         }
 
-        QDateTime currentDateTime;
-        currentDateTime.setDate(currentDate);
-        currentDateTime = currentDateTime.addSecs(hour * 3600);
-        dateTimeStr = currentDateTime.toString("yyyy-MM-dd hh:00:00");
-
-        // check dateTime
-        if (dateTimeStr == "")
-        {
-            *log += "\nWrong dateTime: " + line.at(0) + " h" + line.at(1);
-            nrWrongDateTime++;
-            continue;
-        }
+        // don't use QDateTime becouse has a strange bug at the end of March
+        char timeStr[9];
+        sprintf (timeStr, " %02d:00:00", hour);
+        dateTimeStr = currentDate.toString("yyyy-MM-dd") + timeStr;
 
         // check duplicate
-        if (currentDateTime <= previousDateTime)
+        if ((currentDate < previousDate) ||
+            (currentDate == previousDate && hour <= previousHour))
         {
             *log += "\nDuplicate dateTime: " + dateTimeStr;
             nrWrongDateTime++;
             continue;
         }
-        previousDateTime = currentDateTime;
+        previousHour = hour;
+        previousDate = currentDate;
 
         queryStr.append(getNewDataEntry(2, line, dateTimeStr, idTavg, airTemperature, &nrMissingData, &nrWrongData, &dataQuality));
         queryStr.append(getNewDataEntry(3, line, dateTimeStr, idPrec, precipitation, &nrMissingData, &nrWrongData, &dataQuality));
@@ -936,7 +930,7 @@ bool Crit3DMeteoPointsDbHandler::importHourlyMeteoData(QString csvFileName, bool
         qry.prepare(queryStr);
         if (! qry.exec())
         {
-            *log += "Error in execute query: " + qry.lastError().text();
+            *log += "\nError in execute query: " + qry.lastError().text();
             return false;
         }
     }
