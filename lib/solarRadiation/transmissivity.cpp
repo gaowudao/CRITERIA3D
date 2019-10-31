@@ -53,14 +53,12 @@ bool computeTransmissivity(Crit3DRadiationSettings* mySettings, Crit3DMeteoPoint
 
     int semiInterval = (intervalWidth - 1)/2;
     float semiIntervalSeconds = float(semiInterval * deltaSeconds);
-    float* myObsRad;
     int myIndex;
     Crit3DTime myTimeIni =  myTime.addSeconds(-semiIntervalSeconds);
     Crit3DTime myTimeFin =  myTime.addSeconds(semiIntervalSeconds);
     Crit3DTime myCurrentTime;
     int myCounter = 0;
     float transmissivity;
-
 
     gis::Crit3DPoint myPoint;
 
@@ -71,11 +69,11 @@ bool computeTransmissivity(Crit3DRadiationSettings* mySettings, Crit3DMeteoPoint
         if (myRad != NODATA)
         {
             myIndex = 0;
-            myObsRad = (float *) calloc(intervalWidth, sizeof(float));
+            float* obsRadVector = new float[unsigned(intervalWidth)];
             myCurrentTime = myTimeIni;
             while (myCurrentTime <= myTimeFin)
             {
-                myObsRad[myIndex] = meteoPoints[i].getMeteoPointValueH(myCurrentTime.date, myCurrentTime.getHour(),
+                obsRadVector[myIndex] = meteoPoints[i].getMeteoPointValueH(myCurrentTime.date, myCurrentTime.getHour(),
                                                                        myCurrentTime.getMinutes(), globalIrradiance);
                 myCurrentTime = myCurrentTime.addSeconds(deltaSeconds);
                 myIndex++;
@@ -85,13 +83,14 @@ bool computeTransmissivity(Crit3DRadiationSettings* mySettings, Crit3DMeteoPoint
             myPoint.utm.y = meteoPoints[i].point.utm.y;
             myPoint.z = meteoPoints[i].point.z;
 
-            transmissivity = radiation::computePointTransmissivity(mySettings, myPoint, myTime, myObsRad,
+            transmissivity = radiation::computePointTransmissivity(mySettings, myPoint, myTime, obsRadVector,
                                                                    intervalWidth, deltaSeconds, myDEM);
 
             meteoPoints[i].setMeteoPointValueH(myTime.date, myTime.getHour(), myTime.getMinutes(),
                                                atmTransmissivity, transmissivity);
 
             if (transmissivity != NODATA) myCounter++;
+            delete [] obsRadVector;
         }
     }
 

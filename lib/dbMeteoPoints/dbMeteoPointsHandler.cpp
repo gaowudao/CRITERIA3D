@@ -775,7 +775,7 @@ bool Crit3DMeteoPointsDbHandler::createTable(const QString& tableName, bool dele
         _db.exec(queryStr);
     }
 
-    queryStr = "CREATE TABLE IF NOT EXISTS " + tableName + " (date_time TEXT, id_variable INTEGER, value REAL, PRIMARY KEY(date_time, id_variable))";
+    queryStr = "CREATE TABLE IF NOT EXISTS " + tableName + " (date_time TEXT(20), id_variable INTEGER, value REAL, PRIMARY KEY(date_time, id_variable))";
     QSqlQuery qry(_db);
     qry.prepare(queryStr);
 
