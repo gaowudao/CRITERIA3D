@@ -1094,10 +1094,9 @@ void MainWindow::on_actionMeteoPointsImport_data_triggered()
         QString myLog = "";
         fileNameComplete = filePath + fileName;
 
-        if (myProject.meteoPointsDbHandler->importHourlyMeteoData(fileNameComplete, &myLog))
+        if (myProject.meteoPointsDbHandler->importHourlyMeteoData(fileNameComplete, false, &myLog))
             myProject.logInfo(myLog);
         else
             myProject.logError(myLog);
     }
-
 }

@@ -754,7 +754,7 @@ int Crit3DMeteoPointsDbHandler::getIdfromMeteoVar(meteoVariable meteoVar)
 }
 
 
-bool Crit3DMeteoPointsDbHandler::existId(const QString& idPoint)
+bool Crit3DMeteoPointsDbHandler::existIdPoint(const QString& idPoint)
 {
     QSqlQuery qry(_db);
     QString queryStr = "SELECT EXISTS(SELECT 1 FROM point_properties WHERE id_point='" + idPoint + "')";
@@ -766,12 +766,14 @@ bool Crit3DMeteoPointsDbHandler::existId(const QString& idPoint)
 }
 
 
-// warning: remove previous data
-bool Crit3DMeteoPointsDbHandler::createTable(const QString& tableName)
+bool Crit3DMeteoPointsDbHandler::createTable(const QString& tableName, bool deletePrevious)
 {
-    // force removal
-    QString queryStr = "DROP TABLE IF EXISTS " + tableName;
-    _db.exec(queryStr);
+    QString queryStr;
+    if (deletePrevious)
+    {
+        queryStr = "DROP TABLE IF EXISTS " + tableName;
+        _db.exec(queryStr);
+    }
 
     queryStr = "CREATE TABLE " + tableName + " (date_time TEXT, id_variable INTEGER, value REAL, PRIMARY KEY(date_time, id_variable))";
     QSqlQuery qry(_db);
@@ -811,16 +813,16 @@ QString Crit3DMeteoPointsDbHandler::getNewDataEntry(int pos, const QStringList& 
 }
 
 
-bool Crit3DMeteoPointsDbHandler::importHourlyMeteoData(QString fileNameComplete, QString* log)
+bool Crit3DMeteoPointsDbHandler::importHourlyMeteoData(QString fileNameComplete, bool deletePreviousData, QString* log)
 {
     QString fileName = getFileName(fileNameComplete);
     *log = "\nInput file: " + fileName + "\n";
 
     // check point code
     QString pointCode = fileName.left(fileName.length()-4);
-    if (! existId(pointCode))
+    if (! existIdPoint(pointCode))
     {
-        *log += "Wrong meteo point id: " + pointCode;
+        *log += "ID " + pointCode + " is not present in the point properties table.";
         return false;
     }
 
@@ -844,9 +846,9 @@ bool Crit3DMeteoPointsDbHandler::importHourlyMeteoData(QString fileNameComplete,
         myStream.readLine().split(',');
     }
 
-    // create table (remove previous data)
+    // create table
     QString tableName = pointCode + "_H";
-    if (! createTable(tableName))
+    if (! createTable(tableName, deletePreviousData))
     {
         *log += _db.lastError().text();
         myFile.close();
@@ -902,21 +904,19 @@ bool Crit3DMeteoPointsDbHandler::importHourlyMeteoData(QString fileNameComplete,
     }
     myFile.close();
 
-    if (queryStr == "")
+    if (queryStr != "")
     {
-        *log += "File is void.";
-        return false;
-    }
-    // remove the trailing comma
-    queryStr.chop(1);
+        // remove the trailing comma
+        queryStr.chop(1);
 
-    // exec query
-    QSqlQuery qry(_db);
-    qry.prepare(queryStr);
-    if (! qry.exec())
-    {
-        *log += "Wrong query: " + _db.lastError().text();
-        return false;
+        // exec query
+        QSqlQuery qry(_db);
+        qry.prepare(queryStr);
+        if (! qry.exec())
+        {
+            *log += "Wrong query: " + _db.lastError().text();
+            return false;
+        }
     }
 
     *log += "Data imported successfully.";

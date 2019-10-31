@@ -58,12 +58,12 @@
         int getIdfromMeteoVar(meteoVariable meteoVar);
         std::map<int, meteoVariable> getMapIdMeteoVar() const;
 
-        bool existId(const QString& idPoint);
-        bool createTable(const QString& tableName);
+        bool existIdPoint(const QString& idPoint);
+        bool createTable(const QString& tableName, bool deletePrevious);
         QString getNewDataEntry(int pos, const QStringList& dataStr, const QString& dateTimeStr,
                             const QString& idVarStr, meteoVariable myVar,
                             int* nrMissingData, int* nrWrongData, Crit3DQuality* dataQuality);
-        bool importHourlyMeteoData(QString fileNameComplete, QString *log);
+        bool importHourlyMeteoData(QString fileNameComplete, bool deletePreviousData, QString *log);
 
 
     protected:
