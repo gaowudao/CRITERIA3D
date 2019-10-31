@@ -783,7 +783,6 @@ bool Crit3DMeteoPointsDbHandler::createTable(const QString& tableName, bool dele
 }
 
 
-
 QString Crit3DMeteoPointsDbHandler::getNewDataEntry(int pos, const QStringList& dataStr, const QString& dateTimeStr,
                                                 const QString& idVarStr, meteoVariable myVar,
                                                 int* nrMissingData, int* nrWrongData, Crit3DQuality* dataQuality)
@@ -862,22 +861,25 @@ bool Crit3DMeteoPointsDbHandler::importHourlyMeteoData(QString csvFileName, bool
     QString idWind = QString::number(getIdfromMeteoVar(windIntensity));
 
     Crit3DQuality dataQuality;
-    QString queryStr = "INSERT INTO " + tableName + " VALUES";
+    QStringList line;
+    QDateTime currentDateTime, previousDateTime;
+    QDate currentDate;
+    QString dateTimeStr;
     int nrWrongDateTime = 0;
     int nrWrongData = 0;
     int nrMissingData = 0;
-    QDateTime previousDateTime;
+    QString queryStr = "INSERT INTO " + tableName + " VALUES";
 
     while(!myStream.atEnd())
     {
-        QStringList line = myStream.readLine().split(',');
+        line = myStream.readLine().split(',');
 
         // skip void lines
         if (line.length() <= 2) continue;
 
         // check date
-        QDate myDate = QDate::fromString(line.at(0),"yyyy-MM-dd");
-        if (! myDate.isValid())
+        currentDate = QDate::fromString(line.at(0),"yyyy-MM-dd");
+        if (! currentDate.isValid())
         {
             *log += "\nWrong dateTime: " + line.at(0) + " h" + line.at(1);
             nrWrongDateTime++;
@@ -894,10 +896,9 @@ bool Crit3DMeteoPointsDbHandler::importHourlyMeteoData(QString csvFileName, bool
             continue;
         }
 
-        QDateTime currentDateTime;
-        currentDateTime.setDate(myDate);
-        currentDateTime.setTime(QTime(hour,0,0,0));
-        QString dateTimeStr = currentDateTime.toString("yyyy-MM-dd hh:00:00");
+        currentDateTime.setDate(currentDate);
+        currentDateTime.setTime(QTime(hour, 0, 0));
+        dateTimeStr = currentDateTime.toString("yyyy-MM-dd hh:00:00");
 
         // check dateTime
         if (dateTimeStr == "")
@@ -939,7 +940,7 @@ bool Crit3DMeteoPointsDbHandler::importHourlyMeteoData(QString csvFileName, bool
         }
     }
 
-    *log += "Data imported successfully.";
+    *log += "\nData imported successfully.";
     *log += "\nWrong date/time: " + QString::number(nrWrongDateTime);
     *log += "\nMissing data: " + QString::number(nrMissingData);
     *log += "\nWrong values: " + QString::number(nrWrongData);
