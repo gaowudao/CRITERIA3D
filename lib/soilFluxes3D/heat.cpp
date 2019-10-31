@@ -449,7 +449,7 @@ double ThermalLiquidFlux(long i, TlinkedNode *myLink, int myProcess, double time
         havg = myNode[i].H - myNode[i].z;
         havgLink = myNode[j].H - myNode[j].z;
     }
-    else if (myProcess = PROCESS_HEAT && myStructure.computeHeat)
+    else if (myProcess == PROCESS_HEAT && myStructure.computeHeat)
     {
         tavg = myNode[i].extra->Heat->T;
         tavgLink = myNode[j].extra->Heat->T;
@@ -494,15 +494,18 @@ double ThermalVaporFlux(long i, TlinkedNode *myLink, int myProcess, double timeS
         havg = myNode[i].H - myNode[i].z;
         havgLink = myNode[j].H - myNode[j].z;
     }
-    else if (myProcess = PROCESS_HEAT && myStructure.computeHeat)
-    {
-        tavg = myNode[i].extra->Heat->T;
-        tavgLink = myNode[j].extra->Heat->T;
-        havg = arithmeticMean(getH_timeStep(i, timeStep, timeStepWater), myNode[i].oldH) - myNode[i].z;
-        havgLink = arithmeticMean(getH_timeStep(j, timeStep, timeStepWater), myNode[j].oldH) - myNode[j].z;
-    }
     else
-        return NODATA;
+    {
+        if (myProcess == PROCESS_HEAT && myStructure.computeHeat)
+        {
+            tavg = myNode[i].extra->Heat->T;
+            tavgLink = myNode[j].extra->Heat->T;
+            havg = arithmeticMean(getH_timeStep(i, timeStep, timeStepWater), myNode[i].oldH) - myNode[i].z;
+            havgLink = arithmeticMean(getH_timeStep(j, timeStep, timeStepWater), myNode[j].oldH) - myNode[j].z;
+        }
+        else
+            return NODATA;
+    }
 
     // kg m-1 s-1 K-1
     double Kvt = ThermalVaporConductivity(i, tavg, havg);
@@ -697,7 +700,8 @@ void saveNodeWaterFlux(long i, TlinkedNode *link, double timeStepHeat, double ti
     avgHLink = getH_timeStep(link->index, timeStepHeat, timeStepWater);
 
     double matrixValue = getMatrixValue(i, link);
-    if (matrixValue != INDEX_ERROR) isothLiqFlux = matrixValue * (avgH - avgHLink);
+    if (matrixValue != INDEX_ERROR)
+        isothLiqFlux = matrixValue * (avgH - avgHLink);
 
     if (!myNode[i].isSurface && ! myNode[link->index].isSurface)
     {
@@ -715,15 +719,15 @@ void saveNodeWaterFlux(long i, TlinkedNode *link, double timeStepHeat, double ti
     fluxLiquid = isothLiqFlux - isothVapFlux / WATER_DENSITY + thermLiqFlux;
     fluxVapor = isothVapFlux + thermVapFlux;
 
-    link->linkedExtra->heatFlux->waterFlux = (float)fluxLiquid;
-    link->linkedExtra->heatFlux->vaporFlux = (float)fluxVapor;
+    link->linkedExtra->heatFlux->waterFlux = float(fluxLiquid);
+    link->linkedExtra->heatFlux->vaporFlux = float(fluxVapor);
 
     if (myStructure.saveHeatFluxesType == SAVE_HEATFLUXES_ALL)
     {
-        link->linkedExtra->heatFlux->fluxes[WATERFLUX_LIQUID_ISOTHERMAL] = (float)isothLiqFlux;
-        link->linkedExtra->heatFlux->fluxes[WATERFLUX_LIQUID_THERMAL] = (float)thermLiqFlux;
-        link->linkedExtra->heatFlux->fluxes[WATERFLUX_VAPOR_ISOTHERMAL] = (float)isothVapFlux;
-        link->linkedExtra->heatFlux->fluxes[WATERFLUX_VAPOR_THERMAL] = (float)thermVapFlux;
+        link->linkedExtra->heatFlux->fluxes[WATERFLUX_LIQUID_ISOTHERMAL] = float(isothLiqFlux);
+        link->linkedExtra->heatFlux->fluxes[WATERFLUX_LIQUID_THERMAL] = float(thermLiqFlux);
+        link->linkedExtra->heatFlux->fluxes[WATERFLUX_VAPOR_ISOTHERMAL] = float(isothVapFlux);
+        link->linkedExtra->heatFlux->fluxes[WATERFLUX_VAPOR_THERMAL] = float(thermVapFlux);
     }
 
     return;

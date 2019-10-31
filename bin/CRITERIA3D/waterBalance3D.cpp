@@ -135,7 +135,7 @@ bool setWaterSinkSource(Crit3DProject* myProject, double* totalPrecipitation,
                 //float irr = myProject->meteoMaps->irrigationMap->value[row][col];
                 //if (irr != myProject->meteoMaps->irrigationMap->header->flag) totalWater += irr;
 
-                if (totalWater > 0.0)
+                if (totalWater > 0.f)
                 {
                     flow = area * (totalWater / 1000.0);                //[m^3/h]
                     *totalPrecipitation += flow;
@@ -543,11 +543,14 @@ int getSoilLayerIndex(Crit3DProject* myProject, double depth)
 {
     int i= 0;
     while (depth > getSoilLayerBottom(myProject, i))
-        if (++i == myProject->nrLayers)
+    {
+        if (i == signed(myProject->nrLayers-1))
         {
             myProject->logError("getSoilLayerIndex: wrong soil depth.");
             return INDEX_ERROR;
         }
+        i++;
+    }
     return i;
 }
 

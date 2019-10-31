@@ -269,23 +269,27 @@
      double psiPrevious = fabs(MINVALUE(myNode[myIndex].oldH - myNode[myIndex].z, 0.));
 
     if (myParameters.waterRetentionCurve == MODIFIEDVANGENUCHTEN)
-		{ if ((psi <= myNode[myIndex].Soil->VG_he) && (psiPrevious <= myNode[myIndex].Soil->VG_he)) return 0.;}
-    else if (myParameters.waterRetentionCurve == VANGENUCHTEN)
-		{ if ((psi == 0.) && (psiPrevious == 0.)) return 0.;}
+    {
+        if ((psi <= myNode[myIndex].Soil->VG_he) && (psiPrevious <= myNode[myIndex].Soil->VG_he)) return 0.;
+    }
+    if (myParameters.waterRetentionCurve == VANGENUCHTEN)
+    {
+        if ((psi == 0.) && (psiPrevious == 0.)) return 0.;
+    }
 
 	 if (psi == psiPrevious)
-			{
-			dSe_dH = alfa * n * m * pow(1. + pow(alfa * psi, n), -(m + 1.)) * pow(alfa * psi, n - 1.);
-            if (myParameters.waterRetentionCurve == MODIFIEDVANGENUCHTEN)
-					dSe_dH *= (1. / myNode[myIndex].Soil->VG_Sc);
-			}
+    {
+        dSe_dH = alfa * n * m * pow(1. + pow(alfa * psi, n), -(m + 1.)) * pow(alfa * psi, n - 1.);
+        if (myParameters.waterRetentionCurve == MODIFIEDVANGENUCHTEN)
+                dSe_dH *= (1. / myNode[myIndex].Soil->VG_Sc);
+    }
 	 else
-			{
-            double theta = computeSefromPsi(psi, myNode[myIndex].Soil);
-            double thetaPrevious = computeSefromPsi(psiPrevious, myNode[myIndex].Soil);
-			double delta_H = myNode[myIndex].H - myNode[myIndex].oldH;
-			dSe_dH = fabs((theta - thetaPrevious) / delta_H);
-			}
+    {
+        double theta = computeSefromPsi(psi, myNode[myIndex].Soil);
+        double thetaPrevious = computeSefromPsi(psiPrevious, myNode[myIndex].Soil);
+        double delta_H = myNode[myIndex].H - myNode[myIndex].oldH;
+        dSe_dH = fabs((theta - thetaPrevious) / delta_H);
+    }
 
 	 return (dSe_dH * (myNode[myIndex].Soil->Theta_s - myNode[myIndex].Soil->Theta_r));
 	 }

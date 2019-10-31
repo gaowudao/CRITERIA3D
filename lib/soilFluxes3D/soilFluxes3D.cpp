@@ -115,6 +115,7 @@ namespace soilFluxes3D {
         myNode[i].down.index = NOLINK;
 
         myNode[i].lateral = (TlinkedNode *) calloc(myStructure.nrLateralLinks, sizeof(TlinkedNode));
+
         for (short l = 0; l < myStructure.nrLateralLinks; l++)
         {
             myNode[i].lateral[l].index = NOLINK;
@@ -750,8 +751,10 @@ namespace soilFluxes3D {
 
     double sumLateralFlow = 0.0;
     for (short i = 0; i < myStructure.nrLateralLinks; i++)
+    {
         if (myNode[n].lateral[i].index != NOLINK)
 			sumLateralFlow += myNode[n].lateral[i].sumFlow;
+    }
 	return sumLateralFlow;
  }
 
@@ -850,7 +853,7 @@ namespace soilFluxes3D {
             if (myNode[n].boundary->type == boundaryType)
 				sumBoundaryFlow += myNode[n].boundary->sumBoundaryWaterFlow;
 
-	return(sumBoundaryFlow);
+    return sumBoundaryFlow;
  }
 
 

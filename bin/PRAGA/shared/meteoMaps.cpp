@@ -98,9 +98,8 @@ bool Crit3DDailyMeteoMaps::fixDailyThermalConsistency()
 {
     if (! mapDailyTMax->isLoaded || ! mapDailyTMin->isLoaded) return true;
 
-    float TRange;
+    float TRange = NODATA;
     unsigned row, col;
-    bool inconsistent = false;
 
     for (row = 0; row < unsigned(mapDailyTMax->header->nrRows); row++)
         for (col = 0; col < unsigned(mapDailyTMax->header->nrCols); row++)
@@ -110,7 +109,6 @@ bool Crit3DDailyMeteoMaps::fixDailyThermalConsistency()
             {
                 if (mapDailyTMin->value[row][col] > mapDailyTMax->value[row][col])
                 {
-                    inconsistent = true;
                     //TRange = findNeighbourTRangeRaster(grdTmax, grdTmin, myRow, myCol)
                     if (! isEqual(TRange, NODATA))
                         mapDailyTMin->value[row][col] = mapDailyTMax->value[row][col] - TRange;
@@ -122,6 +120,7 @@ bool Crit3DDailyMeteoMaps::fixDailyThermalConsistency()
 
     return true;
 }
+
 
 bool Crit3DHourlyMeteoMaps::getIsInitialized() const
 {
