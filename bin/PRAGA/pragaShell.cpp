@@ -140,11 +140,24 @@ bool pragaBatch(PragaProject* myProject, QString scriptFileName)
         return false;
     }
 
-    // TODO:
-    // check file
-    // for each line of file:
-        // QStringList argumentList = getArgumentList(line)
-        // executeCommand(argumentList)
+    QFile scriptFile(scriptFileName);
+    if(! scriptFile.open (QIODevice::ReadOnly))
+    {
+        myProject->logError(scriptFile.errorString());
+        return false;
+    }
+
+    QTextStream myStream (&scriptFile);
+    QString cmdLine;
+
+    while (! scriptFile.atEnd())
+    {
+        QStringList argumentList = getArgumentList(cmdLine);
+        if (! executeCommand(argumentList, myProject))
+            return false;
+    }
+
+    scriptFile.close();
 
     #ifdef _WIN32
         // Send "enter" to release application from the console
