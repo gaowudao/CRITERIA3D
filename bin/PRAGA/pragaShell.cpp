@@ -152,6 +152,7 @@ bool pragaBatch(PragaProject* myProject, QString scriptFileName)
 
     while (! scriptFile.atEnd())
     {
+        cmdLine = scriptFile.readLine();
         QStringList argumentList = getArgumentList(cmdLine);
         if (! executeCommand(argumentList, myProject))
             return false;
