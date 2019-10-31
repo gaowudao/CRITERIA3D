@@ -179,6 +179,7 @@
         void setCurrentFrequency(const frequencyType &value);
 
         bool checkMeteoGridForExport();
+        void importHourlyMeteoData(const QString& fileName, bool importAllFiles, bool deletePreviousData);
 
         #ifdef NETCDF
             bool exportMeteoGridToNetCDF(QString fileName);

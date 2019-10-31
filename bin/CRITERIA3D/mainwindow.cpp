@@ -1058,6 +1058,7 @@ void MainWindow::on_actionMeteoPointsOpen_triggered()
 }
 
 
+
 void MainWindow::on_actionMeteoPointsImport_data_triggered()
 {
     if (! myProject.meteoPointsLoaded)
@@ -1066,37 +1067,13 @@ void MainWindow::on_actionMeteoPointsImport_data_triggered()
         return;
     }
 
-    QString fileNameComplete = QFileDialog::getOpenFileName(this, tr("Import meteo data (.csv)"), "", tr("csv files (*.csv)"));
-    if (fileNameComplete == "") return;
-
-    QString filePath = getFilePath(fileNameComplete);
-    QStringList fileList;
+    QString fileName = QFileDialog::getOpenFileName(this, tr("Import meteo data (.csv)"), "", tr("csv files (*.csv)"));
+    if (fileName == "") return;
 
     QMessageBox::StandardButton reply;
-    reply = QMessageBox::question(this, "Import data", "Do you want to import all .csv files in the directory?", QMessageBox::Yes|QMessageBox::No);
+    reply = QMessageBox::question(this, "Import data", "Do you want to import all csv files in the directory?", QMessageBox::Yes|QMessageBox::No);
 
-    if (reply == QMessageBox::Yes)
-    {
-        // all files
-        QDir myDir = QDir(filePath);
-        myDir.setNameFilters(QStringList("*.csv"));
-        fileList = myDir.entryList();
-    }
-    else
-    {
-        // single file
-        fileList << getFileName(fileNameComplete);
-    }
+    bool importAllFiles = (reply == QMessageBox::Yes);
 
-    for (int i=0; i < fileList.count(); i++)
-    {
-        QString fileName = fileList[i];
-        QString myLog = "";
-        fileNameComplete = filePath + fileName;
-
-        if (myProject.meteoPointsDbHandler->importHourlyMeteoData(fileNameComplete, false, &myLog))
-            myProject.logInfo(myLog);
-        else
-            myProject.logError(myLog);
-    }
+    myProject.importHourlyMeteoData(fileName, importAllFiles, false);
 }

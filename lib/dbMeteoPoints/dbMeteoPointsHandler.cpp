@@ -914,7 +914,7 @@ bool Crit3DMeteoPointsDbHandler::importHourlyMeteoData(QString fileNameComplete,
         qry.prepare(queryStr);
         if (! qry.exec())
         {
-            *log += "Error in execute query: " + _db.lastError().text();
+            *log += "Error in execute query: " + qry.lastError().text();
             return false;
         }
     }

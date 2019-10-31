@@ -1972,6 +1972,38 @@ bool Project::checkMeteoGridForExport()
 }
 
 
+void Project::importHourlyMeteoData(const QString& fileName, bool importAllFiles, bool deletePreviousData)
+{
+    QString filePath = getFilePath(fileName);
+    QStringList fileList;
+
+    if (importAllFiles)
+    {
+        QDir myDir = QDir(filePath);
+        myDir.setNameFilters(QStringList("*.csv"));
+        fileList = myDir.entryList();
+    }
+    else
+    {
+        // single file
+        fileList << getFileName(fileName);
+    }
+
+    // cycle on files
+    for (int i=0; i < fileList.count(); i++)
+    {
+        QString myLog = "";
+        QString fileNameComplete = filePath + fileList[i];
+
+        if (meteoPointsDbHandler->importHourlyMeteoData(fileNameComplete, deletePreviousData, &myLog))
+            logInfo(myLog);
+        else
+            logError(myLog);
+    }
+}
+
+
+
 #ifdef NETCDF
 
     bool Project::exportMeteoGridToNetCDF(QString fileName)
