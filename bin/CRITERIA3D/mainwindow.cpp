@@ -1074,5 +1074,5 @@ void MainWindow::on_actionMeteoPointsImport_data_triggered()
     reply = QMessageBox::question(this, "Import data", "Do you want to import all csv files in the directory?", QMessageBox::Yes|QMessageBox::No);
 
     bool importAllFiles = (reply == QMessageBox::Yes);
-    myProject.importHourlyMeteoData(fileName, importAllFiles, false);
+    myProject.importHourlyMeteoData(fileName, importAllFiles, true);
 }
