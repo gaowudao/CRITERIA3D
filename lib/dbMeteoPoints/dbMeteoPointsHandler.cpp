@@ -896,7 +896,7 @@ bool Crit3DMeteoPointsDbHandler::importHourlyMeteoData(QString csvFileName, bool
             continue;
         }
 
-        // don't use QDateTime becouse has a strange bug at the end of March
+        // don't use QDateTime because it has a bug at the end of March
         char timeStr[9];
         sprintf (timeStr, " %02d:00:00", hour);
         dateTimeStr = currentDate.toString("yyyy-MM-dd") + timeStr;
