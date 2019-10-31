@@ -13,6 +13,7 @@
     bool pragaBatch(PragaProject* myProject, QString batchFileName);
 
     bool cmdOpenPragaProject(PragaProject* myProject, QStringList argumentList);
+    bool cmdNetcdfExport(PragaProject* myProject, QStringList argumentList);
     bool cmdInterpolationGridPeriod(PragaProject* myProject, QStringList argumentList);
 
 #endif // PRAGASHELL_H

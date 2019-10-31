@@ -10,6 +10,7 @@ QStringList getPragaCommandList()
     // praga commands
     cmdList.append("List    | ListCommands");
     cmdList.append("Proj    | OpenProject");
+    cmdList.append("Netcdf  | ExportNetcdf");
 
     return cmdList;
 }
@@ -52,6 +53,11 @@ bool PragaProject::executePragaCommand(QStringList argumentList, bool* isCommand
         *isCommandFound = true;
         return cmdInterpolationGridPeriod(this, argumentList);
     }
+    else if (command == "NETCDF" || command == "NETCDFEXPORT")
+    {
+        *isCommandFound = true;
+        return cmdNetcdfExport(this, argumentList);
+    }
     else
     {
         // other specific Praga commands
@@ -74,6 +80,28 @@ bool cmdOpenPragaProject(PragaProject* myProject, QStringList argumentList)
     if (! myProject->loadPragaProject(projectName))
         return false;
 
+    return true;
+}
+
+bool cmdNetcdfExport(PragaProject* myProject, QStringList argumentList)
+{
+    if (argumentList.size() < 2)
+    {
+        myProject->logError("Missing netcdf name");
+        return false;
+    }
+
+    QString netcdfName = myProject->getCompleteFileName(argumentList.at(1), PATH_PROJECT);
+
+    if (! myProject->checkMeteoGridForExport())
+    {
+        return false;
+    }
+
+    if (! myProject->exportMeteoGridToNetCDF(netcdfName))
+    {
+        return false;
+    }
     return true;
 }
 
