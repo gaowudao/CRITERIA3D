@@ -489,11 +489,12 @@ namespace radiation
         float cosElev, sinElev, tgElev;
         float step, stepCount, maxDistCount;
 
-        /*INPUT
+        /* INPUT
         azimuth
         elevationRefr
         supponiamo di avere gia' controllato se siamo dopo l'alba e prima del tramonto
-        inizializzazione a sole visibile*/
+        inizializzazione a sole visibile
+        */
 
         shadowComputed = false;
         x = float(myPoint->x);

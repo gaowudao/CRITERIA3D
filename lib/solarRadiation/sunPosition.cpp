@@ -94,8 +94,8 @@ long RSUN_compute_solar_position (float longitude, float latitude, int myTimezon
     retval = S_solpos (pdat);  /*!< S_solpos function call: returns long value */
 
     return retval;
-
 }
+
 
 void RSUN_get_results (float *amass, float *ampress,
                    float *azim, float *cosinc, float *coszen,
