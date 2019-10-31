@@ -763,7 +763,7 @@ void MainWindow::on_actionView_Slope_triggered()
 {
     if (myProject.DEM.isLoaded)
     {
-        setColorScale(precipitation, myProject.radiationMaps->slopeMap->colorScale);
+        setColorScale(airRelHumidity, myProject.radiationMaps->slopeMap->colorScale);
         setCurrentRasterOutput(myProject.radiationMaps->slopeMap);
         ui->labelOutputRaster->setText("Slope °");
     }
@@ -779,7 +779,7 @@ void MainWindow::on_actionView_Aspect_triggered()
 {
     if (myProject.DEM.isLoaded)
     {
-        setColorScale(precipitation, myProject.radiationMaps->aspectMap->colorScale);
+        setColorScale(airRelHumidity, myProject.radiationMaps->aspectMap->colorScale);
         setCurrentRasterOutput(myProject.radiationMaps->aspectMap);
         ui->labelOutputRaster->setText("Aspect °");
     }
