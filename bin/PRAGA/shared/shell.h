@@ -19,6 +19,7 @@
     bool executeSharedCommand(Project* myProject, QStringList argumentList, bool *isCommandFound);
 
     bool cmdLoadDEM(Project* myProject, QStringList argumentList);
+    bool cmdLoadMeteoGrid(Project* myProject, QStringList argumentList);
     bool cmdSetLogFile(Project* myProject, QStringList argumentList);
     bool cmdExit(Project* myProject);
 

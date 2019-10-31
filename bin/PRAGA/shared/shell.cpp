@@ -164,6 +164,7 @@ QStringList getSharedCommandList()
 
     cmdList.append("Log     | SetLogFile");
     cmdList.append("DEM     | LoadDEM");
+    cmdList.append("GRID    | LoadGrid");
     cmdList.append("Quit    | Exit");
 
     return cmdList;
@@ -191,6 +192,21 @@ bool cmdLoadDEM(Project* myProject, QStringList argumentList)
     else
     {
         return myProject->loadDEM(argumentList[1]);
+    }
+}
+
+
+bool cmdLoadMeteoGrid(Project* myProject, QStringList argumentList)
+{
+    if (argumentList.size() < 2)
+    {
+        myProject->logError("Missing Grid file name.");
+        // TODO: USAGE
+        return false;
+    }
+    else
+    {
+        return myProject->loadMeteoGridDB(argumentList[1]);
     }
 }
 
@@ -226,6 +242,11 @@ bool executeSharedCommand(Project* myProject, QStringList argumentList, bool* is
     {
         *isCommandFound = true;
         return cmdLoadDEM(myProject, argumentList);
+    }
+    else if (command == "GRID" || command == "LOADGRID")
+    {
+        *isCommandFound = true;
+        return cmdLoadMeteoGrid(myProject, argumentList);
     }
     else if (command == "LOG" || command == "SETLOGFILE")
     {
