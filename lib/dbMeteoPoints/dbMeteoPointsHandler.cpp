@@ -813,9 +813,9 @@ QString Crit3DMeteoPointsDbHandler::getNewDataEntry(int pos, const QStringList& 
 }
 
 
-bool Crit3DMeteoPointsDbHandler::importHourlyMeteoData(QString fileNameComplete, bool deletePreviousData, QString* log)
+bool Crit3DMeteoPointsDbHandler::importHourlyMeteoData(QString csvFileName, bool deletePreviousData, QString* log)
 {
-    QString fileName = getFileName(fileNameComplete);
+    QString fileName = getFileName(csvFileName);
     *log = "\nInput file: " + fileName + "\n";
 
     // check point code
@@ -827,7 +827,7 @@ bool Crit3DMeteoPointsDbHandler::importHourlyMeteoData(QString fileNameComplete,
     }
 
     // check input file
-    QFile myFile(fileNameComplete);
+    QFile myFile(csvFileName);
     if(! myFile.open (QIODevice::ReadOnly))
     {
         *log += myFile.errorString();
@@ -866,6 +866,7 @@ bool Crit3DMeteoPointsDbHandler::importHourlyMeteoData(QString fileNameComplete,
     int nrWrongDateTime = 0;
     int nrWrongData = 0;
     int nrMissingData = 0;
+    QDateTime previousDateTime;
 
     while(!myStream.atEnd())
     {
@@ -891,10 +892,13 @@ bool Crit3DMeteoPointsDbHandler::importHourlyMeteoData(QString fileNameComplete,
             continue;
         }
 
-        QDateTime myDateTime;
-        myDateTime.setDate(myDate);
-        myDateTime.setTime(QTime(hour,0,0,0));
-        QString dateTimeStr = myDateTime.toString("yyyy-MM-dd hh:00:00");
+        QDateTime currentDateTime;
+        currentDateTime.setDate(myDate);
+        currentDateTime.setTime(QTime(hour,0,0,0));
+        QString dateTimeStr = currentDateTime.toString("yyyy-MM-dd hh:00:00");
+        if (currentDateTime <= previousDateTime)
+            qDebug() << dateTimeStr;
+        previousDateTime = currentDateTime;
 
         queryStr.append(getNewDataEntry(2, line, dateTimeStr, idTavg, airTemperature, &nrMissingData, &nrWrongData, &dataQuality));
         queryStr.append(getNewDataEntry(3, line, dateTimeStr, idPrec, precipitation, &nrMissingData, &nrWrongData, &dataQuality));

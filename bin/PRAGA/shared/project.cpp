@@ -1972,9 +1972,15 @@ bool Project::checkMeteoGridForExport()
 }
 
 
-void Project::importHourlyMeteoData(const QString& fileName, bool importAllFiles, bool deletePreviousData)
+/*!
+    \name importHourlyMeteoData
+    \brief import hourly meteo data from .csv files
+    \details format:
+    DATE(yyyy-mm-dd), HOUR, TAVG, PREC, RHAVG, RAD, W_INT_AVG
+*/
+void Project::importHourlyMeteoData(const QString& csvFileName, bool importAllFiles, bool deletePreviousData)
 {
-    QString filePath = getFilePath(fileName);
+    QString filePath = getFilePath(csvFileName);
     QStringList fileList;
 
     if (importAllFiles)
@@ -1986,7 +1992,7 @@ void Project::importHourlyMeteoData(const QString& fileName, bool importAllFiles
     else
     {
         // single file
-        fileList << getFileName(fileName);
+        fileList << getFileName(csvFileName);
     }
 
     // cycle on files
