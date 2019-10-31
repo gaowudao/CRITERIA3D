@@ -897,6 +897,14 @@ bool Crit3DMeteoPointsDbHandler::importHourlyMeteoData(QString csvFileName, bool
         currentDateTime.setTime(QTime(hour,0,0,0));
         QString dateTimeStr = currentDateTime.toString("yyyy-MM-dd hh:00:00");
 
+        // check DateTime
+        if (dateTimeStr == "")
+        {
+            *log += "\nWrong dateTime: " + currentDateTime.toString();
+            nrWrongDateTime++;
+            continue;
+        }
+
         // check duplicate dateTime
         if (currentDateTime <= previousDateTime)
         {
