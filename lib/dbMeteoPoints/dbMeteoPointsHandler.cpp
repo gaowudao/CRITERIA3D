@@ -775,7 +775,7 @@ bool Crit3DMeteoPointsDbHandler::createTable(const QString& tableName, bool dele
         _db.exec(queryStr);
     }
 
-    queryStr = "CREATE TABLE " + tableName + " (date_time TEXT, id_variable INTEGER, value REAL, PRIMARY KEY(date_time, id_variable))";
+    queryStr = "CREATE TABLE IF NOT EXISTS " + tableName + " (date_time TEXT, id_variable INTEGER, value REAL, PRIMARY KEY(date_time, id_variable))";
     QSqlQuery qry(_db);
     qry.prepare(queryStr);
 
@@ -850,7 +850,7 @@ bool Crit3DMeteoPointsDbHandler::importHourlyMeteoData(QString fileNameComplete,
     QString tableName = pointCode + "_H";
     if (! createTable(tableName, deletePreviousData))
     {
-        *log += _db.lastError().text();
+        *log += "Error in create table: " + tableName + _db.lastError().text();
         myFile.close();
         return false;
     }
@@ -914,7 +914,7 @@ bool Crit3DMeteoPointsDbHandler::importHourlyMeteoData(QString fileNameComplete,
         qry.prepare(queryStr);
         if (! qry.exec())
         {
-            *log += "Wrong query: " + _db.lastError().text();
+            *log += "Error in execute query: " + _db.lastError().text();
             return false;
         }
     }
