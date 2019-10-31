@@ -164,14 +164,14 @@ float getSinDecimalDegree(float angle)
 {
     while (angle > 360) angle -= 360 ;
     while (angle < -360) angle +=360 ;
-    return (float)sin(angle * DEG_TO_RAD);
+    return float(sin(angle * DEG_TO_RAD));
 }
 
 float getCosDecimalDegree(float angle)
 {
     while (angle > 360) angle -= 360 ;
     while (angle < -360) angle +=360 ;
-    return (float)cos(angle * DEG_TO_RAD);
+    return float(cos(angle * DEG_TO_RAD));
 }
 
 
@@ -800,7 +800,7 @@ bool computeRadiationPointRsun(Crit3DRadiationSettings* mySettings, float myTemp
 
 
    bool computeRadiationGridRsun(Crit3DRadiationSettings* mySettings, const gis::Crit3DRasterGrid& myDEM,
-                                 Crit3DRadiationMaps* radiationMaps, const Crit3DTime& UTCTime)
+                                 Crit3DRadiationMaps* radiationMaps, const Crit3DTime& myTime)
 
     {
         int myRow, myCol;
@@ -826,7 +826,7 @@ bool computeRadiationPointRsun(Crit3DRadiationSettings* mySettings, float myTemp
                     float transmissivity = radiationMaps->transmissivityMap->value[myRow][myCol];
 
                     //CHIAMATA A SINGLE POINT
-                    if (!computeRadiationPointRsun(mySettings, TEMPERATURE_DEFAULT, PRESSURE_SEALEVEL, UTCTime,
+                    if (!computeRadiationPointRsun(mySettings, TEMPERATURE_DEFAULT, PRESSURE_SEALEVEL, myTime,
                         linke, albedo, mySettings->getClearSky(), transmissivity, &mySunPosition, &myRadPoint, myDEM))
                         return false;
 
@@ -857,11 +857,11 @@ bool computeRadiationPointRsun(Crit3DRadiationSettings* mySettings, float myTemp
         gis::updateMinMaxRasterGrid(radiationMaps->diffuseRadiationMap);
         gis::updateMinMaxRasterGrid(radiationMaps->sunElevationMap);
 
-        radiationMaps->transmissivityMap->setMapTime(UTCTime);
-        radiationMaps->globalRadiationMap->setMapTime(UTCTime);
-        radiationMaps->beamRadiationMap->setMapTime(UTCTime);
-        radiationMaps->diffuseRadiationMap->setMapTime(UTCTime);
-        radiationMaps->sunElevationMap->setMapTime(UTCTime);
+        radiationMaps->transmissivityMap->setMapTime(myTime);
+        radiationMaps->globalRadiationMap->setMapTime(myTime);
+        radiationMaps->beamRadiationMap->setMapTime(myTime);
+        radiationMaps->diffuseRadiationMap->setMapTime(myTime);
+        radiationMaps->sunElevationMap->setMapTime(myTime);
 
         radiationMaps->isComputed = true;
         return true;
@@ -1033,7 +1033,7 @@ bool computeRadiationPointRsun(Crit3DRadiationSettings* mySettings, float myTemp
     }
 
 
-    float computePointTransmissivity(Crit3DRadiationSettings* mySettings, const gis::Crit3DPoint& myPoint, Crit3DTime UTCTime,
+    float computePointTransmissivity(Crit3DRadiationSettings* mySettings, const gis::Crit3DPoint& myPoint, Crit3DTime myTime,
                                      float* measuredRad, int windowWidth, int timeStepSecond, const gis::Crit3DRasterGrid& myDEM)
     {
         if (windowWidth % 2 != 1) return NODATA;
@@ -1074,11 +1074,11 @@ bool computeRadiationPointRsun(Crit3DRadiationSettings* mySettings, float myTemp
 
         int backwardTimeStep,forwardTimeStep;
         backwardTimeStep = forwardTimeStep = 0;
-        backwardTime = forwardTime = UTCTime;
+        backwardTime = forwardTime = myTime;
 
         float sumMeasuredRad = measuredRad[intervalCenter];
 
-        computeRadiationPointRsun(mySettings, TEMPERATURE_DEFAULT, PRESSURE_SEALEVEL, UTCTime, myLinke, myAlbedo,
+        computeRadiationPointRsun(mySettings, TEMPERATURE_DEFAULT, PRESSURE_SEALEVEL, myTime, myLinke, myAlbedo,
                                 myClearSkyTransmissivity, myClearSkyTransmissivity, &mySunPosition, &myRadPoint, myDEM);
 
         float sumPotentialRad = float(myRadPoint.global);
@@ -1087,8 +1087,8 @@ bool computeRadiationPointRsun(Crit3DRadiationSettings* mySettings, float myTemp
         {
             backwardTimeStep -= timeStepSecond;
             forwardTimeStep += timeStepSecond;
-            backwardTime = UTCTime.addSeconds(backwardTimeStep);
-            forwardTime = UTCTime.addSeconds(forwardTimeStep);
+            backwardTime = myTime.addSeconds(backwardTimeStep);
+            forwardTime = myTime.addSeconds(forwardTimeStep);
 
             if (measuredRad[windowIndex] != NODATA)
             {

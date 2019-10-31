@@ -49,7 +49,7 @@
         bool computeRadiationGridPresentTime(Crit3DRadiationSettings *mySettings, const gis::Crit3DRasterGrid& myDEM,
                                  Crit3DRadiationMaps* radiationMaps, const Crit3DTime& myCrit3DTime);
 
-        float computePointTransmissivity(Crit3DRadiationSettings *mySettings, const gis::Crit3DPoint& myPoint, Crit3DTime UTCTime, float* measuredRad,
+        float computePointTransmissivity(Crit3DRadiationSettings *mySettings, const gis::Crit3DPoint& myPoint, Crit3DTime myTime, float* measuredRad,
                                          int windowWidth, int timeStepSecond, const gis::Crit3DRasterGrid& myDEM);
 
         gis::Crit3DRasterGrid* getBeamRadiationMap();
