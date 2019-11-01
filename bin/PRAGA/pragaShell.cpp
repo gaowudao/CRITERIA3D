@@ -92,7 +92,6 @@ bool cmdNetcdfExport(PragaProject* myProject, QStringList argumentList)
     }
 
     QString netcdfName = myProject->getCompleteFileName(argumentList.at(1), PATH_PROJECT);
-
     if (! myProject->checkMeteoGridForExport())
     {
         return false;

@@ -37,6 +37,7 @@
 #include "netcdfHandler.h"
 #include "crit3dDate.h"
 
+
 using namespace std;
 
 
@@ -798,9 +799,11 @@ bool NetCDFHandler::writeGeoDimensions(const gis::Crit3DGridHeader& latLonHeader
 
 bool NetCDFHandler::writeData_NoTime(const gis::Crit3DRasterGrid& myDataGrid)
 {
+
     if (ncId == NODATA) return false;
 
     float* var = new float[unsigned(nrLat*nrLon)];
+
     for (int row = 0; row < nrLat; row++)
     {
         for (int col = 0; col < nrLon; col++)

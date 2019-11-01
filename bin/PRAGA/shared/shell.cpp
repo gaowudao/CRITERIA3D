@@ -206,8 +206,16 @@ bool cmdLoadMeteoGrid(Project* myProject, QStringList argumentList)
     }
     else
     {
-        return myProject->loadMeteoGridDB(argumentList[1]);
+        if (!myProject->loadMeteoGridDB(argumentList[1]))
+        {
+            return false;
+        }
+        else
+        {
+            myProject->meteoGridDbHandler->meteoGrid()->createRasterGrid();
+        }
     }
+
 }
 
 
