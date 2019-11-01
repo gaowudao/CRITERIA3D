@@ -500,7 +500,7 @@
      <bool>true</bool>
     </property>
    </widget>
-   <widget class="QGroupBox" name="groupBoxInput">
+   <widget class="QGroupBox" name="groupBoxDEM">
     <property name="geometry">
      <rect>
       <x>0</x>
@@ -3008,6 +3008,7 @@
      <addaction name="separator"/>
      <addaction name="actionView_Boundary"/>
      <addaction name="separator"/>
+     <addaction name="actionView_None"/>
     </widget>
     <widget class="QMenu" name="menuMeteo_variables">
      <property name="title">
@@ -3129,7 +3130,7 @@
   </action>
   <action name="actionView_Boundary">
    <property name="text">
-    <string>Boundary</string>
+    <string>3D Boundary</string>
    </property>
   </action>
   <action name="actionInterpolationSettings">
@@ -3260,6 +3261,11 @@
   <action name="actionCloseProject">
    <property name="text">
     <string>Close</string>
+   </property>
+  </action>
+  <action name="actionView_None">
+   <property name="text">
+    <string>None</string>
    </property>
   </action>
  </widget>

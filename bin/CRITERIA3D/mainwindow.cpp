@@ -93,19 +93,19 @@ void MainWindow::resizeEvent(QResizeEvent * event)
 
     const int INFOHEIGHT = 40;
     int x1 = this->width() - TOOLSWIDTH - MAPBORDER;
-    int dy = ui->groupBoxMeteoPoints->height() + ui->groupBoxInput->height() + ui->groupBoxOutput->height() + MAPBORDER*2;
+    int dy = ui->groupBoxMeteoPoints->height() + ui->groupBoxDEM->height() + ui->groupBoxOutput->height() + MAPBORDER*2;
     int y1 = (this->height() - INFOHEIGHT - dy) / 2;
 
     ui->widgetMap->setGeometry(0, 0, x1, this->height() - INFOHEIGHT);
     mapView->resize(ui->widgetMap->size());
 
-    ui->groupBoxMeteoPoints->move(x1, y1);
+    ui->groupBoxDEM->move(x1, y1);
+    ui->groupBoxDEM->resize(TOOLSWIDTH, ui->groupBoxDEM->height());
+
+    ui->groupBoxMeteoPoints->move(x1, y1 + ui->groupBoxDEM->height() + MAPBORDER);
     ui->groupBoxMeteoPoints->resize(TOOLSWIDTH, ui->groupBoxMeteoPoints->height());
 
-    ui->groupBoxInput->move(x1, y1 + ui->groupBoxMeteoPoints->height() + MAPBORDER);
-    ui->groupBoxInput->resize(TOOLSWIDTH, ui->groupBoxInput->height());
-
-    ui->groupBoxOutput->move(x1, ui->groupBoxInput->y() + ui->groupBoxInput->height() + MAPBORDER);
+    ui->groupBoxOutput->move(x1, ui->groupBoxMeteoPoints->y() + ui->groupBoxMeteoPoints->height() + MAPBORDER);
     ui->groupBoxOutput->resize(TOOLSWIDTH, ui->groupBoxOutput->height());
 }
 
@@ -277,8 +277,8 @@ void MainWindow::renderDEM()
     mapView->centerOn(qreal(center->longitude), qreal(center->latitude));
 
     // resize map
-    float size = this->rasterDEM->getRasterMaxSize();
-    size = log2(1000.f/size);
+    double size = double(this->rasterDEM->getRasterMaxSize());
+    size = log2(1000 / size);
     mapView->setZoomLevel(quint8(size));
     mapView->centerOn(qreal(center->longitude), qreal(center->latitude));
 
@@ -590,6 +590,7 @@ void MainWindow::setInputRasterVisible(bool value)
     inputRasterColorLegend->setVisible(value);
     ui->labelInputRaster->setVisible(value);
     ui->opacitySliderRasterInput->setVisible(value);
+    rasterDEM->setVisible(value);
 }
 
 void MainWindow::setOutputRasterVisible(bool value)
@@ -597,6 +598,7 @@ void MainWindow::setOutputRasterVisible(bool value)
     outputRasterColorLegend->setVisible(value);
     ui->labelOutputRaster->setVisible(value);
     ui->opacitySliderRasterOutput->setVisible(value);
+    rasterOutput->setVisible(value);
 }
 
 
@@ -618,19 +620,9 @@ void MainWindow::setCurrentRasterOutput(gis::Crit3DRasterGrid *myRaster)
 
     rasterOutput->initializeUTM(myRaster, myProject.gisSettings, false);
     outputRasterColorLegend->colorScale = myRaster->colorScale;
-
-    redrawRasterOutput();
-}
-
-
-void MainWindow::redrawRasterOutput()
-{
-    if (ui->labelOutputRaster->isVisible())
-    {
-        outputRasterColorLegend->repaint();
-        rasterOutput->redrawRequested();
-        updateMaps();
-    }
+    outputRasterColorLegend->repaint();
+    rasterOutput->redrawRequested();
+    updateMaps();
 }
 
 
@@ -759,11 +751,17 @@ void MainWindow::on_actionView_Boundary_triggered()
 }
 
 
+void MainWindow::on_actionView_None_triggered()
+{
+    setOutputRasterVisible(false);
+}
+
+
 void MainWindow::on_actionView_Slope_triggered()
 {
     if (myProject.DEM.isLoaded)
     {
-        setColorScale(airRelHumidity, myProject.radiationMaps->slopeMap->colorScale);
+        setColorScale(noMeteoTerrain, myProject.radiationMaps->slopeMap->colorScale);
         setCurrentRasterOutput(myProject.radiationMaps->slopeMap);
         ui->labelOutputRaster->setText("Slope °");
     }
@@ -809,8 +807,8 @@ bool MainWindow::checkMapVariable(bool isComputed)
 }
 
 
-void MainWindow::setMapVariable(meteoVariable myVar, gis::Crit3DRasterGrid *myGrid)
-{
+void MainWindow::setMeteoVariable(meteoVariable myVar, gis::Crit3DRasterGrid *myGrid)
+{   
     myProject.setCurrentVariable(myVar);
 
     setColorScale(myVar, myGrid->colorScale);
@@ -822,52 +820,84 @@ void MainWindow::setMapVariable(meteoVariable myVar, gis::Crit3DRasterGrid *myGr
 }
 
 
-void MainWindow::on_actionView_Transmissivity_triggered()
+void MainWindow::showMeteoVariable(meteoVariable var)
 {
-    if (this->checkMapVariable(myProject.radiationMaps->isComputed))
-        setMapVariable(atmTransmissivity, myProject.radiationMaps->transmissivityMap);
-}
+    switch(var)
+    {
+    case airTemperature:
+        if (checkMapVariable(myProject.hourlyMeteoMaps->isComputed))
+            setMeteoVariable(airTemperature, myProject.hourlyMeteoMaps->mapHourlyT);
+        break;
 
+    case precipitation:
+        if (checkMapVariable(myProject.hourlyMeteoMaps->isComputed))
+        setMeteoVariable(precipitation, myProject.hourlyMeteoMaps->mapHourlyPrec);
+        break;
 
-void MainWindow::on_actionView_Global_radiation_triggered()
-{
-    if (this->checkMapVariable(myProject.radiationMaps->isComputed))
-        setMapVariable(globalIrradiance, myProject.radiationMaps->globalRadiationMap);
-}
+    case airRelHumidity:
+        if (checkMapVariable(myProject.hourlyMeteoMaps->isComputed))
+        setMeteoVariable(airRelHumidity, myProject.hourlyMeteoMaps->mapHourlyRelHum);
+        break;
 
+    case windIntensity:
+        if (checkMapVariable(myProject.hourlyMeteoMaps->isComputed))
+        setMeteoVariable(windIntensity, myProject.hourlyMeteoMaps->mapHourlyWindInt);
+        break;
 
-void MainWindow::on_actionView_ET0_triggered()
-{
-    if (this->checkMapVariable(myProject.hourlyMeteoMaps->isComputed))
-        setMapVariable(referenceEvapotranspiration, myProject.hourlyMeteoMaps->mapHourlyET0);
+    case globalIrradiance:
+        if (checkMapVariable(myProject.radiationMaps->isComputed))
+            setMeteoVariable(globalIrradiance, myProject.radiationMaps->globalRadiationMap);
+        break;
+
+    case atmTransmissivity:
+        if (checkMapVariable(myProject.radiationMaps->isComputed))
+            setMeteoVariable(atmTransmissivity, myProject.radiationMaps->transmissivityMap);
+        break;
+
+    case referenceEvapotranspiration:
+        if (checkMapVariable(myProject.hourlyMeteoMaps->isComputed))
+            setMeteoVariable(referenceEvapotranspiration, myProject.hourlyMeteoMaps->mapHourlyET0);
+        break;
+
+    default:
+        {}
+    }
 }
 
 
 void MainWindow::on_actionView_Air_temperature_triggered()
 {
-    if (this->checkMapVariable(myProject.hourlyMeteoMaps->isComputed))
-        setMapVariable(airTemperature, myProject.hourlyMeteoMaps->mapHourlyT);
+    showMeteoVariable(airTemperature);
 }
 
+void MainWindow::on_actionView_Transmissivity_triggered()
+{
+    showMeteoVariable(atmTransmissivity);
+}
+
+void MainWindow::on_actionView_Global_radiation_triggered()
+{
+    showMeteoVariable(globalIrradiance);
+}
+
+void MainWindow::on_actionView_ET0_triggered()
+{
+    showMeteoVariable(referenceEvapotranspiration);
+}
 
 void MainWindow::on_actionView_Precipitation_triggered()
 {
-    if (this->checkMapVariable(myProject.hourlyMeteoMaps->isComputed))
-        setMapVariable(precipitation, myProject.hourlyMeteoMaps->mapHourlyPrec);
+    showMeteoVariable(precipitation);
 }
-
 
 void MainWindow::on_actionView_Air_relative_humidity_triggered()
 {
-    if (this->checkMapVariable(myProject.hourlyMeteoMaps->isComputed))
-        setMapVariable(airRelHumidity, myProject.hourlyMeteoMaps->mapHourlyRelHum);
+    showMeteoVariable(airRelHumidity);
 }
-
 
 void MainWindow::on_actionView_Wind_intensity_triggered()
 {
-    if (this->checkMapVariable(myProject.hourlyMeteoMaps->isComputed))
-        setMapVariable(windIntensity, myProject.hourlyMeteoMaps->mapHourlyWindInt);
+    showMeteoVariable(windIntensity);
 }
 
 
@@ -954,14 +984,27 @@ void MainWindow::on_actionCompute_solar_radiation_triggered()
 
 void MainWindow::on_actionCompute_AllMeteoMaps_triggered()
 {
+    if (! myProject.DEM.isLoaded)
+    {
+        myProject.logInfoGUI("Load a Digital Elevation Model before.");
+        return;
+    }
+
+    if (myProject.nrMeteoPoints == 0)
+    {
+        myProject.logInfoGUI("Open a meteo points DB before.");
+        return;
+    }
+
+    setOutputRasterVisible(false);
+
     if (! myProject.computeAllMeteoMaps(myProject.getCurrentTime(), true))
     {
         myProject.logError();
         return;
     }
 
-    setColorScale(myProject.getCurrentVariable(), outputRasterColorLegend->colorScale);
-    redrawRasterOutput();
+    showMeteoVariable(myProject.getCurrentVariable());
 }
 
 
@@ -1058,7 +1101,6 @@ void MainWindow::on_actionMeteoPointsOpen_triggered()
 }
 
 
-
 void MainWindow::on_actionMeteoPointsImport_data_triggered()
 {
     if (! myProject.meteoPointsLoaded)
@@ -1076,3 +1118,5 @@ void MainWindow::on_actionMeteoPointsImport_data_triggered()
     bool importAllFiles = (reply == QMessageBox::Yes);
     myProject.importHourlyMeteoData(fileName, importAllFiles, true);
 }
+
+

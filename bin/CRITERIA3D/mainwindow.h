@@ -85,6 +85,8 @@
 
         void updateMaps();
 
+        void on_actionView_None_triggered();
+
     protected:
         /*!
          * \brief mouseReleaseEvent call moveCenter
@@ -144,7 +146,6 @@
         void interpolateDemGUI();
         bool initializeViewer3D();
         bool checkMapVariable(bool isComputed);
-        void setMapVariable(meteoVariable myVar, gis::Crit3DRasterGrid *myGrid);
 
         void openSoilWidget(QPoint mapPos);
         void contextMenuRequested(QPoint localPos, QPoint globalPos);
@@ -158,7 +159,9 @@
         void clearDEM();
         void drawMeteoPoints();
         void clearMeteoPoints();
-        void redrawRasterOutput();
+
+        void setMeteoVariable(meteoVariable myVar, gis::Crit3DRasterGrid *myGrid);
+        void showMeteoVariable(meteoVariable var);
     };
 
 
