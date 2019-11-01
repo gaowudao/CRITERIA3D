@@ -164,14 +164,14 @@ float getSinDecimalDegree(float angle)
 {
     while (angle > 360) angle -= 360 ;
     while (angle < -360) angle +=360 ;
-    return float(sin(angle * DEG_TO_RAD));
+    return float(sin(double(angle) * DEG_TO_RAD));
 }
 
 float getCosDecimalDegree(float angle)
 {
     while (angle > 360) angle -= 360 ;
     while (angle < -360) angle +=360 ;
-    return float(cos(angle * DEG_TO_RAD));
+    return float(cos(double(angle) * DEG_TO_RAD));
 }
 
 
@@ -196,23 +196,30 @@ namespace radiation
             case PARAM_MODE_MAP:
                  output = NODATA;
                  break;
+
+            default:
+                output = mySettings->getAlbedo();
         }
         return output;
     }
 
     float readAlbedo(Crit3DRadiationSettings* mySettings, int myRow, int myCol)
     {
-        float myAlbedo = NODATA;
+        float output = NODATA;
         switch (mySettings->getAlbedoMode())
         {
             case PARAM_MODE_FIXED:
-                myAlbedo = mySettings->getAlbedo();
+                output = mySettings->getAlbedo();
                 break;
+
             case PARAM_MODE_MAP:
-                myAlbedo = mySettings->getAlbedo(myRow, myCol);
+                output = mySettings->getAlbedo(myRow, myCol);
                 break;
+
+            default:
+                output = mySettings->getAlbedo(myRow, myCol);
         }
-        return (myAlbedo);
+        return output;
     }
 
     float readAlbedo(Crit3DRadiationSettings* mySettings, const gis::Crit3DPoint& myPoint)
@@ -227,6 +234,9 @@ namespace radiation
             case PARAM_MODE_MAP:
                 output = mySettings->getAlbedo(myPoint);
                 break;
+
+            default:
+                output = mySettings->getAlbedo(myPoint);
         }
         return output;
     }
@@ -361,9 +371,10 @@ namespace radiation
             rayleighThickness = float(1.0 / (6.6296 + 1.7513 * airMass - 0.1202 * pow(airMass,2)
                                             + 0.0065 * pow(airMass,3) - 0.00013 * pow(airMass,4)));
         else
-            rayleighThickness = float(1.0 / (10.4 + 0.718 * airMass));
+            rayleighThickness = 1.f / (10.4f + 0.718f * airMass);
 
-        return mySunPosition->extraIrradianceNormal * getSinDecimalDegree(mySunPosition->elevation) * (float)exp(-0.8662 * myLinke * airMass * rayleighThickness);
+        return mySunPosition->extraIrradianceNormal * getSinDecimalDegree(mySunPosition->elevation)
+                * float(exp(-0.8662f * myLinke * airMass * rayleighThickness));
     }
 
     /*!
@@ -506,12 +517,13 @@ namespace radiation
         sinElev = getSinDecimalDegree(mySunPosition->elevation);
         tgElev = sinElev / cosElev;
         sunMaskStepZ = float(myDEM.header->cellSize * SHADOW_FACTOR * tgElev);
-        maxDeltaH = float(myDEM.header->cellSize * SHADOW_FACTOR * 2.0);
+        maxDeltaH = float(myDEM.header->cellSize * SHADOW_FACTOR * 2);
 
         if (sunMaskStepZ == 0)
             maxDistCount = myDEM.maximum - z;
         else
             maxDistCount = (myDEM.maximum - z) / sunMaskStepZ;
+
         stepCount = 0;
         step = 1;
 
@@ -531,9 +543,9 @@ namespace radiation
                 float matrixElement = myDEM.value[row][col];
                 if (matrixElement != myDEM.header->flag)
                 {
-                    if (matrixElement > z)
+                    if ((matrixElement - z) > 0.1f)
                     {
-                        //shadow - exit
+                        // shadowed - exit
                         shadowComputed = true ;
                         output = true ;
                     }
@@ -548,22 +560,22 @@ namespace radiation
             else
                 shadowComputed = true;
 
-        } while(!shadowComputed);
+        } while(! shadowComputed);
         return output;
     }
 
 
-    void separateTransmissivity(float myClearSkyTransmissivity, float transmissivity, float *td,float *Tt)
+    void separateTransmissivity(float myClearSkyTransmissivity, float transmissivity, float *td, float *Tt)
     {
         float maximumDiffuseTransmissivity;
 
         //in attesa di studi mirati (Bristow and Campbell, 1985)
-        maximumDiffuseTransmissivity = float(0.6 / (myClearSkyTransmissivity - 0.4));
-        *Tt = float(MAXVALUE(MINVALUE(transmissivity, myClearSkyTransmissivity), 0.00001));
+        maximumDiffuseTransmissivity = 0.6f / (myClearSkyTransmissivity - 0.4f);
+        *Tt = MAXVALUE(MINVALUE(transmissivity, myClearSkyTransmissivity), 0.00001f);
         *td = (*Tt) * (1 - exp(maximumDiffuseTransmissivity - (maximumDiffuseTransmissivity * myClearSkyTransmissivity) / (*Tt)));
 
         /*! FT 0.12 stimato da Settefonti agosto 2007 */
-        if ((*Tt) > 0.6) *td = MAXVALUE((*td), float(0.12));
+        if ((*Tt) > 0.6f) *td = MAXVALUE(*td, 0.1f);
     }
 
 
@@ -743,10 +755,10 @@ bool computeRadiationPointRsun(Crit3DRadiationSettings* mySettings, float myTemp
             noonTime = noonTime.addSeconds(-mySettings->gisSettings->timeZone * 3600);
         }
 
-        // Threshold: potential radiation at noon
+        // Threshold: half of potential radiation at noon
         computeRadiationPointRsun(mySettings, TEMPERATURE_DEFAULT, PRESSURE_SEALEVEL, noonTime, myLinke, myAlbedo,
                                   myClearSkyTransmissivity, myClearSkyTransmissivity, &mySunPosition, &myRadPoint, myDEM);
-        sumPotentialRadThreshold = float(myRadPoint.global);
+        sumPotentialRadThreshold = float(myRadPoint.global * 0.5);
 
         computeRadiationPointRsun(mySettings, TEMPERATURE_DEFAULT, PRESSURE_SEALEVEL, myTime, myLinke, myAlbedo,
                                   myClearSkyTransmissivity, myClearSkyTransmissivity, &mySunPosition, &myRadPoint, myDEM);

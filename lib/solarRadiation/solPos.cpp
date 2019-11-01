@@ -244,7 +244,7 @@ long S_solpos (struct posdata *pdat)
   if ( pdat->function & L_TILT )    /*!<  tilt calculations */
     tilt( pdat );
 
-    return 0;
+   return 0;
 }
 
 
@@ -317,15 +317,15 @@ static long int validate ( struct posdata *pdat)
       retval |= ( (1L << S_HOUR_ERROR) | (1L << S_MINUTE_ERROR) );
     if ( (pdat->hour == 24) && (pdat->second > 0) ) /* no more than 24 hrs */
       retval |= ( (1L << S_HOUR_ERROR) | (1L << S_SECOND_ERROR) );
-    if ( fabs (pdat->timezone) > 12.0 )
+    if ( fabs (pdat->timezone) > 12.f )
       retval |= (1L << S_TZONE_ERROR);
     if ( (pdat->interval < 0) || (pdat->interval > 28800) )
       retval |= (1L << S_INTRVL_ERROR);
 
     /*! No absurd locations, please. */
-    if ( fabs (pdat->longitude) > 180.0 )
+    if ( fabs (pdat->longitude) > 180.f )
       retval |= (1L << S_LON_ERROR);
-    if ( fabs (pdat->latitude) > 90.0 )
+    if ( fabs (pdat->latitude) > 90.f )
       retval |= (1L << S_LAT_ERROR);
   }
 
