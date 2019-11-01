@@ -22,7 +22,8 @@
 extern Crit3DProject myProject;
 
 #define MAPBORDER 10
-#define TOOLSWIDTH 243
+#define TOOLSWIDTH 260
+
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -93,7 +94,7 @@ void MainWindow::resizeEvent(QResizeEvent * event)
 
     const int INFOHEIGHT = 40;
     int x1 = this->width() - TOOLSWIDTH - MAPBORDER;
-    int dy = ui->groupBoxMeteoPoints->height() + ui->groupBoxDEM->height() + ui->groupBoxOutput->height() + MAPBORDER*2;
+    int dy = ui->groupBoxMeteoPoints->height() + ui->groupBoxDEM->height() + ui->groupBoxOutput->height() + MAPBORDER*4;
     int y1 = (this->height() - INFOHEIGHT - dy) / 2;
 
     ui->widgetMap->setGeometry(0, 0, x1, this->height() - INFOHEIGHT);
@@ -102,10 +103,10 @@ void MainWindow::resizeEvent(QResizeEvent * event)
     ui->groupBoxDEM->move(x1, y1);
     ui->groupBoxDEM->resize(TOOLSWIDTH, ui->groupBoxDEM->height());
 
-    ui->groupBoxMeteoPoints->move(x1, y1 + ui->groupBoxDEM->height() + MAPBORDER);
+    ui->groupBoxMeteoPoints->move(x1, y1 + ui->groupBoxDEM->height() + MAPBORDER*2);
     ui->groupBoxMeteoPoints->resize(TOOLSWIDTH, ui->groupBoxMeteoPoints->height());
 
-    ui->groupBoxOutput->move(x1, ui->groupBoxMeteoPoints->y() + ui->groupBoxMeteoPoints->height() + MAPBORDER);
+    ui->groupBoxOutput->move(x1, ui->groupBoxMeteoPoints->y() + ui->groupBoxMeteoPoints->height() + MAPBORDER*2);
     ui->groupBoxOutput->resize(TOOLSWIDTH, ui->groupBoxOutput->height());
 }
 
@@ -756,6 +757,10 @@ void MainWindow::on_actionView_None_triggered()
     setOutputRasterVisible(false);
 }
 
+void MainWindow::on_actionViewMeteoVariable_None_triggered()
+{
+    setOutputRasterVisible(false);
+}
 
 void MainWindow::on_actionView_Slope_triggered()
 {
@@ -1118,5 +1123,4 @@ void MainWindow::on_actionMeteoPointsImport_data_triggered()
     bool importAllFiles = (reply == QMessageBox::Yes);
     myProject.importHourlyMeteoData(fileName, importAllFiles, true);
 }
-
 

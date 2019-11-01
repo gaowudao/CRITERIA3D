@@ -485,9 +485,9 @@
    <widget class="QWidget" name="widgetMap" native="true">
     <property name="geometry">
      <rect>
-      <x>260</x>
+      <x>270</x>
       <y>40</y>
-      <width>751</width>
+      <width>741</width>
       <height>491</height>
      </rect>
     </property>
@@ -505,7 +505,7 @@
      <rect>
       <x>0</x>
       <y>260</y>
-      <width>241</width>
+      <width>260</width>
       <height>111</height>
      </rect>
     </property>
@@ -975,7 +975,7 @@
       <rect>
        <x>20</x>
        <y>20</y>
-       <width>201</width>
+       <width>211</width>
        <height>22</height>
       </rect>
      </property>
@@ -1012,7 +1012,7 @@
       <rect>
        <x>1</x>
        <y>60</y>
-       <width>241</width>
+       <width>256</width>
        <height>42</height>
       </rect>
      </property>
@@ -1032,7 +1032,7 @@
       <rect>
        <x>20</x>
        <y>40</y>
-       <width>151</width>
+       <width>221</width>
        <height>21</height>
       </rect>
      </property>
@@ -1090,7 +1090,7 @@
      <rect>
       <x>0</x>
       <y>380</y>
-      <width>241</width>
+      <width>260</width>
       <height>111</height>
      </rect>
     </property>
@@ -1560,7 +1560,7 @@
       <rect>
        <x>20</x>
        <y>20</y>
-       <width>201</width>
+       <width>211</width>
        <height>22</height>
       </rect>
      </property>
@@ -1597,7 +1597,7 @@
       <rect>
        <x>1</x>
        <y>60</y>
-       <width>241</width>
+       <width>256</width>
        <height>42</height>
       </rect>
      </property>
@@ -1617,7 +1617,7 @@
       <rect>
        <x>20</x>
        <y>40</y>
-       <width>151</width>
+       <width>221</width>
        <height>21</height>
       </rect>
      </property>
@@ -1675,7 +1675,7 @@
      <rect>
       <x>0</x>
       <y>100</y>
-      <width>241</width>
+      <width>260</width>
       <height>151</height>
      </rect>
     </property>
@@ -2142,7 +2142,7 @@
       <rect>
        <x>20</x>
        <y>30</y>
-       <width>101</width>
+       <width>111</width>
        <height>31</height>
       </rect>
      </property>
@@ -2276,7 +2276,7 @@
       <rect>
        <x>150</x>
        <y>30</y>
-       <width>71</width>
+       <width>81</width>
        <height>31</height>
       </rect>
      </property>
@@ -2387,7 +2387,7 @@
       <rect>
        <x>100</x>
        <y>70</y>
-       <width>131</width>
+       <width>151</width>
        <height>21</height>
       </rect>
      </property>
@@ -2444,7 +2444,7 @@
       <rect>
        <x>1</x>
        <y>100</y>
-       <width>241</width>
+       <width>256</width>
        <height>42</height>
       </rect>
      </property>
@@ -2467,7 +2467,7 @@
      <x>0</x>
      <y>0</y>
      <width>1280</width>
-     <height>21</height>
+     <height>26</height>
     </rect>
    </property>
    <property name="palette">
@@ -3024,6 +3024,7 @@
      <addaction name="separator"/>
      <addaction name="actionView_ET0"/>
      <addaction name="separator"/>
+     <addaction name="actionViewMeteoVariable_None"/>
     </widget>
     <widget class="QMenu" name="menuSoil">
      <property name="title">
@@ -3264,6 +3265,11 @@
    </property>
   </action>
   <action name="actionView_None">
+   <property name="text">
+    <string>None</string>
+   </property>
+  </action>
+  <action name="actionViewMeteoVariable_None">
    <property name="text">
     <string>None</string>
    </property>
