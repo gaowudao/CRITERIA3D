@@ -254,12 +254,6 @@ void Crit3DProject::clearCriteria3DProject()
     clearWaterBalance3D();
     cropIndexMap.clear();
 
-    if( hourlyMeteoMaps != nullptr)
-    {
-        delete hourlyMeteoMaps;
-        hourlyMeteoMaps = nullptr;
-    }
-
     isCriteria3DInitialized = false;
 }
 
