@@ -316,8 +316,10 @@ namespace gis
         if (value != nullptr && header->nrRows > 0)
         {
             for (int myRow = 0; myRow < header->nrRows; myRow++)
-                if (value[myRow] != nullptr) free(value[myRow]);
-            free(value);
+                if (value[myRow] != nullptr)
+                    delete [] value[myRow];
+
+            delete [] value;
         }
 
         mapTime = getNullTime();
@@ -1331,7 +1333,7 @@ namespace gis
     }
 
     void resampleGrid(const gis::Crit3DRasterGrid& oldGrid, gis::Crit3DRasterGrid* newGrid,
-                      gis::Crit3DRasterHeader header, aggregationMethod elab, float nodataThreshold)
+                      const gis::Crit3DRasterHeader& header, aggregationMethod elab, float nodataThreshold)
     {
         *(newGrid->header) = header;
 

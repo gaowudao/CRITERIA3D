@@ -65,6 +65,8 @@ Crit3DDailyMeteoMaps::~Crit3DDailyMeteoMaps()
         mapDailyRHMax->clear();
         mapDailyLeafW->clear();
         mapDailyET0HS->clear();
+
+        isInitialized = false;
     }
 }
 
@@ -122,16 +124,6 @@ bool Crit3DDailyMeteoMaps::fixDailyThermalConsistency()
 }
 
 
-bool Crit3DHourlyMeteoMaps::getIsInitialized() const
-{
-    return isInitialized;
-}
-
-void Crit3DHourlyMeteoMaps::setIsInitialized(bool value)
-{
-    isInitialized = value;
-}
-
 gis::Crit3DRasterGrid* Crit3DDailyMeteoMaps::getMapFromVar(meteoVariable myVar)
 {
     if (myVar == dailyAirTemperatureAvg)
@@ -174,42 +166,24 @@ Crit3DHourlyMeteoMaps::Crit3DHourlyMeteoMaps(const gis::Crit3DRasterGrid& DEM)
     mapHourlyTdew->initializeGrid(DEM);
     mapHourlyWindDir->initializeGrid(DEM);
 
-    isInitialized = true;
-    isComputed = false;
-}
-
-
-void Crit3DHourlyMeteoMaps::clean()
-{
-    mapHourlyT->emptyGrid();
-    mapHourlyPrec->emptyGrid();
-    mapHourlyRelHum->emptyGrid();
-    mapHourlyWindInt->emptyGrid();
-    mapHourlyET0->emptyGrid();
-    mapHourlyWindInt->emptyGrid();
-    mapHourlyWindDir->emptyGrid();
-    mapHourlyLeafW->emptyGrid();
-    //irrigationMap->emptyGrid();
-
     isComputed = false;
 }
 
 
 Crit3DHourlyMeteoMaps::~Crit3DHourlyMeteoMaps()
 {
-    if (isInitialized)
-    {
-        mapHourlyT->clear();
-        mapHourlyPrec->clear();
-        mapHourlyRelHum->clear();
-        mapHourlyWindInt->clear();
-        mapHourlyLeafW->clear();
-        mapHourlyWindInt->clear();
-        mapHourlyWindDir->clear();
-        mapHourlyET0->clear();
-        //irrigationMap->clear();
-        //avgDailyTemperatureMap->clear();
-    }
+    mapHourlyT->clear();
+    mapHourlyPrec->clear();
+    mapHourlyRelHum->clear();
+    mapHourlyWindInt->clear();
+    mapHourlyLeafW->clear();
+    mapHourlyWindInt->clear();
+    mapHourlyWindDir->clear();
+    mapHourlyET0->clear();
+    //irrigationMap->clear();
+    //avgDailyTemperatureMap->clear();
+
+    isComputed = false;
 }
 
 

@@ -31,6 +31,7 @@
 #include "crit3dProject.h"
 #include "waterBalance3D.h"
 #include "soilDbTools.h"
+#include "gis.h"
 
 #include <QtSql>
 
@@ -153,6 +154,7 @@ bool Crit3DProject::setSoilIndexMap()
     }
 
     int soilIndex;
+    double x, y;
     soilIndexMap.initializeGrid(*(DEM.header));
     for (int row = 0; row < DEM.header->nrRows; row++)
     {
@@ -160,8 +162,9 @@ bool Crit3DProject::setSoilIndexMap()
         {
             if (int(DEM.value[row][col]) != int(DEM.header->flag))
             {
-                soilIndex = getSoilIndex(row, col);
-                if (soilIndex != INDEX_ERROR)
+                gis::getUtmXYFromRowCol(DEM, row, col, &x, &y);
+                soilIndex = getCrit3DSoilIndex(x, y);
+                if (soilIndex != NODATA)
                     soilIndexMap.value[row][col] = float(soilIndex);
             }
         }
@@ -233,7 +236,12 @@ void Crit3DProject::clearCriteria3DProject()
 {
     clearWaterBalance3D();
     cropIndexMap.clear();
-    delete hourlyMeteoMaps;
+
+    if( hourlyMeteoMaps != nullptr)
+    {
+        delete hourlyMeteoMaps;
+        hourlyMeteoMaps = nullptr;
+    }
 
     isCriteria3DInitialized = false;
 }
@@ -393,6 +401,7 @@ bool Crit3DProject::initializeCriteria3DModel()
     if (! initializeWaterBalance3D(this))
     {
         clearCriteria3DProject();
+        logError("Criteria3D model not initialized.");
         return false;
     }
 

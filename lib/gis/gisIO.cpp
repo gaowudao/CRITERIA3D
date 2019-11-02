@@ -192,8 +192,10 @@ namespace gis
         myFile << "byteorder     LSBFIRST" << "\n";
 
         myFile.close();
+        delete [] xllcorner;
+        delete [] yllcorner;
 
-        return(true);
+        return true;
     }
 
 

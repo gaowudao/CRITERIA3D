@@ -117,7 +117,6 @@ bool modelDailyCycle(bool isInitialState, Crit3DDate myDate, int nrHours,
 
         // meteo interpolation
         myProject->logInfo("Interpolate meteo data");
-        myProject->vine3DMapsH->clean();
         interpolateAndSaveHourlyMeteo(myProject, airTemperature, myCurrentTime, myOutputPath, saveOutput, myArea);
         interpolateAndSaveHourlyMeteo(myProject, precipitation, myCurrentTime, myOutputPath, saveOutput, myArea);
         interpolateAndSaveHourlyMeteo(myProject, airRelHumidity, myCurrentTime, myOutputPath, saveOutput, myArea);

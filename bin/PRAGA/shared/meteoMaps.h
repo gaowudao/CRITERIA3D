@@ -42,8 +42,6 @@ public:
 
 class Crit3DHourlyMeteoMaps
 {
-private:
-    bool isInitialized;
 
 public:
     gis::Crit3DRasterGrid* mapHourlyT;
@@ -60,14 +58,10 @@ public:
     Crit3DHourlyMeteoMaps(const gis::Crit3DRasterGrid& DEM);
     ~Crit3DHourlyMeteoMaps();
 
-    void clean();
-
     gis::Crit3DRasterGrid* getMapFromVar(meteoVariable myVar);
     bool computeET0PMMap(gis::Crit3DRasterGrid* DEM, Crit3DRadiationMaps *radMaps);
     bool computeRelativeHumidityMap();
     bool computeLeafWetnessMap();
-    bool getIsInitialized() const;
-    void setIsInitialized(bool value);
 };
 
 
