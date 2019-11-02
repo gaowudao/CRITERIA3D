@@ -150,16 +150,6 @@ void Crit3DRadiationMaps::clean()
 }
 
 
-Crit3DTransmissivityPoint::Crit3DTransmissivityPoint()
-{
-    isActive = false;
-    point = new gis::Crit3DPoint();
-    point->utm.x = NODATA;
-    point->utm.y = NODATA;
-    point->z = NODATA;
-}
-
-
 float getSinDecimalDegree(float angle)
 {
     while (angle > 360) angle -= 360 ;
@@ -253,6 +243,9 @@ namespace radiation
             case PARAM_MODE_MAP:
                  output = NODATA;
                  break;
+
+            default:
+                output = mySettings->getLinke();
         }
         return output;
     }
@@ -269,6 +262,9 @@ namespace radiation
             case PARAM_MODE_MAP:
                 output = mySettings->getLinke(myRow, myCol);
                 break;
+
+            default:
+                output = mySettings->getLinke(myRow, myCol);
         }
         return output;
     }
@@ -285,6 +281,9 @@ namespace radiation
             case PARAM_MODE_MAP:
                 output = mySettings->getLinke(myPoint);
                 break;
+
+            default:
+                mySettings->getLinke(myPoint);
         }
         return output;
     }

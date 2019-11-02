@@ -90,14 +90,5 @@
         double transmissivity;
     };
 
-    class Crit3DTransmissivityPoint
-    {
-    public:
-       gis::Crit3DPoint* point;
-       bool isActive;
-       float transmissivity;
-       float* globalIrradiance;
-       Crit3DTransmissivityPoint();
-    };
 
 #endif // RADIATIONDEFINITIONS_H

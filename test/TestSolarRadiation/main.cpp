@@ -53,7 +53,7 @@ int main(int argc, char *argv[])
     gisSettings->timeZone = 1;
 
     // DATETIME (UTC time)
-    Crit3DDate* myDate = new Crit3DDate(1,6, 2018);
+    Crit3DDate* myDate = new Crit3DDate(1, 7, 2018);
     int myHour = 12;
 
     std::cout << "\nTEST Solar Radiation library" << std::endl;
@@ -79,7 +79,7 @@ int main(int argc, char *argv[])
     // INITIALIZE RADIATION MAPS (deafult trasmissivity = 0.75)
     Crit3DRadiationMaps* radMaps = new Crit3DRadiationMaps(*DEM, *gisSettings);
 
-    float mySeconds = float(HOUR_SECONDS * myHour);
+    int mySeconds = HOUR_SECONDS * myHour;
     Crit3DTime* myTime = new Crit3DTime(*myDate, mySeconds);
 
     std::cout << "\nComputing..." << std::endl;

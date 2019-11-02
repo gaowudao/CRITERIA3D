@@ -28,6 +28,43 @@
 #include "radiationSettings.h"
 
 
+Crit3DRadiationSettings::Crit3DRadiationSettings()
+{
+    initialize();
+}
+
+void Crit3DRadiationSettings::initialize()
+{
+    gisSettings = new gis::Crit3DGisSettings();
+    realSky = true;
+    shadowing = true;
+    linkeMode = PARAM_MODE_FIXED;
+    linke = 4.f;
+    albedoMode = PARAM_MODE_FIXED;
+    albedo = 0.2f;
+    tiltMode = TILT_TYPE_DEM;
+    tilt = 0;
+    aspect = 0;
+
+    algorithm = RADIATION_ALGORITHM_RSUN;
+    realSkyAlgorithm = RADIATION_REALSKY_LINKE;
+    clearSky = CLEAR_SKY_TRANSMISSIVITY_DEFAULT;
+
+    LinkeMonthly.resize(12);
+    AlbedoMonthly.resize(12);
+
+    for (unsigned int i=0; i<12; i++)
+    {
+        LinkeMonthly[i] = NODATA;
+        AlbedoMonthly[i] = NODATA;
+    }
+
+    linkeMapName = "";
+    albedoMapName = "";
+    linkeMap = nullptr;
+    albedoMap = nullptr;
+}
+
 TradiationRealSkyAlgorithm Crit3DRadiationSettings::getRealSkyAlgorithm() const
 {
     return realSkyAlgorithm;
@@ -261,42 +298,6 @@ void Crit3DRadiationSettings::setAlbedoMonthly(std::vector<float> myAlbedo)
 std::vector<float> Crit3DRadiationSettings::getLinkeMonthly() const
 {
     return LinkeMonthly;
-}
-
-Crit3DRadiationSettings::Crit3DRadiationSettings()
-{
-    initialize();
-}
-
-void Crit3DRadiationSettings::initialize()
-{
-    realSky = true;
-    shadowing = true;
-    linkeMode = PARAM_MODE_FIXED;
-    linke = 4.f;
-    albedoMode = PARAM_MODE_FIXED;
-    albedo = 0.2f;
-    tiltMode = TILT_TYPE_DEM;
-    tilt = 0;
-    aspect = 0;
-
-    algorithm = RADIATION_ALGORITHM_RSUN;
-    realSkyAlgorithm = RADIATION_REALSKY_LINKE;
-    clearSky = CLEAR_SKY_TRANSMISSIVITY_DEFAULT;
-
-    LinkeMonthly.resize(12);
-    AlbedoMonthly.resize(12);
-
-    for (unsigned int i=0; i<12; i++)
-    {
-        LinkeMonthly[i] = NODATA;
-        AlbedoMonthly[i] = NODATA;
-    }
-
-    linkeMapName = "";
-    albedoMapName = "";
-    linkeMap = nullptr;
-    albedoMap = nullptr;
 }
 
 void Crit3DRadiationSettings::setGisSettings(const gis::Crit3DGisSettings* mySettings)
