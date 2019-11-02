@@ -175,7 +175,7 @@ bool Crit3DProject::setSoilIndexMap()
 }
 
 
-int Crit3DProject::getCrit3DSoilIndex(double x, double y)
+int Crit3DProject::getCrit3DSoilId(double x, double y)
 {
     if (! soilMap.isLoaded)
         return NODATA;
@@ -193,9 +193,26 @@ int Crit3DProject::getCrit3DSoilIndex(double x, double y)
 }
 
 
+int Crit3DProject::getCrit3DSoilIndex(double x, double y)
+{
+    int idSoil = getCrit3DSoilId(x, y);
+    if (idSoil == NODATA) return NODATA;
+
+    for (unsigned int index = 0; index < soilList.size(); index++)
+    {
+        if (soilList[index].id == idSoil)
+        {
+            return signed(index);
+        }
+    }
+
+    return NODATA;
+}
+
+
 QString Crit3DProject::getCrit3DSoilCode(double x, double y)
 {
-    int idSoil = getCrit3DSoilIndex(x, y);
+    int idSoil = getCrit3DSoilId(x, y);
     if (idSoil == NODATA) return "";
 
     for (unsigned int i = 0; i < soilList.size(); i++)
