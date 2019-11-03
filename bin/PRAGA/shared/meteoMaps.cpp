@@ -169,6 +169,18 @@ Crit3DHourlyMeteoMaps::Crit3DHourlyMeteoMaps(const gis::Crit3DRasterGrid& DEM)
     isComputed = false;
 }
 
+void Crit3DHourlyMeteoMaps::clean()
+{
+    mapHourlyT->emptyGrid();
+    mapHourlyTdew->emptyGrid();
+    mapHourlyPrec->emptyGrid();
+    mapHourlyRelHum->emptyGrid();
+    mapHourlyWindInt->emptyGrid();
+    mapHourlyWindDir->emptyGrid();
+    mapHourlyET0->emptyGrid();
+    mapHourlyLeafW->emptyGrid();
+}
+
 
 Crit3DHourlyMeteoMaps::~Crit3DHourlyMeteoMaps()
 {
