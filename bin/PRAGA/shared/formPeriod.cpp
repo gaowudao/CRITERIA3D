@@ -22,6 +22,21 @@ formPeriod::~formPeriod()
     delete ui;
 }
 
+
+void formPeriod::setMinimumDate(QDate minDate)
+{
+    ui->dateTimeEditFirst->setMinimumDate(minDate);
+    ui->dateTimeEditLast->setMinimumDate(minDate);
+}
+
+
+void formPeriod::setMaximumDate(QDate maxDate)
+{
+    ui->dateTimeEditFirst->setMaximumDate(maxDate);
+    ui->dateTimeEditLast->setMaximumDate(maxDate);
+}
+
+
 void formPeriod::on_buttonBox_accepted()
 {
     *dateTimeFirst = ui->dateTimeEditFirst->dateTime();

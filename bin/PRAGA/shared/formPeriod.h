@@ -16,6 +16,9 @@
         formPeriod(QDateTime* timeIni, QDateTime* timeFin, QWidget * parent = nullptr);
         ~formPeriod();
 
+        void setMinimumDate(QDate minDate);
+        void setMaximumDate(QDate maxDate);
+
     private slots:
         void on_buttonBox_accepted();
 
