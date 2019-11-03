@@ -59,6 +59,7 @@ public:
     bool computeET0PMMap(gis::Crit3DRasterGrid* DEM, Crit3DRadiationMaps *radMaps);
     bool computeRelativeHumidityMap();
     bool computeLeafWetnessMap();
+    void clean();
 };
 
 
