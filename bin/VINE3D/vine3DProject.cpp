@@ -1756,7 +1756,6 @@ Vine3DHourlyMaps::Vine3DHourlyMaps(const gis::Crit3DRasterGrid& DEM) : Crit3DHou
 
 void Vine3DHourlyMaps::cleanVine3DHourlyMaps()
 {
-    clean();
     mapHourlyIrrigation->emptyGrid();
 }
 
@@ -1765,6 +1764,5 @@ Vine3DHourlyMaps::~Vine3DHourlyMaps()
 {
     mapHourlyIrrigation->clear();
 }
-
 
 

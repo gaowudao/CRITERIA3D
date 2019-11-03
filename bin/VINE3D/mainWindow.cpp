@@ -394,7 +394,7 @@ void MainWindow::interpolateDemGUI()
 {
     meteoVariable myVar = myProject.getCurrentVariable();
 
-    if (myProject.interpolationDemMain(myVar,myProject.getCurrentTime(), &(myProject.dataRaster), true))
+    if (myProject.interpolationDemMain(myVar, myProject.getCrit3DCurrentTime(), &(myProject.dataRaster), true))
     {
         setColorScale(myVar, myProject.dataRaster.colorScale);
         setCurrentRaster(&(myProject.dataRaster));
@@ -515,7 +515,7 @@ void MainWindow::redrawMeteoPoints(visualizationType myType, bool updateColorSCa
 
             // quality control
             checkData(myProject.quality, myProject.getCurrentVariable(),
-                      myProject.meteoPoints, myProject.nrMeteoPoints, myProject.getCurrentTime(),
+                      myProject.meteoPoints, myProject.nrMeteoPoints, myProject.getCrit3DCurrentTime(),
                       &myProject.qualityInterpolationSettings, &(myProject.climateParameters), myProject.checkSpatialQuality);
 
             if (updateColorSCale)

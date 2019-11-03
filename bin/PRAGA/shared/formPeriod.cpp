@@ -1,6 +1,7 @@
 #include "formPeriod.h"
 #include "ui_formPeriod.h"
 
+
 formPeriod::formPeriod(QDateTime *timeIni, QDateTime *timeFin, QWidget * parent) :
     QDialog(parent),
     ui(new Ui::formPeriod)

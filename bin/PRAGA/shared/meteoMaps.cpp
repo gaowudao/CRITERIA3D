@@ -4,16 +4,6 @@
 #include "meteoMaps.h"
 
 
-bool Crit3DDailyMeteoMaps::getIsInitialized() const
-{
-    return isInitialized;
-}
-
-void Crit3DDailyMeteoMaps::setIsInitialized(bool value)
-{
-    isInitialized = value;
-}
-
 Crit3DDailyMeteoMaps::Crit3DDailyMeteoMaps(const gis::Crit3DRasterGrid& DEM)
 {
     mapDailyTAvg = new gis::Crit3DRasterGrid;
@@ -35,39 +25,20 @@ Crit3DDailyMeteoMaps::Crit3DDailyMeteoMaps(const gis::Crit3DRasterGrid& DEM)
     mapDailyRHMax->initializeGrid(DEM);
     mapDailyLeafW->initializeGrid(DEM);
     mapDailyET0HS->initializeGrid(DEM);
-
-    isInitialized = true;
 }
 
-void Crit3DDailyMeteoMaps::clean()
-{
-    mapDailyTAvg->emptyGrid();
-    mapDailyTMax->emptyGrid();
-    mapDailyTMin->emptyGrid();
-    mapDailyPrec->emptyGrid();
-    mapDailyRHAvg->emptyGrid();
-    mapDailyRHMin->emptyGrid();
-    mapDailyRHMax->emptyGrid();
-    mapDailyLeafW->emptyGrid();
-    mapDailyET0HS->emptyGrid();
-}
 
 Crit3DDailyMeteoMaps::~Crit3DDailyMeteoMaps()
 {
-    if (isInitialized)
-    {
-        mapDailyTAvg->clear();
-        mapDailyTMax->clear();
-        mapDailyTMin->clear();
-        mapDailyPrec->clear();
-        mapDailyRHAvg->clear();
-        mapDailyRHMin->clear();
-        mapDailyRHMax->clear();
-        mapDailyLeafW->clear();
-        mapDailyET0HS->clear();
-
-        isInitialized = false;
-    }
+    mapDailyTAvg->clear();
+    mapDailyTMax->clear();
+    mapDailyTMin->clear();
+    mapDailyPrec->clear();
+    mapDailyRHAvg->clear();
+    mapDailyRHMin->clear();
+    mapDailyRHMax->clear();
+    mapDailyLeafW->clear();
+    mapDailyET0HS->clear();
 }
 
 bool Crit3DDailyMeteoMaps::computeHSET0Map(gis::Crit3DGisSettings* gisSettings, Crit3DDate myDate)

@@ -66,6 +66,7 @@ CONFIG(debug, debug|release) {
 }
 
 SOURCES += \
+    ../PRAGA/shared/aggregation.cpp \
     ../PRAGA/shared/dialogRadiation.cpp \
     ../PRAGA/shared/interpolationCmd.cpp \
     ../PRAGA/shared/project.cpp \
@@ -93,6 +94,7 @@ SOURCES += \
     ../PRAGA/shared/meteoMaps.cpp
 
 HEADERS  += \
+    ../PRAGA/shared/aggregation.h \
     ../PRAGA/shared/dialogRadiation.h \
     ../PRAGA/shared/interpolationCmd.h \
     ../PRAGA/shared/project.h \

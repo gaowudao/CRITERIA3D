@@ -78,6 +78,7 @@ SOURCES += mainwindow.cpp \
     ../PRAGA/shared/aggregation.cpp \
     ../PRAGA/shared/dialogRadiation.cpp \
     ../PRAGA/shared/dialogSelection.cpp \
+    ../PRAGA/shared/formPeriod.cpp \
     ../PRAGA/shared/stationMarker.cpp \
     ../PRAGA/shared/dialogSettings.cpp \
     ../PRAGA/shared/dialogInterpolation.cpp \
@@ -98,6 +99,7 @@ HEADERS += mainwindow.h \
     ../PRAGA/shared/aggregation.h \
     ../PRAGA/shared/dialogRadiation.h \
     ../PRAGA/shared/dialogSelection.h \
+    ../PRAGA/shared/formPeriod.h \
     ../PRAGA/shared/stationMarker.h \
     ../PRAGA/shared/dialogSettings.h \
     ../PRAGA/shared/dialogInterpolation.h \
@@ -114,7 +116,8 @@ HEADERS += mainwindow.h \
 
 
 FORMS += mainwindow.ui \
-    ../PRAGA/shared/formInfo.ui
+    ../PRAGA/shared/formInfo.ui \
+    ../PRAGA/shared/formPeriod.ui
 
 
 # insert here path of qwt.prf

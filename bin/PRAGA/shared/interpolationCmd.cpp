@@ -148,7 +148,7 @@ bool interpolationRaster(std::vector <Crit3DInterpolationDataPoint> &myPoints, C
 
 
     FormInfo myInfo;
-    int infoStep;
+    int infoStep = 1;
     QString infoStr;
 
     if (showInfo)
@@ -163,7 +163,7 @@ bool interpolationRaster(std::vector <Crit3DInterpolationDataPoint> &myPoints, C
 
     for (long myRow = 0; myRow < myGrid->header->nrRows ; myRow++)
     {
-        if (showInfo)
+        if (showInfo && (myRow % infoStep) == 0)
             myInfo.setValue(myRow);
 
         for (long myCol = 0; myCol < myGrid->header->nrCols; myCol++)

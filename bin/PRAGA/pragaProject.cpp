@@ -1462,9 +1462,6 @@ bool PragaProject::interpolationMeteoGridPeriod(QDate dateIni, QDate dateFin, QL
             }
         }
 
-        pragaHourlyMaps->clean();
-        pragaDailyMaps->clean();
-
         myDate = myDate.addDays(1);
     }
 

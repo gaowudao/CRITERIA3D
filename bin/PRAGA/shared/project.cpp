@@ -171,7 +171,7 @@ bool Project::checkProxy(QString name_, QString gridName_, QString table_, QStri
 
     bool isHeight = (getProxyPragaName(name_.toStdString()) == height);
 
-    if (!isHeight & gridName_ == "" & (table_ == "" && field_ == ""))
+    if (!isHeight & (gridName_ == "") & (table_ == "" && field_ == ""))
     {
         *error = "error reading grid, table or field for proxy " + name_;
         return false;
@@ -197,6 +197,7 @@ void Project::addProxyToProject(QString name_, QString gridName_, QString table_
     if (getProxyPragaName(name_.toStdString()) == height) setProxyDEM();
 }
 
+
 bool Project::addProxyGridSeries(QString name_, std::vector <QString> gridNames, std::vector <unsigned> gridYears)
 {
     std::string myError;
@@ -210,7 +211,7 @@ bool Project::addProxyGridSeries(QString name_, std::vector <QString> gridNames,
         logInfo("Checking grid " + gridNames[i] + " for proxy " + name_ + " (" + QString::number(i) + "/" + QString::number(gridNames.size()));
 
         if (gis::readEsriGrid(getCompleteFileName(gridNames[i], PATH_GEO).toStdString(), myGrid, &myError))
-            mySeries.addGridToSeries(gridNames[i], gridYears[i]);
+            mySeries.addGridToSeries(gridNames[i], signed(gridYears[i]));
         else {
             errorString = "Grid " + gridNames[i] + " not found";
             return false;
@@ -718,9 +719,14 @@ int Project::getCurrentHour()
     return this->currentHour;
 }
 
-Crit3DTime Project::getCurrentTime()
+Crit3DTime Project::getCrit3DCurrentTime()
 {
     return getCrit3DTime(this->currentDate, this->currentHour);
+}
+
+QDateTime Project::getCurrentTime()
+{
+    return QDateTime(this->currentDate, QTime(this->currentHour, 0, 0));
 }
 
 void Project::getMeteoPointsRange(float *minimum, float *maximum)
@@ -1247,7 +1253,7 @@ bool Project::loadProxyGrids()
     gis::Crit3DRasterGrid *myResampledGrid = nullptr;
     std::string gridName;
 
-    for (int i=0; i < interpolationSettings.getProxyNr(); i++)
+    for (unsigned int i=0; i < interpolationSettings.getProxyNr(); i++)
     {
         myProxy = interpolationSettings.getProxy(i);
         myGrid = myProxy->getGrid();
@@ -1794,7 +1800,7 @@ void Project::saveProxies()
     }
 
     Crit3DProxy* myProxy;
-    for (int i=0; i < interpolationSettings.getProxyNr(); i++)
+    for (unsigned int i=0; i < interpolationSettings.getProxyNr(); i++)
     {
         myProxy = interpolationSettings.getProxy(i);
         parameters->beginGroup("proxy_" + QString::fromStdString(myProxy->getName()));

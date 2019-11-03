@@ -89,6 +89,8 @@
 
         void on_actionViewMeteoVariable_None_triggered();
 
+        void on_actionRun_models_triggered();
+
     protected:
         /*!
          * \brief mouseReleaseEvent call moveCenter

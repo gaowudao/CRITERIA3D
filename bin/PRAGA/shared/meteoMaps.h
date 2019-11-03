@@ -16,7 +16,6 @@
 class Crit3DDailyMeteoMaps
 {
 private:
-    bool isInitialized;
 
 public:
     gis::Crit3DRasterGrid* mapDailyTAvg;
@@ -32,13 +31,11 @@ public:
     Crit3DDailyMeteoMaps(const gis::Crit3DRasterGrid& DEM);
     ~Crit3DDailyMeteoMaps();
 
-    void clean();
     gis::Crit3DRasterGrid* getMapFromVar(meteoVariable myVar);
     bool computeHSET0Map(gis::Crit3DGisSettings *gisSettings, Crit3DDate myDate);
     bool fixDailyThermalConsistency();
-    bool getIsInitialized() const;
-    void setIsInitialized(bool value);
 };
+
 
 class Crit3DHourlyMeteoMaps
 {

@@ -596,7 +596,7 @@ void MainWindow::interpolateDemGUI()
 {
     meteoVariable myVar = myProject.getCurrentVariable();
 
-    if (myProject.interpolationDemMain(myVar, myProject.getCurrentTime(), &(myProject.dataRaster), true))
+    if (myProject.interpolationDemMain(myVar, myProject.getCrit3DCurrentTime(), &(myProject.dataRaster), true))
     {
         setColorScale(myVar, myProject.dataRaster.colorScale);
         setCurrentRaster(&(myProject.dataRaster));
@@ -607,7 +607,8 @@ void MainWindow::interpolateDemGUI()
 
 void MainWindow::interpolateGridGUI()
 {
-    if (myProject.interpolationMeteoGrid(myProject.getCurrentVariable(), myProject.getCurrentFrequency(), myProject.getCurrentTime(), &(myProject.dataRaster), true))
+    if (myProject.interpolationMeteoGrid(myProject.getCurrentVariable(), myProject.getCurrentFrequency(),
+                                         myProject.getCrit3DCurrentTime(), &(myProject.dataRaster), true))
     {
         //setCurrentRaster(&(myProject.meteoGridDbHandler->meteoGrid()->dataMeteoGrid));
         //ui->labelRasterScale->setText(QString::fromStdString(getVariableString(myProject.getCurrentVariable())));
@@ -875,9 +876,9 @@ void MainWindow::redrawMeteoPoints(visualizationType showType, bool updateColorS
             this->ui->actionShowPointsCurrent->setChecked(true);
 
             // quality control
-            checkData(myProject.quality, myProject.getCurrentVariable(),
-                      myProject.meteoPoints, myProject.nrMeteoPoints, myProject.getCurrentTime(),
-                      &myProject.qualityInterpolationSettings, &(myProject.climateParameters), myProject.checkSpatialQuality);
+            checkData(myProject.quality, myProject.getCurrentVariable(), myProject.meteoPoints,
+                      myProject.nrMeteoPoints, myProject.getCrit3DCurrentTime(), &myProject.qualityInterpolationSettings,
+                      &(myProject.climateParameters), myProject.checkSpatialQuality);
 
             if (updateColorScale)
             {
@@ -1054,7 +1055,7 @@ void MainWindow::redrawMeteoGrid(visualizationType showType, bool showInterpolat
                     return;
                 }
 
-                Crit3DTime time = myProject.getCurrentTime();
+                Crit3DTime time = myProject.getCrit3DCurrentTime();
 
                 if (frequency == daily)
                     myProject.meteoGridDbHandler->meteoGrid()->fillCurrentDailyValue(time.date, variable);
@@ -2095,7 +2096,8 @@ void MainWindow::on_actionSaveGridCurrentData_triggered()
 {
     if (myProject.meteoGridDbHandler != nullptr)
     {
-        myProject.saveGrid(myProject.getCurrentVariable(), myProject.getCurrentFrequency(), myProject.getCurrentTime(), true);
+        myProject.saveGrid(myProject.getCurrentVariable(), myProject.getCurrentFrequency(),
+                           myProject.getCrit3DCurrentTime(), true);
     }
 }
 

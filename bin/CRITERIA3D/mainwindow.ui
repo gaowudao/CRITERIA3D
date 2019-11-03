@@ -2984,8 +2984,9 @@
      <string>3D Model</string>
     </property>
     <addaction name="actionCriteria3D_Initialize"/>
-    <addaction name="actionCriteria3D_settings"/>
+    <addaction name="actionRun_models"/>
     <addaction name="separator"/>
+    <addaction name="actionCriteria3D_settings"/>
    </widget>
    <widget class="QMenu" name="menuShow">
     <property name="title">
@@ -3121,7 +3122,7 @@
   </action>
   <action name="actionCriteria3D_settings">
    <property name="text">
-    <string>Criteria3D settings...</string>
+    <string>3D model settings...</string>
    </property>
   </action>
   <action name="actionCriteria3D_Initialize">
@@ -3272,6 +3273,11 @@
   <action name="actionViewMeteoVariable_None">
    <property name="text">
     <string>None</string>
+   </property>
+  </action>
+  <action name="actionRun_models">
+   <property name="text">
+    <string>Run models...</string>
    </property>
   </action>
  </widget>

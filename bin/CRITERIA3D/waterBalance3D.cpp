@@ -110,7 +110,7 @@ bool setWaterSinkSource(Crit3DProject* myProject, double* totalPrecipitation,
     long surfaceIndex;
     unsigned int layerIndex;
     float prec, totalWater;
-    double transp, flow, realEvap;
+    double flow, realEvap;
     int myResult;
     QString myError;
 
@@ -161,6 +161,7 @@ bool setWaterSinkSource(Crit3DProject* myProject, double* totalPrecipitation,
 
     // crop transpiration
     *totalTranspiration = 0.0;
+    double transp;
     for (long row = 0; row < myProject->indexMap[0].header->nrRows; row++)
         for (long col = 0; col < myProject->indexMap[0].header->nrCols; col++)
         {    

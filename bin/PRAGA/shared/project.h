@@ -127,7 +127,8 @@
         void setCurrentVariable(meteoVariable variable);
         int getCurrentHour();
         QDate getCurrentDate();
-        Crit3DTime getCurrentTime();
+        Crit3DTime getCrit3DCurrentTime();
+        QDateTime getCurrentTime();
         meteoVariable getCurrentVariable();
 
         void setApplicationPath(QString myPath);

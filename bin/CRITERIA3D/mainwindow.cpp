@@ -17,6 +17,7 @@
 
 #include "utilities.h"
 #include "crit3dProject.h"
+#include "formPeriod.h"
 
 
 extern Crit3DProject myProject;
@@ -385,7 +386,7 @@ void MainWindow::interpolateDemGUI()
 {
     meteoVariable myVar = myProject.getCurrentVariable();
 
-    if (myProject.interpolationDemMain(myVar, myProject.getCurrentTime(), &(myProject.dataRaster), true))
+    if (myProject.interpolationDemMain(myVar, myProject.getCrit3DCurrentTime(), &(myProject.dataRaster), true))
     {
         setColorScale(myVar, myProject.dataRaster.colorScale);
         setCurrentRasterOutput(&(myProject.dataRaster));
@@ -502,7 +503,7 @@ void MainWindow::redrawMeteoPoints(visualizationType myType, bool updateColorSCa
             this->ui->actionView_PointsCurrentVariable->setChecked(true);
             // quality control
             checkData(myProject.quality, myProject.getCurrentVariable(),
-                      myProject.meteoPoints, myProject.nrMeteoPoints, myProject.getCurrentTime(),
+                      myProject.meteoPoints, myProject.nrMeteoPoints, myProject.getCrit3DCurrentTime(),
                       &myProject.qualityInterpolationSettings, &(myProject.climateParameters), myProject.checkSpatialQuality);
 
             if (updateColorSCale)
@@ -1003,7 +1004,7 @@ void MainWindow::on_actionCompute_AllMeteoMaps_triggered()
 
     setOutputRasterVisible(false);
 
-    if (! myProject.computeAllMeteoMaps(myProject.getCurrentTime(), true))
+    if (! myProject.computeAllMeteoMaps(myProject.getCrit3DCurrentTime(), true))
     {
         myProject.logError();
         return;
@@ -1122,5 +1123,25 @@ void MainWindow::on_actionMeteoPointsImport_data_triggered()
 
     bool importAllFiles = (reply == QMessageBox::Yes);
     myProject.importHourlyMeteoData(fileName, importAllFiles, true);
+}
+
+
+void MainWindow::on_actionRun_models_triggered()
+{
+    if (! myProject.isCriteria3DInitialized)
+    {
+        myProject.logError("Initialize 3D model before");
+        return;
+    }
+
+    QDateTime timeIni(myProject.getCurrentTime());
+    QDateTime timeFin(myProject.getCurrentTime());
+
+    formPeriod myForm(&timeIni, &timeFin);
+    myForm.show();
+    int myReturn = myForm.exec();
+    if (myReturn == QDialog::Rejected) return;
+
+    //myProject.runModels(timeIni, timeFin, true, true, myProject.idArea);
 }
 
