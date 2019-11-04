@@ -8,9 +8,10 @@ QStringList getPragaCommandList()
     QStringList cmdList = getSharedCommandList();
 
     // praga commands
-    cmdList.append("List    | ListCommands");
-    cmdList.append("Proj    | OpenProject");
-    cmdList.append("Netcdf  | ExportNetcdf");
+    cmdList.append("List         | ListCommands");
+    cmdList.append("Proj         | OpenProject");
+    cmdList.append("Netcdf       | ExportNetcdf");
+    cmdList.append("XMLToNetcdf  | ExportXMLElaborationsToNetcdf");
 
     return cmdList;
 }
@@ -58,6 +59,11 @@ bool PragaProject::executePragaCommand(QStringList argumentList, bool* isCommand
         *isCommandFound = true;
         return cmdNetcdfExport(this, argumentList);
     }
+    else if (command == "XMLTONETCDF" || command == "XMLNETCDFEXPORT")
+    {
+        *isCommandFound = true;
+        return cmdExportXMLElabToNetcdf(this, argumentList);
+    }
     else
     {
         // other specific Praga commands
@@ -101,6 +107,23 @@ bool cmdNetcdfExport(PragaProject* myProject, QStringList argumentList)
     {
         return false;
     }
+    return true;
+}
+
+bool cmdExportXMLElabToNetcdf(PragaProject* myProject, QStringList argumentList)
+{
+    if (argumentList.size() < 2)
+    {
+        myProject->logError("Missing xml name");
+        return false;
+    }
+
+    QString xmlName = myProject->getCompleteFileName(argumentList.at(1), PATH_PROJECT);
+    if (!myProject->exportXMLElabGridToNetcdf(xmlName))
+    {
+        return false;
+    }
+
     return true;
 }
 
@@ -216,4 +239,3 @@ bool pragaShell(PragaProject* myProject)
 
     return true;
 }
-
