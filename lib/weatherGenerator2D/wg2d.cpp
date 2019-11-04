@@ -286,10 +286,14 @@ void weatherGenerator2D::computeWeatherGenerator2D()
         if (isTempWG2D)
             weatherGenerator2D::temperatureCompute();
 
+        weatherGenerator2D::computeprecipitationAmountParameters();
+
         if (isPrecWG2D)
             weatherGenerator2D::precipitationCompute();
 
         weatherGenerator2D::getWeatherGeneratorOutput();
+
+
 }
 void weatherGenerator2D::commonModuleCompute()
 {

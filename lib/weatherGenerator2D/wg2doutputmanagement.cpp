@@ -101,6 +101,7 @@ void weatherGenerator2D::getWeatherGeneratorOutput()
             meanAmountsPrecGenerated[iStation][jMonth] /= cumulatedOccurrencePrecGenerated[iStation][jMonth];
             printf("%d  %f %f\n",jMonth,meanAmountsPrecGenerated[iStation][jMonth],cumulatedOccurrencePrecGenerated[iStation][jMonth]);
         }
+        pressEnterToContinue();
     }
 
     for (int iStation=0;iStation<nrStations;iStation++)
