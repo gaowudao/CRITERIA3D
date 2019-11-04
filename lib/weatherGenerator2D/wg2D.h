@@ -174,6 +174,11 @@
         double** wJJA;
         double** wSON;
         double** wSeason;
+        // new distribution for precipitation
+        Tvariable* precipitationAmount;
+        void initializePrecipitationAmountParameters();
+        void computeprecipitationAmountParameters();
+
 
         // variables only for temperatures
         TtemperatureCoefficients* temperatureCoefficients;
