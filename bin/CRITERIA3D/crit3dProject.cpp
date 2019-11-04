@@ -479,7 +479,7 @@ bool Crit3DProject::interpolateAndSaveHourlyMeteo(meteoVariable myVar, const QDa
     gis::Crit3DRasterGrid* myRaster = getHourlyMeteoRaster(myVar);
     if (myRaster == nullptr) return false;
 
-    if (! interpolationDemMain(airTemperature, getCrit3DTime(myTime), myRaster, false))
+    if (! interpolationDemMain(myVar, getCrit3DTime(myTime), myRaster, false))
     {
         QString timeStr = myTime.toString("yyyy-MM-dd hh:mm");
         QString varStr = QString::fromStdString(MapHourlyMeteoVarToString.at(myVar));
@@ -500,7 +500,7 @@ bool Crit3DProject::modelDailyCycle(bool isInitialState, QDate myDate, int first
     for (int hour = firstHour; hour <= lastHour; hour++)
     {
         QDateTime myTime = QDateTime(myDate, QTime(hour, 0, 0));
-        logInfo("\n" + myTime.toString("yyyy-MM-dd hh:mm"));
+        logInfo("Compute " + myTime.toString("yyyy-MM-dd hh:mm"));
 
         // meteo interpolation
         interpolateAndSaveHourlyMeteo(airTemperature, myTime, outputPath, saveOutput);
@@ -531,10 +531,17 @@ bool Crit3DProject::runModels(QDateTime firstTime, QDateTime lastTime, bool save
         return false;
     }
 
-    logInfo("Run models from: " + firstTime.toString() + " to: " + lastTime.toString());
+    logInfo("\nRun models from: " + firstTime.toString() + " to: " + lastTime.toString());
 
     QDate firstDate = firstTime.date();
     QDate lastDate = lastTime.date();
+    logInfo("Load meteo data");
+    if (! loadMeteoPointsData(firstDate, lastDate, false))
+    {
+        logError();
+        return false;
+    }
+
     int hour1 = firstTime.time().hour();
     int hour2 = lastTime.time().hour();
 
@@ -573,8 +580,8 @@ bool Crit3DProject::runModels(QDateTime firstTime, QDateTime lastTime, bool save
             if (saveOutput)
             {
                 //create output directories
-                outputPathDaily = getProjectPath() + "daily_output/" + myDate.toString("yyyy/MM/dd/");
-                outputPathHourly = getProjectPath() + "hourly_output/" + myDate.toString("yyyy/MM/dd/");
+                outputPathDaily = getProjectPath() + "output/daily/" + myDate.toString("yyyy/MM/dd/");
+                outputPathHourly = getProjectPath() + "output/hourly/" + myDate.toString("yyyy/MM/dd/");
 
                 if ((! myDir.mkpath(outputPathDaily)) || (! myDir.mkpath(outputPathHourly)))
                 {
@@ -603,9 +610,7 @@ bool Crit3DProject::runModels(QDateTime firstTime, QDateTime lastTime, bool save
                 aggregateAndSaveDailyMap(this, airRelHumidity, aggregationMin, getCrit3DDate(myDate), myOutputPathDaily, myOutputPathHourly, myArea);
                 aggregateAndSaveDailyMap(this, airRelHumidity, aggregationMax, getCrit3DDate(myDate), myOutputPathDaily, myOutputPathHourly, myArea);
                 aggregateAndSaveDailyMap(this, airRelHumidity, aggregationMean, getCrit3DDate(myDate), myOutputPathDaily, myOutputPathHourly, myArea);
-                aggregateAndSaveDailyMap(this, windIntensity, aggregationMean, getCrit3DDate(myDate), myOutputPathDaily, myOutputPathHourly, myArea);
                 aggregateAndSaveDailyMap(this, globalIrradiance, aggregationIntegration, getCrit3DDate(myDate), myOutputPathDaily, myOutputPathHourly, myArea);
-                aggregateAndSaveDailyMap(this, leafWetness, aggregationSum, getCrit3DDate(myDate), myOutputPathDaily, myOutputPathHourly, myArea);
 
                 if (removeDirectory(outputPathHourly)) this->logInfo("Delete hourly files");
             }*/

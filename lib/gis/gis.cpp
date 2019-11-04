@@ -244,7 +244,7 @@ namespace gis
         this->clear();
 
         *(this->header) = *(initGrid.header);
-        *(this->colorScale) = *(initGrid.colorScale);
+        //*(this->colorScale) = *(initGrid.colorScale);
 
         return this->initializeGrid(this->header->flag);
     }
