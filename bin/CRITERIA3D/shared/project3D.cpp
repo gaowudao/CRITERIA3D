@@ -39,13 +39,13 @@ void Project3D::initializeProject3D()
     soilDbFileName = "";
     soilMapFileName = "";
 
-    nrSoils = 0;
+    // default
     soilDepth = 1.0;            // [m]
-
     minThickness = 0.02;        // [m]
     maxThickness = 0.1;         // [m]
     thickFactor = 1.5;
 
+    nrSoils = 0;
     nrLayers = 0;
     nrNodes = 0;
     nrLateralLink = 8;
