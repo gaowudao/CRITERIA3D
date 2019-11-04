@@ -1543,7 +1543,6 @@ bool PragaProject::exportXMLElabGridToNetcdf(QString xmlName)
     }
     for (int i = 0; i<listXMLElab->listAll().size(); i++)
     {
-
         clima->setVariable(listXMLElab->listVariable()[i]);
         clima->setYearStart(listXMLElab->listYearStart()[i]);
         clima->setYearEnd(listXMLElab->listYearEnd()[i]);
@@ -1573,8 +1572,9 @@ bool PragaProject::exportXMLElabGridToNetcdf(QString xmlName)
 
         elaborationPointsCycleGrid(false, false);
         meteoGridDbHandler->meteoGrid()->fillMeteoRasterElabValue();
-        QString netcdfName = "ELAB"+listXMLElab->listAll()[i];
+        QString netcdfName = getCompleteFileName("ELAB_"+listXMLElab->listAll()[i]+".nc", PATH_PROJECT);
         exportMeteoGridToNetCDF(netcdfName);
+        clima->resetParam();
     }
     // TO DO anomaly
     delete listXMLElab;
