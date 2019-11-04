@@ -831,22 +831,22 @@ void MainWindow::showMeteoVariable(meteoVariable var)
     switch(var)
     {
     case airTemperature:
-        if (checkMapVariable(myProject.hourlyMeteoMaps->isComputed))
+        if (checkMapVariable(myProject.hourlyMeteoMaps->getComputed()))
             setMeteoVariable(airTemperature, myProject.hourlyMeteoMaps->mapHourlyT);
         break;
 
     case precipitation:
-        if (checkMapVariable(myProject.hourlyMeteoMaps->isComputed))
+        if (checkMapVariable(myProject.hourlyMeteoMaps->getComputed()))
         setMeteoVariable(precipitation, myProject.hourlyMeteoMaps->mapHourlyPrec);
         break;
 
     case airRelHumidity:
-        if (checkMapVariable(myProject.hourlyMeteoMaps->isComputed))
+        if (checkMapVariable(myProject.hourlyMeteoMaps->getComputed()))
         setMeteoVariable(airRelHumidity, myProject.hourlyMeteoMaps->mapHourlyRelHum);
         break;
 
     case windIntensity:
-        if (checkMapVariable(myProject.hourlyMeteoMaps->isComputed))
+        if (checkMapVariable(myProject.hourlyMeteoMaps->getComputed()))
         setMeteoVariable(windIntensity, myProject.hourlyMeteoMaps->mapHourlyWindInt);
         break;
 
@@ -861,7 +861,7 @@ void MainWindow::showMeteoVariable(meteoVariable var)
         break;
 
     case referenceEvapotranspiration:
-        if (checkMapVariable(myProject.hourlyMeteoMaps->isComputed))
+        if (checkMapVariable(myProject.hourlyMeteoMaps->getComputed()))
             setMeteoVariable(referenceEvapotranspiration, myProject.hourlyMeteoMaps->mapHourlyET0);
         break;
 

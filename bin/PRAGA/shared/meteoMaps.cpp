@@ -270,4 +270,15 @@ bool Crit3DHourlyMeteoMaps::computeRelativeHumidityMap()
 }
 
 
+void Crit3DHourlyMeteoMaps::setComputed(bool value)
+{
+    isComputed = value;
+}
+
+bool Crit3DHourlyMeteoMaps::getComputed()
+{
+    return isComputed;
+}
+
+
 

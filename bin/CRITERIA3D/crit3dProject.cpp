@@ -306,7 +306,7 @@ bool Crit3DProject::computeAllMeteoMaps(const Crit3DTime& myTime, bool showInfo)
         return false;
     }
 
-    this->hourlyMeteoMaps->isComputed = false;
+    this->hourlyMeteoMaps->setComputed(false);
 
     FormInfo myInfo;
     if (showInfo)
@@ -364,7 +364,7 @@ bool Crit3DProject::computeAllMeteoMaps(const Crit3DTime& myTime, bool showInfo)
 
     if (showInfo) myInfo.close();
 
-    this->hourlyMeteoMaps->isComputed = true;
+    this->hourlyMeteoMaps->setComputed(true);
 
     return true;
 }
@@ -429,7 +429,7 @@ void Crit3DProject::setMapsComputed(bool value)
         radiationMaps->isComputed = value;
 
     if (hourlyMeteoMaps != nullptr)
-        hourlyMeteoMaps->isComputed = value;
+        hourlyMeteoMaps->setComputed(value);
 }
 
 
@@ -506,6 +506,8 @@ bool Crit3DProject::modelDailyCycle(bool isInitialState, QDate myDate, int first
         QDateTime myTime = QDateTime(myDate, QTime(hour, 0, 0));
         logInfo("Compute " + myTime.toString("yyyy-MM-dd hh:mm"));
 
+        hourlyMeteoMaps->setComputed(false);
+
         // meteo interpolation
         if (! interpolateAndSaveHourlyMeteo(airTemperature, myTime, outputPath, saveOutput)) return false;
         if (! interpolateAndSaveHourlyMeteo(precipitation, myTime, outputPath, saveOutput)) return false;
@@ -521,6 +523,7 @@ bool Crit3DProject::modelDailyCycle(bool isInitialState, QDate myDate, int first
         {
             saveHourlyMeteoOutput(referenceEvapotranspiration, outputPath, myTime);
         }
+        hourlyMeteoMaps->setComputed(true);
 
     }
 
