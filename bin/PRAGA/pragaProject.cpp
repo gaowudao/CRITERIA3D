@@ -1573,7 +1573,7 @@ bool PragaProject::exportXMLElabGridToNetcdf(QString xmlName)
 
         elaborationPointsCycleGrid(false, false);
         meteoGridDbHandler->meteoGrid()->fillMeteoRasterElabValue();
-        QString netcdfName = "ELAB"+listXMLElab->listAll()[i];
+        QString netcdfName = getCompleteFileName("ELAB"+listXMLElab->listAll()[i]+".nc", PATH_PROJECT);
         exportMeteoGridToNetCDF(netcdfName);
     }
     // TO DO anomaly
