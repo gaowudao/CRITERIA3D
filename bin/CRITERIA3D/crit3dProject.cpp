@@ -483,7 +483,7 @@ bool Crit3DProject::interpolateAndSaveHourlyMeteo(meteoVariable myVar, const QDa
     {
         QString timeStr = myTime.toString("yyyy-MM-dd hh:mm");
         QString varStr = QString::fromStdString(MapHourlyMeteoVarToString.at(myVar));
-        logError("Error in interpolation of: " + varStr + " at time: " + timeStr);
+        errorString = "Error in interpolation of " + varStr + " at time: " + timeStr;
         return false;
     }
 

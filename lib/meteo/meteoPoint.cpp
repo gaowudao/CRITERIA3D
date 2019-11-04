@@ -424,13 +424,23 @@ void Crit3DMeteoPoint::cleanObsDataM()
 
 bool Crit3DMeteoPoint::setMeteoPointValueH(const Crit3DDate& myDate, int myHour, int myMinutes, meteoVariable myVar, float myValue)
 {
-    // check indexes (day, hour)
+    // day index
     int i = obsDataH[0].date.daysTo(myDate);
-    if ((i < 0) || (i >= nrObsDataDaysH)) return false;
+    if (i < 0 || i >= nrObsDataDaysH) return false;
 
+    // hour index
     int subH = int(ceil(float(myMinutes) / float(60 / hourlyFraction)));
     int h = hourlyFraction * myHour + subH;
-    if ((h < 0) || (h >= hourlyFraction * 24)) return false;
+    if (h < 0 || h > hourlyFraction * 24)
+    {
+        return false;
+    }
+    if (h == hourlyFraction)
+    {
+        i++;
+        if (i >= nrObsDataDaysH) return false;
+        h = 0;
+    }
 
     if (myVar == airTemperature)
         obsDataH[i].tAir[h] = myValue;
@@ -453,36 +463,32 @@ bool Crit3DMeteoPoint::setMeteoPointValueH(const Crit3DDate& myDate, int myHour,
     else
         return false;
 
-    // check if is the first day
-    if (i != 0)
+    // copy data of 00:00 to 24:00 of day before
+    if (h == 0 && i > 0)
     {
-        if (h == 0)
-        {
-            // copy 00:00 to 24 day before
-            i = i-1;
-            h = 24;
+        i--;
+        h = 24;
 
-            if (myVar == airTemperature)
-                obsDataH[i].tAir[h] = myValue;
-            else if (myVar == precipitation)
-                obsDataH[i].prec[h] = myValue;
-            else if (myVar == airRelHumidity)
-                obsDataH[i].rhAir[h] = myValue;
-            else if (myVar == airDewTemperature)
-                obsDataH[i].tDew[h] = myValue;
-            else if (myVar == globalIrradiance)
-                obsDataH[i].irradiance[h] = myValue;
-            else if (myVar == referenceEvapotranspiration)
-                obsDataH[i].et0[h] = myValue;
-            else if (myVar == windIntensity)
-                obsDataH[i].windInt[h] = myValue;
-            else if (myVar == leafWetness)
-                obsDataH[i].leafW[h] = int(myValue);
-            else if (myVar == atmTransmissivity)
-                obsDataH[i].transmissivity[h] = myValue;
-            else
-                return false;
-        }
+        if (myVar == airTemperature)
+            obsDataH[i].tAir[h] = myValue;
+        else if (myVar == precipitation)
+            obsDataH[i].prec[h] = myValue;
+        else if (myVar == airRelHumidity)
+            obsDataH[i].rhAir[h] = myValue;
+        else if (myVar == airDewTemperature)
+            obsDataH[i].tDew[h] = myValue;
+        else if (myVar == globalIrradiance)
+            obsDataH[i].irradiance[h] = myValue;
+        else if (myVar == referenceEvapotranspiration)
+            obsDataH[i].et0[h] = myValue;
+        else if (myVar == windIntensity)
+            obsDataH[i].windInt[h] = myValue;
+        else if (myVar == leafWetness)
+            obsDataH[i].leafW[h] = int(myValue);
+        else if (myVar == atmTransmissivity)
+            obsDataH[i].transmissivity[h] = myValue;
+        else
+            return false;
     }
 
     return true;
