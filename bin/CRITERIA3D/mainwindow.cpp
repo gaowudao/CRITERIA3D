@@ -1149,5 +1149,7 @@ void MainWindow::on_actionRun_models_triggered()
     if (myReturn == QDialog::Rejected) return;
 
     myProject.runModels(firstTime, lastTime, false);
+    updateDateTime();
+    updateMaps();
 }
 

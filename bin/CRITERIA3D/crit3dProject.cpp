@@ -497,8 +497,12 @@ bool Crit3DProject::interpolateAndSaveHourlyMeteo(meteoVariable myVar, const QDa
 bool Crit3DProject::modelDailyCycle(bool isInitialState, QDate myDate, int firstHour, int lastHour,
                                     const QString& outputPath, bool saveOutput)
 {
+    setCurrentDate(myDate);
+
     for (int hour = firstHour; hour <= lastHour; hour++)
     {
+        setCurrentHour(hour);
+
         QDateTime myTime = QDateTime(myDate, QTime(hour, 0, 0));
         logInfo("Compute " + myTime.toString("yyyy-MM-dd hh:mm"));
 
@@ -517,6 +521,7 @@ bool Crit3DProject::modelDailyCycle(bool isInitialState, QDate myDate, int first
         {
             saveHourlyMeteoOutput(referenceEvapotranspiration, outputPath, myTime);
         }
+
     }
 
     return true;
@@ -531,12 +536,18 @@ bool Crit3DProject::runModels(QDateTime firstTime, QDateTime lastTime, bool save
         return false;
     }
 
+    if (lastTime < firstTime)
+    {
+        logError("Wrong date");
+        return false;
+    }
+
     logInfo("\nRun models from: " + firstTime.toString() + " to: " + lastTime.toString());
 
     QDate firstDate = firstTime.date();
     QDate lastDate = lastTime.date();
     logInfo("Load meteo data");
-    if (! loadMeteoPointsData(firstDate, lastDate, false))
+    if (! loadMeteoPointsData(firstDate.addDays(-1), lastDate.addDays(+1), false))
     {
         logError();
         return false;
