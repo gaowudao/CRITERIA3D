@@ -645,7 +645,6 @@ float Crit3DMeteoPoint::getMeteoPointValueD(const Crit3DDate& myDate, meteoVaria
         return (obsDataD[i].waterTable);
     else
         return (NODATA);
-
 }
 
 
