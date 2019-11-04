@@ -90,6 +90,7 @@ meteoVariable getMeteoVariableFromVarName(QString myVar)
         return noMeteoVar;
 }
 
+
 QString getVarNameFromPlantVariable(plantVariable myVar)
 {
     if (myVar == tartaricAcidVar)

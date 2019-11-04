@@ -1134,13 +1134,13 @@ void MainWindow::on_actionRun_models_triggered()
         return;
     }
 
-    QDateTime timeIni(myProject.getCurrentTime());
-    QDateTime timeFin(myProject.getCurrentTime());
+    QDateTime firstTime(myProject.getCurrentTime());
+    QDateTime lastTime(myProject.getCurrentTime());
 
     QDateTime firstDateH = myProject.meteoPointsDbHandler->getFirstDate(hourly);
     QDateTime lastDateH = myProject.meteoPointsDbHandler->getLastDate(hourly);
 
-    formPeriod myForm(&timeIni, &timeFin);
+    formPeriod myForm(&firstTime, &lastTime);
     myForm.setMinimumDate(firstDateH.date());
     myForm.setMaximumDate(lastDateH.date());
     myForm.show();
@@ -1148,6 +1148,6 @@ void MainWindow::on_actionRun_models_triggered()
     int myReturn = myForm.exec();
     if (myReturn == QDialog::Rejected) return;
 
-    //myProject.runModels(timeIni, timeFin, true, true, myProject.idArea);
+    myProject.runModels(firstTime, lastTime, false);
 }
 

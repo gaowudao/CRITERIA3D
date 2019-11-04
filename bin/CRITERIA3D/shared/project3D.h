@@ -19,6 +19,8 @@
 
     class Project3D : public Project
     {
+    private:
+
 
     public:
         QString soilDbFileName;

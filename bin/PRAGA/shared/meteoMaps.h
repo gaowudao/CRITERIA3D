@@ -56,7 +56,7 @@ public:
     ~Crit3DHourlyMeteoMaps();
 
     gis::Crit3DRasterGrid* getMapFromVar(meteoVariable myVar);
-    bool computeET0PMMap(gis::Crit3DRasterGrid* DEM, Crit3DRadiationMaps *radMaps);
+    bool computeET0PMMap(const gis::Crit3DRasterGrid &DEM, Crit3DRadiationMaps *radMaps);
     bool computeRelativeHumidityMap();
     bool computeLeafWetnessMap();
 };

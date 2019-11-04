@@ -151,8 +151,6 @@ Crit3DHourlyMeteoMaps::~Crit3DHourlyMeteoMaps()
     mapHourlyWindInt->clear();
     mapHourlyWindDir->clear();
     mapHourlyET0->clear();
-    //irrigationMap->clear();
-    //avgDailyTemperatureMap->clear();
 
     isComputed = false;
 }
@@ -172,8 +170,6 @@ gis::Crit3DRasterGrid* Crit3DHourlyMeteoMaps::getMapFromVar(meteoVariable myVar)
         return mapHourlyET0;
     else if (myVar == leafWetness)
         return mapHourlyLeafW;
-    //else if (myVar == dailyAirTemperatureAvg)
-        //return avgDailyTemperatureMap;
     else if (myVar == windDirection)
         return mapHourlyWindDir;
     else if (myVar == airDewTemperature)
@@ -183,7 +179,7 @@ gis::Crit3DRasterGrid* Crit3DHourlyMeteoMaps::getMapFromVar(meteoVariable myVar)
 }
 
 
-bool Crit3DHourlyMeteoMaps::computeET0PMMap(gis::Crit3DRasterGrid* myDEM, Crit3DRadiationMaps *radMaps)
+bool Crit3DHourlyMeteoMaps::computeET0PMMap(const gis::Crit3DRasterGrid& DEM, Crit3DRadiationMaps *radMaps)
 {
     float globalRadiation, transmissivity, clearSkyTransmissivity;
     float temperature, relHumidity, windSpeed, height;
@@ -193,8 +189,8 @@ bool Crit3DHourlyMeteoMaps::computeET0PMMap(gis::Crit3DRasterGrid* myDEM, Crit3D
         {
             this->mapHourlyET0->value[row][col] = this->mapHourlyET0->header->flag;
 
-            height = myDEM->value[row][col];
-            if (int(height) != int(myDEM->header->flag))
+            height = DEM.value[row][col];
+            if (int(height) != int(DEM.header->flag))
             {
                 clearSkyTransmissivity = CLEAR_SKY_TRANSMISSIVITY_DEFAULT;
                 globalRadiation = radMaps->globalRadiationMap->value[row][col];

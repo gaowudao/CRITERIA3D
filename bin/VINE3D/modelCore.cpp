@@ -124,7 +124,7 @@ bool modelDailyCycle(bool isInitialState, Crit3DDate myDate, int nrHours,
         interpolateAndSaveHourlyMeteo(myProject, globalIrradiance, myCurrentTime, myOutputPath, saveOutput, myArea);
 
         // ET0
-        myProject->vine3DMapsH->computeET0PMMap(&(myProject->DEM), myProject->radiationMaps);
+        myProject->vine3DMapsH->computeET0PMMap(myProject->DEM, myProject->radiationMaps);
         if (saveOutput)
         {
             saveMeteoHourlyOutput(myProject, referenceEvapotranspiration, myOutputPath, myCurrentTime, myArea);

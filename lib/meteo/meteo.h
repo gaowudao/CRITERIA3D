@@ -160,6 +160,16 @@
       { "ACTUAL_EVAPO", actualEvaporation }
     };
 
+    const std::map<meteoVariable, std::string> MapHourlyMeteoVarToString = {
+        { airTemperature, "TAVG" },
+        { precipitation, "PREC" },
+        { airRelHumidity, "RHAVG" },
+        { globalIrradiance, "RAD" },
+        { windIntensity, "W_INT_AVG" },
+        { windDirection, "W_DIR" },
+        { referenceEvapotranspiration, "ET0" }
+    };
+
 
     enum frequencyType {hourly, daily, monthly, noFrequency};
 

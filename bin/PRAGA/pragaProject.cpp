@@ -1417,7 +1417,7 @@ bool PragaProject::interpolationMeteoGridPeriod(QDate dateIni, QDate dateFin, QL
                         pragaHourlyMaps->computeLeafWetnessMap() ;
                     }
                     else if (myVar == referenceEvapotranspiration) {
-                        pragaHourlyMaps->computeET0PMMap(&DEM, radiationMaps);
+                        pragaHourlyMaps->computeET0PMMap(DEM, radiationMaps);
                     }
                     else {
                         if (! interpolationDemMain(myVar, getCrit3DTime(myDate, myHour), pragaHourlyMaps->getMapFromVar(myVar), false)) return false;
