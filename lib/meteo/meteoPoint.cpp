@@ -437,9 +437,9 @@ bool Crit3DMeteoPoint::setMeteoPointValueH(const Crit3DDate& myDate, int myHour,
     }
     if (h == hourlyFraction * 24)
     {
+        h = 0;
         i++;
         if (i >= nrObsDataDaysH) return false;
-        h = 0;
     }
 
     if (myVar == airTemperature)
@@ -549,14 +549,14 @@ float Crit3DMeteoPoint::getMeteoPointValueH(const Crit3DDate& myDate, int myHour
     {
         return NODATA;
     }
-    if ((myHour < 0) || (myHour > 24))
+    if (myHour < 0 || myHour > 24)
     {
         return NODATA;
     }
 
     // day index
     int d = obsDataH[0].date.daysTo(myDate);
-    if ((d < 0) || (d >= nrObsDataDaysH))
+    if (d < 0 || d >= nrObsDataDaysH)
     {
         return NODATA;
     }
@@ -564,7 +564,7 @@ float Crit3DMeteoPoint::getMeteoPointValueH(const Crit3DDate& myDate, int myHour
     // hour index
     int subH = int(ceil(float(myMinutes) / float(60 / hourlyFraction)));
     int h = hourlyFraction * myHour + subH;
-    if ((h < 0) || (h > hourlyFraction * 24))
+    if (h < 0 || h > hourlyFraction * 24)
     {
         return NODATA;
     }
@@ -572,6 +572,7 @@ float Crit3DMeteoPoint::getMeteoPointValueH(const Crit3DDate& myDate, int myHour
     {
         h = 0;
         d++;
+        if (d >= nrObsDataDaysH) return NODATA;
     }
 
     if (myVar == airTemperature)
