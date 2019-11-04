@@ -548,43 +548,49 @@ float Crit3DMeteoPoint::getMeteoPointValueH(const Crit3DDate& myDate, int myHour
         return NODATA;
     }
 
-    //indexes
-    int subH = int(ceil(float(myMinutes) / float(60 / hourlyFraction)));
-    int h = hourlyFraction * myHour + subH;
-    if ((h < 0) || (h >= hourlyFraction * 24))
+    // day index
+    int d = obsDataH[0].date.daysTo(myDate);
+    if ((d < 0) || (d >= nrObsDataDaysH))
     {
         return NODATA;
     }
 
-    int i = obsDataH[0].date.daysTo(myDate);
-    if ((i < 0) || (i >= nrObsDataDaysH))
+    // hour index
+    int subH = int(ceil(float(myMinutes) / float(60 / hourlyFraction)));
+    int h = hourlyFraction * myHour + subH;
+    if ((h < 0) || (h > hourlyFraction * 24))
     {
         return NODATA;
+    }
+    if (h == hourlyFraction * 24)
+    {
+        h = 0;
+        d++;
     }
 
     if (myVar == airTemperature)
-        return (obsDataH[i].tAir[h]);
+        return (obsDataH[d].tAir[h]);
     else if (myVar == precipitation)
-        return (obsDataH[i].prec[h]);
+        return (obsDataH[d].prec[h]);
     else if (myVar == airRelHumidity)
-        return (obsDataH[i].rhAir[h]);
+        return (obsDataH[d].rhAir[h]);
     else if (myVar == airDewTemperature)
     {
-        if (int(obsDataH[i].tDew[h]) != int(NODATA))
-            return obsDataH[i].tDew[h];
+        if (int(obsDataH[d].tDew[h]) != int(NODATA))
+            return obsDataH[d].tDew[h];
         else
-            return tDewFromRelHum(obsDataH[i].rhAir[h], obsDataH[i].tAir[h]);
+            return tDewFromRelHum(obsDataH[d].rhAir[h], obsDataH[d].tAir[h]);
     }
     else if (myVar == globalIrradiance)
-        return (obsDataH[i].irradiance[h]);
+        return (obsDataH[d].irradiance[h]);
     else if (myVar == referenceEvapotranspiration)
-        return (obsDataH[i].et0[h]);
+        return (obsDataH[d].et0[h]);
     else if (myVar == windIntensity)
-        return (obsDataH[i].windInt[h]);
+        return (obsDataH[d].windInt[h]);
     else if (myVar == leafWetness)
-        return float(obsDataH[i].leafW[h]);
+        return float(obsDataH[d].leafW[h]);
     else if (myVar == atmTransmissivity)
-        return (obsDataH[i].transmissivity[h]);
+        return (obsDataH[d].transmissivity[h]);
     else
     {
         return (NODATA);
