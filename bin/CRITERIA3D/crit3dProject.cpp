@@ -507,16 +507,16 @@ bool Crit3DProject::modelDailyCycle(bool isInitialState, QDate myDate, int first
         logInfo("Compute " + myTime.toString("yyyy-MM-dd hh:mm"));
 
         // meteo interpolation
-        interpolateAndSaveHourlyMeteo(airTemperature, myTime, outputPath, saveOutput);
-        interpolateAndSaveHourlyMeteo(precipitation, myTime, outputPath, saveOutput);
-        interpolateAndSaveHourlyMeteo(airRelHumidity, myTime, outputPath, saveOutput);
-        interpolateAndSaveHourlyMeteo(windIntensity, myTime, outputPath, saveOutput);
+        if (! interpolateAndSaveHourlyMeteo(airTemperature, myTime, outputPath, saveOutput)) return false;
+        if (! interpolateAndSaveHourlyMeteo(precipitation, myTime, outputPath, saveOutput)) return false;
+        if (! interpolateAndSaveHourlyMeteo(airRelHumidity, myTime, outputPath, saveOutput)) return false;
+        if (! interpolateAndSaveHourlyMeteo(windIntensity, myTime, outputPath, saveOutput)) return false;
 
         // radiation model
-        interpolateAndSaveHourlyMeteo(globalIrradiance, myTime, outputPath, saveOutput);
+        if (! interpolateAndSaveHourlyMeteo(globalIrradiance, myTime, outputPath, saveOutput)) return false;
 
         // ET0
-        this->hourlyMeteoMaps->computeET0PMMap(DEM, radiationMaps);
+        if (! hourlyMeteoMaps->computeET0PMMap(DEM, radiationMaps)) return false;
         if (saveOutput)
         {
             saveHourlyMeteoOutput(referenceEvapotranspiration, outputPath, myTime);
@@ -586,26 +586,23 @@ bool Crit3DProject::runModels(QDateTime firstTime, QDateTime lastTime, bool save
         else
             lastHour = 23;
 
-        if (lastHour > 0)
+        if (saveOutput)
         {
-            if (saveOutput)
-            {
-                //create output directories
-                outputPathDaily = getProjectPath() + "output/daily/" + myDate.toString("yyyy/MM/dd/");
-                outputPathHourly = getProjectPath() + "output/hourly/" + myDate.toString("yyyy/MM/dd/");
+            //create output directories
+            outputPathDaily = getProjectPath() + "output/daily/" + myDate.toString("yyyy/MM/dd/");
+            outputPathHourly = getProjectPath() + "output/hourly/" + myDate.toString("yyyy/MM/dd/");
 
-                if ((! myDir.mkpath(outputPathDaily)) || (! myDir.mkpath(outputPathHourly)))
-                {
-                    this->logError("Creation output directories failed." );
-                    saveOutput = false;
-                }
-            }
-
-            if (! modelDailyCycle(isInitialState, myDate, firstHour, lastHour, outputPathHourly, saveOutput))
+            if ((! myDir.mkpath(outputPathDaily)) || (! myDir.mkpath(outputPathHourly)))
             {
-                logError(errorString);
-                return false;
+                this->logError("Creation output directories failed." );
+                saveOutput = false;
             }
+        }
+
+        if (! modelDailyCycle(isInitialState, myDate, firstHour, lastHour, outputPathHourly, saveOutput))
+        {
+            logError(errorString);
+            return false;
         }
 
         if (lastHour >= 23)
