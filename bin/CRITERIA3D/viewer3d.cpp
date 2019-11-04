@@ -1,4 +1,5 @@
 #include "viewer3d.h"
+#include "gis.h"
 #include "QHBoxLayout"
 
 #include <QVector3D>
@@ -246,6 +247,7 @@ void Viewer3D::clearScene()
 
 void Viewer3D::createScene()
 {
+    gis::updateMinMaxRasterGrid(&(m_project->indexMap[0]));
     m_nrVertex = int(m_project->indexMap[0].maximum) + 1;
 
     m_vertexPositionArray.resize(m_nrVertex * 3 * int(sizeof(float)));
