@@ -435,7 +435,7 @@ bool Crit3DMeteoPoint::setMeteoPointValueH(const Crit3DDate& myDate, int myHour,
     {
         return false;
     }
-    if (h == hourlyFraction)
+    if (h == hourlyFraction * 24)
     {
         i++;
         if (i >= nrObsDataDaysH) return false;
@@ -645,7 +645,6 @@ float Crit3DMeteoPoint::getMeteoPointValueD(const Crit3DDate& myDate, meteoVaria
         return (obsDataD[i].waterTable);
     else
         return (NODATA);
-
 }
 
 
