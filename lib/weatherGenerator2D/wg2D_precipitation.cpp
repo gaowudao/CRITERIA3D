@@ -756,7 +756,40 @@ void weatherGenerator2D::precipitationMultiDistributionParameterization()
 
 void weatherGenerator2D::precipitationMultisiteAmountsGeneration()
 {
-   // begin of step 5
+
+
+    // begin of step 5
+   weatherGenerator2D::computeprecipitationAmountParameters();
+   seasonPrec = (TseasonPrec*)calloc(nrStations, sizeof(TseasonPrec));
+   for (int i=0;i<nrStations;i++)
+   {
+       seasonPrec[i].DJF = (double *)calloc(lengthSeason[0]*parametersModel.yearOfSimulation, sizeof(double));
+       seasonPrec[i].MAM = (double *)calloc(lengthSeason[1]*parametersModel.yearOfSimulation, sizeof(double));
+       seasonPrec[i].JJA = (double *)calloc(lengthSeason[2]*parametersModel.yearOfSimulation, sizeof(double));
+       seasonPrec[i].SON = (double *)calloc(lengthSeason[3]*parametersModel.yearOfSimulation, sizeof(double));
+   }
+   for (int i=0;i<nrStations;i++)
+   {
+       for (int j=0;j<4;j++)
+       {
+            if (j == 0) weatherGenerator2D::getSeasonalMeanPrecipitation(i,j,lengthSeason[j]*parametersModel.yearOfSimulation,seasonPrec[i].DJF);
+            if (j == 1) weatherGenerator2D::getSeasonalMeanPrecipitation(i,j,lengthSeason[j]*parametersModel.yearOfSimulation,seasonPrec[i].MAM);
+            if (j == 2) weatherGenerator2D::getSeasonalMeanPrecipitation(i,j,lengthSeason[j]*parametersModel.yearOfSimulation,seasonPrec[i].JJA);
+            if (j == 3) weatherGenerator2D::getSeasonalMeanPrecipitation(i,j,lengthSeason[j]*parametersModel.yearOfSimulation,seasonPrec[i].SON);
+       }
+   }
+
+   for (int i=0;i<nrStations;i++)
+   {
+       printf("%d\n",lengthSeason[3]);
+       for (int j=0; j<lengthSeason[3]*parametersModel.yearOfSimulation;j++)
+       {
+           printf("%d %f\n",j,seasonPrec[i].SON[j]);
+           pressEnterToContinue();
+       }
+   }
+
+
    //printf("parte 5 inizio\n");
    double** amountMatrixSeasonDJF = (double **)calloc(nrStations, sizeof(double*));
    double** amountMatrixSeasonMAM = (double **)calloc(nrStations, sizeof(double*));
@@ -1364,6 +1397,8 @@ void weatherGenerator2D::spatialIterationAmounts(double** correlationMatrixSimul
    double* eigenvalues =(double*)calloc(nrStations, sizeof(double));
    double* eigenvectors =(double*)calloc(nrStations*nrStations, sizeof(double));
    double** dummyMatrix3 = (double**)calloc(nrStations, sizeof(double*));
+
+
    //double** normRandom = (double**)calloc(nrStations, sizeof(double*));
    //double** uniformRandom = (double**)calloc(nrStations, sizeof(double*));
    double normRandomVar;
@@ -1536,13 +1571,18 @@ void weatherGenerator2D::spatialIterationAmounts(double** correlationMatrixSimul
                {
                    if (parametersModel.distributionPrecipitation == 1)
                    {
-                       simulatedPrecipitationAmountsSeasonal[i][j] =-log(1-uniformRandomVar)/phatAlpha[i][j]+ parametersModel.precipitationThreshold;
+                       simulatedPrecipitationAmountsSeasonal[i][j] =-log(1-uniformRandomVar)/phatAlpha[i][j] + parametersModel.precipitationThreshold;
                    }
-                   else
+                   else if (parametersModel.distributionPrecipitation == 2)
                    {
                        simulatedPrecipitationAmountsSeasonal[i][j] = weatherGenerator2D::inverseGammaFunction(uniformRandomVar,phatAlpha[i][j],phatBeta[i][j],0.01) + parametersModel.precipitationThreshold;
                        //printf("%.4f ",simulatedPrecipitationAmountsSeasonal[i][j]);
                        // check uniformRandom phatAlpha e phatBeta i dati non vanno bene
+                   }
+                   else if (parametersModel.distributionPrecipitation == 3)
+                   {
+                        int dayOfYear,month,day;
+
                    }
                }
            }
