@@ -1367,20 +1367,6 @@ float Vine3DProject::getTimeStep()
 }
 
 
-bool removeDirectory(QString myPath)
-{
-    QDir myDirectory(myPath);
-    myDirectory.setNameFilters(QStringList() << "*.*");
-    myDirectory.setFilter(QDir::Files);
-    //remove all files
-    foreach(QString myFile, myDirectory.entryList())
-    {
-        myDirectory.remove(myFile);
-    }
-    return myDirectory.rmdir(myPath);
-}
-
-
 bool Vine3DProject::loadObsDataFilled(QDateTime firstTime, QDateTime lastTime)
 {
     QDate d1 = firstTime.date().addDays(-30);

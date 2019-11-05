@@ -1,18 +1,16 @@
 #ifndef UTILITIES_H
 #define UTILITIES_H
 
-    class Crit3DDate;
-    class Crit3DTime;
+    #ifndef METEO_H
+        #include "meteo.h"
+    #endif
+
     class QDate;
     class QDateTime;
     class QVariant;
     class QString;
     class QStringList;
     class QSqlDatabase;
-
-#ifndef _VECTOR_
-    #include <vector>
-#endif
 
     Crit3DDate getCrit3DDate(const QDate &myDate);
     Crit3DTime getCrit3DTime(const QDateTime &myTime);
@@ -41,5 +39,12 @@
 
     std::vector <float> StringListToFloat(QStringList myList);
     QStringList FloatVectorToStringList(std::vector <float> myVector);
+
+    bool removeDirectory(QString myPath);
+
+    QString getVarNameDaily(meteoVariable myVar);
+    QString getVarNameHourly(meteoVariable myVar);
+    QString getOutputNameDaily(meteoVariable dailyVar, QDate myDate);
+    QString getOutputNameHourly(meteoVariable myVar, QDateTime myTime);
 
 #endif // UTILITIES_H

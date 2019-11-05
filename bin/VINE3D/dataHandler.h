@@ -1,9 +1,6 @@
 #ifndef DATAHANDLER_H
 #define DATAHANDLER_H
 
-    #ifndef QVARIANT_H
-        #include <QVariant>
-    #endif
     #ifndef QDATETIME_H
         #include <QDateTime>
     #endif

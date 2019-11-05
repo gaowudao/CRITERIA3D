@@ -27,7 +27,8 @@ win32:{
     TARGET = soilWidget
 }
 
-INCLUDEPATH += ../mathFunctions ../soil ../utilities
+INCLUDEPATH += ../crit3dDate ../mathFunctions ../soil ../meteo ../utilities
+
 unix:{
     INCLUDEPATH += /usr/include/qwt/
 }

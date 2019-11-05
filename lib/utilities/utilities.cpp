@@ -9,6 +9,7 @@
 #include <QSqlDatabase>
 #include <QSqlDriver>
 #include <QSqlRecord>
+#include <QDir>
 
 QStringList getFields(QSqlDatabase* db_, QString tableName)
 {
@@ -374,3 +375,44 @@ QStringList FloatVectorToStringList(std::vector <float> myVector)
 
     return myList;
 }
+
+
+bool removeDirectory(QString myPath)
+{
+    QDir myDir(myPath);
+    myDir.setNameFilters(QStringList() << "*.*");
+    myDir.setFilter(QDir::Files);
+
+    //remove all files
+    foreach(QString myFile, myDir.entryList())
+    {
+        myDir.remove(myFile);
+    }
+
+    return myDir.rmdir(myPath);
+}
+
+
+QString getVarNameDaily(meteoVariable myVar)
+{
+    return QString::fromStdString(MapDailyMeteoVarToString.at(myVar));
+}
+
+QString getVarNameHourly(meteoVariable myVar)
+{
+    return QString::fromStdString(MapHourlyMeteoVarToString.at(myVar));
+}
+
+QString getOutputNameDaily(meteoVariable dailyVar, QDate myDate)
+{
+    QString varName = getVarNameDaily(dailyVar);
+    return varName + "_" + myDate.toString("yyyyMMdd");
+}
+
+QString getOutputNameHourly(meteoVariable hourlyVar, QDateTime myTime)
+{
+    QString varName = getVarNameHourly(hourlyVar);
+    return varName + "_" + myTime.toString("yyyyMMdd_hhmm");
+}
+
+

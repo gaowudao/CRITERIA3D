@@ -26,8 +26,6 @@
         bool saveHourlyMeteoOutput(meteoVariable myVar, const QString& myOutputPath, QDateTime myTime);
         gis::Crit3DRasterGrid* getHourlyMeteoRaster(meteoVariable myVar);
 
-        QString getOutputNameHourly(meteoVariable myVar, QDateTime myTime);
-
 
     public:
         // meteo maps

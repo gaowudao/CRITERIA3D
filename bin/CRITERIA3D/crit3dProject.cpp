@@ -32,6 +32,7 @@
 #include "waterBalance3D.h"
 #include "soilDbTools.h"
 #include "gis.h"
+#include "statistics.h"
 
 #include <QtSql>
 #include <QPaintEvent>
@@ -434,14 +435,6 @@ void Crit3DProject::setMapsComputed(bool value)
 }
 
 
-QString Crit3DProject::getOutputNameHourly(meteoVariable myVar, QDateTime myTime)
-{
-    std::string varName = MapHourlyMeteoVarToString.at(myVar);
-    QString timeStr = myTime.toString("yyyyMMdd_hhmm");
-    return QString::fromStdString(varName) + "_" + timeStr;
-}
-
-
 gis::Crit3DRasterGrid* Crit3DProject::getHourlyMeteoRaster(meteoVariable myVar)
 {
     if (myVar == globalIrradiance)
@@ -536,20 +529,19 @@ bool Crit3DProject::saveStateAndOutput(QDate myDate, const QString& outputPathHo
         }
         else
         {
+            logInfo("Aggregate daily meteo data");
             /*
-            this->logInfo("Aggregate daily meteo data");
-            aggregateAndSaveDailyMap(this, airTemperature, aggregationMin, getCrit3DDate(myDate), myOutputPathDaily, myOutputPathHourly, myArea);
-            aggregateAndSaveDailyMap(this, airTemperature, aggregationMax, getCrit3DDate(myDate), myOutputPathDaily, myOutputPathHourly, myArea);
-            aggregateAndSaveDailyMap(this, airTemperature, aggregationMean, getCrit3DDate(myDate), myOutputPathDaily,myOutputPathHourly, myArea);
-            aggregateAndSaveDailyMap(this, precipitation, aggregationSum, getCrit3DDate(myDate), myOutputPathDaily, myOutputPathHourly, myArea);
-            aggregateAndSaveDailyMap(this, referenceEvapotranspiration, aggregationSum, getCrit3DDate(myDate), myOutputPathDaily, myOutputPathHourly, myArea);
-            aggregateAndSaveDailyMap(this, airRelHumidity, aggregationMin, getCrit3DDate(myDate), myOutputPathDaily, myOutputPathHourly, myArea);
-            aggregateAndSaveDailyMap(this, airRelHumidity, aggregationMax, getCrit3DDate(myDate), myOutputPathDaily, myOutputPathHourly, myArea);
-            aggregateAndSaveDailyMap(this, airRelHumidity, aggregationMean, getCrit3DDate(myDate), myOutputPathDaily, myOutputPathHourly, myArea);
-            aggregateAndSaveDailyMap(this, globalIrradiance, aggregationIntegration, getCrit3DDate(myDate), myOutputPathDaily, myOutputPathHourly, myArea);
-
-            if (removeDirectory(outputPathHourly)) this->logInfo("Delete hourly files");
+            aggregateAndSaveDailyMap(this, airTemperature, aggrMin, getCrit3DDate(myDate), outputPathDaily, outputPathHourly);
+            aggregateAndSaveDailyMap(this, airTemperature, aggrMax, getCrit3DDate(myDate), outputPathDaily, outputPathHourly);
+            aggregateAndSaveDailyMap(this, airTemperature, aggrAverage, getCrit3DDate(myDate), outputPathDaily,outputPathHourly);
+            aggregateAndSaveDailyMap(this, precipitation, aggrSum, getCrit3DDate(myDate), outputPathDaily, outputPathHourly);
+            aggregateAndSaveDailyMap(this, referenceEvapotranspiration, aggrSum, getCrit3DDate(myDate), outputPathDaily, outputPathHourly);
+            aggregateAndSaveDailyMap(this, airRelHumidity, aggrMin, getCrit3DDate(myDate), outputPathDaily, outputPathHourly);
+            aggregateAndSaveDailyMap(this, airRelHumidity, aggrMax, getCrit3DDate(myDate), outputPathDaily, outputPathHourly);
+            aggregateAndSaveDailyMap(this, airRelHumidity, aggrAverage, getCrit3DDate(myDate), outputPathDaily, outputPathHourly);
+            aggregateAndSaveDailyMap(this, globalIrradiance, aggrIntegration, getCrit3DDate(myDate), outputPathDaily, outputPathHourly);
             */
+            removeDirectory(outputPathHourly);
         }
     }
 

@@ -24,7 +24,7 @@ win32:{
 }
 
 
-INCLUDEPATH += ../crit3dDate ../mathFunctions ../utilities ../soil ../crop
+INCLUDEPATH += ../crit3dDate ../mathFunctions ../meteo ../soil ../crop ../utilities
 
 SOURCES += \
     cropDbTools.cpp
