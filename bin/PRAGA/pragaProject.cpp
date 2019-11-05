@@ -10,7 +10,7 @@
 #include "aggregation.h"
 #include "interpolationCmd.h"
 #include "pragaProject.h"
-
+#include "iostream" //debug
 
 bool PragaProject::getIsElabMeteoPointsValue() const
 {
@@ -461,7 +461,6 @@ bool PragaProject::elaboration(bool isMeteoGrid, bool isAnomaly, bool saveClima)
             {
                 return false;
             }
-            //meteoGridDbHandler->meteoGrid()->fillMeteoRasterElabValue();
         }
         else
         {
@@ -469,7 +468,6 @@ bool PragaProject::elaboration(bool isMeteoGrid, bool isAnomaly, bool saveClima)
             {
                 return false;
             }
-            //meteoGridDbHandler->meteoGrid()->fillMeteoRasterAnomalyValue();
         }
         meteoGridDbHandler->meteoGrid()->setIsElabValue(true);
     }
@@ -662,7 +660,6 @@ bool PragaProject::elaborationPointsCycleGrid(bool isAnomaly, bool showInfo)
             infoStep = myInfo.start(infoStr, this->meteoGridDbHandler->gridStructure().header().nrRows);
         }
     }
-
 
     QDate startDate(climaUsed->yearStart(), climaUsed->genericPeriodDateStart().month(), climaUsed->genericPeriodDateStart().day());
     QDate endDate(climaUsed->yearEnd(), climaUsed->genericPeriodDateEnd().month(), climaUsed->genericPeriodDateEnd().day());
@@ -1541,6 +1538,7 @@ bool PragaProject::exportXMLElabGridToNetcdf(QString xmlName)
     {
         clima = new Crit3DClimate();
     }
+
     for (int i = 0; i<listXMLElab->listAll().size(); i++)
     {
         clima->setVariable(listXMLElab->listVariable()[i]);
@@ -1574,7 +1572,10 @@ bool PragaProject::exportXMLElabGridToNetcdf(QString xmlName)
         meteoGridDbHandler->meteoGrid()->fillMeteoRasterElabValue();
         QString netcdfName = getCompleteFileName("ELAB_"+listXMLElab->listAll()[i]+".nc", PATH_PROJECT);
         exportMeteoGridToNetCDF(netcdfName);
+        // reset param
         clima->resetParam();
+        // reset current values
+        clima->resetCurrentValues();
     }
     // TO DO anomaly
     delete listXMLElab;
