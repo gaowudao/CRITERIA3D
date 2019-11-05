@@ -11,6 +11,7 @@
 #include "quality.h"
 #include "dbClimate.h"
 #include "qdebug.h"
+#include "iostream"
 
 bool elaborationOnPoint(QString *myError, Crit3DMeteoPointsDbHandler* meteoPointsDbHandler, Crit3DMeteoGridDbHandler* meteoGridDbHandler,
     Crit3DMeteoPoint* meteoPointTemp, Crit3DClimate* clima, bool isMeteoGrid, QDate startDate, QDate endDate, bool isAnomaly, Crit3DMeteoSettings* meteoSettings)
@@ -1892,8 +1893,6 @@ float computeStatistic(std::vector<float> &inputValues, Crit3DMeteoPoint* meteoP
                     }
 
                     presentDate = firstDate;
-
-
                     for (int i = 0; i < numberOfDays; i++)
                     {
 
@@ -1926,7 +1925,6 @@ float computeStatistic(std::vector<float> &inputValues, Crit3DMeteoPoint* meteoP
                 }
 
                 if (nValidValues == 0)return NODATA;
-
                 if (float(nValidValues) / float(nValues) * 100.f < meteoSettings->getMinimumPercentage()) return NODATA;
 
                 return statisticalElab(elab1, param1, values, nValidValues, meteoSettings->getRainfallThreshold());
@@ -2400,7 +2398,7 @@ bool parseXMLElaboration(Crit3DElabList *listXMLElab, Crit3DAnomalyList *listXML
                         {
                             elab = "average";
                         }
-                        listXMLElab->insertElab1(elab);
+                        listXMLElab->insertElab1(elab.toLower());
                     }
 
                 }
@@ -2425,7 +2423,7 @@ bool parseXMLElaboration(Crit3DElabList *listXMLElab, Crit3DAnomalyList *listXML
                     {
                         elab = "average";
                     }
-                    listXMLElab->insertElab2(elab);
+                    listXMLElab->insertElab2(elab.toLower());
                 }
                 if (errorElab)
                 {
@@ -2665,7 +2663,7 @@ bool parseXMLElaboration(Crit3DElabList *listXMLElab, Crit3DAnomalyList *listXML
                         {
                             elab = "average";
                         }
-                        listXMLAnomaly->insertElab1(elab);
+                        listXMLAnomaly->insertElab1(elab.toLower());
                     }
                 }
                 if (myTag == "SECONDARYELABORATION")
@@ -2689,7 +2687,7 @@ bool parseXMLElaboration(Crit3DElabList *listXMLElab, Crit3DAnomalyList *listXML
                     {
                         elab = "average";
                     }
-                    listXMLAnomaly->insertElab2(elab);
+                    listXMLAnomaly->insertElab2(elab.toLower());
                 }
 
 
@@ -2753,7 +2751,7 @@ bool parseXMLElaboration(Crit3DElabList *listXMLElab, Crit3DAnomalyList *listXML
                             {
                                 refElab = "average";
                             }
-                            listXMLAnomaly->insertRefElab1(refElab);
+                            listXMLAnomaly->insertRefElab1(refElab.toLower());
                         }
 
                     }
@@ -2779,7 +2777,7 @@ bool parseXMLElaboration(Crit3DElabList *listXMLElab, Crit3DAnomalyList *listXML
                         {
                             refElab2 = "average";
                         }
-                        listXMLAnomaly->insertRefElab2(refElab2);
+                        listXMLAnomaly->insertRefElab2(refElab2.toLower());
                     }
                 }
                 if (errorAnomaly)
