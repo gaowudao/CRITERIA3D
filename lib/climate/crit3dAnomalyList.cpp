@@ -652,6 +652,7 @@ void Crit3DAnomalyList::insertRefParam2(float refParam2)
 void Crit3DAnomalyList::addAnomaly(unsigned int index)
 {
 
+    bool isPercentage = _listisPercentage[index];
     QString yearStart = QString::number(_listYearStart[index]);
     QString yearEnd = QString::number(_listYearEnd[index]);
     QString variable = QString::fromStdString(MapDailyMeteoVarToString.at(_listVariable[index]));
@@ -740,6 +741,10 @@ void Crit3DAnomalyList::addAnomaly(unsigned int index)
         {
             anomalyAdded = anomalyAdded + "_|" + refElab1ParamFromdB + "||";
         }
+    }
+    if(isPercentage)
+    {
+        anomalyAdded = anomalyAdded + "_PERC";
     }
 
     if (_listAll.contains(anomalyAdded)!= 0)
