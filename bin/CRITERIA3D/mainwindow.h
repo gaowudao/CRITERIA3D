@@ -75,6 +75,8 @@
         void on_actionView_Air_relative_humidity_triggered();
         void on_actionView_Wind_intensity_triggered();
         void on_actionView_ET0_triggered();
+        void on_actionView_None_triggered();
+        void on_actionViewMeteoVariable_None_triggered();
 
         void on_actionMapOpenStreetMap_triggered();
         void on_actionMapESRISatellite_triggered();
@@ -83,13 +85,10 @@
         void on_actionCriteria3D_Initialize_triggered();
         void on_viewer3DClosed();
 
-        void updateMaps();
-
-        void on_actionView_None_triggered();
-
-        void on_actionViewMeteoVariable_None_triggered();
-
         void on_actionRun_models_triggered();
+
+        void updateMaps();
+        void updateGUI();
 
     protected:
         /*!
@@ -166,6 +165,8 @@
 
         void setMeteoVariable(meteoVariable myVar, gis::Crit3DRasterGrid *myGrid);
         void showMeteoVariable(meteoVariable var);
+
+        bool runModels(QDateTime dateTime1, QDateTime dateTime2, bool saveOutput);
     };
 
 

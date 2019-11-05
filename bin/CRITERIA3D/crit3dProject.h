@@ -22,10 +22,10 @@
 
         bool interpolateAndSaveHourlyMeteo(meteoVariable myVar, const QDateTime& myTime,
                                            const QString& outputPath, bool saveOutput);
-        bool modelDailyCycle(bool isInitialState, QDate myDate, int firstHour, int lastHour,
-                             const QString& outputPath, bool saveOutput);
+
         bool saveHourlyMeteoOutput(meteoVariable myVar, const QString& myOutputPath, QDateTime myTime);
         gis::Crit3DRasterGrid* getHourlyMeteoRaster(meteoVariable myVar);
+
         QString getOutputNameHourly(meteoVariable myVar, QDateTime myTime);
 
 
@@ -67,7 +67,9 @@
 
         void setMapsComputed(bool value);
 
-        bool runModels(QDateTime dateTime1, QDateTime dateTime2, bool saveOutput);
+        bool saveStateAndOutput(QDate myDate, const QString& outputPathHourly, bool saveOutput);
+
+        bool modelHourlyCycle(bool isInitialState, QDateTime myTime, const QString& outputPath, bool saveOutput);
     };
 
 

@@ -45,8 +45,9 @@ int main(int argc, char *argv[])
     QNetworkProxyFactory::setUseSystemConfiguration(true);
 
     QApplication::setOverrideCursor(Qt::ArrowCursor);
-    MainWindow w;
-    w.show();
+
+    MainWindow mainWindow;
+    mainWindow.show();
 
     return myApp.exec();
 }

@@ -120,6 +120,15 @@ void MainWindow::updateMaps()
 }
 
 
+void MainWindow::updateGUI()
+{
+    updateDateTime();
+    rasterDEM->redrawRequested();
+    rasterOutput->redrawRequested();
+    qApp->processEvents();
+}
+
+
 void MainWindow::mouseReleaseEvent(QMouseEvent *event)
 {
     Q_UNUSED(event)
@@ -1148,8 +1157,93 @@ void MainWindow::on_actionRun_models_triggered()
     int myReturn = myForm.exec();
     if (myReturn == QDialog::Rejected) return;
 
-    myProject.runModels(firstTime, lastTime, false);
+    runModels(firstTime, lastTime, false);
     updateDateTime();
     updateMaps();
+}
+
+
+bool MainWindow::runModels(QDateTime firstTime, QDateTime lastTime, bool saveOutput)
+{
+    if (! myProject.isCriteria3DInitialized)
+    {
+        myProject.logError("Initialize 3d model before.");
+        return false;
+    }
+
+    if (lastTime < firstTime)
+    {
+        myProject.logError("Wrong date");
+        return false;
+    }
+
+    QDate firstDate = firstTime.date();
+    QDate lastDate = lastTime.date();
+    int hour1 = firstTime.time().hour();
+    int hour2 = lastTime.time().hour();
+
+    myProject.logInfo("\nRun models from: " + firstTime.toString() + " to: " + lastTime.toString());
+    myProject.logInfo("Load meteo data...");
+    if (! myProject.loadMeteoPointsData(firstDate.addDays(-1), lastDate.addDays(+1), false))
+    {
+        myProject.logError();
+        return false;
+    }
+
+    bool isInitialState = false;
+    QString outputPathHourly;
+    int firstHour, lastHour;
+
+    // cycle on days
+    for (QDate myDate = firstDate; myDate <= lastDate; myDate = myDate.addDays(1))
+    {
+        myProject.setCurrentDate(myDate);
+
+        // load state if available
+        /*if (myDate == firstDate)
+        {
+            // previousDate =
+            if (! loadStates(previousDate))
+            {
+                myProject.logInfo("Previous state not found, model will be initialized.");
+                isInitialState = true;
+            }
+        }*/
+
+        if (saveOutput)
+        {
+            // create output directory
+            outputPathHourly = myProject.getProjectPath() + "output/hourly/" + myDate.toString("yyyy/MM/dd/");
+            if (! QDir().mkpath(outputPathHourly))
+            {
+                myProject.logError("Creation hourly output directory failed." );
+                saveOutput = false;
+            }
+        }
+
+        // cycle on hours
+        firstHour = (myDate == firstDate) ? hour1 : 0;
+        lastHour = (myDate == lastDate) ? hour2 : 23;
+
+        for (int hour = firstHour; hour <= lastHour; hour++)
+        {
+            myProject.setCurrentHour(hour);
+            QDateTime myTime = QDateTime(myDate, QTime(hour, 0, 0));
+
+            if (! myProject.modelHourlyCycle(isInitialState, myTime, outputPathHourly, saveOutput))
+            {
+                myProject.logError();
+                return false;
+            }
+
+            updateGUI();
+        }
+
+        if (lastHour >= 23)
+            myProject.saveStateAndOutput(myDate, outputPathHourly, saveOutput);
+    }
+
+    myProject.logInfo("End of run.");
+    return true;
 }
 
