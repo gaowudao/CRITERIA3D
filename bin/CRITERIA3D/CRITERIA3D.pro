@@ -75,6 +75,7 @@ CONFIG(debug, debug|release) {
 
 
 SOURCES += mainwindow.cpp \
+    ../PRAGA/shared/aggregation.cpp \
     ../PRAGA/shared/dialogRadiation.cpp \
     ../PRAGA/shared/dialogSelection.cpp \
     ../PRAGA/shared/formPeriod.cpp \
@@ -96,6 +97,7 @@ SOURCES += mainwindow.cpp \
 
 
 HEADERS += mainwindow.h \
+    ../PRAGA/shared/aggregation.h \
     ../PRAGA/shared/dialogRadiation.h \
     ../PRAGA/shared/dialogSelection.h \
     ../PRAGA/shared/formPeriod.h \

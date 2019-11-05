@@ -453,7 +453,7 @@ bool Crit3DProject::saveHourlyMeteoOutput(meteoVariable myVar, const QString& my
     gis::Crit3DRasterGrid* myRaster = getHourlyMeteoRaster(myVar);
     if (myRaster == nullptr) return false;
 
-    QString fileName = getOutputNameHourly(myVar, myTime);
+    QString fileName = getOutputNameHourly(myVar, myTime, "");
     QString outputFileName = myOutputPath + fileName;
 
     std::string errStr;
