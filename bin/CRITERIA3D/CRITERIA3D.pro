@@ -75,7 +75,6 @@ CONFIG(debug, debug|release) {
 
 
 SOURCES += mainwindow.cpp \
-    ../PRAGA/shared/aggregation.cpp \
     ../PRAGA/shared/dialogRadiation.cpp \
     ../PRAGA/shared/dialogSelection.cpp \
     ../PRAGA/shared/formPeriod.cpp \
@@ -88,7 +87,6 @@ SOURCES += mainwindow.cpp \
     ../PRAGA/shared/project.cpp \
     ../PRAGA/shared/formInfo.cpp \
     ../PRAGA/shared/meteoMaps.cpp \
-    ../PRAGA/shared/aggregation.cpp \
     shared/project3D.cpp \
     waterBalance3D.cpp \
     viewer3d.cpp \
@@ -98,7 +96,6 @@ SOURCES += mainwindow.cpp \
 
 
 HEADERS += mainwindow.h \
-    ../PRAGA/shared/aggregation.h \
     ../PRAGA/shared/dialogRadiation.h \
     ../PRAGA/shared/dialogSelection.h \
     ../PRAGA/shared/formPeriod.h \
@@ -111,7 +108,6 @@ HEADERS += mainwindow.h \
     ../PRAGA/shared/project.h \
     ../PRAGA/shared/formInfo.h \
     ../PRAGA/shared/meteoMaps.h \
-    ../PRAGA/shared/aggregation.h \
     shared/project3D.h \
     waterBalance3D.h \
     viewer3d.h \

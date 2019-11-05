@@ -136,10 +136,19 @@ Crit3DTime Crit3DTime::addSeconds(long mySeconds) const
 }
 
 
-std::string Crit3DTime::toStdString()
+std::string Crit3DTime::toISOString()
 {
     char myStr[17];
     sprintf (myStr, "%d-%02d-%02d %02d:%02d", this->date.year, this->date.month, this->date.day, this->getHour(), this->getMinutes());
+
+    return std::string(myStr);
+}
+
+
+std::string Crit3DTime::toString()
+{
+    char myStr[13];
+    sprintf (myStr, "%d%02d%02dT%02d%02d", this->date.year, this->date.month, this->date.day, this->getHour(), this->getMinutes());
 
     return std::string(myStr);
 }

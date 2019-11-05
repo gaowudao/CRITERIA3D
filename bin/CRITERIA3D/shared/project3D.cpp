@@ -27,6 +27,7 @@
 #include "soilFluxes3D.h"
 #include "soilDbTools.h"
 #include "math.h"
+#include "utilities.h"
 
 
 Project3D::Project3D() : Project()
@@ -558,6 +559,82 @@ bool Project3D::isWithinSoil(int soilIndex, double depth)
 }
 
 
+bool Project3D::aggregateAndSaveDailyMap(meteoVariable myVar, aggregationMethod myAggregation, const Crit3DDate& myDate,
+                              const QString& dailyPath, const QString& hourlyPath, const QString& myArea)
+{
+    std::string myError;
+    int myTimeStep = int(3600. / meteoSettings->getHourlyIntervals());
+    Crit3DTime myTimeIni(myDate, myTimeStep);
+    Crit3DTime myTimeFin(myDate.addDays(1), 0.);
+
+    gis::Crit3DRasterGrid* myMap = new gis::Crit3DRasterGrid();
+    myMap->initializeGrid(DEM);
+    gis::Crit3DRasterGrid* myAggrMap = new gis::Crit3DRasterGrid();
+    myAggrMap->initializeGrid(DEM);
+
+    long myRow, myCol;
+    int nrAggrMap = 0;
+
+    for (Crit3DTime myTime = myTimeIni; myTime<=myTimeFin; myTime=myTime.addSeconds(myTimeStep))
+    {
+        QString hourlyFileName = getOutputNameHourly(myVar, getQDateTime(myTime), myArea);
+        if (gis::readEsriGrid((hourlyPath + hourlyFileName).toStdString(), myMap, &myError))
+        {
+            if (myTime == myTimeIni)
+            {
+                for (myRow = 0; myRow < myAggrMap->header->nrRows; myRow++)
+                    for (myCol = 0; myCol < myAggrMap->header->nrCols; myCol++)
+                        myAggrMap->value[myRow][myCol] = myMap->value[myRow][myCol];
+
+                nrAggrMap++;
+            }
+            else
+            {
+                if (myAggregation == aggrMin)
+                    gis::mapAlgebra(myAggrMap, myMap, myAggrMap, operationMin);
+                else if (myAggregation == aggrMax)
+                    gis::mapAlgebra(myAggrMap, myMap, myAggrMap, operationMax);
+                else if (myAggregation == aggrSum || myAggregation == aggrAverage)
+                    gis::mapAlgebra(myAggrMap, myMap, myAggrMap, operationSum);
+                else
+                {
+                    logError("wrong aggregation type in function 'aggregateAndSaveDailyMap'");
+                    return(false);
+                }
+                nrAggrMap++;
+            }
+        }
+    }
+
+    if (myAggregation == aggrAverage)
+        gis::mapAlgebra(myAggrMap, nrAggrMap, myAggrMap, operationDivide);
+    else if (myAggregation == aggrSum)
+    {
+        if (myVar == globalIrradiance || myVar == directIrradiance || myVar == diffuseIrradiance || myVar == reflectedIrradiance)
+            gis::mapAlgebra(myAggrMap, float(myTimeStep / 1000000.0), myAggrMap, operationProduct);
+    }
+
+    meteoVariable dailyVar = getDailyMeteoVarFromHourly(myVar, myAggregation);
+    QString varName = QString::fromStdString(MapDailyMeteoVarToString.at(dailyVar));
+
+    QString filename = getOutputNameDaily(varName, myArea , "", getQDate(myDate));
+
+    QString outputFileName = dailyPath + filename;
+    bool isOk = gis::writeEsriGrid(outputFileName.toStdString(), myAggrMap, &myError);
+
+    myMap->clear();
+    myAggrMap->clear();
+
+    if (! isOk)
+    {
+        logError("aggregateMapToDaily: " + QString::fromStdString(myError));
+        return false;
+    }
+
+    return true;
+}
+
+
 // ------------------------- other functions -------------------------
 
 bool isCrit3dError(int result, QString* error)
@@ -639,7 +716,58 @@ double getCriteria3DVar(criteria3DVariable myVar, long nodeIndex)
     else {
         return crit3dVar;
     }
-
 }
+
+
+QString getOutputNameDaily(QString varName, QString strArea, QString notes, QDate myDate)
+{
+    QString myStr = varName;
+    if (strArea != "")
+        myStr += "_" + strArea;
+    if (notes != "")
+        myStr += "_" + notes;
+
+    return myStr + "_" + myDate.toString("yyyyMMdd");
+}
+
+
+QString getOutputNameHourly(meteoVariable hourlyVar, QDateTime myTime, QString myArea)
+{
+    std::string varName = MapHourlyMeteoVarToString.at(hourlyVar);
+    QString myStr = QString::fromStdString(varName);
+    if (myArea != "")
+        myStr += "_" + myArea;
+
+    return myStr + myTime.toString("yyyyMMddThhmm");
+}
+
+
+bool readHourlyMap(meteoVariable myVar, QString hourlyPath, QDateTime myTime, QString myArea, gis::Crit3DRasterGrid* myGrid)
+{
+    QString fileName = hourlyPath + getOutputNameHourly(myVar, myTime, myArea);
+    std::string error;
+
+    if (gis::readEsriGrid(fileName.toStdString(), myGrid, &error))
+        return true;
+    else
+        return false;
+}
+
+
+float readDataHourly(meteoVariable myVar, QString hourlyPath, QDateTime myTime, QString myArea, int row, int col)
+{
+    gis::Crit3DRasterGrid* myGrid = new gis::Crit3DRasterGrid();
+    QString fileName = hourlyPath + getOutputNameHourly(myVar, myTime, myArea);
+    std::string error;
+
+    if (gis::readEsriGrid(fileName.toStdString(), myGrid, &error))
+        if (myGrid->value[row][col] != myGrid->header->flag)
+            return myGrid->value[row][col];
+
+    return NODATA;
+}
+
+
+
 
 

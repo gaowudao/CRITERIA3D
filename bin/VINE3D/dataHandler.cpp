@@ -5,6 +5,7 @@
 #include "dataHandler.h"
 
 
+/* vintage name
 QString getVarNameFromMeteoVariable(meteoVariable myVar)
 {
     if (myVar == airTemperature)
@@ -56,39 +57,7 @@ QString getVarNameFromMeteoVariable(meteoVariable myVar)
     else
         return "";
 }
-
-
-meteoVariable getMeteoVariableFromVarName(QString myVar)
-{
-    if (myVar == "tair")
-        return airTemperature;
-    if (myVar == "tmin")
-        return dailyAirTemperatureMin;
-    if (myVar == "tmax")
-        return dailyAirTemperatureMax;
-    else if (myVar == "prec")
-        return precipitation;
-    else if (myVar == "rhair")
-        return airRelHumidity;
-    else if (myVar == "rad")
-        return globalIrradiance;
-    else if (myVar == "dirrad")
-        return directIrradiance;
-    else if (myVar == "diffrad")
-        return diffuseIrradiance;
-    else if (myVar == "reflrad")
-        return reflectedIrradiance;
-    else if (myVar == "wint")
-        return windIntensity;
-    else if (myVar == "leafWetness")
-        return leafWetness;
-    else if (myVar == "potentialET")
-        return referenceEvapotranspiration;
-    else if (myVar == "evaporation")
-        return actualEvaporation;
-    else
-        return noMeteoVar;
-}
+*/
 
 
 QString getVarNameFromPlantVariable(plantVariable myVar)
@@ -162,52 +131,6 @@ QString getVarNameFromPlantVariable(plantVariable myVar)
 }
 
 
-QString getOutputNameDaily(QString varName, QString strArea, QString notes, QDate myDate)
-{
-    if (notes != "")
-        return varName + "_" + strArea + "_" + notes + "_" + myDate.toString("yyyyMMdd");
-    else
-        return varName + "_" + strArea + "_" + myDate.toString("yyyyMMdd");
-}
-
-QString getOutputNameHourly(meteoVariable myVar, Crit3DTime myTime, QString myArea)
-{
-    QDateTime myQDateTime = getQDateTime(myTime);
-    QString varName = getVarNameFromMeteoVariable(myVar);
-    return varName + "_" + myArea + "_" + myQDateTime.toString("yyyyMMddThhmm");
-}
-
-QString getOutputNameHourly(meteoVariable myVar, QDateTime myTime, QString myArea)
-{
-    QString varName = getVarNameFromMeteoVariable(myVar);
-    return varName + "_" + myArea + "_" + myTime.toString("yyyyMMddThhmm");
-}
-
-
-bool readHourlyMap(meteoVariable myVar, QString hourlyPath, QDateTime myTime, QString myArea, gis::Crit3DRasterGrid* myGrid)
-{
-    QString fileName = hourlyPath + getOutputNameHourly(myVar, myTime, myArea);
-    std::string error;
-
-    if (gis::readEsriGrid(fileName.toStdString(), myGrid, &error))
-        return true;
-    else
-        return false;
-}
-
-
-float readDataHourly(meteoVariable myVar, QString hourlyPath, QDateTime myTime, QString myArea, int row, int col)
-{
-    gis::Crit3DRasterGrid* myGrid = new gis::Crit3DRasterGrid();
-    QString fileName = hourlyPath + getOutputNameHourly(myVar, myTime, myArea);
-    std::string error;
-
-    if (gis::readEsriGrid(fileName.toStdString(), myGrid, &error))
-        if (myGrid->value[row][col] != myGrid->header->flag)
-            return myGrid->value[row][col];
-
-    return NODATA;
-}
 
 meteoVariable getMeteoVariable(int myVar)
 {

@@ -34,6 +34,7 @@
         Crit3DDate addDays(long myDays) const;
         int daysTo(const Crit3DDate& myDate) const;
         std::string toStdString();
+        std::string toString();
     };
 
 
@@ -59,7 +60,10 @@
         int getHour() const;
         int getMinutes() const;
         int getSeconds() const;
-        std::string toStdString();
+
+        std::string toISOString();
+        std::string toString();
+
     };
 
 

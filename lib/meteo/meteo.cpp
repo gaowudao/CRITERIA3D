@@ -663,3 +663,46 @@ bool checkLapseRateCode(lapseRateCodeType myType, bool useLapseRateCode, bool us
     else
         return (! useLapseRateCode || myType == primary || myType == secondary);
 }
+
+
+meteoVariable getDailyMeteoVarFromHourly(meteoVariable myVar, aggregationMethod myAggregation)
+{
+    if (myVar == airTemperature)
+    {
+        if (myAggregation == aggrMin)
+            return dailyAirTemperatureMin;
+        else if (myAggregation == aggrMax)
+            return dailyAirTemperatureMax;
+        else if (myAggregation == aggrAverage)
+            return dailyAirTemperatureAvg;
+    }
+    else if (myVar == airRelHumidity)
+    {
+        if (myAggregation == aggrMin)
+            return dailyAirRelHumidityMin;
+        else if (myAggregation == aggrMax)
+            return dailyAirRelHumidityMax;
+        else if (myAggregation == aggrAverage)
+            return dailyAirRelHumidityAvg;
+    }
+    else if (myVar == windIntensity)
+        return dailyWindIntensityAvg;
+    else if (myVar == precipitation)
+        return dailyPrecipitation;
+    else if (myVar == referenceEvapotranspiration)
+        return dailyReferenceEvapotranspirationHS;
+    else if (myVar == actualEvaporation)
+        return actualEvaporation;
+    else if (myVar == globalIrradiance)
+        return dailyGlobalRadiation;
+    else if (myVar == directIrradiance)
+        return dailyDirectRadiation;
+    else if (myVar == diffuseIrradiance)
+        return dailyDiffuseRadiation;
+    else if (myVar == reflectedIrradiance)
+        return dailyReflectedRadiation;
+    else if (myVar == leafWetness)
+        return dailyLeafWetness;
+
+    return noMeteoVar;
+}

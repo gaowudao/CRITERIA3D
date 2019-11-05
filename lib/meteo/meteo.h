@@ -5,6 +5,10 @@
         #include "crit3dDate.h"
     #endif
 
+    #ifndef STATISTICS_H
+        #include "statistics.h"
+    #endif
+
     #ifndef VECTOR_H
         #include <vector>
     #endif
@@ -12,6 +16,7 @@
     #ifndef _MAP_
         #include <map>
     #endif
+
 
     class Crit3DColorScale;
 
@@ -219,6 +224,7 @@
     meteoVariable getHourlyMeteoVar(std::string varString);
 
     bool checkLapseRateCode(lapseRateCodeType myType, bool useLapseRateCode, bool useSupplemental);
+    meteoVariable getDailyMeteoVarFromHourly(meteoVariable myVar, aggregationMethod myAggregation);
 
 
 #endif // METEO_H

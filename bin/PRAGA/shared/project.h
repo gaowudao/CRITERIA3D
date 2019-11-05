@@ -181,6 +181,8 @@
 
         bool checkMeteoGridForExport();
         void importHourlyMeteoData(const QString& fileName, bool importAllFiles, bool deletePreviousData);
+        /*bool aggregateAndSaveDailyMap(meteoVariable myVar, aggregationMethod myAggregation, const Crit3DDate& myDate,
+                                      const std::string& dailyPath, const std::string& hourlyPath);*/
 
         #ifdef NETCDF
             bool exportMeteoGridToNetCDF(QString fileName);

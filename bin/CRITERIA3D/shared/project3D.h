@@ -10,6 +10,7 @@
     #ifndef SOIL_H
         #include "soil.h"
     #endif
+    class QString;
 
 
     enum criteria3DVariable {waterContent, waterTotalPotential, waterMatricPotential,
@@ -77,11 +78,20 @@
 
         int getSoilIndex(long row, long col);
         bool isWithinSoil(int soilIndex, double depth);
+
+        bool aggregateAndSaveDailyMap(meteoVariable myVar, aggregationMethod myAggregation, const Crit3DDate& myDate,
+                                      const QString& dailyPath, const QString& hourlyPath, const QString& myArea);
     };
 
 
     bool isCrit3dError(int result, QString* error);
     double getCriteria3DVar(criteria3DVariable myVar, long nodeIndex);
+
+    QString getOutputNameDaily(QString varName, QString strArea, QString notes, QDate myDate);
+    QString getOutputNameHourly(meteoVariable myVar, QDateTime myTime, QString myArea);
+
+    float readDataHourly(meteoVariable myVar, QString hourlyPath, QDateTime myTime, QString myArea, int row, int col);
+    bool readHourlyMap(meteoVariable myVar, QString hourlyPath, QDateTime myTime, QString myArea, gis::Crit3DRasterGrid* myGrid);
 
 
 #endif // PROJECT3D_H

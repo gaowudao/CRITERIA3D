@@ -393,26 +393,3 @@ bool removeDirectory(QString myPath)
 }
 
 
-QString getVarNameDaily(meteoVariable myVar)
-{
-    return QString::fromStdString(MapDailyMeteoVarToString.at(myVar));
-}
-
-QString getVarNameHourly(meteoVariable myVar)
-{
-    return QString::fromStdString(MapHourlyMeteoVarToString.at(myVar));
-}
-
-QString getOutputNameDaily(meteoVariable dailyVar, QDate myDate)
-{
-    QString varName = getVarNameDaily(dailyVar);
-    return varName + "_" + myDate.toString("yyyyMMdd");
-}
-
-QString getOutputNameHourly(meteoVariable hourlyVar, QDateTime myTime)
-{
-    QString varName = getVarNameHourly(hourlyVar);
-    return varName + "_" + myTime.toString("yyyyMMdd_hhmm");
-}
-
-

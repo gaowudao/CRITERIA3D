@@ -12,8 +12,6 @@
     class QDate;
     class QString;
 
-    enum aggregationType {aggregationMin, aggregationMax, aggregationMean, aggregationSum, aggregationIntegration};
-
     bool vine3DInterpolationDem(Vine3DProject* myProject, meteoVariable myVar, const Crit3DTime& myTime, bool loadData);
 
     bool interpolationProjectDemMain(Vine3DProject* myProject, meteoVariable myVar, const Crit3DTime& myTime, bool isLoadData);
@@ -27,7 +25,7 @@
                             bool isSave, const QString& myArea);
 
     bool aggregateAndSaveDailyMap(Vine3DProject* myProject, meteoVariable myVar,
-                             aggregationType myAggregation, const Crit3DDate& myDate,
+                             aggregationMethod myAggregation, const Crit3DDate& myDate,
                              const QString& dailyPath, const QString& hourlyPath, const QString& myArea);
 
     bool loadDailyMeteoMap(Vine3DProject* myProject, meteoVariable myDailyVar, QDate myDate,

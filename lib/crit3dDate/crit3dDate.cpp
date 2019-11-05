@@ -61,7 +61,7 @@ Crit3DDate::Crit3DDate(int myDay, int myMonth, int myYear)
 }
 
 
-// myDate have to be in standard form (YYYY-MM-DD)
+// myDate have to be in ISO 8601 form (YYYY-MM-DD)
 Crit3DDate::Crit3DDate(std::string myDate)
 {
     sscanf(myDate.data(), "%d-%02d-%02d", &year, &month, &day);
@@ -325,6 +325,15 @@ std::string Crit3DDate::toStdString()
 {
     char myStr[11];
     sprintf (myStr, "%d-%02d-%02d", this->year, this->month, this->day);
+
+    return std::string(myStr);
+}
+
+
+std::string Crit3DDate::toString()
+{
+    char myStr[9];
+    sprintf (myStr, "%d%02d%02d", this->year, this->month, this->day);
 
     return std::string(myStr);
 }
