@@ -2751,7 +2751,7 @@ bool parseXMLElaboration(Crit3DElabList *listXMLElab, Crit3DAnomalyList *listXML
                             {
                                 refElab = "average";
                             }
-                            listXMLAnomaly->insertRefElab1(refElab);
+                            listXMLAnomaly->insertRefElab1(refElab.toLower());
                         }
 
                     }
@@ -2777,7 +2777,7 @@ bool parseXMLElaboration(Crit3DElabList *listXMLElab, Crit3DAnomalyList *listXML
                         {
                             refElab2 = "average";
                         }
-                        listXMLAnomaly->insertRefElab2(refElab2);
+                        listXMLAnomaly->insertRefElab2(refElab2.toLower());
                     }
                 }
                 if (errorAnomaly)

@@ -12,6 +12,13 @@
 
     enum Tseason {DJF,MAM,JJA,SON};
 
+    struct TseasonPrec{
+        double* DJF;
+        double* MAM;
+        double* JJA;
+        double* SON;
+    };
+
     struct ToccurrenceIndexSeasonal{
         double** meanP;
         double** stdDevP;
@@ -176,8 +183,10 @@
         double** wSeason;
         // new distribution for precipitation
         Tvariable* precipitationAmount;
+        TseasonPrec* seasonPrec;
         void initializePrecipitationAmountParameters();
         void computeprecipitationAmountParameters();
+        void getSeasonalMeanPrecipitation(int iStation, int iSeason, int length, double* meanPrec);
 
 
         // variables only for temperatures

@@ -50,6 +50,11 @@ void weatherGenerator2D::computeprecipitationAmountParameters()
 
         float* averageMonthlyAmountPrec = nullptr;
         averageMonthlyAmountPrec = (float *)calloc(12, sizeof(float));
+        double* averageMonthlyAmountPrecLarger = nullptr;
+        averageMonthlyAmountPrecLarger = (double *)calloc(14, sizeof(double));
+        double* month = nullptr;
+        month = (double *)calloc(14, sizeof(double));
+
         float* averageAmountPrec = nullptr;
         averageAmountPrec = (float *)calloc(365, sizeof(float));
         //double stdDevMonthlyAmountPrec[12];
@@ -62,6 +67,28 @@ void weatherGenerator2D::computeprecipitationAmountParameters()
             //stdDevMonthlyAmountPrec[iMonth] = 0;
             countMonthlyAmountPrec[iMonth] = 0;
         }
+
+        //month = {, 0, 31, 59, 90, 120, 151, 181, 212, 243, 273, 304, 334, 365, 396};
+        month[0] = -31;
+        month[1] = 0;
+        month[2] = 31;
+        month[3] = 59;
+        month[4] = 90;
+        month[5] = 120;
+        month[6] = 151;
+        month[7] = 181;
+        month[8] = 212;
+        month[9] = 243;
+        month[10] = 273;
+        month[11] = 304;
+        month[12] = 334;
+        month[13] = 365;
+
+        for (int iMonth=0;iMonth<14;iMonth++)
+        {
+            month[iMonth] += 15;
+        }
+
         for (int iDay=0;iDay<finalDay;iDay++)
         {
 
@@ -114,17 +141,146 @@ void weatherGenerator2D::computeprecipitationAmountParameters()
             else averageMonthlyAmountPrec[iMonth] = NODATA;
         }
 
-        qSplineYearInterpolate(averageMonthlyAmountPrec,averageAmountPrec);
+        for (int iMonth=0; iMonth<12; iMonth++)
+        {
+            averageMonthlyAmountPrecLarger[iMonth+1] = averageMonthlyAmountPrec[iMonth];
+        }
+        averageMonthlyAmountPrecLarger[0]  = averageMonthlyAmountPrec[11];
+        averageMonthlyAmountPrecLarger[13] = averageMonthlyAmountPrec[0];
+        //double risultato;
+        for (int jjj=0; jjj<365; jjj++)
+        {
+            averageAmountPrec[jjj] = interpolation::cubicSpline(jjj*1.0,month,averageMonthlyAmountPrecLarger,14);
+        }
+        pressEnterToContinue();
+        double dummy;
         for (int i=0; i<365 ; i++)
         {
-            precipitationAmount[iStation].averageEstimation[i] = double(averageAmountPrec[i]);
+            precipitationAmount[iStation].averageEstimation[i] = double(averageAmountPrec[(i+334)%365]);
         }
 
-        for (int i=0;i<365;i++) printf("%d %f\n",i,averageAmountPrec[i]);
-        pressEnterToContinue();
+        //for (int i=0;i<365;i++) {printf("prima %d %f\n",(i+334)%365,precipitationAmount[iStation].averageEstimation[i]);
+        //pressEnterToContinue();}
         free (averageAmountPrec);
         free (averageMonthlyAmountPrec);
+        free (averageMonthlyAmountPrecLarger);
+        free (month);
 
 
     }
+}
+
+void weatherGenerator2D::getSeasonalMeanPrecipitation(int iStation, int iSeason, int length, double* meanPrec)
+{
+    int index = 0;
+    if (iSeason == 0)
+    {
+        for (int j=0; j<parametersModel.yearOfSimulation ; j++)
+        {
+            for (int i=0; i<31 ; i++)
+            {
+                meanPrec[index] = precipitationAmount[iStation].averageEstimation[i];
+                index++;
+            }
+        }
+        for (int j=0; j<parametersModel.yearOfSimulation ; j++)
+        {
+            for (int i=0; i<31 ; i++)
+            {
+                meanPrec[index] = precipitationAmount[iStation].averageEstimation[i+31];
+                index++;
+            }
+        }
+        for (int j=0; j<parametersModel.yearOfSimulation ; j++)
+        {
+            for (int i=0; i<28 ; i++)
+            {
+                meanPrec[index] = precipitationAmount[iStation].averageEstimation[i+62];
+                index++;
+            }
+        }
+    }
+    else if (iSeason == 1)
+    {
+        for (int j=0; j<parametersModel.yearOfSimulation ; j++)
+        {
+            for (int i=0; i<31 ; i++)
+            {
+                meanPrec[index] = precipitationAmount[iStation].averageEstimation[i+90];
+                index++;
+            }
+        }
+        for (int j=0; j<parametersModel.yearOfSimulation ; j++)
+        {
+            for (int i=0; i<30 ; i++)
+            {
+                meanPrec[index] = precipitationAmount[iStation].averageEstimation[i+121];
+                index++;
+            }
+        }
+        for (int j=0; j<parametersModel.yearOfSimulation ; j++)
+        {
+            for (int i=0; i<31 ; i++)
+            {
+                meanPrec[index] = precipitationAmount[iStation].averageEstimation[i+151];
+                index++;
+            }
+        }
+    }
+    else if (iSeason == 2)
+    {
+        for (int j=0; j<parametersModel.yearOfSimulation ; j++)
+        {
+            for (int i=0; i<30 ; i++)
+            {
+                meanPrec[index] = precipitationAmount[iStation].averageEstimation[i+182];
+                index++;
+            }
+        }
+        for (int j=0; j<parametersModel.yearOfSimulation ; j++)
+        {
+            for (int i=0; i<31 ; i++)
+            {
+                meanPrec[index] = precipitationAmount[iStation].averageEstimation[i+212];
+                index++;
+            }
+        }
+        for (int j=0; j<parametersModel.yearOfSimulation ; j++)
+        {
+            for (int i=0; i<31 ; i++)
+            {
+                meanPrec[index] = precipitationAmount[iStation].averageEstimation[i+243];
+                index++;
+            }
+        }
+    }
+    else if (iSeason == 3)
+    {
+        for (int j=0; j<parametersModel.yearOfSimulation ; j++)
+        {
+            for (int i=0; i<30 ; i++)
+            {
+                meanPrec[index] = precipitationAmount[iStation].averageEstimation[i+274];
+                index++;
+            }
+        }
+        for (int j=0; j<parametersModel.yearOfSimulation ; j++)
+        {
+            for (int i=0; i<31 ; i++)
+            {
+                meanPrec[index] = precipitationAmount[iStation].averageEstimation[i+304];
+                index++;
+            }
+        }
+        for (int j=0; j<parametersModel.yearOfSimulation ; j++)
+        {
+            for (int i=0; i<30 ; i++)
+            {
+                meanPrec[index] = precipitationAmount[iStation].averageEstimation[i+335];
+                index++;
+            }
+        }
+    }
+
+
 }
