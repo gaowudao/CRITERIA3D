@@ -380,7 +380,6 @@ void PragaProject::saveClimateResult(bool isMeteoGrid, QString climaSelected, in
                 }
              }
         }
-        //meteoGridDbHandler->meteoGrid()->fillMeteoRasterClimateValue();
         meteoGridDbHandler->meteoGrid()->setIsElabValue(true);
     }
     else
