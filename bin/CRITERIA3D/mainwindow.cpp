@@ -188,11 +188,12 @@ void MainWindow::addMeteoPoints()
         point->setLongitude(myProject.meteoPoints[i].longitude);
 
         this->pointList.append(point);
-        this->mapView->scene()->addObject(this->pointList[i]);
+        this->mapView->scene()->addObject(pointList[i]);
 
         point->setToolTip(&(myProject.meteoPoints[i]));
     }
 }
+
 
 void MainWindow::drawMeteoPoints()
 {
@@ -375,9 +376,10 @@ bool MainWindow::isInsideMap(const QPoint& pos)
 
 void MainWindow::resetMeteoPoints()
 {
-    for (int i = 0; i < this->pointList.size(); i++)
+    for (int i = pointList.size()-1; i >= 0; i--)
     {
-        mapView->scene()->removeObject(this->pointList[i]);
+        mapView->scene()->removeObject(pointList[i]);
+        delete pointList[i];
     }
 
     pointList.clear();

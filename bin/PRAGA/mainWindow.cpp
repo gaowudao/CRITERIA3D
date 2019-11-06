@@ -575,10 +575,12 @@ bool MainWindow::isInsideMap(const QPoint& pos)
 
 void MainWindow::resetMeteoPoints()
 {
-    for (int i = 0; i < this->pointList.size(); i++)
-        this->mapView->scene()->removeObject(this->pointList[i]);
-
-    this->pointList.clear();
+    for (int i = pointList.size()-1; i >= 0; i--)
+    {
+        mapView->scene()->removeObject(pointList[i]);
+        delete pointList[i];
+    }
+    pointList.clear();
 
     datasetCheckbox.clear();
 }

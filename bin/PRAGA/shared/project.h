@@ -40,6 +40,7 @@
         QString defaultPath;
         QString projectPath;
 
+        void clearMeteoPoints();
         bool createDefaultProject(QString fileName);
         bool searchDefaultPath(QString* path);
 

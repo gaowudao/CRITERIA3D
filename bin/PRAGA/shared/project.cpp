@@ -753,6 +753,31 @@ void Project::getMeteoPointsRange(float *minimum, float *maximum)
     }
 }
 
+
+void Project::clearMeteoPoints()
+{
+    if (nrMeteoPoints > 0 && meteoPoints != nullptr)
+    {
+        for (int i = 0; i < nrMeteoPoints; i++)
+        {
+            meteoPoints[i].cleanObsDataH();
+            meteoPoints[i].cleanObsDataD();
+            meteoPoints[i].cleanObsDataM();
+            meteoPoints[i].proxyValues.clear();
+            if (meteoPoints[i].topographicDistance != nullptr)
+            {
+                meteoPoints[i].topographicDistance->clear();
+                delete meteoPoints[i].topographicDistance;
+            }
+        }
+        delete [] meteoPoints;
+    }
+
+    nrMeteoPoints = 0;
+    meteoPoints = nullptr;
+}
+
+
 void Project::closeMeteoPointsDB()
 {
     if (meteoPointsDbHandler != nullptr)
@@ -761,23 +786,7 @@ void Project::closeMeteoPointsDB()
         meteoPointsDbHandler = nullptr;
     }
 
-    if (nrMeteoPoints > 0)
-    {
-        if (meteoPoints != nullptr)
-        {
-            for (int i = 0; i < nrMeteoPoints; i++)
-            {
-                meteoPoints[i].cleanObsDataH();
-                meteoPoints[i].cleanObsDataD();
-                meteoPoints[i].cleanObsDataM();
-            }
-            delete [] meteoPoints;
-
-            meteoPoints = nullptr;
-        }
-        nrMeteoPoints = 0;
-    }
-
+    clearMeteoPoints();
     meteoPointsSelected.clear();
 
     dbPointsFileName = "";
