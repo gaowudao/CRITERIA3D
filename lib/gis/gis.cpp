@@ -330,7 +330,6 @@ namespace gis
         mapTime = getNullTime();
         minimum = NODATA;
         maximum = NODATA;
-
         header->nrRows = 0;
         header->nrCols = 0;
         header->cellSize = NODATA;
