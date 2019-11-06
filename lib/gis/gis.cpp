@@ -238,7 +238,7 @@ namespace gis
         this->clear();
 
         *(this->header) = initHeader;
-        this->colorScale = new Crit3DColorScale();
+        //this->colorScale = new Crit3DColorScale();
 
         return this->initializeGrid(this->header->flag);
     }
@@ -246,12 +246,10 @@ namespace gis
 
     bool Crit3DRasterGrid::initializeGrid(const Crit3DRasterGrid& initGrid)
     {
-        this->clear();
+        clear();
+        *header = *(initGrid.header);
 
-        *(this->header) = *(initGrid.header);
-        //*(this->colorScale) = *(initGrid.colorScale);
-
-        return this->initializeGrid(this->header->flag);
+        return initializeGrid(header->flag);
     }
 
 
@@ -260,7 +258,7 @@ namespace gis
         this->clear();
 
         *(this->header) = *(initGrid.header);
-        *(this->colorScale) = *(initGrid.colorScale);
+        //*(this->colorScale) = *(initGrid.colorScale);
 
         return this->initializeGrid(initValue);
     }

@@ -1566,8 +1566,6 @@ bool Project::interpolationDemMain(meteoVariable myVar, const Crit3DTime& myTime
         return false;
     }
 
-    myRaster->initializeGrid(this->DEM);
-
     if (myVar == globalIrradiance)
     {
         Crit3DTime measureTime = myTime.addSeconds(-1800);
