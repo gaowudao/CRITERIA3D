@@ -74,10 +74,10 @@ namespace gis
 
     Crit3DUtmPoint::Crit3DUtmPoint()
     {
-        clear();
+        this->initialize();
     }
 
-    void Crit3DUtmPoint::clear()
+    void Crit3DUtmPoint::initialize()
     {
         this->x = NODATA;
         this->y = NODATA;
@@ -325,6 +325,7 @@ namespace gis
                     delete [] value[myRow];
 
             delete [] value;
+            value = nullptr;
         }
 
         mapTime = getNullTime();
@@ -333,7 +334,7 @@ namespace gis
         header->nrRows = 0;
         header->nrCols = 0;
         header->cellSize = NODATA;
-        header->llCorner->clear();
+        header->llCorner->initialize();
 
         isLoaded = false;
     }
