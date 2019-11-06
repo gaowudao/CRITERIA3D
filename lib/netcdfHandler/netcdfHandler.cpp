@@ -498,24 +498,24 @@ bool NetCDFHandler::readProperties(string fileName)
             latLonHeader.nrRows = nrLat;
             latLonHeader.nrCols = nrLon;
 
-            latLonHeader.llCorner->longitude = double(lon[0]);
+            latLonHeader.llCorner.longitude = double(lon[0]);
             latLonHeader.dx = double(lon[nrLon-1] - lon[0]) / double(nrLon-1);
 
             if (lat[1] > lat[0])
             {
-                latLonHeader.llCorner->latitude = double(lat[0]);
+                latLonHeader.llCorner.latitude = double(lat[0]);
                 latLonHeader.dy = double(lat[nrLat-1]-lat[0]) / double(nrLat-1);
                 isLatDecreasing = false;
             }
             else
             {
-                latLonHeader.llCorner->latitude = double(lat[nrLat-1]);
+                latLonHeader.llCorner.latitude = double(lat[nrLat-1]);
                 latLonHeader.dy = double(lat[0]-lat[nrLat-1]) / double(nrLat-1);
                 isLatDecreasing = true;
             }
 
-            latLonHeader.llCorner->longitude -= (latLonHeader.dx * 0.5);
-            latLonHeader.llCorner->latitude -= (latLonHeader.dy * 0.5);
+            latLonHeader.llCorner.longitude -= (latLonHeader.dx * 0.5);
+            latLonHeader.llCorner.latitude -= (latLonHeader.dy * 0.5);
 
             latLonHeader.flag = NODATA;
 
@@ -547,8 +547,8 @@ bool NetCDFHandler::readProperties(string fileName)
                 metadata << "\nWarning! dx != dy" << endl;
 
             dataGrid.header->cellSize = double(x[1]-x[0]);
-            dataGrid.header->llCorner->x = double(x[0]) - dataGrid.header->cellSize*0.5;
-            dataGrid.header->llCorner->y = double(y[0]) - dataGrid.header->cellSize*0.5;
+            dataGrid.header->llCorner.x = double(x[0]) - dataGrid.header->cellSize*0.5;
+            dataGrid.header->llCorner.y = double(y[0]) - dataGrid.header->cellSize*0.5;
 
             dataGrid.header->nrCols = nrX;
             dataGrid.header->nrRows = nrY;
@@ -779,11 +779,11 @@ bool NetCDFHandler::writeGeoDimensions(const gis::Crit3DGridHeader& latLonHeader
 
     for (int row = 0; row < nrLat; row++)
     {
-        lat[row] = float(latLonHeader.llCorner->latitude + latLonHeader.dy * (latLonHeader.nrRows - row - 0.5));
+        lat[row] = float(latLonHeader.llCorner.latitude + latLonHeader.dy * (latLonHeader.nrRows - row - 0.5));
     }
     for (int col = 0; col < nrLon; col++)
     {
-        lon[col] = float(latLonHeader.llCorner->longitude + latLonHeader.dx * (col + 0.5));
+        lon[col] = float(latLonHeader.llCorner.longitude + latLonHeader.dx * (col + 0.5));
     }
 
     // write lat/lon vectors
