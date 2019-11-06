@@ -1734,15 +1734,11 @@ bool Vine3DProject::getFieldBookIndex(int firstIndex, QDate myDate, int fieldInd
     return false;
 }
 
+
 Vine3DHourlyMaps::Vine3DHourlyMaps(const gis::Crit3DRasterGrid& DEM) : Crit3DHourlyMeteoMaps (DEM)
 {
     mapHourlyIrrigation = new gis::Crit3DRasterGrid;
     mapHourlyIrrigation->initializeGrid(DEM);
-}
-
-void Vine3DHourlyMaps::cleanVine3DHourlyMaps()
-{
-    mapHourlyIrrigation->emptyGrid();
 }
 
 

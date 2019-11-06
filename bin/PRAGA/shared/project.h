@@ -22,6 +22,9 @@
     #ifndef INTERPOLATIONCMD_H
         #include "interpolationCmd.h"
     #endif
+    #ifndef METEOMAPS_H
+        #include "meteoMaps.h"
+    #endif
 
     #ifndef QSETTINGS_H
         #include <QSettings>
@@ -50,6 +53,7 @@
         QString projectName = "";
         bool isProjectLoaded;
         int modality;
+        QString currentTileMap;
 
         bool requestedExit;
         QString errorString;
@@ -59,7 +63,6 @@
         QString dbPointsFileName;
         QString dbGridXMLFileName;
         QString parametersFileName;
-        QString tileMap;
 
         std::ofstream logFile;
 
@@ -85,7 +88,9 @@
 
         gis::Crit3DGisSettings gisSettings;
         Crit3DRadiationSettings radSettings;
+
         Crit3DRadiationMaps *radiationMaps;
+        Crit3DHourlyMeteoMaps *hourlyMeteoMaps;
 
         gis::Crit3DRasterGrid DEM;
         gis::Crit3DRasterGrid dataRaster;
@@ -181,8 +186,9 @@
 
         bool checkMeteoGridForExport();
         void importHourlyMeteoData(const QString& fileName, bool importAllFiles, bool deletePreviousData);
-        /*bool aggregateAndSaveDailyMap(meteoVariable myVar, aggregationMethod myAggregation, const Crit3DDate& myDate,
-                                      const std::string& dailyPath, const std::string& hourlyPath);*/
+
+        gis::Crit3DRasterGrid* getHourlyMeteoRaster(meteoVariable myVar);
+
 
         #ifdef NETCDF
             bool exportMeteoGridToNetCDF(QString fileName);

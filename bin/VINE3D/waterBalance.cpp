@@ -71,6 +71,7 @@ void updateWaterBalanceMaps(Vine3DProject* myProject)
             }
 }
 
+
 gis::Crit3DRasterGrid* Crit3DWaterBalanceMaps::getMapFromVar(criteria3DVariable myVar)
 {
     if (myVar == bottomDrainage)

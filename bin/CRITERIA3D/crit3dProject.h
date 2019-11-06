@@ -23,20 +23,13 @@
         bool interpolateAndSaveHourlyMeteo(meteoVariable myVar, const QDateTime& myTime,
                                            const QString& outputPath, bool saveOutput);
 
-        bool saveHourlyMeteoOutput(meteoVariable myVar, const QString& myOutputPath, QDateTime myTime);
-        gis::Crit3DRasterGrid* getHourlyMeteoRaster(meteoVariable myVar);
-
 
     public:
-        // meteo maps
-        Crit3DHourlyMeteoMaps* hourlyMeteoMaps;
-
         // same header of DEM
         gis::Crit3DRasterGrid soilMap;
         gis::Crit3DRasterGrid cropIndexMap;
 
         bool isParametersLoaded;
-        bool isCriteria3DInitialized;
 
         Crit3DProject();
 
@@ -63,7 +56,7 @@
         bool interpolationRelHumidity(const Crit3DTime& myTime, gis::Crit3DRasterGrid *myRaster, bool showInfo);
         bool computeAllMeteoMaps(const Crit3DTime &myTime, bool showInfo);
 
-        void setMapsComputed(bool value);
+        void setAllHourlyMeteoMapsComputed(bool value);
 
         bool saveStateAndOutput(QDate myDate, const QString& outputPathHourly, bool saveOutput);
 

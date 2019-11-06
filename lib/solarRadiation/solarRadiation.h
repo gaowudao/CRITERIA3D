@@ -7,16 +7,20 @@
 
     class Crit3DRadiationMaps
     {
+    private:
+        bool isComputed;
+
+
     public:
         gis::Crit3DRasterGrid* latMap;
         gis::Crit3DRasterGrid* lonMap;
         gis::Crit3DRasterGrid* slopeMap;
         gis::Crit3DRasterGrid* aspectMap;
-        gis::Crit3DRasterGrid* transmissivityMap;
-        gis::Crit3DRasterGrid* globalRadiationMap;
         gis::Crit3DRasterGrid* sunElevationMap;
         gis::Crit3DRasterGrid* beamRadiationMap;
         gis::Crit3DRasterGrid* diffuseRadiationMap;
+        gis::Crit3DRasterGrid* transmissivityMap;
+        gis::Crit3DRasterGrid* globalRadiationMap;
 
         /*
         gis::Crit3DRasterGrid* linkeMap;
@@ -31,10 +35,11 @@
         Crit3DRadiationMaps(const gis::Crit3DRasterGrid& myDEM, const gis::Crit3DGisSettings& myGisSettings);
         ~Crit3DRadiationMaps();
 
-        void clean();
-
-        bool isComputed;
+        void clear();
+        bool getComputed();
+        void setComputed(bool value);
     };
+
 
     namespace radiation
     {

@@ -37,7 +37,7 @@
     };
 
 
-    class Vine3DHourlyMaps : public Crit3DHourlyMeteoMaps
+    class Vine3DHourlyMaps
     {
     public:
         gis::Crit3DRasterGrid* mapHourlyIrrigation;
@@ -45,7 +45,6 @@
         Vine3DHourlyMaps(const gis::Crit3DRasterGrid& DEM);
         ~Vine3DHourlyMaps();
 
-        void cleanVine3DHourlyMaps();
     };
 
     class Vine3DProject : public Project3D

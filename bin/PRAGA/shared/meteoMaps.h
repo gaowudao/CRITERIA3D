@@ -31,6 +31,8 @@
         Crit3DDailyMeteoMaps(const gis::Crit3DRasterGrid& DEM);
         ~Crit3DDailyMeteoMaps();
 
+        void clear();
+
         gis::Crit3DRasterGrid* getMapFromVar(meteoVariable myVar);
         bool computeHSET0Map(gis::Crit3DGisSettings *gisSettings, Crit3DDate myDate);
         bool fixDailyThermalConsistency();
@@ -43,7 +45,7 @@
         bool isComputed;
 
     public:
-        gis::Crit3DRasterGrid* mapHourlyT;
+        gis::Crit3DRasterGrid* mapHourlyTair;
         gis::Crit3DRasterGrid* mapHourlyTdew;
         gis::Crit3DRasterGrid* mapHourlyPrec;
         gis::Crit3DRasterGrid* mapHourlyRelHum;
@@ -54,6 +56,8 @@
 
         Crit3DHourlyMeteoMaps(const gis::Crit3DRasterGrid& DEM);
         ~Crit3DHourlyMeteoMaps();
+
+        void clear();
 
         gis::Crit3DRasterGrid* getMapFromVar(meteoVariable myVar);
         bool computeET0PMMap(const gis::Crit3DRasterGrid &DEM, Crit3DRadiationMaps *radMaps);

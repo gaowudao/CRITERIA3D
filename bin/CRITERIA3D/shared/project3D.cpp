@@ -71,6 +71,8 @@ void Project3D::clearWaterBalance3D()
 
     boundaryMap.clear();
     soilIndexMap.clear();
+
+    isCriteria3DInitialized = false;
 }
 
 
@@ -83,8 +85,6 @@ void Project3D::clearProject3D()
         soilList[i].cleanSoil();
     }
     soilList.clear();
-
-    initializeProject3D();
 
     clearProject();
 }
@@ -559,6 +559,25 @@ bool Project3D::isWithinSoil(int soilIndex, double depth)
 }
 
 
+bool Project3D::saveHourlyMeteoOutput(meteoVariable myVar, const QString& myPath, QDateTime myTime)
+{
+    gis::Crit3DRasterGrid* myRaster = getHourlyMeteoRaster(myVar);
+    if (myRaster == nullptr) return false;
+
+    QString fileName = getOutputNameHourly(myVar, myTime, "");
+    QString outputFileName = myPath + fileName;
+
+    std::string errStr;
+    if (! gis::writeEsriGrid(outputFileName.toStdString(), myRaster, &errStr))
+    {
+        logError(QString::fromStdString(errStr));
+        return false;
+    }
+    else
+        return true;
+}
+
+
 bool Project3D::aggregateAndSaveDailyMap(meteoVariable myVar, aggregationMethod myAggregation, const Crit3DDate& myDate,
                               const QString& dailyPath, const QString& hourlyPath, const QString& myArea)
 {
@@ -766,6 +785,8 @@ float readDataHourly(meteoVariable myVar, QString hourlyPath, QDateTime myTime, 
 
     return NODATA;
 }
+
+
 
 
 

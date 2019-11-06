@@ -26,7 +26,6 @@
     public:
 
         Crit3DDailyMeteoMaps* pragaDailyMaps;
-        Crit3DHourlyMeteoMaps* pragaHourlyMaps;
 
         aggregationMethod grdAggrMethod;
 

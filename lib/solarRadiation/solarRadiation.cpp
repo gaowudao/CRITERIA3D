@@ -102,11 +102,11 @@ Crit3DRadiationMaps::Crit3DRadiationMaps(const gis::Crit3DRasterGrid& myDEM, con
 
 Crit3DRadiationMaps::~Crit3DRadiationMaps()
 {
-    this->clean();
+    this->clear();
 }
 
 
-void Crit3DRadiationMaps::clean()
+void Crit3DRadiationMaps::clear()
 {
     latMap->clear();
     lonMap->clear();
@@ -147,6 +147,16 @@ void Crit3DRadiationMaps::clean()
     */
 
     isComputed = false;
+}
+
+bool Crit3DRadiationMaps::getComputed()
+{
+    return isComputed;
+}
+
+void Crit3DRadiationMaps::setComputed(bool value)
+{
+    isComputed = value;
 }
 
 
@@ -367,8 +377,8 @@ namespace radiation
         float rayleighThickness;
         float airMass = mySunPosition->relOptAirMassCorr ;
         if (airMass <= 20)
-            rayleighThickness = float(1.0 / (6.6296 + 1.7513 * airMass - 0.1202 * pow(airMass,2)
-                                            + 0.0065 * pow(airMass,3) - 0.00013 * pow(airMass,4)));
+            rayleighThickness = 1.f / (6.6296f + 1.7513f * airMass - 0.1202f * pow(airMass, 2)
+                                       + 0.0065f * pow(airMass, 3) - 0.00013f * pow(airMass, 4));
         else
             rayleighThickness = 1.f / (10.4f + 0.718f * airMass);
 
@@ -387,19 +397,19 @@ namespace radiation
     {
         double Fd;          /*!< diffuse solar altitude function [] */
         double Trd;         /*!< transmission function [] */
-        double A0, A1, A2;
-        double sinElev;
+        double linke = double(myLinke);
 
-        Trd = -0.015843 + myLinke * (0.030543 + 0.0003797 * myLinke);
+        Trd = -0.015843 + linke * (0.030543 + 0.0003797 * linke);
 
-        sinElev = MAXVALUE(getSinDecimalDegree(mySunPosition->elevation), 0.);
-        A0 = 0.26463 + myLinke * (-0.061581 + 0.0031408 * myLinke);
-        if ((A0 * Trd) < 0.0022) A0 = 0.002 / Trd;
-        A1 = 2.0402 + myLinke * (0.018945 - 0.011161 * myLinke);
-        A2 = -1.3025 + myLinke * (0.039231 + 0.0085079 * myLinke);
+        double sinElev = MAXVALUE(double(getSinDecimalDegree(mySunPosition->elevation)), 0);
+        double A0 = 0.26463 + linke * (-0.061581 + 0.0031408 * linke);
+        if ((A0 * Trd) < 0.0022)
+            A0 = 0.002 / Trd;
+        double A1 = 2.0402 + linke * (0.018945 - 0.011161 * linke);
+        double A2 = -1.3025 + linke * (0.039231 + 0.0085079 * linke);
         Fd = A0 + A1 * sinElev + A2 * sinElev * sinElev;
 
-        return float(mySunPosition->extraIrradianceNormal * Fd * Trd);
+        return mySunPosition->extraIrradianceNormal * float(Fd * Trd);
     }
 
     /*!
@@ -874,7 +884,7 @@ bool computeRadiationPointRsun(Crit3DRadiationSettings* mySettings, float myTemp
         radiationMaps->diffuseRadiationMap->setMapTime(myTime);
         radiationMaps->sunElevationMap->setMapTime(myTime);
 
-        radiationMaps->isComputed = true;
+        radiationMaps->setComputed(true);
         return true;
     }
 

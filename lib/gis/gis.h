@@ -40,6 +40,7 @@
             Crit3DUtmPoint();
             Crit3DUtmPoint(double x, double y);
 
+            void clear();
             bool isInsideGrid(const Crit3DRasterHeader& myGridHeader) const;
         };
 

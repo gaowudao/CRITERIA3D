@@ -232,7 +232,7 @@ std::string NetCDFHandler::getDateTimeStr(int timeIndex)
         return "ERROR: time is not standard (std: seconds since 1970-01-01)";
     }
 
-    return myTime.toStdString();
+    return myTime.toISOString();
 }
 
 

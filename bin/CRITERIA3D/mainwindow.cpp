@@ -213,13 +213,13 @@ void MainWindow::drawMeteoPoints()
 
 void MainWindow::setProjectTileMap()
 {
-    if (myProject.tileMap != "")
+    if (myProject.currentTileMap != "")
     {
-        if (myProject.tileMap.toUpper() == "ESRI" || myProject.tileMap == "ESRIWorldImagery")
+        if (myProject.currentTileMap.toUpper() == "ESRI" || myProject.currentTileMap == "ESRIWorldImagery")
         {
             this->setTileMapSource(OSMTileSource::ESRIWorldImagery);
         }
-        else if (myProject.tileMap.toUpper() == "TERRAIN")
+        else if (myProject.currentTileMap.toUpper() == "TERRAIN")
         {
             this->setTileMapSource(OSMTileSource::Terrain);
         }
@@ -451,7 +451,7 @@ void MainWindow::on_dateEdit_dateChanged(const QDate &date)
         myProject.setCurrentDate(date);
         myProject.loadMeteoPointsData(date, date, true);
         myProject.loadMeteoGridData(date, date, true);
-        myProject.setMapsComputed(false);
+        myProject.setAllHourlyMeteoMapsComputed(false);
     }
 
     redrawMeteoPoints(currentPointsVisualization, true);
@@ -463,7 +463,7 @@ void MainWindow::on_timeEdit_timeChanged(const QTime &time)
     if (time.hour() != myProject.getCurrentHour())
     {
         myProject.setCurrentHour(time.hour());
-        myProject.setMapsComputed(false);
+        myProject.setAllHourlyMeteoMapsComputed(false);
     }
 
     redrawMeteoPoints(currentPointsVisualization, true);
@@ -841,31 +841,31 @@ void MainWindow::showMeteoVariable(meteoVariable var)
     {
     case airTemperature:
         if (checkMapVariable(myProject.hourlyMeteoMaps->getComputed()))
-            setMeteoVariable(airTemperature, myProject.hourlyMeteoMaps->mapHourlyT);
+            setMeteoVariable(airTemperature, myProject.hourlyMeteoMaps->mapHourlyTair);
         break;
 
     case precipitation:
         if (checkMapVariable(myProject.hourlyMeteoMaps->getComputed()))
-        setMeteoVariable(precipitation, myProject.hourlyMeteoMaps->mapHourlyPrec);
+            setMeteoVariable(precipitation, myProject.hourlyMeteoMaps->mapHourlyPrec);
         break;
 
     case airRelHumidity:
         if (checkMapVariable(myProject.hourlyMeteoMaps->getComputed()))
-        setMeteoVariable(airRelHumidity, myProject.hourlyMeteoMaps->mapHourlyRelHum);
+            setMeteoVariable(airRelHumidity, myProject.hourlyMeteoMaps->mapHourlyRelHum);
         break;
 
     case windIntensity:
         if (checkMapVariable(myProject.hourlyMeteoMaps->getComputed()))
-        setMeteoVariable(windIntensity, myProject.hourlyMeteoMaps->mapHourlyWindInt);
+            setMeteoVariable(windIntensity, myProject.hourlyMeteoMaps->mapHourlyWindInt);
         break;
 
     case globalIrradiance:
-        if (checkMapVariable(myProject.radiationMaps->isComputed))
+        if (checkMapVariable(myProject.radiationMaps->getComputed()))
             setMeteoVariable(globalIrradiance, myProject.radiationMaps->globalRadiationMap);
         break;
 
     case atmTransmissivity:
-        if (checkMapVariable(myProject.radiationMaps->isComputed))
+        if (checkMapVariable(myProject.radiationMaps->getComputed()))
             setMeteoVariable(atmTransmissivity, myProject.radiationMaps->transmissivityMap);
         break;
 

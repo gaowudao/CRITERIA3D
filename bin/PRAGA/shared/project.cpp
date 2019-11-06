@@ -42,13 +42,12 @@ Project::Project()
 void Project::initializeProject()
 {
     projectPath = "";
-
     projectName = "";
     isProjectLoaded = false;
     requestedExit = false;
     logFileName = "";
     errorString = "";
-    tileMap = "";
+    currentTileMap = "";
 
     meteoSettings->initialize();
     quality->initialize();
@@ -61,31 +60,26 @@ void Project::initializeProject()
     currentHour = 12;
 
     parameters = nullptr;
-    parametersFileName = "";
-
     projectSettings = nullptr;
-
     aggregationDbHandler = nullptr;
+    radiationMaps = nullptr;
+    hourlyMeteoMaps = nullptr;
 
     gisSettings.initialize();
     radSettings.initialize();
-
-    radiationMaps = nullptr;
-
-    demFileName = "";
-
     interpolationSettings.initialize();
     qualityInterpolationSettings.initialize();
 
-    proxyGridSeries.clear();
-
+    parametersFileName = "";
+    demFileName = "";
     dbPointsFileName = "";
     dbGridXMLFileName = "";
 
     meteoPointsLoaded = false;
     meteoGridLoaded = false;
-
     loadGridDataAtStart = false;
+
+    proxyGridSeries.clear();
 }
 
 void Project::clearProject()
@@ -98,11 +92,15 @@ void Project::clearProject()
     delete parameters;
     delete projectSettings;
     delete aggregationDbHandler;
-    delete radiationMaps;
 
     clearProxyDEM();
     DEM.clear();
     dataRaster.clear();
+
+    delete radiationMaps;
+    delete hourlyMeteoMaps;
+    radiationMaps = nullptr;
+    hourlyMeteoMaps = nullptr;
 
     closeMeteoPointsDB();
     closeMeteoGridDB();
@@ -833,12 +831,13 @@ bool Project::loadDEM(QString myFileName)
 
     setColorScale(noMeteoTerrain, DEM.colorScale);
 
-    // initialize radition maps: slope, aspect, lat/lon
-    if (radiationMaps != nullptr)
-    {
-        radiationMaps->clean();
-    }
+    // initialize radiation maps (slope, aspect, lat/lon, transmissivity, etc.)
+    if (radiationMaps != nullptr) radiationMaps->clear();
     radiationMaps = new Crit3DRadiationMaps(DEM, gisSettings);
+
+    // initialize hourly meteo maps
+    if (hourlyMeteoMaps != nullptr) hourlyMeteoMaps->clear();
+    hourlyMeteoMaps = new Crit3DHourlyMeteoMaps(DEM);
 
     //reset aggregationPoints meteoGrid
     if (meteoGridDbHandler != nullptr)
@@ -1685,7 +1684,7 @@ bool Project::loadProjectSettings(QString settingsFileName)
     projectSettings->beginGroup("settings");
         parametersFileName = projectSettings->value("parameters_file").toString();
         logFileName = projectSettings->value("log_file").toString();
-        tileMap = projectSettings->value("tile_map").toString();
+        currentTileMap = projectSettings->value("tile_map").toString();
     projectSettings->endGroup();
 
     return true;
@@ -2014,6 +2013,18 @@ void Project::importHourlyMeteoData(const QString& csvFileName, bool importAllFi
     }
 }
 
+
+gis::Crit3DRasterGrid* Project::getHourlyMeteoRaster(meteoVariable myVar)
+{
+    if (myVar == globalIrradiance)
+    {
+        return radiationMaps->globalRadiationMap;
+    }
+    else
+    {
+        return hourlyMeteoMaps->getMapFromVar(myVar);
+    }
+}
 
 
 #ifdef NETCDF
