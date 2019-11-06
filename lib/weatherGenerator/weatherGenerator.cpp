@@ -227,26 +227,14 @@ void initializeWeather(TweatherGenClimate* wGen)
         mMeanPrecip[m] = mMeanPrecip[m] / (fWetDays[m] * daysInMonth);
     }
 
-    qSplineYearInterpolate(mpww, wGen->daily.pww);
-    qSplineYearInterpolate(mpwd, wGen->daily.pwd);
-    qSplineYearInterpolate(mMeanDryTMax, wGen->daily.meanDryTMax);
-    qSplineYearInterpolate(mMeanPrecip, wGen->daily.meanPrecip);
-    qSplineYearInterpolate(mMeanWetTMax, wGen->daily.meanWetTMax);
-    qSplineYearInterpolate(mMeanTMin, wGen->daily.meanTMin);
-    qSplineYearInterpolate(mMinTempStd, wGen->daily.minTempStd);
-    qSplineYearInterpolate(mMaxTempStd, wGen->daily.maxTempStd);
-    float testPrec[365];
-    for (m = 0; m < 365; m++)
-    {
-        testPrec[m] = wGen->daily.meanPrecip[m];
-    }
-    qSplineYearInterpolateNoDiscontinuity(mMeanPrecip, wGen->daily.meanPrecip);
-    for (m = 0; m < 365; m++)
-    {
-        printf("%d %f %f\n",m,testPrec[m],wGen->daily.meanPrecip[m]);
-    }
-    printf("press enter");
-    getchar();
+    cubicSplineYearInterpolate(mpww, wGen->daily.pww);
+    cubicSplineYearInterpolate(mpwd, wGen->daily.pwd);
+    cubicSplineYearInterpolate(mMeanDryTMax, wGen->daily.meanDryTMax);
+    cubicSplineYearInterpolate(mMeanPrecip, wGen->daily.meanPrecip);
+    cubicSplineYearInterpolate(mMeanWetTMax, wGen->daily.meanWetTMax);
+    cubicSplineYearInterpolate(mMeanTMin, wGen->daily.meanTMin);
+    cubicSplineYearInterpolate(mMinTempStd, wGen->daily.minTempStd);
+    cubicSplineYearInterpolate(mMaxTempStd, wGen->daily.maxTempStd);
 
 }
 
@@ -324,61 +312,47 @@ float weibull (float dailyAvgPrec, float precThreshold)
 }
 
 
+
 /*!
   * \brief Computes daily values starting from monthly mean
-  * using quadratic spline
+  * using cubic spline
 */
-
-void qSplineYearInterpolateNoDiscontinuity(float *meanY, float *dayVal)
+void cubicSplineYearInterpolate(float *meanY, float *dayVal)
 {
-    double* month = nullptr;
-    month = (double *)calloc(16, sizeof(double));
-    month[0] = -61;
-    month[1] = -31;
-    month[2] = 0;
-    month[3] = 31;
-    month[4] = 59;
-    month[5] = 90;
-    month[6] = 120;
-    month[7] = 151;
-    month[8] = 181;
-    month[9] = 212;
-    month[10] = 243;
-    month[11] = 273;
-    month[12] = 304;
-    month[13] = 334;
-    month[14] = 365;
-    month[15] = 396;
+    double monthMid [16] = {-61, - 31, 0, 31, 59, 90, 120, 151, 181, 212, 243, 273, 304, 334, 365, 396};
 
-
-
-    for (int iMonth=0;iMonth<16;iMonth++)
+    for (int iMonth=0; iMonth<16; iMonth++)
     {
-        month[iMonth] += 15;
+        monthMid[iMonth] += 15;
     }
 
     double* averageMonthlyAmountPrecLarger = nullptr;
-    averageMonthlyAmountPrecLarger = (double *)calloc(16, sizeof(double));
-    for (int iMonth=0; iMonth<12; iMonth++)
+    averageMonthlyAmountPrecLarger = new double[16];
+    for (int iMonth = 0; iMonth < 12; iMonth++)
     {
-        averageMonthlyAmountPrecLarger[iMonth+2] = meanY[iMonth];
+        averageMonthlyAmountPrecLarger[iMonth+2] = double(meanY[iMonth]);
     }
-    averageMonthlyAmountPrecLarger[0]  = meanY[10];
-    averageMonthlyAmountPrecLarger[1]  = meanY[11];
-    averageMonthlyAmountPrecLarger[14] = meanY[0];
-    averageMonthlyAmountPrecLarger[15]  = meanY[1];
+    averageMonthlyAmountPrecLarger[0] = double(meanY[10]);
+    averageMonthlyAmountPrecLarger[1] = double(meanY[11]);
+    averageMonthlyAmountPrecLarger[14] = double(meanY[0]);
+    averageMonthlyAmountPrecLarger[15] = double(meanY[1]);
 
     for (int jjj=0; jjj<365; jjj++)
     {
-        dayVal[jjj] = interpolation::cubicSpline(jjj*1.0,month,averageMonthlyAmountPrecLarger,16);
+        dayVal[jjj] = interpolation::cubicSpline(jjj*1.0, monthMid, averageMonthlyAmountPrecLarger, 16);
     }
 
-    free(month);
-    free(averageMonthlyAmountPrecLarger);
-
+    delete [] averageMonthlyAmountPrecLarger;
 }
 
-void qSplineYearInterpolate(float *meanY, float *dayVal)
+
+/*!
+  * \brief Computes daily values starting from monthly mean
+  * using quadratic spline
+  * original Campbell function
+  * it has a discontinuity between end and start of the year
+*/
+void quadrSplineYearInterpolate(float *meanY, float *dayVal)
 {
     float a[13] = {0};
     float b[14] = {0};
