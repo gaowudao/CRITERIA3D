@@ -48,7 +48,7 @@
 */
 
 // uncomment CLIMATE or SEASONAL for test:
-// #define TEST_WG_CLIMATE 1
+#define TEST_WG_CLIMATE 1
 // #define TEST_WG_SEASONAL 2
 
 

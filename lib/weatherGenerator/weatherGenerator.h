@@ -88,7 +88,7 @@
 
     bool markov(float pwd, float pww, bool isWetPreviousDay);
     float weibull (float mean, float precThreshold);
-
+    void qSplineYearInterpolateNoDiscontinuity(float *meanY, float *dayVal);
     void qSplineYearInterpolate(float *meanY, float *dayVal);
 
     void genTemps(float *tMax, float *tMin, float meanTMax, float meanTMin, float stdMax,
