@@ -73,7 +73,7 @@
             int nrCols;
             double dx, dy;
             float flag;
-            Crit3DGeoPoint* llCorner;
+            Crit3DGeoPoint llCorner;
 
             Crit3DGridHeader();
         };
@@ -85,7 +85,7 @@
             int nrCols;
             double cellSize;
             float flag;
-            Crit3DUtmPoint* llCorner;
+            Crit3DUtmPoint llCorner;
 
             Crit3DRasterHeader();
 

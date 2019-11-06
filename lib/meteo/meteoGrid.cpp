@@ -170,14 +170,14 @@ bool Crit3DMeteoGrid::createRasterGrid()
     if (_gridStructure.isUTM())
     {
         dataMeteoGrid.header->cellSize = _gridStructure.header().dx;
-        dataMeteoGrid.header->llCorner->x = _gridStructure.header().llCorner->longitude;
-        dataMeteoGrid.header->llCorner->y = _gridStructure.header().llCorner->latitude;
+        dataMeteoGrid.header->llCorner.x = _gridStructure.header().llCorner.longitude;
+        dataMeteoGrid.header->llCorner.y = _gridStructure.header().llCorner.latitude;
     }
     else
     {
         dataMeteoGrid.header->cellSize = NODATA;
-        dataMeteoGrid.header->llCorner->x = NODATA;
-        dataMeteoGrid.header->llCorner->y = NODATA;
+        dataMeteoGrid.header->llCorner.x = NODATA;
+        dataMeteoGrid.header->llCorner.y = NODATA;
     }
 
     dataMeteoGrid.header->nrCols = _gridStructure.header().nrCols;
@@ -252,14 +252,14 @@ void Crit3DMeteoGrid::fillMeteoPoint(unsigned int row, unsigned int col, const s
     {
         if (_gridStructure.isUTM())
         {
-            _meteoPoints[row][col]->point.utm.x = _gridStructure.header().llCorner->longitude + _gridStructure.header().dx * (col + 0.5);
-            _meteoPoints[row][col]->point.utm.y = _gridStructure.header().llCorner->latitude + _gridStructure.header().dy * (row + 0.5);
+            _meteoPoints[row][col]->point.utm.x = _gridStructure.header().llCorner.longitude + _gridStructure.header().dx * (col + 0.5);
+            _meteoPoints[row][col]->point.utm.y = _gridStructure.header().llCorner.latitude + _gridStructure.header().dy * (row + 0.5);
             gis::utmToLatLon(_gisSettings.utmZone, _gisSettings.startLocation.latitude, _meteoPoints[row][col]->point.utm.x, _meteoPoints[row][col]->point.utm.y, &(_meteoPoints[row][col]->latitude), &(_meteoPoints[row][col]->longitude));
         }
         else
         {
-            _meteoPoints[row][col]->longitude = _gridStructure.header().llCorner->longitude + _gridStructure.header().dx * (col + 0.5);
-            _meteoPoints[row][col]->latitude = _gridStructure.header().llCorner->latitude + _gridStructure.header().dy * (row + 0.5);
+            _meteoPoints[row][col]->longitude = _gridStructure.header().llCorner.longitude + _gridStructure.header().dx * (col + 0.5);
+            _meteoPoints[row][col]->latitude = _gridStructure.header().llCorner.latitude + _gridStructure.header().dy * (row + 0.5);
 
             gis::Crit3DUtmPoint utmPoint;
             gis::Crit3DGeoPoint geoPoint(_meteoPoints[row][col]->latitude, _meteoPoints[row][col]->longitude);
@@ -559,8 +559,8 @@ void Crit3DMeteoGrid::assignCellAggregationPoints(int row, int col, gis::Crit3DR
 
             gis::Crit3DGeoPoint pointLatLon0;
             gis::Crit3DGeoPoint geoPoint;
-            pointLatLon0.latitude = _gridStructure.header().llCorner->latitude + row * _gridStructure.header().dy;
-            pointLatLon0.longitude = _gridStructure.header().llCorner->longitude + col * _gridStructure.header().dx;
+            pointLatLon0.latitude = _gridStructure.header().llCorner.latitude + row * _gridStructure.header().dy;
+            pointLatLon0.longitude = _gridStructure.header().llCorner.longitude + col * _gridStructure.header().dx;
             gis::getUtmFromLatLon(_gisSettings.utmZone, pointLatLon0, &utmPoint);
             v[0] = utmPoint;
 
@@ -607,8 +607,8 @@ void Crit3DMeteoGrid::assignCellAggregationPoints(int row, int col, gis::Crit3DR
                         gis::getUtmXYFromRowCol(*(myDEM->header), demRow, demCol, &utmX, &utmY);
                         gis::getLatLonFromUtm(_gisSettings, utmX, utmY, &geoP.latitude, &geoP.longitude);
 
-                        latLonHeader.llCorner->latitude = pointLatLon0.latitude;
-                        latLonHeader.llCorner->longitude = pointLatLon0.longitude;
+                        latLonHeader.llCorner.latitude = pointLatLon0.latitude;
+                        latLonHeader.llCorner.longitude = pointLatLon0.longitude;
                         latLonHeader.dx = _gridStructure.header().dx;
                         latLonHeader.dy = _gridStructure.header().dy;
                         latLonHeader.nrRows = row;

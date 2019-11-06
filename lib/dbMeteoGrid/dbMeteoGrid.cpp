@@ -170,8 +170,8 @@ bool Crit3DMeteoGridDbHandler::parseXMLGrid(QString xmlFileName, QString *myErro
             child = ancestor.firstChild();
             gis::Crit3DGridHeader header;
             /* init */
-            header.llCorner->longitude = NODATA;
-            header.llCorner->latitude = NODATA;
+            header.llCorner.longitude = NODATA;
+            header.llCorner.latitude = NODATA;
             header.nrRows = NODATA;
             header.nrCols = NODATA;
             header.dx = NODATA;
@@ -182,11 +182,11 @@ bool Crit3DMeteoGridDbHandler::parseXMLGrid(QString xmlFileName, QString *myErro
                 myTag = child.toElement().tagName().toUpper();
                 if (myTag == "XLL")
                 {
-                    header.llCorner->longitude = child.toElement().text().toFloat();
+                    header.llCorner.longitude = child.toElement().text().toFloat();
                 }
                 if (myTag == "YLL")
                 {
-                    header.llCorner->latitude = child.toElement().text().toFloat();
+                    header.llCorner.latitude = child.toElement().text().toFloat();
                 }
                 if (myTag == "NROWS")
                 {
@@ -453,12 +453,12 @@ bool Crit3DMeteoGridDbHandler::checkXML(QString *myError)
 
     /* grid structure */
 
-    if (_gridStructure.header().llCorner->longitude == NODATA)
+    if (_gridStructure.header().llCorner.longitude == NODATA)
     {
         *myError = "Error missing xll tag";
         return false;
     }
-    if (_gridStructure.header().llCorner->latitude == NODATA)
+    if (_gridStructure.header().llCorner.latitude == NODATA)
     {
         *myError = "Error missing yll tag";
         return false;

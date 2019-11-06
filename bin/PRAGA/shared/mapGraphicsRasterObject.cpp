@@ -155,8 +155,8 @@ float RasterObject::getRasterMaxSize()
 gis::Crit3DGeoPoint* RasterObject::getRasterCenter()
 {
     gis::Crit3DGeoPoint* center = new(gis::Crit3DGeoPoint);
-    center->latitude = latLonHeader.llCorner->latitude + (latLonHeader.nrRows * latLonHeader.dy) * 0.5;
-    center->longitude = latLonHeader.llCorner->longitude + (latLonHeader.nrCols * latLonHeader.dx) * 0.5;
+    center->latitude = latLonHeader.llCorner.latitude + (latLonHeader.nrRows * latLonHeader.dy) * 0.5;
+    center->longitude = latLonHeader.llCorner.longitude + (latLonHeader.nrCols * latLonHeader.dx) * 0.5;
     return center;
 }
 
@@ -249,11 +249,11 @@ bool RasterObject::initializeLatLon(gis::Crit3DRasterGrid* myRaster, const gis::
     latLonHeader = latLonHeader_;
 
     // TODO improve management of 0-360 netcdf grid
-    double maxLongitude = latLonHeader.llCorner->longitude + latLonHeader.nrCols * latLonHeader.dx;
+    double maxLongitude = latLonHeader.llCorner.longitude + latLonHeader.nrCols * latLonHeader.dx;
     if (maxLongitude > 180)
     {
         longitudeShift = maxLongitude - 180;
-        latLonHeader.llCorner->longitude -= longitudeShift;
+        latLonHeader.llCorner.longitude -= longitudeShift;
     }
 
     setDrawing(true);
@@ -294,10 +294,10 @@ int RasterObject::getCurrentStep(const gis::Crit3DRasterWindow& window)
 {
     // boundary pixels position
     QPointF lowerLeft, topRight, pixelLL, pixelRT;
-    lowerLeft.setX(latLonHeader.llCorner->longitude + window.v[0].col * latLonHeader.dx);
-    lowerLeft.setY(latLonHeader.llCorner->latitude + (latLonHeader.nrRows-1 - window.v[1].row) * latLonHeader.dy);
-    topRight.setX(latLonHeader.llCorner->longitude + (window.v[1].col+1) * latLonHeader.dx);
-    topRight.setY(latLonHeader.llCorner->latitude + (latLonHeader.nrRows - window.v[0].row) * latLonHeader.dy);
+    lowerLeft.setX(latLonHeader.llCorner.longitude + window.v[0].col * latLonHeader.dx);
+    lowerLeft.setY(latLonHeader.llCorner.latitude + (latLonHeader.nrRows-1 - window.v[1].row) * latLonHeader.dy);
+    topRight.setX(latLonHeader.llCorner.longitude + (window.v[1].col+1) * latLonHeader.dx);
+    topRight.setY(latLonHeader.llCorner.latitude + (latLonHeader.nrRows - window.v[0].row) * latLonHeader.dy);
     pixelLL = getPixel(lowerLeft);
     pixelRT = getPixel(topRight);
 
@@ -341,8 +341,8 @@ bool RasterObject::drawRaster(gis::Crit3DRasterGrid *myRaster, QPainter* myPaint
     int step = getCurrentStep(window);
 
     QPointF lowerLeft;
-    lowerLeft.setX(latLonHeader.llCorner->longitude + window.v[0].col * latLonHeader.dx);
-    lowerLeft.setY(latLonHeader.llCorner->latitude + (latLonHeader.nrRows-1 - window.v[1].row) * latLonHeader.dy);
+    lowerLeft.setX(latLonHeader.llCorner.longitude + window.v[0].col * latLonHeader.dx);
+    lowerLeft.setY(latLonHeader.llCorner.latitude + (latLonHeader.nrRows-1 - window.v[1].row) * latLonHeader.dy);
 
     // draw
     int x0, y0, x1, y1, lx, ly;

@@ -94,10 +94,10 @@ namespace gis
 
                 // LLCORNER is the lower-left corner
                 else if (upKey == "XLLCORNER")
-                    myHeader->llCorner->x = ::atof(myValue.c_str());
+                    myHeader->llCorner.x = ::atof(myValue.c_str());
 
                 else if (upKey == "YLLCORNER")
-                    myHeader->llCorner->y = ::atof(myValue.c_str());
+                    myHeader->llCorner.y = ::atof(myValue.c_str());
 
                 else if (upKey == "CELLSIZE")
                     myHeader->cellSize = ::atof(myValue.c_str());
@@ -175,8 +175,8 @@ namespace gis
 
         char* xllcorner = new char[20];
         char* yllcorner = new char[20];
-        sprintf(xllcorner, "%.03f", myHeader->llCorner->x);
-        sprintf(yllcorner, "%.03f", myHeader->llCorner->y);
+        sprintf(xllcorner, "%.03f", myHeader->llCorner.x);
+        sprintf(yllcorner, "%.03f", myHeader->llCorner.y);
 
         myFile << "xllcorner     " << xllcorner << "\n";
 
@@ -264,13 +264,13 @@ namespace gis
         Crit3DGeoPoint v[4];
 
         // compute vertexes
-        Crit3DUtmPoint myVertex = *(utmHeader->llCorner);
+        Crit3DUtmPoint myVertex = utmHeader->llCorner;
         gis::getLatLonFromUtm(mySettings, myVertex, &(v[0]));
         myVertex.x += utmHeader->nrCols * utmHeader->cellSize;
         gis::getLatLonFromUtm(mySettings, myVertex, &(v[1]));
         myVertex.y += utmHeader->nrRows * utmHeader->cellSize;
         gis::getLatLonFromUtm(mySettings, myVertex, &(v[2]));
-        myVertex.x = utmHeader->llCorner->x;
+        myVertex.x = utmHeader->llCorner.x;
         gis::getLatLonFromUtm(mySettings, myVertex, &(v[3]));
 
         // compute LLcorner and URcorner
@@ -296,8 +296,8 @@ namespace gis
         latLonHeader->dx = (URcorner.longitude - LLcorner.longitude) / latLonHeader->nrCols;
         latLonHeader->dy = (URcorner.latitude - LLcorner.latitude) / latLonHeader->nrRows;
 
-        latLonHeader->llCorner->latitude = LLcorner.latitude;
-        latLonHeader->llCorner->longitude = LLcorner.longitude;
+        latLonHeader->llCorner.latitude = LLcorner.latitude;
+        latLonHeader->llCorner.longitude = LLcorner.longitude;
 
         // flag
         latLonHeader->flag = utmHeader->flag;

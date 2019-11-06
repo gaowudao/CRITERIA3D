@@ -59,8 +59,8 @@ void Viewer3D::initialize(Crit3DProject *project)
     float z = m_project->DEM.minimum + dz * 0.5f;
     double dy = m_project->DEM.header->nrRows * m_project->DEM.header->cellSize;
     double dx = m_project->DEM.header->nrCols * m_project->DEM.header->cellSize;
-    m_center.x = m_project->DEM.header->llCorner->x + dx * 0.5;
-    m_center.y = m_project->DEM.header->llCorner->y + dy * 0.5;
+    m_center.x = m_project->DEM.header->llCorner.x + dx * 0.5;
+    m_center.y = m_project->DEM.header->llCorner.y + dy * 0.5;
     m_size = float(sqrt(dx*dy));
     m_ratio = m_size / dz;
     m_magnify = MAXVALUE(1.f, MINVALUE(10.f, m_ratio / 5.f));
