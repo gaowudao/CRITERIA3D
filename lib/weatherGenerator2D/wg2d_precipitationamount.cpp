@@ -153,27 +153,17 @@ void weatherGenerator2D::computeprecipitationAmountParameters()
         averageMonthlyAmountPrecLarger[1]  = averageMonthlyAmountPrec[11];
         averageMonthlyAmountPrecLarger[14] = averageMonthlyAmountPrec[0];
         averageMonthlyAmountPrecLarger[15]  = averageMonthlyAmountPrec[1];
-        for (int iMonth=0; iMonth<16; iMonth++)
-        {
-            printf("month %d month %.0f mean %f\n",iMonth, month[iMonth], averageMonthlyAmountPrecLarger[iMonth]);
-        }
+
         //double risultato;
         for (int jjj=0; jjj<365; jjj++)
         {
             averageAmountPrec[jjj] = interpolation::cubicSpline(jjj*1.0,month,averageMonthlyAmountPrecLarger,16);
         }
-        pressEnterToContinue();
-        double dummy;
         for (int i=0; i<365 ; i++)
         {
             precipitationAmount[iStation].averageEstimation[i] = double(averageAmountPrec[(i+334)%365]);
         }
 
-        for (int i=0;i<365;i++) {printf("spline %d %f\n",(i+334)%365,precipitationAmount[iStation].averageEstimation[i]);
-        pressEnterToContinue();}
-
-        //for (int i=0;i<365;i++) {printf("spline %d %f\n",i,averageAmountPrec[i]);
-        //pressEnterToContinue();}
         free (averageAmountPrec);
         free (averageMonthlyAmountPrec);
         free (averageMonthlyAmountPrecLarger);
