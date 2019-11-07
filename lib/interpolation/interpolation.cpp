@@ -954,7 +954,7 @@ void detrendPoints(std::vector <Crit3DInterpolationDataPoint> &myPoints, Crit3DI
     }
 }
 
-float retrend(meteoVariable myVar, vector <float> myProxyValues, Crit3DInterpolationSettings* mySettings)
+float retrend(meteoVariable myVar, vector<float> myProxyValues, Crit3DInterpolationSettings* mySettings)
 {
 
     if (! getUseDetrendingVar(myVar)) return 0.;
