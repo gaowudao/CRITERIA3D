@@ -559,12 +559,12 @@ bool Project3D::isWithinSoil(int soilIndex, double depth)
 }
 
 
-bool Project3D::saveHourlyMeteoOutput(meteoVariable myVar, const QString& myPath, QDateTime myTime)
+bool Project3D::saveHourlyMeteoOutput(meteoVariable myVar, const QString& myPath, QDateTime myTime, const QString& myArea)
 {
     gis::Crit3DRasterGrid* myRaster = getHourlyMeteoRaster(myVar);
     if (myRaster == nullptr) return false;
 
-    QString fileName = getOutputNameHourly(myVar, myTime, "");
+    QString fileName = getOutputNameHourly(myVar, myTime, myArea);
     QString outputFileName = myPath + fileName;
 
     std::string errStr;

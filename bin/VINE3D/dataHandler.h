@@ -8,10 +8,6 @@
         #include "plant.h"
     #endif
 
-    #define OUTPUT_WEATHER 1
-    #define OUTPUT_PLANT 2
-    #define OUTPUT_SOIL 3
-
     float getTimeStepFromHourlyInterval(int myHourlyIntervals);
 
     meteoVariable getMeteoVariable(int myVar);

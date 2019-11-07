@@ -16,10 +16,6 @@
 
     bool interpolationProjectDemMain(Vine3DProject* myProject, meteoVariable myVar, const Crit3DTime& myTime, bool isLoadData);
 
-    bool saveMeteoHourlyOutput(Vine3DProject* myProject, meteoVariable myVar,
-                                const QString& myOutputPath, Crit3DTime myCrit3DTime,
-                                const QString myArea);
-
     bool interpolateAndSaveHourlyMeteo(Vine3DProject* myProject, meteoVariable myVar,
                             const Crit3DTime& myCrit3DTime, const QString& myOutputPath,
                             bool isSave, const QString& myArea);

@@ -445,7 +445,7 @@ bool Crit3DProject::interpolateAndSaveHourlyMeteo(meteoVariable myVar, const QDa
     }
 
     if (saveOutput)
-        return saveHourlyMeteoOutput(myVar, outputPath, myTime);
+        return saveHourlyMeteoOutput(myVar, outputPath, myTime, "");
     else
         return true;
 }
@@ -470,7 +470,7 @@ bool Crit3DProject::modelHourlyCycle(bool isInitialState, QDateTime myTime, cons
     if (! hourlyMeteoMaps->computeET0PMMap(DEM, radiationMaps)) return false;
     if (saveOutput)
     {
-        saveHourlyMeteoOutput(referenceEvapotranspiration, hourlyPath, myTime);
+        saveHourlyMeteoOutput(referenceEvapotranspiration, hourlyPath, myTime, "");
     }
     hourlyMeteoMaps->setComputed(true);
 

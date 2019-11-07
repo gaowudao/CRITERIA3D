@@ -111,7 +111,7 @@ double evaporation(Vine3DProject* myProject, int row, int col)
     laiTot = laiVine + laiGrass;
 
     //E0 [mm]
-    ET0 = myProject->vine3DMapsH->mapHourlyET0->value[row][col];
+    ET0 = myProject->hourlyMeteoMaps->mapHourlyET0->value[row][col];
     E0 = getMaxEvaporation(ET0, laiTot);
     realEvap = 0;
 
@@ -177,8 +177,8 @@ bool waterBalanceSinkSource(Vine3DProject* myProject, double* totalPrecipitation
             if (surfaceIndex != long(myProject->indexMap.at(0).header->flag))
             {
                 totalWater = 0.0;
-                prec = double(myProject->vine3DMapsH->mapHourlyPrec->value[row][col]);
-                if (int(prec) != int(myProject->vine3DMapsH->mapHourlyPrec->header->flag)) totalWater += prec;
+                prec = double(myProject->hourlyMeteoMaps->mapHourlyPrec->value[row][col]);
+                if (int(prec) != int(myProject->hourlyMeteoMaps->mapHourlyPrec->header->flag)) totalWater += prec;
 
                 irr = double(myProject->vine3DMapsH->mapHourlyIrrigation->value[row][col]);
                 if (int(irr) != int(myProject->vine3DMapsH->mapHourlyIrrigation->header->flag)) totalWater += irr;

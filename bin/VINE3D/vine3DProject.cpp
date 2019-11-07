@@ -1711,9 +1711,15 @@ bool Vine3DProject::setSoilIndexMap()
 soil::Crit3DHorizon* Vine3DProject::getSoilHorizon(long row, long col, int layer)
 {
     int soilIndex = getSoilIndex(row, col);
-    int horizonIndex = soil::getHorizonIndex(&(soilList[soilIndex]), layer);
-    return &(soilList[soilIndex].horizon[horizonIndex]);
+    if (soilIndex == NODATA) return nullptr;
+
+    int horizonIndex = soil::getHorizonIndex(&(soilList[unsigned(soilIndex)]), layer);
+    if (horizonIndex == NODATA) return nullptr;
+
+    soil::Crit3DHorizon* horizonPtr = &(soilList[unsigned(soilIndex)].horizon[unsigned(horizonIndex)]);
+    return horizonPtr;
 }
+
 
 bool Vine3DProject::getFieldBookIndex(int firstIndex, QDate myDate, int fieldIndex, int* outputIndex)
 {
@@ -1735,7 +1741,7 @@ bool Vine3DProject::getFieldBookIndex(int firstIndex, QDate myDate, int fieldInd
 }
 
 
-Vine3DHourlyMaps::Vine3DHourlyMaps(const gis::Crit3DRasterGrid& DEM) : Crit3DHourlyMeteoMaps (DEM)
+Vine3DHourlyMaps::Vine3DHourlyMaps(const gis::Crit3DRasterGrid& DEM)
 {
     mapHourlyIrrigation = new gis::Crit3DRasterGrid;
     mapHourlyIrrigation->initializeGrid(DEM);

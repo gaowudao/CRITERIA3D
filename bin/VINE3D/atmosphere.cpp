@@ -156,7 +156,7 @@ bool vine3DInterpolationDem(Vine3DProject* myProject, meteoVariable myVar,
 
     if (! dataAvailable) return false;
 
-    gis::Crit3DRasterGrid* myMap = myProject->vine3DMapsH->getMapFromVar(myVar);
+    gis::Crit3DRasterGrid* myMap = myProject->hourlyMeteoMaps->getMapFromVar(myVar);
     if (myMap == nullptr)
     {
         myMap = &(myProject->dataRaster);
@@ -272,7 +272,7 @@ bool interpolationProjectDemMain(Vine3DProject* myProject, meteoVariable myVar, 
     {
         if (myProject->interpolationSettings.getUseDewPoint())
         {
-            if (myProject->vine3DMapsH->mapHourlyT->mapTime != myCrit3DTime)
+            if (myProject->hourlyMeteoMaps->mapHourlyTair->mapTime != myCrit3DTime)
             {
                 if (! vine3DInterpolationDem(myProject, airTemperature, myCrit3DTime, isLoadData))
                     return false;
@@ -280,9 +280,9 @@ bool interpolationProjectDemMain(Vine3DProject* myProject, meteoVariable myVar, 
 
             if (vine3DInterpolationDem(myProject, airDewTemperature, myCrit3DTime, isLoadData))
             {
-                myResult = computeHumidityMap(*(myProject->vine3DMapsH->mapHourlyT),
-                                              *(myProject->vine3DMapsH->mapHourlyTdew),
-                                              myProject->vine3DMapsH->mapHourlyRelHum);
+                myResult = computeHumidityMap(*(myProject->hourlyMeteoMaps->mapHourlyTair),
+                                              *(myProject->hourlyMeteoMaps->mapHourlyTdew),
+                                              myProject->hourlyMeteoMaps->mapHourlyRelHum);
             }
         }
         else
@@ -293,8 +293,8 @@ bool interpolationProjectDemMain(Vine3DProject* myProject, meteoVariable myVar, 
         myResult = vine3DInterpolationDem(myProject, windIntensity, myCrit3DTime, isLoadData);
         if (myResult == false)
         {
-            myProject->vine3DMapsH->mapHourlyWindInt->setConstantValueWithBase(myProject->meteoSettings->getWindIntensityDefault(), myProject->DEM);
-            myResult = postInterpolation(windIntensity, myProject->vine3DMapsH->mapHourlyWindInt);
+            myProject->hourlyMeteoMaps->mapHourlyWindInt->setConstantValueWithBase(myProject->meteoSettings->getWindIntensityDefault(), myProject->DEM);
+            myResult = postInterpolation(windIntensity, myProject->hourlyMeteoMaps->mapHourlyWindInt);
         }
     }
     else
@@ -330,33 +330,6 @@ bool loadDailyMeteoMap(Vine3DProject* myProject, meteoVariable myDailyVar, QDate
 }
 
 
-bool saveMeteoHourlyOutput(Vine3DProject* myProject, meteoVariable myVar, const QString& myOutputPath,
-                     Crit3DTime myCrit3DTime, const QString myArea)
-{
-    QString fileName = getOutputNameHourly(myVar, getQDateTime(myCrit3DTime), myArea);
-    QString outputFileName = myOutputPath + fileName;
-    std::string myErrorString;
-    gis::Crit3DRasterGrid* myMap;
-    if (myVar == globalIrradiance)
-    {
-        myMap = myProject->radiationMaps->globalRadiationMap;
-    }
-    else
-    {
-        myMap = myProject->vine3DMapsH->getMapFromVar(myVar);
-    }
-
-
-    if (! gis::writeEsriGrid(outputFileName.toStdString(), myMap, &myErrorString))
-    {
-        myProject->logError(QString::fromStdString(myErrorString));
-        return false;
-    }
-
-    return true;
-}
-
-
 bool interpolateAndSaveHourlyMeteo(Vine3DProject* myProject, meteoVariable myVar,
                         const Crit3DTime& myCrit3DTime, const QString& myOutputPath,
                         bool isSave, const QString& myArea)
@@ -371,7 +344,7 @@ bool interpolateAndSaveHourlyMeteo(Vine3DProject* myProject, meteoVariable myVar
     }
 
     if (isSave)
-        return saveMeteoHourlyOutput(myProject, myVar, myOutputPath, myCrit3DTime, myArea);
+        return myProject->saveHourlyMeteoOutput(myVar, myOutputPath, getQDateTime(myCrit3DTime), myArea);
     else
         return true;
 }

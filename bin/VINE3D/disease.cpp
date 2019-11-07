@@ -211,16 +211,16 @@ bool computeDownyMildew(Vine3DProject* myProject, QDate firstDate, QDate lastDat
                     break;
                 }
 
-                myProject->vine3DMapsH->computeLeafWetnessMap();
+                myProject->hourlyMeteoMaps->computeLeafWetnessMap();
 
                 for (n = 0; n < nrPoints; n++)
                 {
                     row = rowPoint[n];
                     col = colPoint[n];
-                    input[n*nrHours+h].tair = myProject->vine3DMapsH->mapHourlyT->value[row][col];
-                    input[n*nrHours+h].relativeHumidity = myProject->vine3DMapsH->mapHourlyRelHum->value[row][col];
-                    input[n*nrHours+h].rain = myProject->vine3DMapsH->mapHourlyPrec->value[row][col];
-                    input[n*nrHours+h].leafWetness = int(myProject->vine3DMapsH->mapHourlyLeafW->value[row][col]);
+                    input[n*nrHours+h].tair = myProject->hourlyMeteoMaps->mapHourlyTair->value[row][col];
+                    input[n*nrHours+h].relativeHumidity = myProject->hourlyMeteoMaps->mapHourlyRelHum->value[row][col];
+                    input[n*nrHours+h].rain = myProject->hourlyMeteoMaps->mapHourlyPrec->value[row][col];
+                    input[n*nrHours+h].leafWetness = int(myProject->hourlyMeteoMaps->mapHourlyLeafW->value[row][col]);
                 }
                 myTime = myTime.addSeconds(3600);
             }

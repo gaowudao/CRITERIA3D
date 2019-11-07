@@ -81,7 +81,7 @@
         int getSoilIndex(long row, long col);
         bool isWithinSoil(int soilIndex, double depth);
 
-        bool saveHourlyMeteoOutput(meteoVariable myVar, const QString& myPath, QDateTime myTime);
+        bool saveHourlyMeteoOutput(meteoVariable myVar, const QString& myPath, QDateTime myTime, const QString& myArea);
         bool aggregateAndSaveDailyMap(meteoVariable myVar, aggregationMethod myAggregation, const Crit3DDate& myDate,
                                       const QString& dailyPath, const QString& hourlyPath, const QString& myArea);
     };
