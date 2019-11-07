@@ -899,8 +899,8 @@ bool Project::loadMeteoPointsDB(QString dbName)
     if (nrMeteoPoints == 0)
     {
         errorString = "Error in reading the point properties:\n" + errorString;
-        this->logError();
-        this->closeMeteoPointsDB();
+        logError();
+        closeMeteoPointsDB();
         return false;
     }
 
@@ -1219,9 +1219,9 @@ bool Project::readPointProxyValues(Crit3DMeteoPoint* myPoint, QSqlDatabase* myDb
         myPoint->proxyValues[i] = NODATA;
 
         // read only for active proxies
-        if (interpolationSettings.getSelectedCombination().getValue(signed(i)))
+        if (interpolationSettings.getSelectedCombination().getValue(i))
         {
-            myProxy = interpolationSettings.getProxy(signed(i));
+            myProxy = interpolationSettings.getProxy(i);
             proxyField = QString::fromStdString(myProxy->getProxyField());
             proxyTable = QString::fromStdString(myProxy->getProxyTable());
             if (proxyField != "" && proxyTable != "")
@@ -1244,7 +1244,7 @@ bool Project::readPointProxyValues(Crit3DMeteoPoint* myPoint, QSqlDatabase* myDb
                 {
                     float myValue = gis::getValueFromXY(*proxyGrid, myPoint->point.utm.x, myPoint->point.utm.y);
                     if (int(myValue) != int(proxyGrid->header->flag))
-                        myPoint->proxyValues[unsigned(i)] = myValue;
+                        myPoint->proxyValues[i] = myValue;
                 }
             }
         }
@@ -1252,44 +1252,44 @@ bool Project::readPointProxyValues(Crit3DMeteoPoint* myPoint, QSqlDatabase* myDb
 
     return true;
 }
+
 
 bool Project::loadProxyGrids()
 {
-    std::string* myError = new std::string();
-    Crit3DProxy *myProxy;
-    gis::Crit3DRasterGrid *myGrid = nullptr;
-    gis::Crit3DRasterGrid *myResampledGrid = nullptr;
-    std::string gridName;
-
     for (unsigned int i=0; i < interpolationSettings.getProxyNr(); i++)
     {
-        myProxy = interpolationSettings.getProxy(i);
-        myGrid = myProxy->getGrid();
-        gridName = myProxy->getGridName();
-        gridName = getCompleteFileName(QString::fromStdString(gridName), PATH_GEO).toStdString();
+        Crit3DProxy* myProxy = interpolationSettings.getProxy(i);
 
         if (interpolationSettings.getSelectedCombination().getValue(i) || myProxy->getForQualityControl())
         {
-            if (! myGrid->isLoaded && gridName != "")
+            gis::Crit3DRasterGrid* myGrid = myProxy->getGrid();
+
+            QString fileName = QString::fromStdString(myProxy->getGridName());
+            fileName = getCompleteFileName(fileName, PATH_GEO);
+
+            if (! myGrid->isLoaded && fileName != "")
             {
-                myGrid = new gis::Crit3DRasterGrid();
-                myResampledGrid = new gis::Crit3DRasterGrid();
-                if (gis::readEsriGrid(gridName, myGrid, myError))
+                gis::Crit3DRasterGrid proxyGrid;
+                std::string myError;
+                if (gis::readEsriGrid(fileName.toStdString(), &proxyGrid, & myError))
                 {
-                    gis::resampleGrid(*myGrid, myResampledGrid, *DEM.header, aggrAverage, 0);
-                    myProxy->setGrid(myResampledGrid);
+                    gis::Crit3DRasterGrid* resGrid = new gis::Crit3DRasterGrid();
+                    gis::resampleGrid(proxyGrid, resGrid, *(DEM.header), aggrAverage, 0);
+                    myProxy->setGrid(resGrid);
                 }
                 else
                 {
-                    logError("Error loading proxy grid " + QString::fromStdString(gridName));
+                    logError("Error loading proxy grid " + fileName);
                     interpolationSettings.getSelectedCombination().setValue(i, false);
                 }
+                proxyGrid.clear();
             }
         }
     }
 
     return true;
 }
+
 
 bool Project::loadRadiationGrids()
 {

@@ -257,7 +257,7 @@ void MainWindow::drawProject()
 }
 
 
-void MainWindow::clearDEM()
+void MainWindow::clearDEM_GUI()
 {
     rasterDEM->clear();
     rasterOutput->clear();
@@ -270,10 +270,9 @@ void MainWindow::clearDEM()
 }
 
 
-void MainWindow::clearMeteoPoints()
+void MainWindow::clearMeteoPoints_GUI()
 {
     resetMeteoPoints();
-    myProject.closeMeteoPointsDB();
     meteoPointsLegend->setVisible(false);
     showPointsGroup->setEnabled(false);
 }
@@ -326,8 +325,8 @@ void MainWindow::on_actionOpenProject_triggered()
 
     if (myProject.isProjectLoaded)
     {
-        clearMeteoPoints();
-        clearDEM();
+        clearMeteoPoints_GUI();
+        clearDEM_GUI();
     }
 
     if (! myProject.loadCriteria3DProject(fileName))
@@ -343,10 +342,11 @@ void MainWindow::on_actionCloseProject_triggered()
 {
     if (! myProject.isProjectLoaded) return;
 
-    clearMeteoPoints();
-    clearDEM();
+    clearMeteoPoints_GUI();
+    clearDEM_GUI();
 
     myProject.loadCriteria3DProject(myProject.getApplicationPath() + "default.ini");
+
     drawProject();
 }
 
@@ -376,7 +376,7 @@ bool MainWindow::isInsideMap(const QPoint& pos)
 
 void MainWindow::resetMeteoPoints()
 {
-    for (int i = pointList.size()-1; i >= 0; i--)
+    for (int i = 0; i < pointList.size(); i++)
     {
         mapView->scene()->removeObject(pointList[i]);
         delete pointList[i];

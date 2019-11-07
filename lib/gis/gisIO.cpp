@@ -228,7 +228,7 @@ namespace gis
 
     bool readEsriGrid(string myFileName, Crit3DRasterGrid* myGrid, string* myError)
     {
-        if (myGrid == nullptr) return(false);
+        if (myGrid == nullptr) return false;
         myGrid->isLoaded = false;
 
         Crit3DRasterHeader *myHeader;
