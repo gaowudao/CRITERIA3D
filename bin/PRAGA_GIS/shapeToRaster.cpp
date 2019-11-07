@@ -32,8 +32,8 @@ gis::Crit3DRasterGrid* initializeRasterFromShape(Crit3DShapeHandler* shape, gis:
     xmin = floor(xmin);
     ymin = floor(ymin);
     header.cellSize = cellSize;
-    header.llCorner->x = xmin;
-    header.llCorner->y = ymin;
+    header.llCorner.x = xmin;
+    header.llCorner.y = ymin;
     header.nrRows = int(floor((ymax - ymin) / cellSize))+1;
     header.nrCols = int(floor((xmax - xmin) / cellSize))+1;
 
