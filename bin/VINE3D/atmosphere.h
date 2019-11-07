@@ -20,10 +20,6 @@
                             const Crit3DTime& myCrit3DTime, const QString& myOutputPath,
                             bool isSave, const QString& myArea);
 
-    bool aggregateAndSaveDailyMap(Vine3DProject* myProject, meteoVariable myVar,
-                             aggregationMethod myAggregation, const Crit3DDate& myDate,
-                             const QString& dailyPath, const QString& hourlyPath, const QString& myArea);
-
     bool loadDailyMeteoMap(Vine3DProject* myProject, meteoVariable myDailyVar, QDate myDate,
                            const QString& myArea);
 

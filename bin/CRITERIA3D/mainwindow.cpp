@@ -1159,13 +1159,13 @@ void MainWindow::on_actionRun_models_triggered()
     int myReturn = myForm.exec();
     if (myReturn == QDialog::Rejected) return;
 
-    runModels(firstTime, lastTime, false);
+    runModels(firstTime, lastTime, false, false);
     updateDateTime();
     updateMaps();
 }
 
 
-bool MainWindow::runModels(QDateTime firstTime, QDateTime lastTime, bool saveOutput)
+bool MainWindow::runModels(QDateTime firstTime, QDateTime lastTime, bool saveOutput, bool saveState)
 {
     if (! myProject.isCriteria3DInitialized)
     {
@@ -1184,7 +1184,6 @@ bool MainWindow::runModels(QDateTime firstTime, QDateTime lastTime, bool saveOut
     int hour1 = firstTime.time().hour();
     int hour2 = lastTime.time().hour();
 
-    myProject.logInfo("\nRun models from: " + firstTime.toString() + " to: " + lastTime.toString());
     myProject.logInfo("Load meteo data...");
     if (! myProject.loadMeteoPointsData(firstDate.addDays(-1), lastDate.addDays(+1), false))
     {
@@ -1192,11 +1191,12 @@ bool MainWindow::runModels(QDateTime firstTime, QDateTime lastTime, bool saveOut
         return false;
     }
 
-    bool isInitialState = false;
+    // cycle on days
+    bool isInitialState = true;
     QString outputPathHourly;
     int firstHour, lastHour;
+    myProject.logInfo("\nRun models from: " + firstTime.toString() + " to: " + lastTime.toString());
 
-    // cycle on days
     for (QDate myDate = firstDate; myDate <= lastDate; myDate = myDate.addDays(1))
     {
         myProject.setCurrentDate(myDate);
@@ -1237,12 +1237,20 @@ bool MainWindow::runModels(QDateTime firstTime, QDateTime lastTime, bool saveOut
                 myProject.logError();
                 return false;
             }
+            isInitialState = false;
 
             updateGUI();
         }
 
-        if (lastHour >= 23)
-            myProject.saveStateAndOutput(myDate, outputPathHourly, saveOutput);
+        if (saveOutput && firstHour <=1 && lastHour >= 23)
+        {
+            myProject.saveDailyOutput(myDate, outputPathHourly);
+        }
+
+        if (saveState)
+        {
+            //save model state
+        }
     }
 
     myProject.logInfo("End of run.");

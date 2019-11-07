@@ -20,10 +20,6 @@
     private:
         void clearCriteria3DProject();
 
-        bool interpolateAndSaveHourlyMeteo(meteoVariable myVar, const QDateTime& myTime,
-                                           const QString& outputPath, bool saveOutput);
-
-
     public:
         // same header of DEM
         gis::Crit3DRasterGrid soilMap;
@@ -58,9 +54,7 @@
 
         void setAllHourlyMeteoMapsComputed(bool value);
 
-        bool saveStateAndOutput(QDate myDate, const QString& outputPathHourly, bool saveOutput);
-
-        bool modelHourlyCycle(bool isInitialState, QDateTime myTime, const QString& outputPath, bool saveOutput);
+        bool saveDailyOutput(QDate myDate, const QString& outputPathHourly);
     };
 
 

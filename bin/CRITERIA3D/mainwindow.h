@@ -166,7 +166,7 @@
         void setMeteoVariable(meteoVariable myVar, gis::Crit3DRasterGrid *myGrid);
         void showMeteoVariable(meteoVariable var);
 
-        bool runModels(QDateTime dateTime1, QDateTime dateTime2, bool saveOutput);
+        bool runModels(QDateTime dateTime1, QDateTime dateTime2, bool saveOutput, bool saveState);
     };
 
 

@@ -21,7 +21,8 @@
     class Project3D : public Project
     {
     private:
-
+        bool interpolateAndSaveHourlyMeteo(meteoVariable myVar, const QDateTime& myTime,
+                                           const QString& outputPath, bool saveOutput);
 
     public:
         bool isCriteria3DInitialized;
@@ -84,6 +85,10 @@
         bool saveHourlyMeteoOutput(meteoVariable myVar, const QString& myPath, QDateTime myTime, const QString& myArea);
         bool aggregateAndSaveDailyMap(meteoVariable myVar, aggregationMethod myAggregation, const Crit3DDate& myDate,
                                       const QString& dailyPath, const QString& hourlyPath, const QString& myArea);
+
+        bool hourlyWaterBalance();
+        bool updateCrop(QDateTime myTime);
+        bool modelHourlyCycle(bool isInitialState, QDateTime myTime, const QString& outputPath, bool saveOutput);
     };
 
 

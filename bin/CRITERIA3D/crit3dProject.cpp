@@ -429,92 +429,38 @@ void Crit3DProject::setAllHourlyMeteoMapsComputed(bool value)
 }
 
 
-
-bool Crit3DProject::interpolateAndSaveHourlyMeteo(meteoVariable myVar, const QDateTime& myTime,
-                                                  const QString& outputPath, bool saveOutput)
+bool Crit3DProject::saveDailyOutput(QDate myDate, const QString& hourlyPath)
 {
-    gis::Crit3DRasterGrid* myRaster = getHourlyMeteoRaster(myVar);
-    if (myRaster == nullptr) return false;
+    QString dailyPath = getProjectPath() + "output/daily/" + myDate.toString("yyyy/MM/dd/");
+    QDir myDir;
 
-    if (! interpolationDemMain(myVar, getCrit3DTime(myTime), myRaster, false))
+    if (! myDir.mkpath(dailyPath))
     {
-        QString timeStr = myTime.toString("yyyy-MM-dd hh:mm");
-        QString varStr = QString::fromStdString(MapHourlyMeteoVarToString.at(myVar));
-        errorString = "Error in interpolation of " + varStr + " at time: " + timeStr;
+        logError("Creation daily output directory failed." );
         return false;
     }
-
-    if (saveOutput)
-        return saveHourlyMeteoOutput(myVar, outputPath, myTime, "");
     else
-        return true;
-}
-
-
-bool Crit3DProject::modelHourlyCycle(bool isInitialState, QDateTime myTime, const QString& hourlyPath, bool saveOutput)
-{
-    logInfo("Compute " + myTime.toString("yyyy-MM-dd hh:mm"));
-
-    hourlyMeteoMaps->setComputed(false);
-
-    // meteo interpolation
-    if (! interpolateAndSaveHourlyMeteo(airTemperature, myTime, hourlyPath, saveOutput)) return false;
-    if (! interpolateAndSaveHourlyMeteo(precipitation, myTime, hourlyPath, saveOutput)) return false;
-    if (! interpolateAndSaveHourlyMeteo(airRelHumidity, myTime, hourlyPath, saveOutput)) return false;
-    if (! interpolateAndSaveHourlyMeteo(windIntensity, myTime, hourlyPath, saveOutput)) return false;
-
-    // radiation model
-    if (! interpolateAndSaveHourlyMeteo(globalIrradiance, myTime, hourlyPath, saveOutput)) return false;
-
-    // ET0
-    if (! hourlyMeteoMaps->computeET0PMMap(DEM, radiationMaps)) return false;
-    if (saveOutput)
     {
-        saveHourlyMeteoOutput(referenceEvapotranspiration, hourlyPath, myTime, "");
+        logInfo("Aggregate daily meteo data");
+        Crit3DDate crit3DDate = getCrit3DDate(myDate);
+
+        aggregateAndSaveDailyMap(airTemperature, aggrMin, crit3DDate, dailyPath, hourlyPath, "");
+        aggregateAndSaveDailyMap(airTemperature, aggrMax, crit3DDate, dailyPath, hourlyPath, "");
+        aggregateAndSaveDailyMap(airTemperature, aggrAverage, crit3DDate, dailyPath,hourlyPath, "");
+        aggregateAndSaveDailyMap(precipitation, aggrSum, crit3DDate, dailyPath, hourlyPath, "");
+        aggregateAndSaveDailyMap(referenceEvapotranspiration, aggrSum, crit3DDate, dailyPath, hourlyPath, "");
+        aggregateAndSaveDailyMap(airRelHumidity, aggrMin, crit3DDate, dailyPath, hourlyPath, "");
+        aggregateAndSaveDailyMap(airRelHumidity, aggrMax, crit3DDate, dailyPath, hourlyPath, "");
+        aggregateAndSaveDailyMap(airRelHumidity, aggrAverage, crit3DDate, dailyPath, hourlyPath, "");
+        aggregateAndSaveDailyMap(globalIrradiance, aggrSum, crit3DDate, dailyPath, hourlyPath, "");
+
+        removeDirectory(hourlyPath);
+
+        // save crop output
+
+        // save water balance output
     }
-    hourlyMeteoMaps->setComputed(true);
 
     return true;
 }
-
-
-bool Crit3DProject::saveStateAndOutput(QDate myDate, const QString& hourlyPath, bool saveOutput)
-{
-    if (saveOutput)
-    {
-        QString dailyPath = getProjectPath() + "output/daily/" + myDate.toString("yyyy/MM/dd/");
-        QDir myDir;
-
-        if (! myDir.mkpath(dailyPath))
-        {
-            logError("Creation daily output directory failed." );
-            saveOutput = false;
-        }
-        else
-        {
-            logInfo("Aggregate daily meteo data");
-            Crit3DDate crit3DDate = getCrit3DDate(myDate);
-
-            aggregateAndSaveDailyMap(airTemperature, aggrMin, crit3DDate, dailyPath, hourlyPath, "");
-            aggregateAndSaveDailyMap(airTemperature, aggrMax, crit3DDate, dailyPath, hourlyPath, "");
-            aggregateAndSaveDailyMap(airTemperature, aggrAverage, crit3DDate, dailyPath,hourlyPath, "");
-            aggregateAndSaveDailyMap(precipitation, aggrSum, crit3DDate, dailyPath, hourlyPath, "");
-            aggregateAndSaveDailyMap(referenceEvapotranspiration, aggrSum, crit3DDate, dailyPath, hourlyPath, "");
-            aggregateAndSaveDailyMap(airRelHumidity, aggrMin, crit3DDate, dailyPath, hourlyPath, "");
-            aggregateAndSaveDailyMap(airRelHumidity, aggrMax, crit3DDate, dailyPath, hourlyPath, "");
-            aggregateAndSaveDailyMap(airRelHumidity, aggrAverage, crit3DDate, dailyPath, hourlyPath, "");
-            aggregateAndSaveDailyMap(globalIrradiance, aggrSum, crit3DDate, dailyPath, hourlyPath, "");
-
-            removeDirectory(hourlyPath);
-        }
-    }
-
-    // save state and output
-    //if (! saveStateAndOutput(myDate)) return false;
-
-    return true;
-}
-
-
-
 

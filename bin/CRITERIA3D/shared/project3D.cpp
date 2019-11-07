@@ -654,6 +654,131 @@ bool Project3D::aggregateAndSaveDailyMap(meteoVariable myVar, aggregationMethod 
 }
 
 
+bool Project3D::hourlyWaterBalance()
+{
+    double totalPrecipitation = 0;
+    double totalEvaporation = 0;
+    double totalTranspiration = 0;
+
+    double previousWaterContent = soilFluxes3D::getTotalWaterContent();
+    logInfo("total water [m^3]: " + QString::number(previousWaterContent));
+
+    /*if (! waterBalanceSinkSource(&totalPrecipitation,
+            &totalEvaporation, &totalTranspiration)) return(false);*/
+
+    logInfo("precipitation [m^3]: " + QString::number(totalPrecipitation));
+    logInfo("evaporation [m^3]: " + QString::number(-totalEvaporation));
+    logInfo("transpiration [m^3]: " + QString::number(-totalTranspiration));
+
+    // COMPUTE ONE HOUR
+    logInfo("Compute water flow");
+    soilFluxes3D::initializeBalance();
+    soilFluxes3D::computePeriod(3600.0);
+
+
+    double runoff = soilFluxes3D::getBoundaryWaterSumFlow(BOUNDARY_RUNOFF);
+    logInfo("runoff [m^3]: " + QString::number(runoff));
+
+    double freeDrainage = soilFluxes3D::getBoundaryWaterSumFlow(BOUNDARY_FREEDRAINAGE);
+    logInfo("free drainage [m^3]: " + QString::number(freeDrainage));
+
+    double lateralDrainage = soilFluxes3D::getBoundaryWaterSumFlow(BOUNDARY_FREELATERALDRAINAGE);
+    logInfo("lateral drainage [m^3]: " + QString::number(lateralDrainage));
+
+    double currentWaterContent = soilFluxes3D::getTotalWaterContent();
+    double forecastWaterContent = previousWaterContent + runoff + freeDrainage + lateralDrainage
+                                  + totalPrecipitation - totalEvaporation - totalTranspiration;
+    double massBalanceError = currentWaterContent - forecastWaterContent;
+    logInfo("Mass balance error [m^3]: " + QString::number(massBalanceError));
+
+    return(true);
+}
+
+
+
+bool Project3D::updateCrop(QDateTime myTime)
+{
+    logInfo("Compute crop");
+
+    for (long row = 0; row < DEM.header->nrRows ; row++)
+    {
+        for (long col = 0; col < DEM.header->nrCols; col++)
+        {
+            if (int(DEM.value[row][col]) != int(DEM.header->flag))
+            {
+                // TODO read crop
+                // compute LAI and kc
+                // state variables
+            }
+        }
+    }
+
+    return true;
+}
+
+
+bool Project3D::interpolateAndSaveHourlyMeteo(meteoVariable myVar, const QDateTime& myTime,
+                                              const QString& outputPath, bool saveOutput)
+{
+    gis::Crit3DRasterGrid* myRaster = getHourlyMeteoRaster(myVar);
+    if (myRaster == nullptr) return false;
+
+    if (! interpolationDemMain(myVar, getCrit3DTime(myTime), myRaster, false))
+    {
+        QString timeStr = myTime.toString("yyyy-MM-dd hh:mm");
+        QString varStr = QString::fromStdString(MapHourlyMeteoVarToString.at(myVar));
+        errorString = "Error in interpolation of " + varStr + " at time: " + timeStr;
+        return false;
+    }
+
+    if (saveOutput)
+        return saveHourlyMeteoOutput(myVar, outputPath, myTime, "");
+    else
+        return true;
+}
+
+
+bool Project3D::modelHourlyCycle(bool isInitialState, QDateTime myTime, const QString& hourlyPath, bool saveOutput)
+{
+    logInfo("Compute " + myTime.toString("yyyy-MM-dd hh:mm"));
+
+    logInfo("Compute meteo variables");
+    hourlyMeteoMaps->setComputed(false);
+
+    if (! interpolateAndSaveHourlyMeteo(airTemperature, myTime, hourlyPath, saveOutput)) return false;
+    if (! interpolateAndSaveHourlyMeteo(precipitation, myTime, hourlyPath, saveOutput)) return false;
+    if (! interpolateAndSaveHourlyMeteo(airRelHumidity, myTime, hourlyPath, saveOutput)) return false;
+    if (! interpolateAndSaveHourlyMeteo(windIntensity, myTime, hourlyPath, saveOutput)) return false;
+
+    // radiation model
+    if (! interpolateAndSaveHourlyMeteo(globalIrradiance, myTime, hourlyPath, saveOutput)) return false;
+
+    // compute ET0
+    if (! hourlyMeteoMaps->computeET0PMMap(DEM, radiationMaps)) return false;
+    if (saveOutput)
+    {
+        saveHourlyMeteoOutput(referenceEvapotranspiration, hourlyPath, myTime, "");
+    }
+    hourlyMeteoMaps->setComputed(true);
+
+    if (isInitialState)
+    {
+        initializeSoilMoisture(myTime.date().month());
+    }
+
+    updateCrop(myTime);
+    // compute evap/transp
+    // sum dailyEvap, dailyTransp
+
+    // soil water balance
+    hourlyWaterBalance();
+
+    //updateWaterBalanceMaps();
+
+    return true;
+}
+
+
 // ------------------------- other functions -------------------------
 
 bool isCrit3dError(int result, QString* error)
@@ -785,7 +910,6 @@ float readDataHourly(meteoVariable myVar, QString hourlyPath, QDateTime myTime, 
 
     return NODATA;
 }
-
 
 
 
