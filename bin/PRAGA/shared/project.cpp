@@ -1984,6 +1984,19 @@ bool Project::checkMeteoGridForExport()
 }
 
 
+gis::Crit3DRasterGrid* Project::getHourlyMeteoRaster(meteoVariable myVar)
+{
+    if (myVar == globalIrradiance)
+    {
+        return radiationMaps->globalRadiationMap;
+    }
+    else
+    {
+        return hourlyMeteoMaps->getMapFromVar(myVar);
+    }
+}
+
+
 /*!
     \name importHourlyMeteoData
     \brief import hourly meteo data from .csv files
@@ -2020,18 +2033,6 @@ void Project::importHourlyMeteoData(const QString& csvFileName, bool importAllFi
     }
 }
 
-
-gis::Crit3DRasterGrid* Project::getHourlyMeteoRaster(meteoVariable myVar)
-{
-    if (myVar == globalIrradiance)
-    {
-        return radiationMaps->globalRadiationMap;
-    }
-    else
-    {
-        return hourlyMeteoMaps->getMapFromVar(myVar);
-    }
-}
 
 
 #ifdef NETCDF

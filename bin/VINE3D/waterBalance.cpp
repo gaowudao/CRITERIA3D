@@ -83,163 +83,6 @@ gis::Crit3DRasterGrid* Crit3DWaterBalanceMaps::getMapFromVar(criteria3DVariable 
 }
 
 
-double getMaxEvaporation(float ET0, float LAI)
-{
-    const double ke = 0.6;   //[-] light extinction factor
-    const double maxEvaporationRatio = 0.66;
-
-    double Kc = exp(-ke * LAI);
-    return(maxEvaporationRatio * ET0 * Kc);
-}
-
-
-double evaporation(Vine3DProject* myProject, int row, int col)
-{
-    double depthCoeff, thickCoeff, layerCoeff;
-    double realEvap, residualEvap, layerEvap, availableWater, E0, ET0, flow;
-    double laiGrass, laiVine, laiTot;
-    long nodeIndex;
-
-    double const MAX_PROF_EVAPORATION = 0.15;           //[m]
-    int lastEvapLayer = getLayerIndex(myProject, MAX_PROF_EVAPORATION);
-    double area = myProject->DEM.header->cellSize * myProject->DEM.header->cellSize;
-    int idField = myProject->getModelCaseIndex(row, col);
-
-    //LAI
-    laiGrass = myProject->modelCases[idField].maxLAIGrass;
-    laiVine = myProject->statePlantMaps->leafAreaIndexMap->value[row][col];
-    laiTot = laiVine + laiGrass;
-
-    //E0 [mm]
-    ET0 = myProject->hourlyMeteoMaps->mapHourlyET0->value[row][col];
-    E0 = getMaxEvaporation(ET0, laiTot);
-    realEvap = 0;
-
-    for (int layer=0; layer <= lastEvapLayer; layer++)
-    {
-        nodeIndex = myProject->indexMap.at(layer).value[row][col];
-
-        //[m]
-        availableWater = getCriteria3DVar(availableWaterContent, nodeIndex);
-        if (layer > 0) availableWater *= myProject->layerThickness[layer];
-        //->[mm]
-        availableWater *= 1000.0;
-
-        //layer coefficient
-        if (layer == 0)
-        {
-            //surface
-            layerCoeff = 1.0;
-        }
-        else
-        {
-            depthCoeff = myProject->layerDepth[layer] / MAX_PROF_EVAPORATION;
-            thickCoeff = myProject->layerThickness[layer] / 0.04;
-            layerCoeff = exp(-EULER * depthCoeff) * thickCoeff;
-        }
-
-        residualEvap = E0 - realEvap;
-        layerEvap = MINVALUE(E0 * layerCoeff, residualEvap);
-        layerEvap = MINVALUE(layerEvap, availableWater);
-
-        if (layerEvap > 0.0)
-        {
-            realEvap += layerEvap;
-            flow = area * (layerEvap / 1000.0);                  //[m^3/h]
-            myProject->waterSinkSource.at(size_t(nodeIndex)) -= (flow / 3600.0);        //[m^3/s]
-        }
-    }
-    return realEvap;
-}
-
-
-bool waterBalanceSinkSource(Vine3DProject* myProject, double* totalPrecipitation,
-                        double* totalEvaporation, double *totalTranspiration)
-{
-    long surfaceIndex, nodeIndex, layerIndex;
-    double prec, irr, totalWater;
-    double transp, flow, realEvap;
-    int myResult;
-    QString myError;
-
-    //initialize
-    for (long i = 0; i < myProject->nrNodes; i++)
-        myProject->waterSinkSource.at(size_t(i)) = 0.0;
-
-    double area = myProject->DEM.header->cellSize * myProject->DEM.header->cellSize;
-
-    //precipitation - irrigation
-    *totalPrecipitation = 0.0;
-    for (long row = 0; row < myProject->indexMap.at(0).header->nrRows; row++)
-        for (long col = 0; col < myProject->indexMap.at(0).header->nrCols; col++)
-        {
-            surfaceIndex = long(myProject->indexMap.at(0).value[row][col]);
-            if (surfaceIndex != long(myProject->indexMap.at(0).header->flag))
-            {
-                totalWater = 0.0;
-                prec = double(myProject->hourlyMeteoMaps->mapHourlyPrec->value[row][col]);
-                if (int(prec) != int(myProject->hourlyMeteoMaps->mapHourlyPrec->header->flag)) totalWater += prec;
-
-                irr = double(myProject->vine3DMapsH->mapHourlyIrrigation->value[row][col]);
-                if (int(irr) != int(myProject->vine3DMapsH->mapHourlyIrrigation->header->flag)) totalWater += irr;
-
-                if (totalWater > 0.0)
-                {
-                    flow = area * (totalWater / 1000.0);                //[m^3/h]
-                    *totalPrecipitation += flow;
-                    myProject->waterSinkSource[size_t(surfaceIndex)] += flow / 3600.0;     //[m^3/s]
-                }
-            }
-        }
-
-    //Evaporation
-    *totalEvaporation = 0.0;
-    for (long row = 0; row < myProject->indexMap.at(0).header->nrRows; row++)
-        for (long col = 0; col < myProject->indexMap.at(0).header->nrCols; col++)
-        {
-            surfaceIndex = long(myProject->indexMap.at(0).value[row][col]);
-            if (surfaceIndex != long(myProject->indexMap.at(0).header->flag))
-            {
-                realEvap = evaporation(myProject, row, col);
-
-                flow = area * (realEvap / 1000.0);                  //[m^3/h]
-                *totalEvaporation += flow;
-            }
-        }
-
-    //crop transpiration
-    *totalTranspiration = 0.0;
-    for (layerIndex=1; layerIndex < myProject->nrLayers; layerIndex++)
-        for (long row = 0; row < myProject->indexMap.at(size_t(layerIndex)).header->nrRows; row++)
-            for (long col = 0; col < myProject->indexMap.at(size_t(layerIndex)).header->nrCols; col++)
-            {
-                nodeIndex = long(myProject->indexMap.at(size_t(layerIndex)).value[row][col]);
-                if (nodeIndex != long(myProject->indexMap.at(size_t(layerIndex)).header->flag))
-                {
-                    transp = double(myProject->outputPlantMaps->transpirationLayerMaps[layerIndex]->value[row][col]);
-
-                    if (int(transp) != int(myProject->outputPlantMaps->transpirationLayerMaps[layerIndex]->header->flag))
-                    {
-                        flow = area * (transp / 1000.0);                    //[m^3/h]
-                        *totalTranspiration += flow;
-                        myProject->waterSinkSource.at(size_t(nodeIndex)) -= flow / 3600.0;        //[m^3/s]
-                    }
-                }
-            }
-
-    for (long i = 0; i < myProject->nrNodes; i++)
-    {
-        myResult = soilFluxes3D::setWaterSinkSource(i, myProject->waterSinkSource.at(size_t(i)));
-        if (isCrit3dError(myResult, &myError))
-        {
-            myProject->errorString = "waterBalanceSinkSource:" + myError;
-            return(false);
-        }
-    }
-
-    return(true);
-}
-
 
 double getSoilVar(Vine3DProject* myProject, int soilIndex, int layerIndex, soil::soilVariable myVar)
 {
@@ -334,29 +177,6 @@ double* getCriteria3DVarProfile(Vine3DProject* myProject, int row, int col, crit
 
 
 
-
-bool setCriteria3DVar(criteria3DVariable myVar, long nodeIndex, double myValue)
-{
-    int myResult;
-
-    if (myVar == waterMatricPotential)
-    {
-        myResult = soilFluxes3D::setMatricPotential(nodeIndex, myValue);
-    }
-    /*else if (myVar == waterContent)
-    {   //TODO skeleton
-        myResult = soilFluxes3D::setWaterContent(nodeIndex, myValue);
-    }*/
-    else
-    {
-        myResult = MISSING_DATA_ERROR;
-    }
-
-    return (myResult != INDEX_ERROR && myResult != MEMORY_ERROR && myResult != MISSING_DATA_ERROR &&
-            myResult != TOPOGRAPHY_ERROR);
-}
-
-
 bool setCriteria3DVarMap(int myLayerIndex, Vine3DProject* myProject, criteria3DVariable myVar,
                         gis::Crit3DRasterGrid* myCriteria3DMap)
 {
@@ -412,7 +232,7 @@ bool getSoilSurfaceMoisture(Vine3DProject* myProject, gis::Crit3DRasterGrid* out
     double soilSurfaceMoisture;
     int layer;
 
-    lastLayer = getLayerIndex(myProject, lowerDepth);
+    lastLayer = myProject->getSoilLayerIndex(lowerDepth);
 
     for (int row = 0; row < myProject->indexMap.at(0).header->nrRows; row++)
         for (int col = 0; col < myProject->indexMap.at(0).header->nrCols; col++)
@@ -511,19 +331,19 @@ bool getCriteria3DIntegrationMap(Vine3DProject* myProject, criteria3DVariable my
 
     if (upperDepth == lowerDepth)
     {
-        int layerIndex = getLayerIndex(myProject, upperDepth);
+        int layerIndex = myProject->getSoilLayerIndex(upperDepth);
         if (layerIndex == INDEX_ERROR) return false;
         return getCriteria3DVarMap(myProject, myVar, layerIndex, criteria3DMap);
     }
 
     int firstIndex, lastIndex;
     double firstThickness, lastThickness;
-    firstIndex = getLayerIndex(myProject, upperDepth);
-    lastIndex = getLayerIndex(myProject, lowerDepth);
+    firstIndex = myProject->getSoilLayerIndex(upperDepth);
+    lastIndex = myProject->getSoilLayerIndex(lowerDepth);
     if ((firstIndex == INDEX_ERROR)||(lastIndex == INDEX_ERROR))
         return false;
-    firstThickness = getLayerBottom(myProject, firstIndex) - upperDepth;
-    lastThickness = lowerDepth - getLayerTop(myProject, lastIndex);
+    firstThickness = myProject->getSoilLayerBottom(firstIndex) - upperDepth;
+    lastThickness = lowerDepth - myProject->getSoilLayerTop(lastIndex);
 
     long nodeIndex;
     double myValue, sumValues;
@@ -627,23 +447,6 @@ bool saveWaterBalanceOutput(Vine3DProject* myProject, QDate myDate, criteria3DVa
 }
 
 
-QString getPrefixFromVar(QDate myDate, QString myArea, criteria3DVariable myVar)
-{
-    QString fileName = myDate.toString("yyyyMMdd") + "_" + myArea;
-
-    if (myVar == waterContent)
-        fileName += "_WaterContent_";
-    if (myVar == availableWaterContent)
-        fileName += "_availableWaterContent_";
-    else if(myVar == waterMatricPotential)
-        fileName += "_MP_";
-    else if(myVar == degreeOfSaturation)
-        fileName += "_degreeOfSaturation_";
-    else
-        return "";
-
-    return fileName;
-}
 
 bool loadWaterBalanceState(Vine3DProject* myProject, QDate myDate, QString myArea, QString statePath, criteria3DVariable myVar)
 {
@@ -652,7 +455,7 @@ bool loadWaterBalanceState(Vine3DProject* myProject, QDate myDate, QString myAre
 
     gis::Crit3DRasterGrid myMap;
 
-    QString myPrefix = getPrefixFromVar(myDate, myArea, myVar);
+    QString myPrefix = getDailyPrefixFromVar(myDate, myArea, myVar);
 
     for (int layerIndex = 0; layerIndex < myProject->nrLayers; layerIndex++)
     {
@@ -671,34 +474,6 @@ bool loadWaterBalanceState(Vine3DProject* myProject, QDate myDate, QString myAre
 }
 
 
-//[m] upper depth of layer
-double getLayerTop(Vine3DProject* myProject, int i)
-{
-    return myProject->layerDepth[i] - myProject->layerThickness[i] / 2.0;
-}
-
-//lower depth of layer [m]
-double getLayerBottom(Vine3DProject* myProject, int i)
-{
-    return myProject->layerDepth[i] + myProject->layerThickness[i] / 2.0;
-}
-
-
-// index of soil layer for the current depth
-// depth [m]
-int getLayerIndex(Vine3DProject* myProject, double depth)
-{
-    int i= 0;
-    while (depth > getLayerBottom(myProject, i))
-        if (++i == myProject->nrLayers)
-        {
-            myProject->logError("getSoilLayerIndex: wrong soil depth.");
-            return INDEX_ERROR;
-        }
-    return i;
-}
-
-
 bool saveWaterBalanceState(Vine3DProject* myProject, QDate myDate, QString myArea, QString statePath, criteria3DVariable myVar)
 {
     std::string myErrorString;
@@ -706,7 +481,7 @@ bool saveWaterBalanceState(Vine3DProject* myProject, QDate myDate, QString myAre
     myMap = new gis::Crit3DRasterGrid();
     myMap->initializeGrid(myProject->indexMap.at(0));
 
-    QString myPrefix = getPrefixFromVar(myDate, myArea, myVar);
+    QString myPrefix = getDailyPrefixFromVar(myDate, myArea, myVar);
 
     for (int layerIndex = 0; layerIndex < myProject->nrLayers; layerIndex++)
         if (getCriteria3DVarMap(myProject, myVar, layerIndex, myMap))
@@ -723,91 +498,4 @@ bool saveWaterBalanceState(Vine3DProject* myProject, QDate myDate, QString myAre
     return true;
 }
 
-
-bool waterBalance(Vine3DProject* myProject)
-{
-    double totalPrecipitation = 0.0, totalEvaporation = 0.0, totalTranspiration = 0.0;
-    double previousWaterContent = 0.0, currentWaterContent = 0.0;
-
-    previousWaterContent = soilFluxes3D::getTotalWaterContent();
-    myProject->logInfo("total water [m^3]: " + QString::number(previousWaterContent));
-
-    if (! waterBalanceSinkSource(myProject, &totalPrecipitation,
-                             &totalEvaporation, &totalTranspiration)) return(false);
-
-    myProject->logInfo("precipitation [m^3]: " + QString::number(totalPrecipitation));
-    myProject->logInfo("evaporation [m^3]: " + QString::number(-totalEvaporation));
-    myProject->logInfo("transpiration [m^3]: " + QString::number(-totalTranspiration));
-
-    myProject->logInfo("Compute water flow");
-    soilFluxes3D::initializeBalance();
-    soilFluxes3D::computePeriod(3600.0);
-
-    currentWaterContent = soilFluxes3D::getTotalWaterContent();
-    double runoff = soilFluxes3D::getBoundaryWaterSumFlow(BOUNDARY_RUNOFF);
-    myProject->logInfo("runoff [m^3]: " + QString::number(runoff));
-    double freeDrainage = soilFluxes3D::getBoundaryWaterSumFlow(BOUNDARY_FREEDRAINAGE);
-    myProject->logInfo("free drainage [m^3]: " + QString::number(freeDrainage));
-    double lateralDrainage = soilFluxes3D::getBoundaryWaterSumFlow(BOUNDARY_FREELATERALDRAINAGE);
-    myProject->logInfo("lateral drainage [m^3]: " + QString::number(lateralDrainage));
-
-    double forecastWaterContent = previousWaterContent + runoff + freeDrainage + lateralDrainage
-                        + totalPrecipitation - totalEvaporation - totalTranspiration;
-    double massBalanceError = currentWaterContent - forecastWaterContent;
-    myProject->logInfo("Mass balance error [m^3]: " + QString::number(massBalanceError));
-
-    return(true);
-}
-
-
-bool initializeWaterBalance(Vine3DProject* myProject)
-{
-    myProject->logInfo("\nInitialize Waterbalance...");
-
-    QString myError;
-    if (! myProject->isProjectLoaded)
-    {
-        myProject->errorString = "initializeWaterBalance: project not loaded";
-        return false;
-    }
-
-    myProject->outputWaterBalanceMaps = new Crit3DWaterBalanceMaps(myProject->DEM);
-
-    myProject->computeNrLayers();
-    myProject->setLayersDepth();
-
-    myProject->logInfo("nr of layers: " + QString::number(myProject->nrLayers));
-
-    if (! myProject->setSoilIndexMap()) return false;
-
-    if (! myProject->setIndexMaps()) return false;
-    myProject->logInfo("nr of nodes: " + QString::number(myProject->nrNodes));
-
-    myProject->waterSinkSource.resize(size_t(myProject->nrNodes));
-
-    // Boundary
-    if (!myProject->setBoundary()) return false;
-    myProject->logInfo("Boundary computed");
-
-    int myResult = soilFluxes3D::initialize(myProject->nrNodes, myProject->nrLayers,
-                                            myProject->nrLateralLink, true, false, false);
-
-    if (isCrit3dError(myResult, &myError))
-    {
-        myProject->errorString = "initializeWaterBalance:" + myError;
-        return(false);
-    }
-
-    if (! myProject->setCrit3DSurfaces()) return(false);
-    if (! myProject->setCrit3DSoils()) return(false);
-    if (! myProject->setCrit3DTopography()) return(false);
-    if (! myProject->setCrit3DNodeSoil()) return(false);
-
-    //soilFluxes3D::setNumericalParameters(6.0, 1800.0, 200, 10, 12, 3);   // precision
-    soilFluxes3D::setNumericalParameters(30.0, 1800.0, 100, 10, 12, 2);  // speedy
-    soilFluxes3D::setHydraulicProperties(MODIFIEDVANGENUCHTEN, MEAN_LOGARITHMIC, 10.0);
-
-    myProject->logInfo("Waterbalance initialized");
-    return true;
-}
 

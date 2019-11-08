@@ -51,6 +51,10 @@ void Project3D::initializeProject3D()
     nrNodes = 0;
     nrLateralLink = 8;
 
+    totalPrecipitation = 0;
+    totalEvaporation = 0;
+    totalTranspiration = 0;
+
     setCurrentFrequency(hourly);
 }
 
@@ -87,6 +91,57 @@ void Project3D::clearProject3D()
     soilList.clear();
 
     clearProject();
+}
+
+
+bool Project3D::initializeWaterBalance3D()
+{
+    logInfo("\nInitialize Waterbalance...");
+    QString myError;
+
+    // Layers depth
+    computeNrLayers();
+    setLayersDepth();
+    logInfo("nr of layers: " + QString::number(nrLayers));
+
+    // Index map
+    if (! setIndexMaps()) return false;
+    logInfo("nr of nodes: " + QString::number(nrNodes));
+
+    waterSinkSource.resize(nrNodes);
+
+    // Boundary
+    if (!setBoundary()) return false;
+    logInfo("Boundary computed");
+
+    // Initiale soil fluxes
+    int myResult = soilFluxes3D::initialize(long(nrNodes), int(nrLayers), nrLateralLink, true, false, false);
+    if (isCrit3dError(myResult, &myError))
+    {
+        logError("initializeWaterBalance3D:" + myError);
+        return false;
+    }
+    logInfo("Memory initialized");
+
+    // Set properties for all voxels
+    if (! setCrit3DSurfaces()) return false;
+
+    if (! setCrit3DSoils()) return false;
+    logInfo("Soils initialized");
+
+    if (! setCrit3DTopography()) return false;
+    logInfo("Topology initialized");
+
+    if (! setCrit3DNodeSoil()) return false;
+    logInfo("Soils initialized");
+
+    //criteria3D::setNumericalParameters(6.0, 600.0, 200, 10, 12, 3);   // precision
+    soilFluxes3D::setNumericalParameters(30.0, 1800.0, 100, 10, 12, 2);  // speedy
+    //criteria3D::setNumericalParameters(300.0, 3600.0, 100, 10, 12, 1);   // very speedy (high error)
+    soilFluxes3D::setHydraulicProperties(MODIFIEDVANGENUCHTEN, MEAN_LOGARITHMIC, 10.0);
+
+    logInfo("3D water balance initialized");
+    return true;
 }
 
 
@@ -559,6 +614,37 @@ bool Project3D::isWithinSoil(int soilIndex, double depth)
 }
 
 
+// upper depth of soil layer [m]
+
+double Project3D::getSoilLayerTop(unsigned int i)
+{
+    return layerDepth[i] - layerThickness[i] / 2.0;
+}
+
+// lower depth of soil layer [m]
+double Project3D::getSoilLayerBottom(unsigned int i)
+{
+    return layerDepth[i] + layerThickness[i] / 2.0;
+}
+
+// index of soil layer for the current depth
+int Project3D::getSoilLayerIndex(double depth)
+{
+    unsigned int i= 0;
+    while (depth > getSoilLayerBottom(i))
+    {
+        if (i == nrLayers-1)
+        {
+            logError("getSoilLayerIndex: wrong soil depth.");
+            return INDEX_ERROR;
+        }
+        i++;
+    }
+
+    return signed(i);
+}
+
+
 bool Project3D::saveHourlyMeteoOutput(meteoVariable myVar, const QString& myPath, QDateTime myTime, const QString& myArea)
 {
     gis::Crit3DRasterGrid* myRaster = getHourlyMeteoRaster(myVar);
@@ -654,27 +740,76 @@ bool Project3D::aggregateAndSaveDailyMap(meteoVariable myVar, aggregationMethod 
 }
 
 
-bool Project3D::hourlyWaterBalance()
+// compute evaporation [mm]
+double Project3D::computeEvaporation(int row, int col, double lai)
 {
-    double totalPrecipitation = 0;
-    double totalEvaporation = 0;
-    double totalTranspiration = 0;
+    double depthCoeff, thickCoeff, layerCoeff;
+    double residualEvap, layerEvap, availableWater, flow;
 
+    double const MAX_PROF_EVAPORATION = 0.15;           //[m]
+    int lastEvapLayer = getSoilLayerIndex(MAX_PROF_EVAPORATION);
+    double area = DEM.header->cellSize * DEM.header->cellSize;
+
+    //E0 [mm]
+    double et0 = double(hourlyMeteoMaps->mapHourlyET0->value[row][col]);
+    double potentialEvaporation = getMaxEvaporation(et0, lai);
+    double realEvap = 0;
+
+    for (unsigned int layer=0; layer <= unsigned(lastEvapLayer); layer++)
+    {
+        long nodeIndex = long(indexMap.at(layer).value[row][col]);
+
+        // [m]
+        availableWater = getCriteria3DVar(availableWaterContent, nodeIndex);
+
+        // conversion [m]->[mm]
+        availableWater *= 1000;
+
+        // layer coefficient
+        if (layer == 0)
+        {
+            // surface
+            layerCoeff = 1.0;
+        }
+        else
+        {
+            // sub-surface
+            availableWater *= layerThickness[layer];
+            depthCoeff = layerDepth[layer] / MAX_PROF_EVAPORATION;
+            thickCoeff = layerThickness[layer] / 0.04;
+            layerCoeff = exp(-EULER * depthCoeff) * thickCoeff;
+        }
+
+        residualEvap = potentialEvaporation - realEvap;
+        layerEvap = MINVALUE(potentialEvaporation * layerCoeff, residualEvap);
+        layerEvap = MINVALUE(layerEvap, availableWater);
+
+        if (layerEvap > 0)
+        {
+            realEvap += layerEvap;
+            flow = area * (layerEvap / 1000);                               // [m3/h]
+            waterSinkSource.at(unsigned(nodeIndex)) -= (flow / 3600);       // [m3/s]
+        }
+    }
+
+    return realEvap;
+}
+
+
+// input: timeStep [s]
+void Project3D::computeWaterBalance3D(double timeStep)
+{
     double previousWaterContent = soilFluxes3D::getTotalWaterContent();
     logInfo("total water [m^3]: " + QString::number(previousWaterContent));
-
-    /*if (! waterBalanceSinkSource(&totalPrecipitation,
-            &totalEvaporation, &totalTranspiration)) return(false);*/
 
     logInfo("precipitation [m^3]: " + QString::number(totalPrecipitation));
     logInfo("evaporation [m^3]: " + QString::number(-totalEvaporation));
     logInfo("transpiration [m^3]: " + QString::number(-totalTranspiration));
 
-    // COMPUTE ONE HOUR
-    logInfo("Compute water flow");
     soilFluxes3D::initializeBalance();
-    soilFluxes3D::computePeriod(3600.0);
 
+    logInfo("Compute water flow");
+    soilFluxes3D::computePeriod(timeStep);
 
     double runoff = soilFluxes3D::getBoundaryWaterSumFlow(BOUNDARY_RUNOFF);
     logInfo("runoff [m^3]: " + QString::number(runoff));
@@ -690,13 +825,10 @@ bool Project3D::hourlyWaterBalance()
                                   + totalPrecipitation - totalEvaporation - totalTranspiration;
     double massBalanceError = currentWaterContent - forecastWaterContent;
     logInfo("Mass balance error [m^3]: " + QString::number(massBalanceError));
-
-    return(true);
 }
 
 
-
-bool Project3D::updateCrop(QDateTime myTime)
+bool Project3D::computeCrop(QDateTime myTime)
 {
     logInfo("Compute crop");
 
@@ -738,9 +870,106 @@ bool Project3D::interpolateAndSaveHourlyMeteo(meteoVariable myVar, const QDateTi
 }
 
 
+bool Project3D::computeWaterSinkSource()
+{
+    long surfaceIndex, nodeIndex;
+    double prec, waterSource;
+    double transp, flow;
+    int myResult;
+    QString myError;
+
+    //initialize
+    totalPrecipitation = 0;
+    totalEvaporation = 0;
+    totalTranspiration = 0;
+
+    for (unsigned long i = 0; i < nrNodes; i++)
+        waterSinkSource.at(size_t(i)) = 0.0;
+
+    double area = DEM.header->cellSize * DEM.header->cellSize;
+
+    //precipitation - irrigation
+    for (long row = 0; row < indexMap.at(0).header->nrRows; row++)
+    {
+        for (long col = 0; col < indexMap.at(0).header->nrCols; col++)
+        {
+            surfaceIndex = long(indexMap.at(0).value[row][col]);
+            if (surfaceIndex != long(indexMap.at(0).header->flag))
+            {
+                waterSource = 0;
+                prec = double(hourlyMeteoMaps->mapHourlyPrec->value[row][col]);
+                if (int(prec) != int(hourlyMeteoMaps->mapHourlyPrec->header->flag)) waterSource += prec;
+
+                if (waterSource > 0)
+                {
+                    flow = area * (waterSource / 1000);                         // [m3/h]
+                    totalPrecipitation += flow;
+                    waterSinkSource[unsigned(surfaceIndex)] += flow / 3600;     // [m3/s]
+                }
+            }
+        }
+    }
+
+    //Evaporation
+    for (int row = 0; row < indexMap.at(0).header->nrRows; row++)
+    {
+        for (int col = 0; col < indexMap.at(0).header->nrCols; col++)
+        {
+            surfaceIndex = long(indexMap.at(0).value[row][col]);
+            if (surfaceIndex != long(indexMap.at(0).header->flag))
+            {
+                // TODO read LAI
+                double lai = 0;
+
+                double realEvap = computeEvaporation(row, col, lai);        // [mm]
+                flow = area * (realEvap / 1000.0);                          // [m3/h]
+                totalEvaporation += flow;
+            }
+        }
+    }
+
+    //crop transpiration
+    for (unsigned int layerIndex=1; layerIndex < nrLayers; layerIndex++)
+    {
+        for (long row = 0; row < indexMap.at(size_t(layerIndex)).header->nrRows; row++)
+        {
+            for (long col = 0; col < indexMap.at(size_t(layerIndex)).header->nrCols; col++)
+            {
+                nodeIndex = long(indexMap.at(size_t(layerIndex)).value[row][col]);
+                if (nodeIndex != long(indexMap.at(size_t(layerIndex)).header->flag))
+                {
+                    // TO DO: transpiration
+                    /*
+                    transp = double(outputPlantMaps->transpirationLayerMaps[layerIndex]->value[row][col]);
+                    if (int(transp) != int(outputPlantMaps->transpirationLayerMaps[layerIndex]->header->flag))
+                    {
+                        flow = area * (transp / 1000.0);                            //[m^3/h]
+                        totalTranspiration += flow;
+                        waterSinkSource.at(unsigned(nodeIndex)) -= flow / 3600.0;   //[m^3/s]
+                    }
+                    */
+                }
+            }
+        }
+    }
+
+    for (unsigned long i = 0; i < nrNodes; i++)
+    {
+        myResult = soilFluxes3D::setWaterSinkSource(signed(i), waterSinkSource.at(i));
+        if (isCrit3dError(myResult, &myError))
+        {
+            logError("waterBalanceSinkSource:" + myError);
+            return false;
+        }
+    }
+
+    return true;
+}
+
+
 bool Project3D::modelHourlyCycle(bool isInitialState, QDateTime myTime, const QString& hourlyPath, bool saveOutput)
 {
-    logInfo("Compute " + myTime.toString("yyyy-MM-dd hh:mm"));
+    logInfo("\nCompute " + myTime.toString("yyyy-MM-dd hh:mm"));
 
     logInfo("Compute meteo variables");
     hourlyMeteoMaps->setComputed(false);
@@ -766,12 +995,12 @@ bool Project3D::modelHourlyCycle(bool isInitialState, QDateTime myTime, const QS
         initializeSoilMoisture(myTime.date().month());
     }
 
-    updateCrop(myTime);
+    computeCrop(myTime);
     // compute evap/transp
-    // sum dailyEvap, dailyTransp
 
     // soil water balance
-    hourlyWaterBalance();
+    if (! computeWaterSinkSource()) return false;
+    computeWaterBalance3D(3600);
 
     //updateWaterBalanceMaps();
 
@@ -844,7 +1073,7 @@ double getCriteria3DVar(criteria3DVariable myVar, long nodeIndex)
     }
     else if (myVar == waterDeficit)
     {
-        // TODO chiamare soil per field capacity
+        // TODO leggere horizon per field capacity
         double fieldCapacity = 3.0;
         crit3dVar = soilFluxes3D::getWaterDeficit(nodeIndex, fieldCapacity);
     }
@@ -860,6 +1089,21 @@ double getCriteria3DVar(criteria3DVariable myVar, long nodeIndex)
     else {
         return crit3dVar;
     }
+}
+
+
+bool setCriteria3DVar(criteria3DVariable myVar, long nodeIndex, double myValue)
+{
+    int myResult = MISSING_DATA_ERROR;
+
+    if (myVar == waterContent)
+        // TODO: skeleton
+        myResult = soilFluxes3D::setWaterContent(nodeIndex, myValue);
+    else if (myVar == waterMatricPotential)
+        myResult = soilFluxes3D::setMatricPotential(nodeIndex, myValue);
+
+    return (myResult != INDEX_ERROR && myResult != MEMORY_ERROR && myResult != MISSING_DATA_ERROR &&
+            myResult != TOPOGRAPHY_ERROR);
 }
 
 
@@ -912,6 +1156,35 @@ float readDataHourly(meteoVariable myVar, QString hourlyPath, QDateTime myTime, 
 }
 
 
+QString getDailyPrefixFromVar(QDate myDate, QString myArea, criteria3DVariable myVar)
+{
+    QString fileName = myDate.toString("yyyyMMdd");
+    if (myArea != "")
+        fileName += "_" + myArea;
+
+    if (myVar == waterContent)
+        fileName += "_WaterContent_";
+    if (myVar == availableWaterContent)
+        fileName += "_availableWaterContent_";
+    else if(myVar == waterMatricPotential)
+        fileName += "_MP_";
+    else if(myVar == degreeOfSaturation)
+        fileName += "_degreeOfSaturation_";
+    else
+        return "";
+
+    return fileName;
+}
+
+
+double getMaxEvaporation(double ET0, double LAI)
+{
+    const double ke = 0.6;   //[-] light extinction factor
+    const double maxEvaporationRatio = 0.66;
+
+    double Kc = exp(-ke * LAI);
+    return(ET0 * Kc * maxEvaporationRatio);
+}
 
 
 

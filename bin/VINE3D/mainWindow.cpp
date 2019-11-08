@@ -712,8 +712,13 @@ void MainWindow::on_actionCriteria3D_settings_triggered()
 
 void MainWindow::on_actionVine3D_InitializeWaterBalance_triggered()
 {
-    if (initializeWaterBalance(&myProject))
+    if (! myProject.setVine3DSoilIndexMap()) return;
+
+    if (myProject.initializeWaterBalance3D())
+    {
+        myProject.outputWaterBalanceMaps = new Crit3DWaterBalanceMaps(myProject.DEM);
         QMessageBox::information(nullptr, "", "Criteria3D initialized.");
+    }
 }
 
 void MainWindow::on_actionShowPointsHide_triggered()

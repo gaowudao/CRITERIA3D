@@ -29,7 +29,6 @@
 #include "formInfo.h"
 #include "utilities.h"
 #include "crit3dProject.h"
-#include "waterBalance3D.h"
 #include "soilDbTools.h"
 #include "gis.h"
 #include "statistics.h"
@@ -405,7 +404,7 @@ bool Crit3DProject::initializeCriteria3DModel()
                          GAMMA_DISTRIBUTION, depthModeRootDensity, depthMeanRootDensity);
     */
 
-    if (! initializeWaterBalance3D(this))
+    if (! initializeWaterBalance3D())
     {
         clearWaterBalance3D();
         logError("Criteria3D model not initialized.");

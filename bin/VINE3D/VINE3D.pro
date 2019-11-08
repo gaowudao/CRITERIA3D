@@ -13,6 +13,8 @@ QT  += core gui widgets xml sql network
 TARGET = VINE3D
 TEMPLATE = app
 
+DEFINES += VINE3D
+
 INCLUDEPATH +=  ../../lib/crit3dDate ../../lib/mathFunctions ../../lib/gis ../../lib/meteo \
                 ../../lib/interpolation ../../lib/solarRadiation ../../lib/soil  \
                 ../../lib/soilFluxes3D/header ../../lib/crop ../../lib/grapevine \

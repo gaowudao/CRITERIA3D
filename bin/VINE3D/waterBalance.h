@@ -30,19 +30,11 @@
             gis::Crit3DRasterGrid* getMapFromVar(criteria3DVariable myVar);
     };
 
-    int getLayerIndex(Vine3DProject* myProject, double depth);
-    double getLayerTop(Vine3DProject* myProject, int i);
-    double getLayerBottom(Vine3DProject* myProject, int i);
-
-    bool initializeWaterBalance(Vine3DProject* myProject);
-
     bool saveWaterBalanceState(Vine3DProject* myProject, QDate myDate, QString myArea,
                                QString myStatePath, criteria3DVariable myVar);
 
     bool loadWaterBalanceState(Vine3DProject* myProject, QDate myDate, QString myArea,
                                QString myStatePath, criteria3DVariable myVar);
-
-    bool waterBalance(Vine3DProject* myProject);
 
     bool getCriteria3DVarMap(Vine3DProject* myProject, criteria3DVariable myVar, int layerIndex,
                              gis::Crit3DRasterGrid* criteria3DMap);
@@ -59,14 +51,11 @@
     bool saveWaterBalanceCumulatedOutput(Vine3DProject* myProject, QDate myDate, criteria3DVariable myVar,
                                 QString varName, QString notes, QString outputPath, QString myArea);
 
-    double getMaxEvaporation(float ET0, float LAI);
-
     double* getCriteria3DVarProfile(Vine3DProject* myProject, int myRow, int myCol, criteria3DVariable myVar);
     double* getSoilVarProfile(Vine3DProject* myProject, int myRow, int myCol, soil::soilVariable myVar);
 
-    double evaporation(Vine3DProject* myProject, int row, int col);
-
     void resetWaterBalanceMap(Vine3DProject* myProject);
     void updateWaterBalanceMaps(Vine3DProject* myProject);
+
 
 #endif // WATERBALANCE_H

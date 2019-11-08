@@ -198,13 +198,15 @@ bool Vine3DProject::loadVine3DProject(QString myFileName)
         if (!loadFieldMap(myFileName)) return false;
     }
 
-    isProjectLoaded = true;
+    if (! setVine3DSoilIndexMap())
+        return false;
 
-    if (! initializeWaterBalance(this))
+    if (! initializeWaterBalance3D())
     {
         logError();
         return(false);
     }
+    outputWaterBalanceMaps = new Crit3DWaterBalanceMaps(DEM);
 
     if (! initializeGrapevine(this))
     {
@@ -213,7 +215,9 @@ bool Vine3DProject::loadVine3DProject(QString myFileName)
     }
 
     logInfo("Project loaded");
-    return(true);
+    isProjectLoaded = true;
+
+    return true;
 }
 
 
@@ -1672,17 +1676,17 @@ int Vine3DProject::getVine3DSoilIndex(long row, long col)
     }
 }
 
-bool Vine3DProject::setSoilIndexMap()
+bool Vine3DProject::setVine3DSoilIndexMap()
 {
     // check
     if (!DEM.isLoaded || !modelCaseIndexMap.isLoaded || nrSoils == 0)
     {
         if (!DEM.isLoaded)
-            logError("setSoilIndexMap: missing Digital Elevation Model.");
+            logError("setVine3DSoilIndexMap: missing Digital Elevation Model.");
         else if (!modelCaseIndexMap.isLoaded)
-            logError("setSoilIndexMap: missing field map.");
+            logError("setVine3DSoilIndexMap: missing field map.");
         else if (nrSoils == 0)
-            logError("setSoilIndexMap: missing soil properties.");
+            logError("setVine3DSoilIndexMap: missing soil properties.");
         return false;
     }
 
@@ -1738,6 +1742,106 @@ bool Vine3DProject::getFieldBookIndex(int firstIndex, QDate myDate, int fieldInd
         }
     }
     return false;
+}
+
+
+bool Vine3DProject::computeVine3DWaterSinkSource()
+{
+    long surfaceIndex, nodeIndex;
+    double prec, waterSource;
+    double transp, flow;
+    int myResult;
+    QString myError;
+
+    //initialize
+    totalPrecipitation = 0;
+    totalEvaporation = 0;
+    totalTranspiration = 0;
+
+    for (unsigned long i = 0; i < nrNodes; i++)
+        waterSinkSource.at(size_t(i)) = 0.0;
+
+    double area = DEM.header->cellSize * DEM.header->cellSize;
+
+    //precipitation - irrigation
+    for (long row = 0; row < indexMap.at(0).header->nrRows; row++)
+    {
+        for (long col = 0; col < indexMap.at(0).header->nrCols; col++)
+        {
+            surfaceIndex = long(indexMap.at(0).value[row][col]);
+            if (surfaceIndex != long(indexMap.at(0).header->flag))
+            {
+                waterSource = 0.0;
+                prec = double(hourlyMeteoMaps->mapHourlyPrec->value[row][col]);
+                if (int(prec) != int(hourlyMeteoMaps->mapHourlyPrec->header->flag)) waterSource += prec;
+
+                double irr = double(vine3DMapsH->mapHourlyIrrigation->value[row][col]);
+                if (int(irr) != int(vine3DMapsH->mapHourlyIrrigation->header->flag)) waterSource += irr;
+
+                if (waterSource > 0.0)
+                {
+                    flow = area * (waterSource / 1000.0);                        // [m3/h]
+                    totalPrecipitation += flow;
+                    waterSinkSource[unsigned(surfaceIndex)] += flow / 3600.0;   // [m3/s]
+                }
+            }
+        }
+    }
+
+    //Evaporation
+    for (int row = 0; row < indexMap.at(0).header->nrRows; row++)
+    {
+        for (int col = 0; col < indexMap.at(0).header->nrCols; col++)
+        {
+            surfaceIndex = long(indexMap.at(0).value[row][col]);
+            if (surfaceIndex != long(indexMap.at(0).header->flag))
+            {
+                // LAI
+                int idField = getModelCaseIndex(row, col);
+                float laiGrass = modelCases[idField].maxLAIGrass;
+                float laiVine = statePlantMaps->leafAreaIndexMap->value[row][col];
+                float laiTot = laiVine + laiGrass;
+
+                double realEvap = computeEvaporation(row, col, double(laiTot));     // [mm]
+                flow = area * (realEvap / 1000.0);                                  // [m3/h]
+                totalEvaporation += flow;
+            }
+        }
+    }
+
+    //crop transpiration
+    for (unsigned int layerIndex=1; layerIndex < nrLayers; layerIndex++)
+    {
+        for (long row = 0; row < indexMap.at(size_t(layerIndex)).header->nrRows; row++)
+        {
+            for (long col = 0; col < indexMap.at(size_t(layerIndex)).header->nrCols; col++)
+            {
+                nodeIndex = long(indexMap.at(size_t(layerIndex)).value[row][col]);
+                if (nodeIndex != long(indexMap.at(size_t(layerIndex)).header->flag))
+                {
+                    transp = double(outputPlantMaps->transpirationLayerMaps[layerIndex]->value[row][col]);
+                    if (int(transp) != int(outputPlantMaps->transpirationLayerMaps[layerIndex]->header->flag))
+                    {
+                        flow = area * (transp / 1000.0);                            //[m^3/h]
+                        totalTranspiration += flow;
+                        waterSinkSource.at(unsigned(nodeIndex)) -= flow / 3600.0;   //[m^3/s]
+                    }
+                }
+            }
+        }
+    }
+
+    for (unsigned long i = 0; i < nrNodes; i++)
+    {
+        myResult = soilFluxes3D::setWaterSinkSource(signed(i), waterSinkSource.at(i));
+        if (isCrit3dError(myResult, &myError))
+        {
+            logError("waterBalanceSinkSource:" + myError);
+            return false;
+        }
+    }
+
+    return true;
 }
 
 

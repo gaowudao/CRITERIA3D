@@ -57,6 +57,7 @@
 
         // sink/source
         std::vector <double> waterSinkSource;   // [m^3/sec]
+        double totalPrecipitation, totalEvaporation, totalTranspiration;
 
 
         Project3D();
@@ -65,6 +66,8 @@
         void clearProject3D();
 
         void clearWaterBalance3D();
+
+        bool initializeWaterBalance3D();
 
         bool loadSoilDatabase(QString fileName);
 
@@ -77,7 +80,12 @@
         bool setCrit3DTopography();
         bool setCrit3DNodeSoil();
 
+        double getSoilLayerTop(unsigned int i);
+        double getSoilLayerBottom(unsigned int i);
+        int getSoilLayerIndex(double depth);
+
         bool initializeSoilMoisture(int month);
+
 
         int getSoilIndex(long row, long col);
         bool isWithinSoil(int soilIndex, double depth);
@@ -86,20 +94,26 @@
         bool aggregateAndSaveDailyMap(meteoVariable myVar, aggregationMethod myAggregation, const Crit3DDate& myDate,
                                       const QString& dailyPath, const QString& hourlyPath, const QString& myArea);
 
-        bool hourlyWaterBalance();
-        bool updateCrop(QDateTime myTime);
+        double computeEvaporation(int row, int col, double lai);
+        bool computeWaterSinkSource();
+        void computeWaterBalance3D(double timeStep);
+        bool computeCrop(QDateTime myTime);
         bool modelHourlyCycle(bool isInitialState, QDateTime myTime, const QString& outputPath, bool saveOutput);
-    };
 
+    };
 
     bool isCrit3dError(int result, QString* error);
     double getCriteria3DVar(criteria3DVariable myVar, long nodeIndex);
+    bool setCriteria3DVar(criteria3DVariable myVar, long nodeIndex, double myValue);
 
     QString getOutputNameDaily(QString varName, QString strArea, QString notes, QDate myDate);
     QString getOutputNameHourly(meteoVariable myVar, QDateTime myTime, QString myArea);
+    QString getDailyPrefixFromVar(QDate myDate, QString myArea, criteria3DVariable myVar);
 
     float readDataHourly(meteoVariable myVar, QString hourlyPath, QDateTime myTime, QString myArea, int row, int col);
     bool readHourlyMap(meteoVariable myVar, QString hourlyPath, QDateTime myTime, QString myArea, gis::Crit3DRasterGrid* myGrid);
+
+    double getMaxEvaporation(double ET0, double LAI);
 
 
 #endif // PROJECT3D_H

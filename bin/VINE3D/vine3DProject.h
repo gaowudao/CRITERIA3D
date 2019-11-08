@@ -156,7 +156,8 @@
 
         int getVine3DSoilIndex(long row, long col);
 
-        bool setSoilIndexMap();
+        bool setVine3DSoilIndexMap();
+        bool computeVine3DWaterSinkSource();
 
         soil::Crit3DHorizon* getSoilHorizon(long row, long col, int layer);
 

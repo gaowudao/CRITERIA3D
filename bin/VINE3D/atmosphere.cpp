@@ -121,28 +121,6 @@ bool postInterpolation(meteoVariable myVar, gis::Crit3DRasterGrid* myGrid)
 }
 
 
-bool computeHumidityMap(const gis::Crit3DRasterGrid& myTemperatureMap,
-                        const gis::Crit3DRasterGrid& myDewTemperatureMap,
-                        gis::Crit3DRasterGrid* myHumidityMap)
-{
-    if (myHumidityMap == nullptr) return false;
-    if (! myHumidityMap->isLoaded) return false;
-
-    if (! (*(myHumidityMap->header) == *(myTemperatureMap.header) && *(myHumidityMap->header) == *(myDewTemperatureMap.header)))
-        return false;
-
-    for (long myRow = 0; myRow < myHumidityMap->header->nrRows ; myRow++)
-        for (long myCol = 0; myCol < myHumidityMap->header->nrCols; myCol++)
-            if ((myTemperatureMap.value[myRow][myCol] != myTemperatureMap.header->flag) &&
-                    (myDewTemperatureMap.value[myRow][myCol] != myDewTemperatureMap.header->flag))
-                        myHumidityMap->value[myRow][myCol] = relHumFromTdew(myDewTemperatureMap.value[myRow][myCol], myTemperatureMap.value[myRow][myCol]);
-
-    if (! gis::updateMinMaxRasterGrid(myHumidityMap))
-        return (false);
-
-    return postInterpolation(airDewTemperature, myHumidityMap);
-}
-
 bool vine3DInterpolationDem(Vine3DProject* myProject, meteoVariable myVar,
                              const Crit3DTime& myCrit3DTime, bool isLoadData)
 {
@@ -280,9 +258,7 @@ bool interpolationProjectDemMain(Vine3DProject* myProject, meteoVariable myVar, 
 
             if (vine3DInterpolationDem(myProject, airDewTemperature, myCrit3DTime, isLoadData))
             {
-                myResult = computeHumidityMap(*(myProject->hourlyMeteoMaps->mapHourlyTair),
-                                              *(myProject->hourlyMeteoMaps->mapHourlyTdew),
-                                              myProject->hourlyMeteoMaps->mapHourlyRelHum);
+                myResult = myProject->hourlyMeteoMaps->computeRelativeHumidityMap();
             }
         }
         else
@@ -305,8 +281,6 @@ bool interpolationProjectDemMain(Vine3DProject* myProject, meteoVariable myVar, 
 
     return myResult;
 }
-
-
 
 
 bool loadDailyMeteoMap(Vine3DProject* myProject, meteoVariable myDailyVar, QDate myDate, const QString& myArea)

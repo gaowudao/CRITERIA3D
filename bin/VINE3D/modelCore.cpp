@@ -249,11 +249,16 @@ bool modelDailyCycle(bool isInitialState, Crit3DDate myDate, int nrHours,
             }
         }
 
-        //Irrigation
+        // Irrigation
         assignIrrigation(myProject, myCurrentTime);
 
-        //3D soil water balance
-        waterBalance(myProject);
+
+        if (! myProject->computeVine3DWaterSinkSource())
+            return false;
+
+        // 3D soil water balance
+        myProject->computeWaterBalance3D(3600);
+
         if (myCurrentTime == myFirstTime)
             resetWaterBalanceMap(myProject);
 
