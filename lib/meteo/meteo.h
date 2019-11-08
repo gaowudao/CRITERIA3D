@@ -172,7 +172,8 @@
         { globalIrradiance, "RAD" },
         { windIntensity, "W_INT_AVG" },
         { windDirection, "W_DIR" },
-        { referenceEvapotranspiration, "ET0" }
+        { referenceEvapotranspiration, "ET0" },
+        { leafWetness, "LEAFW" }
     };
 
 

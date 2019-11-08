@@ -135,9 +135,9 @@ bool Project3D::initializeWaterBalance3D()
     if (! setCrit3DNodeSoil()) return false;
     logInfo("Soils initialized");
 
-    //criteria3D::setNumericalParameters(6.0, 600.0, 200, 10, 12, 3);   // precision
-    soilFluxes3D::setNumericalParameters(30.0, 1800.0, 100, 10, 12, 2);  // speedy
-    //criteria3D::setNumericalParameters(300.0, 3600.0, 100, 10, 12, 1);   // very speedy (high error)
+    soilFluxes3D::setNumericalParameters(6, 600, 200, 10, 12, 3);   // precision
+    //soilFluxes3D::setNumericalParameters(30, 1800, 100, 10, 12, 2);  // speedy
+    //soilFluxes3D::setNumericalParameters(300, 3600, 100, 10, 12, 1);   // very speedy (high error)
     soilFluxes3D::setHydraulicProperties(MODIFIEDVANGENUCHTEN, MEAN_LOGARITHMIC, 10.0);
 
     logInfo("3D water balance initialized");

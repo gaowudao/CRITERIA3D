@@ -705,10 +705,7 @@ void MainWindow::on_actionShow_boundary_triggered()
         }
 }
 
-void MainWindow::on_actionCriteria3D_settings_triggered()
-{
 
-}
 
 void MainWindow::on_actionVine3D_InitializeWaterBalance_triggered()
 {

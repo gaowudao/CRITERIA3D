@@ -64,7 +64,6 @@
         void on_actionShow_boundary_triggered();
         void on_actionShow_DEM_triggered();
 
-        void on_actionCriteria3D_settings_triggered();
         void on_actionVine3D_InitializeWaterBalance_triggered();
         void on_actionParameters_triggered();
 
