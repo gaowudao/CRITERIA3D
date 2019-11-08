@@ -1146,7 +1146,9 @@ void MainWindow::on_actionRun_models_triggered()
     }
 
     QDateTime firstTime(myProject.getCurrentTime());
+    firstTime.setTime(QTime(0,0,0));
     QDateTime lastTime(myProject.getCurrentTime());
+    lastTime.setTime(QTime(23,0,0));
 
     QDateTime firstDateH = myProject.meteoPointsDbHandler->getFirstDate(hourly);
     QDateTime lastDateH = myProject.meteoPointsDbHandler->getLastDate(hourly);
@@ -1159,7 +1161,7 @@ void MainWindow::on_actionRun_models_triggered()
     int myReturn = myForm.exec();
     if (myReturn == QDialog::Rejected) return;
 
-    runModels(firstTime, lastTime, false, false);
+    runModels(firstTime, lastTime, true, true);
     updateDateTime();
     updateMaps();
 }
@@ -1215,7 +1217,7 @@ bool MainWindow::runModels(QDateTime firstTime, QDateTime lastTime, bool saveOut
         if (saveOutput)
         {
             // create output directory
-            outputPathHourly = myProject.getProjectPath() + "output/hourly/" + myDate.toString("yyyy/MM/dd/");
+            outputPathHourly = myProject.getProjectPath() + "OUTPUT/hourly/" + myDate.toString("yyyy/MM/dd/");
             if (! QDir().mkpath(outputPathHourly))
             {
                 myProject.logError("Creation hourly output directory failed." );

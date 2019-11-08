@@ -874,7 +874,7 @@ bool Project3D::computeWaterSinkSource()
 {
     long surfaceIndex, nodeIndex;
     double prec, waterSource;
-    double transp, flow;
+    double flow;
     int myResult;
     QString myError;
 
@@ -940,7 +940,7 @@ bool Project3D::computeWaterSinkSource()
                 {
                     // TO DO: transpiration
                     /*
-                    transp = double(outputPlantMaps->transpirationLayerMaps[layerIndex]->value[row][col]);
+                    float transp = outputPlantMaps->transpirationLayerMaps[layerIndex]->value[row][col];
                     if (int(transp) != int(outputPlantMaps->transpirationLayerMaps[layerIndex]->header->flag))
                     {
                         flow = area * (transp / 1000.0);                            //[m^3/h]
@@ -1009,6 +1009,7 @@ bool Project3D::modelHourlyCycle(bool isInitialState, QDateTime myTime, const QS
 
 
 // ------------------------- other functions -------------------------
+
 
 bool isCrit3dError(int result, QString* error)
 {
@@ -1189,7 +1190,4 @@ double getMaxEvaporation(double ET0, double LAI)
     double Kc = exp(-ke * LAI);
     return(ET0 * Kc * maxEvaporationRatio);
 }
-
-
-
 

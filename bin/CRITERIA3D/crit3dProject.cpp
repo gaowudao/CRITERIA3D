@@ -430,7 +430,7 @@ void Crit3DProject::setAllHourlyMeteoMapsComputed(bool value)
 
 bool Crit3DProject::saveDailyOutput(QDate myDate, const QString& hourlyPath)
 {
-    QString dailyPath = getProjectPath() + "output/daily/" + myDate.toString("yyyy/MM/dd/");
+    QString dailyPath = getProjectPath() + "OUTPUT/daily/" + myDate.toString("yyyy/MM/dd/");
     QDir myDir;
 
     if (! myDir.mkpath(dailyPath))
