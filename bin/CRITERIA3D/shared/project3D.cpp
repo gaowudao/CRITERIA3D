@@ -59,7 +59,7 @@ void Project3D::initializeProject3D()
 }
 
 
-void Project3D::clearWaterBalance3D()
+void Project3D::clearWaterBalance()
 {
     soilFluxes3D::cleanMemory();
     waterSinkSource.clear();
@@ -82,7 +82,7 @@ void Project3D::clearWaterBalance3D()
 
 void Project3D::clearProject3D()
 {
-    clearWaterBalance3D();
+    clearWaterBalance();
 
     for (unsigned int i = 0; i < soilList.size(); i++)
     {
@@ -1097,10 +1097,14 @@ bool setCriteria3DVar(criteria3DVariable myVar, long nodeIndex, double myValue)
     int myResult = MISSING_DATA_ERROR;
 
     if (myVar == waterContent)
-        // TODO: skeleton
+    {
+        // TODO check: skeleton
         myResult = soilFluxes3D::setWaterContent(nodeIndex, myValue);
+    }
     else if (myVar == waterMatricPotential)
+    {
         myResult = soilFluxes3D::setMatricPotential(nodeIndex, myValue);
+    }
 
     return (myResult != INDEX_ERROR && myResult != MEMORY_ERROR && myResult != MISSING_DATA_ERROR &&
             myResult != TOPOGRAPHY_ERROR);

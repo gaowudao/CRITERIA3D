@@ -21,6 +21,15 @@
     class Project3D : public Project
     {
     private:
+        void computeNrLayers();
+        void setLayersDepth();
+        bool setIndexMaps();
+        bool setBoundary();
+        bool setCrit3DSurfaces();
+        bool setCrit3DSoils();
+        bool setCrit3DTopography();
+        bool setCrit3DNodeSoil();
+
         bool interpolateAndSaveHourlyMeteo(meteoVariable myVar, const QDateTime& myTime,
                                            const QString& outputPath, bool saveOutput);
 
@@ -59,33 +68,22 @@
         std::vector <double> waterSinkSource;   // [m^3/sec]
         double totalPrecipitation, totalEvaporation, totalTranspiration;
 
-
         Project3D();
 
         void initializeProject3D();
-        void clearProject3D();
 
-        void clearWaterBalance3D();
+        void clearProject3D();
+        void clearWaterBalance();
 
         bool initializeWaterBalance3D();
 
         bool loadSoilDatabase(QString fileName);
-
-        void computeNrLayers();
-        void setLayersDepth();
-        bool setIndexMaps();
-        bool setBoundary();
-        bool setCrit3DSurfaces();
-        bool setCrit3DSoils();
-        bool setCrit3DTopography();
-        bool setCrit3DNodeSoil();
 
         double getSoilLayerTop(unsigned int i);
         double getSoilLayerBottom(unsigned int i);
         int getSoilLayerIndex(double depth);
 
         bool initializeSoilMoisture(int month);
-
 
         int getSoilIndex(long row, long col);
         bool isWithinSoil(int soilIndex, double depth);
