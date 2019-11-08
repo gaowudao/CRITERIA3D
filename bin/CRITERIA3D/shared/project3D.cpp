@@ -855,12 +855,24 @@ bool Project3D::interpolateAndSaveHourlyMeteo(meteoVariable myVar, const QDateTi
     gis::Crit3DRasterGrid* myRaster = getHourlyMeteoRaster(myVar);
     if (myRaster == nullptr) return false;
 
-    if (! interpolationDemMain(myVar, getCrit3DTime(myTime), myRaster, false))
+    if (myVar == airRelHumidity && interpolationSettings.getUseDewPoint())
     {
-        QString timeStr = myTime.toString("yyyy-MM-dd hh:mm");
-        QString varStr = QString::fromStdString(MapHourlyMeteoVarToString.at(myVar));
-        errorString = "Error in interpolation of " + varStr + " at time: " + timeStr;
-        return false;
+        // TODO check on airTemperatureMap
+        if (! interpolationDem(airDewTemperature, getCrit3DTime(myTime), hourlyMeteoMaps->mapHourlyTdew, false))
+            return false;
+
+        if (! hourlyMeteoMaps->computeRelativeHumidityMap())
+            return false;
+    }
+    else
+    {
+        if (! interpolationDemMain(myVar, getCrit3DTime(myTime), myRaster, false))
+        {
+            QString timeStr = myTime.toString("yyyy-MM-dd hh:mm");
+            QString varStr = QString::fromStdString(MapHourlyMeteoVarToString.at(myVar));
+            errorString = "Error in interpolation of " + varStr + " at time: " + timeStr;
+            return false;
+        }
     }
 
     if (saveOutput)
