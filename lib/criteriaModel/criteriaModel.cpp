@@ -384,7 +384,7 @@ bool CriteriaModel::createOutputTable(QString* myError)
             + " TRANSP_MAX, TRANSP REAL, EVAP_MAX REAL, EVAP REAL, LAI REAL, KC REAL, ROOTDEPTH REAL )";
     myQuery = this->dbOutput.exec(queryString);
 
-    if (! myQuery.isValid())
+    if (myQuery.lastError().isValid())
     {
         *myError = "Error in creating table: " + this->idCase + "\n" + myQuery.lastError().text();
         return false;
