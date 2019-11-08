@@ -849,16 +849,12 @@ bool Project3D::computeCrop(QDateTime myTime)
 }
 
 
-bool Project3D::interpolateAndSaveHourlyMeteo(meteoVariable myVar, const QDateTime& myTime,
-                                              const QString& outputPath, bool saveOutput)
+bool Project3D::interpolateHourlyMeteoVar(meteoVariable myVar, const QDateTime& myTime, bool showInfo)
 {
-    gis::Crit3DRasterGrid* myRaster = getHourlyMeteoRaster(myVar);
-    if (myRaster == nullptr) return false;
-
     if (myVar == airRelHumidity && interpolationSettings.getUseDewPoint())
     {
         // TODO check on airTemperatureMap
-        if (! interpolationDem(airDewTemperature, getCrit3DTime(myTime), hourlyMeteoMaps->mapHourlyTdew, false))
+        if (! interpolationDem(airDewTemperature, getCrit3DTime(myTime), hourlyMeteoMaps->mapHourlyTdew, showInfo))
             return false;
 
         if (! hourlyMeteoMaps->computeRelativeHumidityMap())
@@ -866,7 +862,10 @@ bool Project3D::interpolateAndSaveHourlyMeteo(meteoVariable myVar, const QDateTi
     }
     else
     {
-        if (! interpolationDemMain(myVar, getCrit3DTime(myTime), myRaster, false))
+        gis::Crit3DRasterGrid* myRaster = getHourlyMeteoRaster(myVar);
+        if (myRaster == nullptr) return false;
+
+        if (! interpolationDemMain(myVar, getCrit3DTime(myTime), myRaster, showInfo))
         {
             QString timeStr = myTime.toString("yyyy-MM-dd hh:mm");
             QString varStr = QString::fromStdString(MapHourlyMeteoVarToString.at(myVar));
@@ -874,6 +873,16 @@ bool Project3D::interpolateAndSaveHourlyMeteo(meteoVariable myVar, const QDateTi
             return false;
         }
     }
+
+    return true;
+}
+
+
+bool Project3D::interpolateAndSaveHourlyMeteo(meteoVariable myVar, const QDateTime& myTime,
+                                              const QString& outputPath, bool saveOutput)
+{
+    if (! interpolateHourlyMeteoVar(myVar, myTime, false))
+        return false;
 
     if (saveOutput)
         return saveHourlyMeteoOutput(myVar, outputPath, myTime, "");

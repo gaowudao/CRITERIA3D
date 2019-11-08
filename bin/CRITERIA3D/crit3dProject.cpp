@@ -253,42 +253,7 @@ void Crit3DProject::clearCriteria3DProject()
 }
 
 
-bool Crit3DProject::interpolationRelHumidity(const Crit3DTime& myTime, gis::Crit3DRasterGrid *myRaster, bool showInfo)
-{
-    if (! this->DEM.isLoaded)
-    {
-        errorString = "Load a Digital Elevation Model before.";
-        return false;
-    }
-
-    if (nrMeteoPoints == 0)
-    {
-        errorString = "Open a meteo points DB before.";
-        return false;
-    }
-
-    if (interpolationSettings.getUseDewPoint())
-    {
-        // TODO check on airTemperatureMap
-
-        if (! interpolationDem(airDewTemperature, myTime, hourlyMeteoMaps->mapHourlyTdew, showInfo))
-            return false;
-
-        if (! this->hourlyMeteoMaps->computeRelativeHumidityMap())
-            return false;
-
-        *myRaster = *(hourlyMeteoMaps->mapHourlyRelHum);
-
-        return true;
-    }
-    else
-    {
-        return interpolationDem(airRelHumidity, myTime, myRaster, showInfo);
-    }
-}
-
-
-bool Crit3DProject::computeAllMeteoMaps(const Crit3DTime& myTime, bool showInfo)
+bool Crit3DProject::computeAllMeteoMaps(const QDateTime& myTime, bool showInfo)
 {
     if (! this->DEM.isLoaded)
     {
@@ -309,7 +274,7 @@ bool Crit3DProject::computeAllMeteoMaps(const Crit3DTime& myTime, bool showInfo)
         myInfo.start("Computing air temperature...", 6);
     }
 
-    if (! interpolationDemMain(airTemperature, myTime, this->hourlyMeteoMaps->mapHourlyTair, false))
+    if (! interpolateHourlyMeteoVar(airTemperature, myTime, false))
         return false;
 
     if (showInfo)
@@ -318,7 +283,7 @@ bool Crit3DProject::computeAllMeteoMaps(const Crit3DTime& myTime, bool showInfo)
         myInfo.setValue(1);
     }
 
-    if (! interpolationRelHumidity(myTime, this->hourlyMeteoMaps->mapHourlyRelHum, false))
+    if (! interpolateHourlyMeteoVar(airRelHumidity, myTime, false))
         return false;
 
     if (showInfo)
@@ -327,7 +292,7 @@ bool Crit3DProject::computeAllMeteoMaps(const Crit3DTime& myTime, bool showInfo)
         myInfo.setValue(2);
     }
 
-    if (! interpolationDemMain(precipitation, myTime, this->hourlyMeteoMaps->mapHourlyPrec, false))
+    if (! interpolateHourlyMeteoVar(precipitation, myTime, false))
         return false;
 
     if (showInfo)
@@ -336,7 +301,7 @@ bool Crit3DProject::computeAllMeteoMaps(const Crit3DTime& myTime, bool showInfo)
         myInfo.setValue(3);
     }
 
-    if (! interpolationDemMain(windIntensity, myTime, this->hourlyMeteoMaps->mapHourlyWindInt, false))
+    if (! interpolateHourlyMeteoVar(windIntensity, myTime, false))
         return false;
 
     if (showInfo)
@@ -345,7 +310,7 @@ bool Crit3DProject::computeAllMeteoMaps(const Crit3DTime& myTime, bool showInfo)
         myInfo.setValue(4);
     }
 
-    if (! interpolationDemMain(globalIrradiance, myTime, this->radiationMaps->globalRadiationMap, false))
+    if (! interpolateHourlyMeteoVar(globalIrradiance, myTime, false))
         return false;
 
     if (showInfo)

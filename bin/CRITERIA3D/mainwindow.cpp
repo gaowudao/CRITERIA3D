@@ -397,12 +397,9 @@ void MainWindow::interpolateDemGUI()
 {
     meteoVariable myVar = myProject.getCurrentVariable();
 
-    if (myProject.interpolationDemMain(myVar, myProject.getCrit3DCurrentTime(), &(myProject.dataRaster), true))
+    if (myProject.interpolateHourlyMeteoVar(myVar, myProject.getCurrentTime(), true))
     {
-        setColorScale(myVar, myProject.dataRaster.colorScale);
-        setCurrentRasterOutput(&(myProject.dataRaster));
-
-        ui->labelOutputRaster->setText(QString::fromStdString(getVariableString(myVar)));
+        showMeteoVariable(myProject.getCurrentVariable());
     }
 }
 
@@ -1015,7 +1012,7 @@ void MainWindow::on_actionCompute_AllMeteoMaps_triggered()
 
     setOutputRasterVisible(false);
 
-    if (! myProject.computeAllMeteoMaps(myProject.getCrit3DCurrentTime(), true))
+    if (! myProject.computeAllMeteoMaps(myProject.getCurrentTime(), true))
     {
         myProject.logError();
         return;

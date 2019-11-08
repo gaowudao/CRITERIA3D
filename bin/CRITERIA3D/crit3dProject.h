@@ -49,8 +49,7 @@
         QString getCrit3DSoilCode(double x, double y);
         int getCrit3DSoilIndex(double x, double y);
 
-        bool interpolationRelHumidity(const Crit3DTime& myTime, gis::Crit3DRasterGrid *myRaster, bool showInfo);
-        bool computeAllMeteoMaps(const Crit3DTime &myTime, bool showInfo);
+        bool computeAllMeteoMaps(const QDateTime& myTime, bool showInfo);
 
         void setAllHourlyMeteoMapsComputed(bool value);
 
