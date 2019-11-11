@@ -287,3 +287,358 @@ void weatherGenerator2D::getSeasonalMeanPrecipitation(int iStation, int iSeason,
 
 
 }
+
+
+void weatherGenerator2D::getMonthlyAmountStatistics()
+{
+    double*** wMonth;
+
+    wMonth = (double ***)calloc(12, sizeof(double**));
+    for (int k=0;k<12;k++)
+    {
+        wMonth[k] = (double **)calloc(nrStations, sizeof(double*));
+        for (int i=0;i<nrStations;i++)
+        {
+            wMonth[k][i]= (double *)calloc(nrStations, sizeof(double));
+            for (int j=0;j<nrStations;j++)
+            {
+               wMonth[k][i][j] = NODATA;
+            }
+        }
+    }
+    for (int k=0;k<12;k++)
+    {
+        statistics::correlationsMatrix(nrStations,randomMatrix[k].matrixOccurrences,lengthMonth[k]*parametersModel.yearOfSimulation,wMonth[k]);
+    }
+
+    weatherGenerator2D::computeprecipitationAmountParameters();
+
+
+
+    for (int iMonth=0;iMonth<12;iMonth++)
+    {
+
+        int gasDevIset = 0;
+        double gasDevGset = 0;
+        srand (time(nullptr));
+        int firstRandomNumber = rand();
+        double** randomMatrixNormalDistributionMonthly = (double **)calloc(nrStations, sizeof(double*));
+        double** simulatedPrecipitationAmountsMonthly = (double **)calloc(nrStations, sizeof(double*));
+
+        for (int i=0;i<nrStations;i++)
+        {
+             randomMatrixNormalDistributionMonthly[i] = (double *)calloc(lengthMonth[iMonth]*parametersModel.yearOfSimulation, sizeof(double));
+             simulatedPrecipitationAmountsMonthly[i] = (double *)calloc(lengthMonth[iMonth]*parametersModel.yearOfSimulation, sizeof(double));
+        }
+
+        for (int j=0;j<lengthMonth[iMonth]*parametersModel.yearOfSimulation;j++)
+        {
+            for (int i=0;i<nrStations;i++)
+            {
+                 //randomMatrixNormalDistribution[i][j] = myrandom::normalRandomLongSeries(&gasDevIset,&gasDevGset,&firstRandomNumber);
+                 randomMatrixNormalDistributionMonthly[i][j] = myrandom::normalRandom(&gasDevIset,&gasDevGset);
+            }
+        }
+        weatherGenerator2D::spatialIterationAmountsMonthly(amountCorrelationMatrixSeasonSimulated , correlationMatrix[iMonth].amount,randomMatrixNormalDistributionMonthly,lengthMonth[iMonth]*parametersModel.yearOfSimulation,randomMatrix[iMonth].matrixOccurrences,simulatedPrecipitationAmountsMonthly);
+
+
+
+
+    }
+
+
+
+}
+
+
+void weatherGenerator2D::spatialIterationAmountsMonthly(double** correlationMatrixSimulatedData,double ** amountsCorrelationMatrix , double** randomMatrix, int lengthSeries, double** occurrences, double** simulatedPrecipitationAmountsSeasonal)
+{
+   double val=5;
+   int ii=0;
+   double kiter=0.1;
+   double** dummyMatrix = (double**)calloc(nrStations, sizeof(double*));
+   double** dummyMatrix2 = (double**)calloc(nrStations, sizeof(double*));
+   double* correlationArray =(double*)calloc(nrStations*nrStations, sizeof(double));
+   double* eigenvalues =(double*)calloc(nrStations, sizeof(double));
+   double* eigenvectors =(double*)calloc(nrStations*nrStations, sizeof(double));
+   double** dummyMatrix3 = (double**)calloc(nrStations, sizeof(double*));
+
+
+   //double** normRandom = (double**)calloc(nrStations, sizeof(double*));
+   //double** uniformRandom = (double**)calloc(nrStations, sizeof(double*));
+   double normRandomVar;
+   double uniformRandomVar;
+   //double** correlationMatrixSimulatedData = (double**)calloc(nrStations, sizeof(double*));
+   double** initialAmountsCorrelationMatrix = (double**)calloc(nrStations, sizeof(double*));
+
+
+   // initialization internal arrays
+   for (int i=0;i<nrStations;i++)
+   {
+       dummyMatrix[i]= (double*)calloc(nrStations, sizeof(double));
+       dummyMatrix2[i]= (double*)calloc(nrStations, sizeof(double));
+       //correlationMatrixSimulatedData[i]= (double*)calloc(nrStations, sizeof(double));
+       initialAmountsCorrelationMatrix[i]= (double*)calloc(nrStations, sizeof(double));
+       for (int j=0;j<nrStations;j++)
+       {
+           dummyMatrix[i][j]= NODATA;
+           dummyMatrix2[i][j]= NODATA;
+           //correlationMatrixSimulatedData[i][j]= NODATA;
+           initialAmountsCorrelationMatrix[i][j]= NODATA;
+       }
+   }
+
+   for (int i=0;i<nrStations;i++)
+   {
+       eigenvalues[i]=NODATA;
+       for (int j=0;j<nrStations;j++) eigenvectors[i*nrStations+j] = NODATA;
+   }
+   for (int i=0;i<nrStations;i++)
+   {
+       dummyMatrix3[i]= (double*)calloc(lengthSeries, sizeof(double));
+       //normRandom[i]= (double*)calloc(lengthSeries, sizeof(double));
+       //uniformRandom[i]= (double*)calloc(lengthSeries, sizeof(double));
+       for (int j=0;j<lengthSeries;j++)
+       {
+           dummyMatrix3[i][j]= NODATA;
+           //normRandom[i][j]= NODATA;
+           //uniformRandom[i][j]= NODATA;
+       }
+
+   }
+
+   for (int i=0;i<nrStations;i++)
+   {
+       for (int j=0;j<nrStations;j++)
+       {
+           initialAmountsCorrelationMatrix[i][j] = amountsCorrelationMatrix[i][j];
+       }
+
+   }
+
+   for (int i=0;i<nrStations;i++)
+   {
+       for (int j=0;j<nrStations;j++)
+       {
+            //printf("%.4f ",amountsCorrelationMatrix[i][j]);
+       }
+       //printf("mat \n");
+   }
+   //pressEnterToContinue();
+
+   double minimalValueToExitFromCycle = NODATA;
+   int counterConvergence=0;
+   bool exitWhileCycle = false;
+   int nrEigenvaluesLessThan0;
+   int counter;
+   while ((val>TOLERANCE_MULGETS) && (ii<MAX_ITERATION_MULGETS) && (!exitWhileCycle))
+   {
+       ++ii;
+       nrEigenvaluesLessThan0 = 0;
+       counter = 0;
+       for (int i=0;i<nrStations;i++)
+       {
+           for (int j=0;j<nrStations;j++) // avoid solutions with correlation coefficient greater than 1
+           {
+               correlationArray[counter] = amountsCorrelationMatrix[i][j];
+               counter++;
+           }
+
+       }
+
+       eigenproblem::rs(nrStations,correlationArray,eigenvalues,true,eigenvectors);
+
+
+       for (int i=0;i<nrStations;i++)
+       {
+           if (eigenvalues[i] <= 0)
+           {
+               ++nrEigenvaluesLessThan0;
+               eigenvalues[i] = 0.000001;
+           }
+       }
+       if (nrEigenvaluesLessThan0 > 0)
+       {
+           counter=0;
+           for (int i=0;i<nrStations;i++)
+           {
+               for (int j=0;j<nrStations;j++)
+               {
+                   dummyMatrix[j][i]= eigenvectors[counter];
+                   dummyMatrix2[i][j]= eigenvectors[counter]*eigenvalues[i];
+                   ++counter;
+               }
+           }
+           matricial::matrixProductSquareMatricesNoCheck(dummyMatrix,dummyMatrix2,nrStations,amountsCorrelationMatrix);
+           for (int i=0;i<nrStations-1;i++)
+           {
+               dummyMatrix[i][i] = 1.;
+               for (int j=i+1;j<nrStations;j++)
+               {
+                    /*if (i == j)
+                    {
+                        dummyMatrix[i][j] = 1.;
+                    }
+                    else
+                    {*/
+                        dummyMatrix[i][j] = MINVALUE(2*amountsCorrelationMatrix[i][j]/(amountsCorrelationMatrix[i][i]+ amountsCorrelationMatrix[j][j]),ONELESSEPSILON);
+                        dummyMatrix[j][i] = dummyMatrix[i][j];
+                    //}
+               }
+            }
+            dummyMatrix[nrStations-1][nrStations-1]=1.;
+       }
+       else
+       {
+            for (int i=0;i<nrStations;i++)
+                for (int j=0;j<nrStations;j++)
+                    dummyMatrix[i][j] = amountsCorrelationMatrix[i][j];
+       }
+       matricial::choleskyDecompositionTriangularMatrix(dummyMatrix,nrStations,true);
+       /*for (int i=0;i<nrStations;i++)
+       {
+           for (int j=0;j<nrStations;j++)
+           {
+                //printf("%.4f ",dummyMatrix[i][j]);
+           }
+           //printf(" cholesky \n");
+       }*/
+       //pressEnterToContinue();
+       matricial::matrixProduct(dummyMatrix,randomMatrix,nrStations,nrStations,lengthSeries,nrStations,dummyMatrix3);
+       /*for (int i=0;i<lengthSeries;i++)
+       {
+           for (int j=0;j<nrStations;j++)
+           {
+                //printf("%.4f ",dummyMatrix3[j][i]);
+           }
+           //printf(" corr_random \n");
+       }*/
+       //pressEnterToContinue();
+       double meanValue,stdDevValue;
+       for (int i=0;i<nrStations;i++)
+       {
+           // compute mean and standard deviation without NODATA check
+           meanValue = stdDevValue = 0;
+           for (int j=0;j<lengthSeries;j++)
+               meanValue += dummyMatrix3[i][j];
+           meanValue /= lengthSeries;
+           for (int j=0;j<lengthSeries;j++)
+               stdDevValue += (dummyMatrix3[i][j]- meanValue)*(dummyMatrix3[i][j]- meanValue);
+           stdDevValue /= (lengthSeries-1);
+           stdDevValue = sqrt(stdDevValue);
+
+           for (int j=0;j<lengthSeries;j++)
+           {
+               //normRandomVar= (dummyMatrix3[i][j]-meanValue)/stdDevValue;
+               uniformRandomVar =0.5*statistics::tabulatedERFC(-(dummyMatrix3[i][j]-meanValue)/stdDevValue/SQRT_2);
+               simulatedPrecipitationAmountsSeasonal[i][j]=0.;
+               if (occurrences[i][j] > EPSILON)
+               {
+                   if (parametersModel.distributionPrecipitation == 1)
+                   {
+                       simulatedPrecipitationAmountsSeasonal[i][j] =-log(1-uniformRandomVar)/phatAlpha[i][j] + parametersModel.precipitationThreshold;
+                   }
+                   else if (parametersModel.distributionPrecipitation == 2)
+                   {
+                       simulatedPrecipitationAmountsSeasonal[i][j] = weatherGenerator2D::inverseGammaFunction(uniformRandomVar,phatAlpha[i][j],phatBeta[i][j],0.01) + parametersModel.precipitationThreshold;
+                       //printf("%.4f ",simulatedPrecipitationAmountsSeasonal[i][j]);
+                       // check uniformRandom phatAlpha e phatBeta i dati non vanno bene
+                   }
+                   else if (parametersModel.distributionPrecipitation == 3)
+                   {
+                        int dayOfYear,month,day;
+
+                   }
+               }
+           }
+           //printf("\n");
+       }
+       /*for (int i=0;i<lengthSeries;i++)
+       {
+           for (int j=0;j<nrStations;j++)
+           {
+              //printf("%.4f ",simulatedPrecipitationAmountsSeasonal[j][i]);
+           }
+           //printf("\n");
+       }*/
+       printf("%d\n", ii);
+       //pressEnterToContinue();
+       for (int i=0;i<nrStations;i++)
+       {
+           for (int j=0;j<nrStations;j++)
+           {
+               statistics::correlationsMatrix(nrStations,simulatedPrecipitationAmountsSeasonal,lengthSeries,correlationMatrixSimulatedData);
+               // da verificare dovrebbe esserci correlazione solo per i dati diversi da zero
+               //printf("%.4f ",correlationMatrixSimulatedData[i][j]);
+           }
+           //printf("\n");
+       }
+       //pressEnterToContinue();
+       val = 0;
+       for (int i=0;i<nrStations;i++)
+       {
+           for (int j=0;j<nrStations;j++)
+           {
+               val = MAXVALUE(val,fabs(correlationMatrixSimulatedData[i][j] - initialAmountsCorrelationMatrix[i][j]));
+           }
+       }
+       if (val < fabs(minimalValueToExitFromCycle))
+       {
+           minimalValueToExitFromCycle = val;
+           counterConvergence = 0;
+       }
+       else
+       {
+           ++counterConvergence;
+       }
+
+       if (counterConvergence > 20)
+       {
+           if (val <= fabs(minimalValueToExitFromCycle) + TOLERANCE_MULGETS) exitWhileCycle = true;
+       }
+
+       if (ii != MAX_ITERATION_MULGETS && val> TOLERANCE_MULGETS && (!exitWhileCycle))
+       {
+           for (int i=0;i<nrStations;i++)
+           {
+               for (int j=0;j<nrStations;j++)
+               {
+                   if (i == j)
+                   {
+                       amountsCorrelationMatrix[i][j]=1.;
+                   }
+                   else
+                   {
+                       amountsCorrelationMatrix[i][j] += kiter*(initialAmountsCorrelationMatrix[i][j]-correlationMatrixSimulatedData[i][j]);
+                       amountsCorrelationMatrix[i][j] = MINVALUE(amountsCorrelationMatrix[i][j],ONELESSEPSILON);
+                   }
+               }
+           }
+       }
+
+
+   }
+   //pressEnterToContinue();
+   // free memory
+   for (int i=0;i<nrStations;i++)
+   {
+       free(dummyMatrix[i]);
+       free(dummyMatrix2[i]);
+       free(dummyMatrix3[i]);
+       //free(normRandom[i]);
+       //free(uniformRandom[i]);
+       free(initialAmountsCorrelationMatrix[i]);
+   }
+
+
+       free(dummyMatrix);
+       free(dummyMatrix2);
+       free(dummyMatrix3);
+       //free(normRandom);
+       //free(uniformRandom);
+       free(correlationArray);
+       free(eigenvalues);
+       free(eigenvectors);
+       free(initialAmountsCorrelationMatrix);
+
+}

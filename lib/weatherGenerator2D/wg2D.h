@@ -176,7 +176,7 @@
         double** occurrenceMatrixSeasonJJA;
         double** occurrenceMatrixSeasonSON;
 
-        double** wDJF ;
+        double** wDJF;
         double** wMAM;
         double** wJJA;
         double** wSON;
@@ -187,6 +187,8 @@
         void initializePrecipitationAmountParameters();
         void computeprecipitationAmountParameters();
         void getSeasonalMeanPrecipitation(int iStation, int iSeason, int length, double* meanPrec);
+        void getMonthlyAmountStatistics();
+        void spatialIterationAmountsMonthly(double** correlationMatrixSimulatedData,double ** amountsCorrelationMatrix , double** randomMatrix, int lengthSeries, double** occurrences, double** simulatedPrecipitationAmountsSeasonal);
 
 
         // variables only for temperatures

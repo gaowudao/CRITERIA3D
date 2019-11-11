@@ -779,15 +779,15 @@ void weatherGenerator2D::precipitationMultisiteAmountsGeneration()
        }
    }
 
-   for (int i=0;i<nrStations;i++)
+   /*for (int i=0;i<nrStations;i++)
    {
        printf("%d\n",lengthSeason[3]);
        for (int j=0; j<lengthSeason[3]*parametersModel.yearOfSimulation;j++)
        {
-           printf("%d %f\n",j,seasonPrec[i].SON[j]);
-           pressEnterToContinue();
+           //printf("%d %f\n",j,seasonPrec[i].SON[j]);
+           //pressEnterToContinue();
        }
-   }
+   }*/
 
 
    //printf("parte 5 inizio\n");
