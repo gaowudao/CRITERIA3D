@@ -45,14 +45,14 @@ CONFIG(debug, debug|release) {
     LIBS += -L../../lib/dbMeteoGrid/debug -ldbMeteoGrid
     LIBS += -L../../lib/dbMeteoPoints/debug -ldbMeteoPoints
     LIBS += -L../../lib/soilWidget/debug -lsoilWidget
+    LIBS += -L../../lib/crop/debug -lcrop
+    LIBS += -L../../lib/soil/debug -lsoil
     LIBS += -L../../lib/utilities/debug -lutilities
     LIBS += -L../../lib/solarRadiation/debug -lsolarRadiation
     LIBS += -L../../lib/interpolation/debug -linterpolation
     LIBS += -L../../lib/meteo/debug -lmeteo
     LIBS += -L../../lib/gis/debug -lgis
-    LIBS += -L../../lib/crop/debug -lcrop
     LIBS += -L../../lib/soilFluxes3D/debug -lsoilFluxes3D
-    LIBS += -L../../lib/soil/debug -lsoil
     LIBS += -L../../lib/mathFunctions/debug -lmathFunctions
     LIBS += -L../../lib/crit3dDate/debug -lcrit3dDate
 
@@ -61,14 +61,14 @@ CONFIG(debug, debug|release) {
     LIBS += -L../../lib/dbMeteoGrid/release -ldbMeteoGrid
     LIBS += -L../../lib/dbMeteoPoints/release -ldbMeteoPoints
     LIBS += -L../../lib/soilWidget/release -lsoilWidget
+    LIBS += -L../../lib/crop/release -lcrop
+    LIBS += -L../../lib/soil/release -lsoil
     LIBS += -L../../lib/utilities/release -lutilities
     LIBS += -L../../lib/solarRadiation/release -lsolarRadiation
     LIBS += -L../../lib/interpolation/release -linterpolation
     LIBS += -L../../lib/meteo/release -lmeteo
     LIBS += -L../../lib/gis/release -lgis
-    LIBS += -L../../lib/crop/release -lcrop
     LIBS += -L../../lib/soilFluxes3D/release -lsoilFluxes3D
-    LIBS += -L../../lib/soil/release -lsoil
     LIBS += -L../../lib/mathFunctions/release -lmathFunctions
     LIBS += -L../../lib/crit3dDate/release -lcrit3dDate
 }
