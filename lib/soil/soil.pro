@@ -5,7 +5,8 @@
 #
 #----------------------------------------------------
 
-QT  -= core gui
+QT -= gui
+QT += core sql
 
 TARGET = soil
 TEMPLATE = lib
@@ -24,9 +25,11 @@ win32:{
     TARGET = soil
 }
 
-INCLUDEPATH += ../mathFunctions  ../specialMathFunctions
+INCLUDEPATH += ../crit3dDate ../mathFunctions  ../specialMathFunctions ../utilities
 
-SOURCES += soil.cpp
+SOURCES += soil.cpp \
+    soilDbTools.cpp
 
-HEADERS += soil.h
+HEADERS += soil.h \
+    soilDbTools.h
 

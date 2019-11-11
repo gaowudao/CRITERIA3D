@@ -1,8 +1,12 @@
 #ifndef UTILITIES_H
 #define UTILITIES_H
 
-    #include "crit3dDate.h"
-    #include <vector>
+    #ifndef CRIT3DDATE_H
+        #include "crit3dDate.h"
+    #endif
+    #ifndef _VECTOR_
+        #include <vector>
+    #endif
 
     class QDate;
     class QDateTime;

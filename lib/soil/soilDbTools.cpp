@@ -10,7 +10,6 @@
 #include <QSqlError>
 #include <QUuid>
 #include <QVariant>
-#include <QDebug>
 
 
 bool openDbSoil(QString dbName, QSqlDatabase* dbSoil, QString* error)

@@ -24,7 +24,7 @@ win32:{
     TARGET = utilities
 }
 
-INCLUDEPATH += ../crit3dDate ../mathFunctions ../meteo
+INCLUDEPATH += ../crit3dDate ../mathFunctions
 
 SOURCES += \
     utilities.cpp

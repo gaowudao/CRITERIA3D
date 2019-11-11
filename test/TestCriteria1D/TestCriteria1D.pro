@@ -40,30 +40,28 @@ HEADERS += \
 
 INCLUDEPATH +=  ../../lib/crit3dDate ../../lib/mathFunctions ../../lib/soil \
                 ../../lib/crop ../../lib/gis ../../lib/meteo ../../lib/utilities \
-                ../../lib/cropWidget ../../lib/soilWidget ../../lib/criteriaModel
+                ../../lib/cropWidget ../../lib/criteriaModel
 
 CONFIG(debug, debug|release) {
     LIBS += -L../../lib/criteriaModel/debug -lcriteriaModel
-    LIBS += -L../../lib/soilWidget/debug -lsoilWidget
     LIBS += -L../../lib/cropWidget/debug -lcropWidget
+    LIBS += -L../../lib/crop/debug -lcrop
+    LIBS += -L../../lib/soil/debug -lsoil
     LIBS += -L../../lib/utilities/debug -lutilities
     LIBS += -L../../lib/meteo/debug -lmeteo
     LIBS += -L../../lib/gis/debug -lgis
-    LIBS += -L../../lib/crop/debug -lcrop
-    LIBS += -L../../lib/soil/debug -lsoil
     LIBS += -L../../lib/crit3dDate/debug -lcrit3dDate
     LIBS += -L../../lib/mathFunctions/debug -lmathFunctions
 
 } else {
 
     LIBS += -L../../lib/criteriaModel/release -lcriteriaModel
-    LIBS += -L../../lib/soilWidget/release -lsoilWidget
     LIBS += -L../../lib/cropWidget/release -lcropWidget
+    LIBS += -L../../lib/crop/release -lcrop
+    LIBS += -L../../lib/soil/release -lsoil
     LIBS += -L../../lib/utilities/release -lutilities
     LIBS += -L../../lib/meteo/release -lmeteo
     LIBS += -L../../lib/gis/release -lgis
-    LIBS += -L../../lib/crop/release -lcrop
-    LIBS += -L../../lib/soil/release -lsoil
     LIBS += -L../../lib/crit3dDate/release -lcrit3dDate
     LIBS += -L../../lib/mathFunctions/release -lmathFunctions
 }

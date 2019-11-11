@@ -1,9 +1,6 @@
 #ifndef SOILDBTOOLS_H
 #define SOILDBTOOLS_H
 
-    #ifndef _VECTOR_
-        #include <vector>
-    #endif
     #ifndef SOIL_H
         #include "soil.h"
     #endif
