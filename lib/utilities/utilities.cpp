@@ -367,6 +367,7 @@ std::vector <float> StringListToFloat(QStringList myList)
     return myVector;
 }
 
+
 QStringList FloatVectorToStringList(std::vector <float> myVector)
 {
     QStringList myList;
@@ -383,7 +384,7 @@ bool removeDirectory(QString myPath)
     myDir.setNameFilters(QStringList() << "*.*");
     myDir.setFilter(QDir::Files);
 
-    //remove all files
+    // remove all files
     foreach(QString myFile, myDir.entryList())
     {
         myDir.remove(myFile);

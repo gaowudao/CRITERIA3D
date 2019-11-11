@@ -38,13 +38,12 @@ SOURCES += main.cpp \
 HEADERS += \
     project.h \
 
-INCLUDEPATH +=  ../../lib/crit3dDate ../../lib/mathFunctions ../../lib/soil \
-                ../../lib/crop ../../lib/gis ../../lib/meteo ../../lib/utilities \
-                ../../lib/cropWidget ../../lib/criteriaModel
+INCLUDEPATH +=  ../../lib/crit3dDate ../../lib/mathFunctions ../../lib/gis ../../lib/meteo \
+                ../../lib/soil ../../lib/crop ../../lib/utilities \
+                ../../lib/criteriaModel
 
 CONFIG(debug, debug|release) {
     LIBS += -L../../lib/criteriaModel/debug -lcriteriaModel
-    LIBS += -L../../lib/cropWidget/debug -lcropWidget
     LIBS += -L../../lib/crop/debug -lcrop
     LIBS += -L../../lib/soil/debug -lsoil
     LIBS += -L../../lib/utilities/debug -lutilities
@@ -56,7 +55,6 @@ CONFIG(debug, debug|release) {
 } else {
 
     LIBS += -L../../lib/criteriaModel/release -lcriteriaModel
-    LIBS += -L../../lib/cropWidget/release -lcropWidget
     LIBS += -L../../lib/crop/release -lcrop
     LIBS += -L../../lib/soil/release -lsoil
     LIBS += -L../../lib/utilities/release -lutilities

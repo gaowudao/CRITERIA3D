@@ -5,7 +5,8 @@
 #
 #----------------------------------------------------
 
-QT      -= core gui
+QT -= gui
+QT += core sql
 
 TARGET = crop
 TEMPLATE = lib
@@ -24,14 +25,16 @@ win32:{
     TARGET = crop
 }
 
-INCLUDEPATH +=  ../crit3dDate ../mathFunctions ../soil
+INCLUDEPATH +=  ../crit3dDate ../mathFunctions ../soil ../utilities
 
 SOURCES += crop.cpp \
+    cropDbTools.cpp \
     root.cpp \
     development.cpp \
     biomass.cpp
 
 HEADERS += crop.h \
     biomass.h \
+    cropDbTools.h \
     root.h \
     development.h

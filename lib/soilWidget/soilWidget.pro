@@ -27,7 +27,7 @@ win32:{
     TARGET = soilWidget
 }
 
-INCLUDEPATH += ../crit3dDate ../mathFunctions ../soil ../meteo ../utilities
+INCLUDEPATH += ../crit3dDate ../mathFunctions ../soil ../utilities
 
 unix:{
     INCLUDEPATH += /usr/include/qwt/
@@ -41,7 +41,6 @@ SOURCES += \
     curvePicker.cpp \
     soilTable.cpp \
     soilWidget.cpp \
-    soilDbTools.cpp \
     tabHorizons.cpp \
     tabWaterRetentionCurve.cpp \
     tabWaterRetentionData.cpp \
@@ -57,7 +56,6 @@ HEADERS += \
     curvePicker.h \
     soilTable.h \
     soilWidget.h \
-    soilDbTools.h \
     tabHorizons.h \
     tabWaterRetentionCurve.h \
     tabWaterRetentionData.h \

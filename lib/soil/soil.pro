@@ -25,7 +25,7 @@ win32:{
     TARGET = soil
 }
 
-INCLUDEPATH += ../crit3dDate ../mathFunctions  ../specialMathFunctions ../utilities
+INCLUDEPATH += ../crit3dDate ../mathFunctions ../utilities
 
 SOURCES += soil.cpp \
     soilDbTools.cpp
