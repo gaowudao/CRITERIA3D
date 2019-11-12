@@ -337,7 +337,14 @@ void weatherGenerator2D::precipitationCompute()
     weatherGenerator2D::precipitationMultiDistributionParameterization(); // seasonal amounts distribution
     printf("step 9/9\n");
     // step 5 of precipitation WG2D
-    weatherGenerator2D::precipitationMultisiteAmountsGeneration(); // generation of synthetic series
+    if (parametersModel.distributionPrecipitation == 3)
+    {
+        weatherGenerator2D::getPrecipitationAmount();
+    }
+    else
+    {
+        weatherGenerator2D::precipitationMultisiteAmountsGeneration(); // generation of synthetic series
+    }
     printf("end precipitation module\n");
 }
 
@@ -495,6 +502,17 @@ void weatherGenerator2D::precipitationCorrelationMatrices()
         }
 
     }
+    /*for (int i=0;i<nrStations;i++)
+    {
+        for (int j=0;j<nrStations;j++)
+        {
+            printf("%.2f", correlationMatrix[0].amount[j][i]);
+        }
+        printf("\n");
+    }
+    pressEnterToContinue();*/
+
+
 }
 
 void weatherGenerator2D::precipitationMultisiteOccurrenceGeneration()
@@ -663,7 +681,7 @@ void weatherGenerator2D::precipitationMultisiteOccurrenceGeneration()
     free(normalizedTransitionProbability);
 
     // free memory
-    for (int j=0;j<12;j++)
+    /*for (int j=0;j<12;j++)
     {
         for (int i=0;i<nrStations;i++)
         {
@@ -671,7 +689,7 @@ void weatherGenerator2D::precipitationMultisiteOccurrenceGeneration()
             free(correlationMatrix[j].occurrence[i]);
         }
     }
-    free(correlationMatrix);
+    free(correlationMatrix);*/
 }
 
 

@@ -7,8 +7,8 @@
 #include "wg2D.h"
 #include "commonConstants.h"
 #include "furtherMathFunctions.h"
-//#include "statistics.h"
-//#include "eispack.h"
+#include "statistics.h"
+#include "eispack.h"
 //#include "gammaFunction.h"
 #include "crit3dDate.h"
 #include "weatherGenerator.h"
@@ -54,7 +54,6 @@ void weatherGenerator2D::computeprecipitationAmountParameters()
         averageMonthlyAmountPrecLarger = (double *)calloc(16, sizeof(double));
         double* month = nullptr;
         month = (double *)calloc(16, sizeof(double));
-
         float* averageAmountPrec = nullptr;
         averageAmountPrec = (float *)calloc(365, sizeof(float));
         //double stdDevMonthlyAmountPrec[12];
@@ -147,29 +146,35 @@ void weatherGenerator2D::computeprecipitationAmountParameters()
 
         for (int iMonth=0; iMonth<12; iMonth++)
         {
-            averageMonthlyAmountPrecLarger[iMonth+2] = averageMonthlyAmountPrec[iMonth];
+            averageMonthlyAmountPrecLarger[iMonth+2] = double(averageMonthlyAmountPrec[iMonth]);
         }
-        averageMonthlyAmountPrecLarger[0]  = averageMonthlyAmountPrec[10];
-        averageMonthlyAmountPrecLarger[1]  = averageMonthlyAmountPrec[11];
-        averageMonthlyAmountPrecLarger[14] = averageMonthlyAmountPrec[0];
-        averageMonthlyAmountPrecLarger[15]  = averageMonthlyAmountPrec[1];
+        averageMonthlyAmountPrecLarger[0]  = double(averageMonthlyAmountPrec[10]);
+        averageMonthlyAmountPrecLarger[1]  = double(averageMonthlyAmountPrec[11]);
+        averageMonthlyAmountPrecLarger[14] = double(averageMonthlyAmountPrec[0]);
+        averageMonthlyAmountPrecLarger[15]  = double(averageMonthlyAmountPrec[1]);
 
         //double risultato;
         for (int jjj=0; jjj<365; jjj++)
         {
+            int iDay,iMonth;
+            iDay = iMonth = 0;
             averageAmountPrec[jjj] = interpolation::cubicSpline(jjj*1.0,month,averageMonthlyAmountPrecLarger,16);
+
         }
+        /*
         for (int i=0; i<365 ; i++)
         {
             precipitationAmount[iStation].averageEstimation[i] = double(averageAmountPrec[(i+334)%365]);
+        }*/
+        for (int i=0; i<365 ; i++)
+        {
+            precipitationAmount[iStation].averageEstimation[i] = double(averageAmountPrec[i]);
         }
 
         free (averageAmountPrec);
         free (averageMonthlyAmountPrec);
         free (averageMonthlyAmountPrecLarger);
         free (month);
-
-
     }
 }
 
@@ -289,9 +294,19 @@ void weatherGenerator2D::getSeasonalMeanPrecipitation(int iStation, int iSeason,
 }
 
 
-void weatherGenerator2D::getMonthlyAmountStatistics()
+void weatherGenerator2D::getPrecipitationAmount()
 {
-    double*** wMonth;
+
+    precGenerated = (double **)calloc(nrStations, sizeof(double*));
+    for (int i=0;i<nrStations;i++)
+    {
+        precGenerated[i] = (double *)calloc(365*parametersModel.yearOfSimulation, sizeof(double));
+        for (int j=0;j<365*parametersModel.yearOfSimulation;j++)
+        {
+            precGenerated[i][j] = NODATA;
+        }
+    }
+    /*double*** wMonth;
 
     wMonth = (double ***)calloc(12, sizeof(double**));
     for (int k=0;k<12;k++)
@@ -310,7 +325,7 @@ void weatherGenerator2D::getMonthlyAmountStatistics()
     {
         statistics::correlationsMatrix(nrStations,randomMatrix[k].matrixOccurrences,lengthMonth[k]*parametersModel.yearOfSimulation,wMonth[k]);
     }
-
+    */
     weatherGenerator2D::computeprecipitationAmountParameters();
 
 
@@ -324,11 +339,12 @@ void weatherGenerator2D::getMonthlyAmountStatistics()
         int firstRandomNumber = rand();
         double** randomMatrixNormalDistributionMonthly = (double **)calloc(nrStations, sizeof(double*));
         double** simulatedPrecipitationAmountsMonthly = (double **)calloc(nrStations, sizeof(double*));
-
+        double** amountCorrelationMatrixMonthSimulated = (double **)calloc(nrStations, sizeof(double*));
         for (int i=0;i<nrStations;i++)
         {
              randomMatrixNormalDistributionMonthly[i] = (double *)calloc(lengthMonth[iMonth]*parametersModel.yearOfSimulation, sizeof(double));
              simulatedPrecipitationAmountsMonthly[i] = (double *)calloc(lengthMonth[iMonth]*parametersModel.yearOfSimulation, sizeof(double));
+             amountCorrelationMatrixMonthSimulated[i] = (double *)calloc(nrStations, sizeof(double));
         }
 
         for (int j=0;j<lengthMonth[iMonth]*parametersModel.yearOfSimulation;j++)
@@ -339,11 +355,43 @@ void weatherGenerator2D::getMonthlyAmountStatistics()
                  randomMatrixNormalDistributionMonthly[i][j] = myrandom::normalRandom(&gasDevIset,&gasDevGset);
             }
         }
-        weatherGenerator2D::spatialIterationAmountsMonthly(amountCorrelationMatrixSeasonSimulated , correlationMatrix[iMonth].amount,randomMatrixNormalDistributionMonthly,lengthMonth[iMonth]*parametersModel.yearOfSimulation,randomMatrix[iMonth].matrixOccurrences,simulatedPrecipitationAmountsMonthly);
+        /*for (int i=0;i<nrStations;i++)
+        {
+            for (int j=0;j<nrStations;j++)
+            {
+                printf("%.2f\n", correlationMatrix[iMonth].amount[i][j]);
+            }
+        }
+        pressEnterToContinue();*/
+        weatherGenerator2D::spatialIterationAmountsMonthly(iMonth, amountCorrelationMatrixMonthSimulated , correlationMatrix[iMonth].amount,randomMatrixNormalDistributionMonthly,lengthMonth[iMonth]*parametersModel.yearOfSimulation,randomMatrix[iMonth].matrixOccurrences,simulatedPrecipitationAmountsMonthly);
+        for (int j=0;j<lengthMonth[iMonth]*parametersModel.yearOfSimulation;j++)
+        {
+            for (int i=0;i<nrStations;i++)
+            {
+
+                int dayUntilThefirstDayOfTheMonth,counter;
+                //double weibullOutput;
+                dayUntilThefirstDayOfTheMonth = counter = 0;
+                while (counter < iMonth)
+                {
+                    dayUntilThefirstDayOfTheMonth += lengthMonth[counter]*parametersModel.yearOfSimulation;
+                    counter++;
+                }
+                //dayOfYear += j%iMonth;
+                precGenerated[i][j+dayUntilThefirstDayOfTheMonth] = simulatedPrecipitationAmountsMonthly[i][j];
+            }
+        }
 
 
-
-
+        for (int i=0;i<nrStations;i++)
+        {
+            free(randomMatrixNormalDistributionMonthly[i]);
+            free(simulatedPrecipitationAmountsMonthly[i]);
+            free(amountCorrelationMatrixMonthSimulated[i]);
+        }
+        free(randomMatrixNormalDistributionMonthly);
+        free(simulatedPrecipitationAmountsMonthly);
+        free(amountCorrelationMatrixMonthSimulated);
     }
 
 
@@ -351,7 +399,7 @@ void weatherGenerator2D::getMonthlyAmountStatistics()
 }
 
 
-void weatherGenerator2D::spatialIterationAmountsMonthly(double** correlationMatrixSimulatedData,double ** amountsCorrelationMatrix , double** randomMatrix, int lengthSeries, double** occurrences, double** simulatedPrecipitationAmountsSeasonal)
+void weatherGenerator2D::spatialIterationAmountsMonthly(int iMonth, double** correlationMatrixSimulatedData,double ** amountsCorrelationMatrix , double** randomMatrix, int lengthSeries, double** occurrences, double** simulatedPrecipitationAmountsMonthly)
 {
    double val=5;
    int ii=0;
@@ -531,43 +579,39 @@ void weatherGenerator2D::spatialIterationAmountsMonthly(double** correlationMatr
            {
                //normRandomVar= (dummyMatrix3[i][j]-meanValue)/stdDevValue;
                uniformRandomVar =0.5*statistics::tabulatedERFC(-(dummyMatrix3[i][j]-meanValue)/stdDevValue/SQRT_2);
-               simulatedPrecipitationAmountsSeasonal[i][j]=0.;
+               simulatedPrecipitationAmountsMonthly[i][j]=0.;
                if (occurrences[i][j] > EPSILON)
                {
-                   if (parametersModel.distributionPrecipitation == 1)
-                   {
-                       simulatedPrecipitationAmountsSeasonal[i][j] =-log(1-uniformRandomVar)/phatAlpha[i][j] + parametersModel.precipitationThreshold;
-                   }
-                   else if (parametersModel.distributionPrecipitation == 2)
-                   {
-                       simulatedPrecipitationAmountsSeasonal[i][j] = weatherGenerator2D::inverseGammaFunction(uniformRandomVar,phatAlpha[i][j],phatBeta[i][j],0.01) + parametersModel.precipitationThreshold;
-                       //printf("%.4f ",simulatedPrecipitationAmountsSeasonal[i][j]);
-                       // check uniformRandom phatAlpha e phatBeta i dati non vanno bene
-                   }
-                   else if (parametersModel.distributionPrecipitation == 3)
-                   {
-                        int dayOfYear,month,day;
 
-                   }
+                        int dayOfYear,counter;
+                        //double weibullOutput;
+                        dayOfYear = counter = 0;
+                        while (counter < iMonth)
+                        {
+                            dayOfYear += lengthMonth[counter];
+                            counter++;
+                        }
+                        dayOfYear += j%lengthMonth[iMonth];
+                        simulatedPrecipitationAmountsMonthly[i][j] = MAXVALUE(1,0.84 * precipitationAmount[i].averageEstimation[dayOfYear] * pow(-log(uniformRandomVar), 1.3333));
                }
            }
            //printf("\n");
        }
-       /*for (int i=0;i<lengthSeries;i++)
+       for (int i=0;i<lengthSeries;i++)
        {
            for (int j=0;j<nrStations;j++)
            {
-              //printf("%.4f ",simulatedPrecipitationAmountsSeasonal[j][i]);
+              printf("%.4f ",simulatedPrecipitationAmountsMonthly[j][i]);
            }
-           //printf("\n");
-       }*/
+           printf("\n");
+       }
        printf("%d\n", ii);
-       //pressEnterToContinue();
+       pressEnterToContinue();
        for (int i=0;i<nrStations;i++)
        {
            for (int j=0;j<nrStations;j++)
            {
-               statistics::correlationsMatrix(nrStations,simulatedPrecipitationAmountsSeasonal,lengthSeries,correlationMatrixSimulatedData);
+               statistics::correlationsMatrix(nrStations,simulatedPrecipitationAmountsMonthly,lengthSeries,correlationMatrixSimulatedData);
                // da verificare dovrebbe esserci correlazione solo per i dati diversi da zero
                //printf("%.4f ",correlationMatrixSimulatedData[i][j]);
            }

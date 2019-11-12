@@ -759,7 +759,7 @@ void weatherGenerator2D::precipitationMultisiteAmountsGeneration()
 
 
     // begin of step 5
-   weatherGenerator2D::computeprecipitationAmountParameters();
+   /*weatherGenerator2D::computeprecipitationAmountParameters();
    seasonPrec = (TseasonPrec*)calloc(nrStations, sizeof(TseasonPrec));
    for (int i=0;i<nrStations;i++)
    {
@@ -779,7 +779,7 @@ void weatherGenerator2D::precipitationMultisiteAmountsGeneration()
        }
    }
 
-   /*for (int i=0;i<nrStations;i++)
+   for (int i=0;i<nrStations;i++)
    {
        printf("%d\n",lengthSeason[3]);
        for (int j=0; j<lengthSeason[3]*parametersModel.yearOfSimulation;j++)
@@ -1579,11 +1579,7 @@ void weatherGenerator2D::spatialIterationAmounts(double** correlationMatrixSimul
                        //printf("%.4f ",simulatedPrecipitationAmountsSeasonal[i][j]);
                        // check uniformRandom phatAlpha e phatBeta i dati non vanno bene
                    }
-                   else if (parametersModel.distributionPrecipitation == 3)
-                   {
-                        int dayOfYear,month,day;
 
-                   }
                }
            }
            //printf("\n");
