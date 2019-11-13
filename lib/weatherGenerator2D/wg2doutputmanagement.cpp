@@ -134,7 +134,12 @@ void weatherGenerator2D::getWeatherGeneratorOutput()
 
                 if (isPrecWG2D)
                 {
-                    outputWeatherData[iStation].precipitation[counter] = amountsPrecGenerated[counter][iStation];
+
+                    if (parametersModel.distributionPrecipitation == 3)
+                    {
+                        outputWeatherData[iStation].precipitation[counter] = precGenerated[iStation][counter];
+                    }
+                    else {outputWeatherData[iStation].precipitation[counter] = amountsPrecGenerated[counter][iStation];}
                     //meanAmountsPrecGenerated[iStation][month-1] += amountsPrecGenerated[counter][iStation];
                     //cumulatedOccurrencePrecGenerated[iStation][month-1] += occurrencePrecGenerated[counter][iStation];
                 }

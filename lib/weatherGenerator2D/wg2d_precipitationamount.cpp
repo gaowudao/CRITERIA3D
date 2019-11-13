@@ -383,6 +383,7 @@ void weatherGenerator2D::getPrecipitationAmount()
         }
 
 
+
         for (int i=0;i<nrStations;i++)
         {
             free(randomMatrixNormalDistributionMonthly[i]);
@@ -394,7 +395,15 @@ void weatherGenerator2D::getPrecipitationAmount()
         free(amountCorrelationMatrixMonthSimulated);
     }
 
-
+    for (int j=0;j<365*parametersModel.yearOfSimulation;j++)
+    {
+        for (int i=0;i<nrStations;i++)
+        {
+            printf("value %.3f  ",precGenerated[i][j]);
+        }
+        printf("\n");
+    }
+    //pressEnterToContinue();
 
 }
 
@@ -601,12 +610,12 @@ void weatherGenerator2D::spatialIterationAmountsMonthly(int iMonth, double** cor
        {
            for (int j=0;j<nrStations;j++)
            {
-              printf("%.4f ",simulatedPrecipitationAmountsMonthly[j][i]);
+              //printf("%.4f ",simulatedPrecipitationAmountsMonthly[j][i]);
            }
-           printf("\n");
+           //printf("\n");
        }
-       printf("%d\n", ii);
-       pressEnterToContinue();
+       //printf("%d\n", ii);
+       //pressEnterToContinue();
        for (int i=0;i<nrStations;i++)
        {
            for (int j=0;j<nrStations;j++)
