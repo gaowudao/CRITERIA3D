@@ -74,12 +74,13 @@ int main()
     fclose(fp);
     int doy,day,month,year;
     double prec,minT,maxT,meanT;
+    double precipitationThreshold = 0.25;
     doy = day = month = year = NODATA;
     prec = minT = maxT = meanT = NODATA;
     bool firstDay = true;
-    int nrStations = 1; // !! da 1 a 10 stazioni
-    int distributionType = 3; // 1 multiexponential 2 multigamma 3 Weibull
-    int yearsOfSimulations = 500; // numero anni
+    int nrStations = 3; // !! da 1 a 10 stazioni
+    int distributionType = 2; // 1 multiexponential 2 multigamma 3 Weibull
+    int yearsOfSimulations = 100; // numero anni
     int lengthDataSeries = numberMeteoLines;
     int nrVariables = 3;
     int nrDate = 3;
@@ -105,7 +106,7 @@ int main()
     {
         if (i==0)
         {
-               fp = fopen("inputData/argelato_1961_2018.txt","r");
+               fp = fopen("inputData/bedonia_1961_2018.txt","r");
                if (fp == nullptr)
                {
                    printf("Error! File not found\n");
@@ -127,7 +128,7 @@ int main()
         }
         else if (i==1)
         {
-            fp = fopen("inputData/baricella_1961_2018.txt","r");
+            fp = fopen("inputData/berceto_1961_2018.txt","r");
             if (fp == nullptr)
             {
                 printf("Error! File not found\n");
@@ -146,7 +147,7 @@ int main()
         }
         else if (i==2)
         {
-            fp = fopen("inputData/bologna_1961_2018.txt","r");
+            fp = fopen("inputData/borgovalditaro_1961_2018.txt","r");
             if (fp == nullptr)
             {
                 printf("Error! File not found\n");
@@ -526,7 +527,7 @@ int main()
     if (computeTemperature) printf("compute temperature\n");
 
 
-    WG2D.initializeParameters(NODATA, yearsOfSimulations, distributionType,
+    WG2D.initializeParameters(precipitationThreshold, yearsOfSimulations, distributionType,
                               computePrecipitation, computeTemperature);
     WG2D.computeWeatherGenerator2D();
 
