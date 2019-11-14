@@ -399,9 +399,9 @@ void weatherGenerator2D::getPrecipitationAmount()
     {
         for (int i=0;i<nrStations;i++)
         {
-            printf("value %.3f  ",precGenerated[i][j]);
+            //printf("value %.3f  ",precGenerated[i][j]);
         }
-        printf("\n");
+        //printf("\n");
     }
     //pressEnterToContinue();
 
@@ -601,7 +601,7 @@ void weatherGenerator2D::spatialIterationAmountsMonthly(int iMonth, double** cor
                             counter++;
                         }
                         dayOfYear += j%lengthMonth[iMonth];
-                        simulatedPrecipitationAmountsMonthly[i][j] = MAXVALUE(1,0.84 * precipitationAmount[i].averageEstimation[dayOfYear] * pow(-log(uniformRandomVar), 1.3333));
+                        simulatedPrecipitationAmountsMonthly[i][j] = MAXVALUE(1+EPSILON,0.84 * precipitationAmount[i].averageEstimation[dayOfYear] * pow(-log(uniformRandomVar), 1.3333)+parametersModel.precipitationThreshold) ;
                }
            }
            //printf("\n");
