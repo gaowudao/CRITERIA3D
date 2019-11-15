@@ -78,9 +78,9 @@ int main()
     doy = day = month = year = NODATA;
     prec = minT = maxT = meanT = NODATA;
     bool firstDay = true;
-    int nrStations = 3; // !! da 1 a 10 stazioni
+    int nrStations = 21; // !! da 1 a 10 stazioni
     int distributionType = 2; // 1 multiexponential 2 multigamma 3 Weibull
-    int yearsOfSimulations = 100; // numero anni
+    int yearsOfSimulations = 500; // numero anni
     int lengthDataSeries = numberMeteoLines;
     int nrVariables = 3;
     int nrDate = 3;
@@ -106,7 +106,7 @@ int main()
     {
         if (i==0)
         {
-               fp = fopen("inputData/bedonia_1961_2018.txt","r");
+               fp = fopen("inputData/argelato_1961_2018.txt","r");
                if (fp == nullptr)
                {
                    printf("Error! File not found\n");
@@ -128,7 +128,7 @@ int main()
         }
         else if (i==1)
         {
-            fp = fopen("inputData/berceto_1961_2018.txt","r");
+            fp = fopen("inputData/baricella_1961_2018.txt","r");
             if (fp == nullptr)
             {
                 printf("Error! File not found\n");
@@ -147,7 +147,7 @@ int main()
         }
         else if (i==2)
         {
-            fp = fopen("inputData/borgovalditaro_1961_2018.txt","r");
+            fp = fopen("inputData/bologna_1961_2018.txt","r");
             if (fp == nullptr)
             {
                 printf("Error! File not found\n");
