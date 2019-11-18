@@ -679,11 +679,11 @@ void weatherGenerator2D::precipitationMultiDistributionParameterization()
            {
                for (int i=0;i<nrBincenter;i++)
                {
-                   //occurrenceIndexSeasonal[ijk].parMultiexp[qq][i][0]=meanPFit[i]*meanPFit[i]/(PstdDev[i]*PstdDev[i]);
-                   //occurrenceIndexSeasonal[ijk].parMultiexp[qq][i][1]=(PstdDev[i]*PstdDev[i])/meanPFit[i];
+                   occurrenceIndexSeasonal[ijk].parMultiexp[qq][i][0]=meanPFit[i]*meanPFit[i]/(PstdDev[i]*PstdDev[i]);
+                   occurrenceIndexSeasonal[ijk].parMultiexp[qq][i][1]=(PstdDev[i]*PstdDev[i])/meanPFit[i];
 
-                   occurrenceIndexSeasonal[ijk].parMultiexp[qq][i][0]=Pmean[i]*Pmean[i]/(PstdDev[i]*PstdDev[i]);
-                   occurrenceIndexSeasonal[ijk].parMultiexp[qq][i][1]=(PstdDev[i]*PstdDev[i])/Pmean[i];
+                   //occurrenceIndexSeasonal[ijk].parMultiexp[qq][i][0]=Pmean[i]*Pmean[i]/(PstdDev[i]*PstdDev[i]);
+                   //occurrenceIndexSeasonal[ijk].parMultiexp[qq][i][1]=(PstdDev[i]*PstdDev[i])/Pmean[i];
                    //printf("lambda %f\t%f\n",occurrenceIndexSeasonal[ijk].parMultiexp[qq][i][0],occurrenceIndexSeasonal[ijk].parMultiexp[qq][i][1]);
 
                }
