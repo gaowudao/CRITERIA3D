@@ -1459,6 +1459,21 @@ bool Project::loadTopographicDistanceMaps()
     return true;
 }
 
+void Project::passInterpolatedTemperatureToHumidityPoints(Crit3DTime myTime)
+{
+    if (! hourlyMeteoMaps->mapHourlyTair->isLoaded) return;
+
+    float airRelHum, airT;
+
+    for (int i = 0; i < nrMeteoPoints; i++)
+    {
+        airRelHum = meteoPoints[i].getMeteoPointValue(myTime, airRelHumidity);
+        airT = meteoPoints[i].getMeteoPointValue(myTime, airTemperature);
+
+        if (! isEqual(airRelHum, NODATA) && isEqual(airT, NODATA))
+            meteoPoints[i].setMeteoPointValueH(myTime.date, myTime.getHour(), myTime.getMinutes(), airTemperature, airT);
+    }
+}
 
 bool Project::interpolationDem(meteoVariable myVar, const Crit3DTime& myTime, gis::Crit3DRasterGrid *myRaster, bool showInfo)
 {
@@ -1553,7 +1568,7 @@ bool Project::interpolationDemMain(meteoVariable myVar, const Crit3DTime& myTime
 {
     if (! DEM.isLoaded)
     {
-        logError("Load a Digital Elevation Model before.");
+        logError("Digital Elevation Model not loaded");
         return false;
     }
 

@@ -1417,6 +1417,7 @@ bool PragaProject::interpolationMeteoGridPeriod(QDate dateIni, QDate dateFin, QL
                 if (getVarFrequency(myVar) == hourly)
                 {
                     if (myVar == airRelHumidity && interpolationSettings.getUseDewPoint()) {
+
                         if (! interpolationDemMain(airDewTemperature, getCrit3DTime(myDate, myHour), hourlyMeteoMaps->mapHourlyTdew, false)) return false;
                         hourlyMeteoMaps->computeRelativeHumidityMap();
                     }
