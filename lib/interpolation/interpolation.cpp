@@ -1118,11 +1118,11 @@ void optimalDetrending(meteoVariable myVar,
     std::vector <Crit3DInterpolationDataPoint> interpolationPoints;
     short i, nrCombination, bestCombinationIndex;
     float avgError, minError;
-    int proxyNr = mySettings->getProxyNr();
+    size_t proxyNr = mySettings->getProxyNr();
     Crit3DProxyCombination myCombination, bestCombination;
     myCombination = mySettings->getSelectedCombination();
 
-    nrCombination = (short)pow(2, (proxyNr + 1));
+    nrCombination = short(pow(2, (proxyNr + 1)));
 
     minError = NODATA;
 
@@ -1140,7 +1140,7 @@ void optimalDetrending(meteoVariable myVar,
             if (computeResiduals(myVar, myMeteoPoints, nrMeteoPoints, interpolationPoints, mySettings, true, true))
             {
                 avgError = computeErrorCrossValidation(myVar, myMeteoPoints, nrMeteoPoints, myTime);
-                if (avgError != NODATA && (minError == NODATA || avgError < minError))
+                if (! isEqual(avgError, NODATA) && (isEqual(minError, NODATA) || avgError < minError))
                 {
                     minError = avgError;
                     bestCombinationIndex = i;
