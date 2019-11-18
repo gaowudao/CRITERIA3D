@@ -596,14 +596,34 @@ void MainWindow::on_actionVariableQualitySpatial_triggered()
 
 void MainWindow::interpolateDemGUI()
 {
+    bool isComputed = false;
+
     meteoVariable myVar = myProject.getCurrentVariable();
 
-    if (myProject.interpolationDemMain(myVar, myProject.getCrit3DCurrentTime(), &(myProject.dataRaster), true))
+    if (myVar == airRelHumidity && myProject.interpolationSettings.getUseDewPoint())
     {
-        setColorScale(myVar, myProject.dataRaster.colorScale);
-        setCurrentRaster(&(myProject.dataRaster));
+        if (! myProject.interpolationDemMain(airTemperature, myProject.getCrit3DCurrentTime(), myProject.hourlyMeteoMaps->mapHourlyTair, false)) return;
 
-        ui->labelRasterScale->setText(QString::fromStdString(getVariableString(myVar)));
+        if (myProject.interpolationSettings.getUseInterpolatedTForRH())
+            myProject.passInterpolatedTemperatureToHumidityPoints(myProject.getCrit3DCurrentTime());
+
+        if (myProject.interpolationDemMain(airDewTemperature, myProject.getCrit3DCurrentTime(), myProject.hourlyMeteoMaps->mapHourlyTdew, false))
+        {
+            myProject.hourlyMeteoMaps->computeRelativeHumidityMap(&myProject.dataRaster);
+            isComputed = true;
+        }
+
+    }
+    else {
+        isComputed = myProject.interpolationDemMain(myVar, myProject.getCrit3DCurrentTime(), &(myProject.dataRaster), true);
+    }
+
+    if (isComputed) {
+        {
+            setColorScale(myVar, myProject.dataRaster.colorScale);
+            setCurrentRaster(&(myProject.dataRaster));
+            ui->labelRasterScale->setText(QString::fromStdString(getVariableString(myVar)));
+        }
     }
 }
 

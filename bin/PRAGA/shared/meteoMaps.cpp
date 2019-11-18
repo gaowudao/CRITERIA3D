@@ -279,10 +279,10 @@ bool Crit3DHourlyMeteoMaps::computeLeafWetnessMap()
 
 
 
-bool Crit3DHourlyMeteoMaps::computeRelativeHumidityMap()
+bool Crit3DHourlyMeteoMaps::computeRelativeHumidityMap(gis::Crit3DRasterGrid* myGrid)
 {
     float airT, dewT;
-    mapHourlyRelHum->emptyGrid();
+    myGrid->emptyGrid();
 
     for (long row = 0; row < mapHourlyRelHum->header->nrRows ; row++)
     {
@@ -293,12 +293,12 @@ bool Crit3DHourlyMeteoMaps::computeRelativeHumidityMap()
             if (! isEqual(airT, mapHourlyTair->header->flag)
                  && ! isEqual(dewT, mapHourlyTdew->header->flag))
             {
-                    mapHourlyRelHum->value[row][col] = relHumFromTdew(dewT, airT);
+                    myGrid->value[row][col] = relHumFromTdew(dewT, airT);
             }
         }
     }
 
-    return gis::updateMinMaxRasterGrid(mapHourlyRelHum);
+    return gis::updateMinMaxRasterGrid(myGrid);
 }
 
 
