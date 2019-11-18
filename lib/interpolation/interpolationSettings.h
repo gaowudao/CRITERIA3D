@@ -107,6 +107,7 @@
         bool useLapseRateCode;
         bool useBestDetrending;
         bool useDewPoint;
+        bool useInterpolatedTForRH;
         float refHeightWind;
         float surfaceRoughness;
 
@@ -191,6 +192,8 @@
         void setRefHeightWind(float value);
         float getSurfaceRoughness() const;
         void setSurfaceRoughness(float value);
+        bool getUseInterpolatedTForRH() const;
+        void setUseInterpolatedTForRH(bool value);
     };
 
 #endif // INTERPOLATIONSETTINGS_H

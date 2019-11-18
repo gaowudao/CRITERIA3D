@@ -65,19 +65,24 @@ float getMaxHeight(std::vector <Crit3DInterpolationDataPoint> &myPoints, bool us
     return zMax;
 }
 
-int sortPointsByDistance(unsigned maxIndex, vector <Crit3DInterpolationDataPoint> &myPoints, vector <Crit3DInterpolationDataPoint> &myValidPoints)
+unsigned sortPointsByDistance(unsigned maxIndex, vector <Crit3DInterpolationDataPoint> &myPoints, vector <Crit3DInterpolationDataPoint> &myValidPoints)
 {   
     unsigned i;
-    int first, index;
-    float min_value;
-    unsigned* indici_ordinati;
-    unsigned* indice_minimo;
-    int outIndex;
+    unsigned first, index;
+    float min_value = NODATA;
+    //unsigned* indici_ordinati;
+    //unsigned* indice_minimo;
+    std::vector <unsigned> indici_ordinati;
+    std::vector <unsigned> indice_minimo;
+    unsigned outIndex;
 
     if (myPoints.size() == 0) return 0;
 
-    indici_ordinati = (unsigned *) calloc(maxIndex, sizeof(unsigned));
-    indice_minimo = (unsigned *) calloc(myPoints.size(), sizeof(unsigned));
+    //indici_ordinati = (unsigned *) calloc(maxIndex, sizeof(unsigned));
+    //  indice_minimo = (unsigned *) calloc(myPoints.size(), sizeof(unsigned));
+
+    indici_ordinati.resize(maxIndex);
+    indice_minimo.resize(myPoints.size());
 
     first = 0;
     index = 0;
@@ -89,10 +94,10 @@ int sortPointsByDistance(unsigned maxIndex, vector <Crit3DInterpolationDataPoint
         if (first == 0)
         {
             i = 0;
-            while ((! myPoints[i].isActive || (myPoints[i].distance == 0)) && (i < int(myPoints.size())-1))
+            while ((! myPoints[i].isActive || (isEqual(myPoints[i].distance, 0))) && (i < myPoints.size()-1))
                 i++;
 
-            if (i == int(myPoints.size())-1 && ! myPoints[i].isActive)
+            if (i == myPoints.size()-1 && ! myPoints[i].isActive)
                 exit=true;
             else
             {
@@ -107,7 +112,7 @@ int sortPointsByDistance(unsigned maxIndex, vector <Crit3DInterpolationDataPoint
         if (!exit)
         {
             for (i = unsigned(indice_minimo[first-1]) + 1; i < myPoints.size(); i++)
-                if (myPoints[i].distance < min_value)
+                if (isEqual(min_value, NODATA) || myPoints[i].distance < min_value)
                     if (myPoints[i].isActive)
                         if (myPoints[i].distance > 0)
                         {
@@ -124,12 +129,12 @@ int sortPointsByDistance(unsigned maxIndex, vector <Crit3DInterpolationDataPoint
     }
 
     outIndex = MINVALUE(index, maxIndex);
-    myValidPoints.resize(outIndex);
+    myValidPoints.clear();
 
     for (i=0; i < outIndex; i++)
     {
         myPoints[indici_ordinati[i]].isActive = true;
-        myValidPoints[i] = myPoints[indici_ordinati[i]];
+        myValidPoints.push_back(myPoints[indici_ordinati[i]]);
     }
 
     return outIndex;
@@ -712,9 +717,6 @@ float computeShepard(vector <Crit3DInterpolationDataPoint> &myPoints, Crit3DInte
     float radius;
     unsigned int nrValid = 0;
 
-    shepardValidPoints.clear();
-    shepardNeighbourPoints.clear();
-
     // define a first neighborhood inside initial radius
     for (i=1; i < myPoints.size(); i++)
         if (myPoints[i].distance <= settings->getShepardInitialRadius() && myPoints[i].distance > 0 && myPoints[i].index != settings->getIndexPointCV())
@@ -750,7 +752,7 @@ float computeShepard(vector <Crit3DInterpolationDataPoint> &myPoints, Crit3DInte
 
     unsigned int j;
     float weightSum, radius_27_4, radius_3, tmp, cosine, result;
-    vector <float> weight, t, S;
+    std::vector <float> weight, t, S;
 
     weight.resize(nrValid);
     t.resize(nrValid);
@@ -1116,11 +1118,11 @@ void optimalDetrending(meteoVariable myVar,
     std::vector <Crit3DInterpolationDataPoint> interpolationPoints;
     short i, nrCombination, bestCombinationIndex;
     float avgError, minError;
-    int proxyNr = mySettings->getProxyNr();
+    size_t proxyNr = mySettings->getProxyNr();
     Crit3DProxyCombination myCombination, bestCombination;
     myCombination = mySettings->getSelectedCombination();
 
-    nrCombination = (short)pow(2, (proxyNr + 1));
+    nrCombination = short(pow(2, (proxyNr + 1)));
 
     minError = NODATA;
 
@@ -1138,7 +1140,7 @@ void optimalDetrending(meteoVariable myVar,
             if (computeResiduals(myVar, myMeteoPoints, nrMeteoPoints, interpolationPoints, mySettings, true, true))
             {
                 avgError = computeErrorCrossValidation(myVar, myMeteoPoints, nrMeteoPoints, myTime);
-                if (avgError != NODATA && (minError == NODATA || avgError < minError))
+                if (! isEqual(avgError, NODATA) && (isEqual(minError, NODATA) || avgError < minError))
                 {
                     minError = avgError;
                     bestCombinationIndex = i;
