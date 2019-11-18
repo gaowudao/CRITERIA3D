@@ -25,6 +25,7 @@ class DialogInterpolation : public QDialog
         QCheckBox* optimalDetrendingEdit;
         QCheckBox* topographicDistanceEdit;
         QCheckBox* useDewPointEdit;
+        QCheckBox* useInterpolTForRH;
         QComboBox gridAggregationMethodEdit;
         QVBoxLayout *layoutProxyList;
         QListWidget *proxyListCheck;

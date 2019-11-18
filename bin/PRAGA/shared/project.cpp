@@ -559,6 +559,9 @@ bool Project::loadParameters(QString parametersFileName)
             if (parameters->contains("useDewPoint"))
                 interpolationSettings.setUseDewPoint(parameters->value("useDewPoint").toBool());
 
+            if (parameters->contains("useInterpolationTemperatureForRH"))
+                interpolationSettings.setUseInterpolatedTForRH(parameters->value("useInterpolationTemperatureForRH").toBool());
+
             parameters->endGroup();
 
         }
@@ -1788,6 +1791,7 @@ void Project::saveInterpolationParameters()
         parameters->setValue("topographicDistance", interpolationSettings.getUseTAD());
         parameters->setValue("optimalDetrending", interpolationSettings.getUseBestDetrending());
         parameters->setValue("useDewPoint", interpolationSettings.getUseDewPoint());
+        parameters->setValue("useInterpolationTemperatureForRH", interpolationSettings.getUseInterpolatedTForRH());
         parameters->setValue("thermalInversion", interpolationSettings.getUseThermalInversion());
         parameters->setValue("minRegressionR2", QString::number(interpolationSettings.getMinRegressionR2()));
     parameters->endGroup();
