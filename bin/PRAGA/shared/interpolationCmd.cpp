@@ -152,7 +152,9 @@ bool interpolationRaster(std::vector <Crit3DInterpolationDataPoint> &myPoints, C
 
     if (showInfo)
     {
-        infoStr = "Interpolation on DEM...";
+        infoStr = "Interpolating ";
+        infoStr += QString::fromStdString(getVariableString(myVar));
+        infoStr += " on DEM...";
         infoStep = myInfo.start(infoStr, myGrid->header->nrRows);
     }
 

@@ -602,13 +602,15 @@ void MainWindow::interpolateDemGUI()
 
     if (myVar == airRelHumidity && myProject.interpolationSettings.getUseDewPoint())
     {
-        if (! myProject.interpolationDemMain(airTemperature, myProject.getCrit3DCurrentTime(), myProject.hourlyMeteoMaps->mapHourlyTair, false)) return;
+        if (! myProject.interpolationDemMain(airTemperature, myProject.getCrit3DCurrentTime(), myProject.hourlyMeteoMaps->mapHourlyTair, true)) return;
 
         if (myProject.interpolationSettings.getUseInterpolatedTForRH())
             myProject.passInterpolatedTemperatureToHumidityPoints(myProject.getCrit3DCurrentTime());
 
-        if (myProject.interpolationDemMain(airDewTemperature, myProject.getCrit3DCurrentTime(), myProject.hourlyMeteoMaps->mapHourlyTdew, false))
+        if (myProject.interpolationDemMain(airDewTemperature, myProject.getCrit3DCurrentTime(), myProject.hourlyMeteoMaps->mapHourlyTdew, true))
         {
+            if (! myProject.dataRaster.initializeGrid(myProject.DEM)) return;
+
             myProject.hourlyMeteoMaps->computeRelativeHumidityMap(&myProject.dataRaster);
             isComputed = true;
         }

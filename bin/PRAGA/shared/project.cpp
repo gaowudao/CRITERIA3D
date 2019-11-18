@@ -1464,14 +1464,17 @@ void Project::passInterpolatedTemperatureToHumidityPoints(Crit3DTime myTime)
     if (! hourlyMeteoMaps->mapHourlyTair->isLoaded) return;
 
     float airRelHum, airT;
+    int row, col;
 
     for (int i = 0; i < nrMeteoPoints; i++)
     {
         airRelHum = meteoPoints[i].getMeteoPointValue(myTime, airRelHumidity);
         airT = meteoPoints[i].getMeteoPointValue(myTime, airTemperature);
 
-        if (! isEqual(airRelHum, NODATA) && isEqual(airT, NODATA))
-            meteoPoints[i].setMeteoPointValueH(myTime.date, myTime.getHour(), myTime.getMinutes(), airTemperature, airT);
+        if (! isEqual(airRelHum, NODATA) && isEqual(airT, NODATA)) {
+            gis::getRowColFromXY(*(hourlyMeteoMaps->mapHourlyTair), meteoPoints[i].point.utm.x, meteoPoints[i].point.utm.y, &row, &col);
+            meteoPoints[i].setMeteoPointValueH(myTime.date, myTime.getHour(), myTime.getMinutes(), airTemperature, hourlyMeteoMaps->mapHourlyRelHum->value[row][col]);
+        }
     }
 }
 
