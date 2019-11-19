@@ -2041,6 +2041,9 @@ void MainWindow::on_actionOpen_project_triggered()
         on_actionClose_meteo_grid_triggered();
         on_actionClose_meteo_points_triggered();
         clearDEM();
+
+        this->ui->labelFrequency->setText("None");
+        this->ui->labelVariable->setText(("None"));
     }
 
     if (myProject.loadPragaProject(fileName))
@@ -2062,6 +2065,8 @@ void MainWindow::on_actionClose_project_triggered()
 
     on_actionClose_meteo_grid_triggered();
     on_actionClose_meteo_points_triggered();
+    this->ui->labelFrequency->setText("None");
+    this->ui->labelVariable->setText(("None"));
 
     clearDEM();
 
