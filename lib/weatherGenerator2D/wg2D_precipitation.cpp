@@ -1466,6 +1466,7 @@ void weatherGenerator2D::spatialIterationAmounts(double** correlationMatrixSimul
    bool exitWhileCycle = false;
    int nrEigenvaluesLessThan0;
    int counter;
+   //while ((val>TOLERANCE_MULGETS) && (ii<1) && (!exitWhileCycle))
    while ((val>TOLERANCE_MULGETS) && (ii<MAX_ITERATION_MULGETS) && (!exitWhileCycle))
    {
        ++ii;
