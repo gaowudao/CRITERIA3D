@@ -1716,61 +1716,121 @@ bool Project::loadProjectSettings(QString settingsFileName)
     projectSettings->endGroup();
 
     projectSettings->beginGroup("id_arkimet");
+    QStringList myList;
+    QList<int> intList;
     if (projectSettings->contains("air_temperature_daily"))
-    {
-        QList<QVariant> myList;
-        QList<int> intList;
-        myList = projectSettings->value("air_temperature_daily").toList();
-        foreach(QVariant v, myList)
+    {  
+        intList.clear();
+        myList = projectSettings->value("air_temperature_daily").toStringList();
+        for (int i = 0; i < myList.size(); i++)
         {
-            intList << v.value<int>();
+            intList << myList[i].toInt();
         }
         idArkimetDailyMap["Air Temperature"] = intList;
     }
     if (projectSettings->contains("precipitation_daily"))
     {
-        QList<QVariant> myList;
-        QList<int> intList;
-        myList = projectSettings->value("precipitation_daily").toList();
-        foreach(QVariant v, myList)
+        intList.clear();
+        myList = projectSettings->value("precipitation_daily").toStringList();
+        for (int i = 0; i < myList.size(); i++)
         {
-            intList << v.value<int>();
+            intList << myList[i].toInt();
         }
         idArkimetDailyMap["Precipitation"] = intList;
     }
     if (projectSettings->contains("air_humidity_daily"))
     {
-        QList<QVariant> myList;
-        QList<int> intList;
-        myList = projectSettings->value("air_humidity_daily").toList();
-        foreach(QVariant v, myList)
+        intList.clear();
+        myList = projectSettings->value("air_humidity_daily").toStringList();
+        for (int i = 0; i < myList.size(); i++)
         {
-            intList << v.value<int>();
+            intList << myList[i].toInt();
         }
         idArkimetDailyMap["Air Humidity"] = intList;
     }
     if (projectSettings->contains("radiation_daily"))
     {
-        QList<QVariant> myList;
-        QList<int> intList;
-        myList = projectSettings->value("radiation_daily").toList();
-        foreach(QVariant v, myList)
+        intList.clear();
+        myList = projectSettings->value("radiation_daily").toStringList();
+        for (int i = 0; i < myList.size(); i++)
         {
-            intList << v.value<int>();
+            intList << myList[i].toInt();
         }
         idArkimetDailyMap["Radiation"] = intList;
     }
     if (projectSettings->contains("wind_daily"))
     {
-        QList<QVariant> myList;
-        QList<int> intList;
-        myList = projectSettings->value("wind_daily").toList();
-        foreach(QVariant v, myList)
+        intList.clear();
+        myList = projectSettings->value("wind_daily").toStringList();
+        for (int i = 0; i < myList.size(); i++)
         {
-            intList << v.value<int>();
+            intList << myList[i].toInt();
         }
         idArkimetDailyMap["Wind"] = intList;
     }
+
+    if (projectSettings->contains("air_temperature_hourly"))
+    {
+        intList.clear();
+        myList = projectSettings->value("air_temperature_hourly").toStringList();
+        for (int i = 0; i < myList.size(); i++)
+        {
+            intList << myList[i].toInt();
+        }
+        idArkimetHourlyMap["Air Temperature"] = intList;
+    }
+    if (projectSettings->contains("precipitation_hourly"))
+    {
+        intList.clear();
+        myList = projectSettings->value("precipitation_hourly").toStringList();
+        for (int i = 0; i < myList.size(); i++)
+        {
+            intList << myList[i].toInt();
+        }
+        idArkimetHourlyMap["Precipitation"] = intList;
+    }
+    if (projectSettings->contains("air_humidity_hourly"))
+    {
+        intList.clear();
+        myList = projectSettings->value("air_humidity_hourly").toStringList();
+        for (int i = 0; i < myList.size(); i++)
+        {
+            intList << myList[i].toInt();
+        }
+        idArkimetHourlyMap["Air Humidity"] = intList;
+    }
+    if (projectSettings->contains("radiation_hourly"))
+    {
+        intList.clear();
+        myList = projectSettings->value("radiation_hourly").toStringList();
+        for (int i = 0; i < myList.size(); i++)
+        {
+            intList << myList[i].toInt();
+        }
+        idArkimetHourlyMap["Radiation"] = intList;
+    }
+    if (projectSettings->contains("wind_hourly"))
+    {
+        intList.clear();
+        myList = projectSettings->value("wind_hourly").toStringList();
+        for (int i = 0; i < myList.size(); i++)
+        {
+            intList << myList[i].toInt();
+        }
+        idArkimetHourlyMap["Wind"] = intList;
+    }
+    /*
+    for(std::map<QString, QList<int> >::const_iterator it = idArkimetDailyMap.begin();
+        it != idArkimetDailyMap.end(); ++it)
+    {
+        qDebug() << "idArkimetDailyMap " << it->first << ":" << it->second << "\n";
+    }
+    for(std::map<QString, QList<int> >::const_iterator it = idArkimetHourlyMap.begin();
+        it != idArkimetHourlyMap.end(); ++it)
+    {
+        qDebug() << "idArkimetHourlyMap " << it->first << ":" << it->second << "\n";
+    }
+    */
     projectSettings->endGroup();
 
     return true;
