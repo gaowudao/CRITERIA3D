@@ -1715,6 +1715,64 @@ bool Project::loadProjectSettings(QString settingsFileName)
         currentTileMap = projectSettings->value("tile_map").toString();
     projectSettings->endGroup();
 
+    projectSettings->beginGroup("id_arkimet");
+    if (projectSettings->contains("air_temperature_daily"))
+    {
+        QList<QVariant> myList;
+        QList<int> intList;
+        myList = projectSettings->value("air_temperature_daily").toList();
+        foreach(QVariant v, myList)
+        {
+            intList << v.value<int>();
+        }
+        idArkimetDailyMap["Air Temperature"] = intList;
+    }
+    if (projectSettings->contains("precipitation_daily"))
+    {
+        QList<QVariant> myList;
+        QList<int> intList;
+        myList = projectSettings->value("precipitation_daily").toList();
+        foreach(QVariant v, myList)
+        {
+            intList << v.value<int>();
+        }
+        idArkimetDailyMap["Precipitation"] = intList;
+    }
+    if (projectSettings->contains("air_humidity_daily"))
+    {
+        QList<QVariant> myList;
+        QList<int> intList;
+        myList = projectSettings->value("air_humidity_daily").toList();
+        foreach(QVariant v, myList)
+        {
+            intList << v.value<int>();
+        }
+        idArkimetDailyMap["Air Humidity"] = intList;
+    }
+    if (projectSettings->contains("radiation_daily"))
+    {
+        QList<QVariant> myList;
+        QList<int> intList;
+        myList = projectSettings->value("radiation_daily").toList();
+        foreach(QVariant v, myList)
+        {
+            intList << v.value<int>();
+        }
+        idArkimetDailyMap["Radiation"] = intList;
+    }
+    if (projectSettings->contains("wind_daily"))
+    {
+        QList<QVariant> myList;
+        QList<int> intList;
+        myList = projectSettings->value("wind_daily").toList();
+        foreach(QVariant v, myList)
+        {
+            intList << v.value<int>();
+        }
+        idArkimetDailyMap["Wind"] = intList;
+    }
+    projectSettings->endGroup();
+
     return true;
 }
 
