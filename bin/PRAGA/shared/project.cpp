@@ -559,6 +559,9 @@ bool Project::loadParameters(QString parametersFileName)
             if (parameters->contains("useDewPoint"))
                 interpolationSettings.setUseDewPoint(parameters->value("useDewPoint").toBool());
 
+            if (parameters->contains("useInterpolationTemperatureForRH"))
+                interpolationSettings.setUseInterpolatedTForRH(parameters->value("useInterpolationTemperatureForRH").toBool());
+
             parameters->endGroup();
 
         }
@@ -1456,6 +1459,24 @@ bool Project::loadTopographicDistanceMaps()
     return true;
 }
 
+void Project::passInterpolatedTemperatureToHumidityPoints(Crit3DTime myTime)
+{
+    if (! hourlyMeteoMaps->mapHourlyTair->isLoaded) return;
+
+    float airRelHum, airT;
+    int row, col;
+
+    for (int i = 0; i < nrMeteoPoints; i++)
+    {
+        airRelHum = meteoPoints[i].getMeteoPointValue(myTime, airRelHumidity);
+        airT = meteoPoints[i].getMeteoPointValue(myTime, airTemperature);
+
+        if (! isEqual(airRelHum, NODATA) && isEqual(airT, NODATA)) {
+            gis::getRowColFromXY(*(hourlyMeteoMaps->mapHourlyTair), meteoPoints[i].point.utm.x, meteoPoints[i].point.utm.y, &row, &col);
+            meteoPoints[i].setMeteoPointValueH(myTime.date, myTime.getHour(), myTime.getMinutes(), airTemperature, hourlyMeteoMaps->mapHourlyRelHum->value[row][col]);
+        }
+    }
+}
 
 bool Project::interpolationDem(meteoVariable myVar, const Crit3DTime& myTime, gis::Crit3DRasterGrid *myRaster, bool showInfo)
 {
@@ -1550,7 +1571,7 @@ bool Project::interpolationDemMain(meteoVariable myVar, const Crit3DTime& myTime
 {
     if (! DEM.isLoaded)
     {
-        logError("Load a Digital Elevation Model before.");
+        logError("Digital Elevation Model not loaded");
         return false;
     }
 
@@ -1694,6 +1715,64 @@ bool Project::loadProjectSettings(QString settingsFileName)
         currentTileMap = projectSettings->value("tile_map").toString();
     projectSettings->endGroup();
 
+    projectSettings->beginGroup("id_arkimet");
+    if (projectSettings->contains("air_temperature_daily"))
+    {
+        QList<QVariant> myList;
+        QList<int> intList;
+        myList = projectSettings->value("air_temperature_daily").toList();
+        foreach(QVariant v, myList)
+        {
+            intList << v.value<int>();
+        }
+        idArkimetDailyMap["Air Temperature"] = intList;
+    }
+    if (projectSettings->contains("precipitation_daily"))
+    {
+        QList<QVariant> myList;
+        QList<int> intList;
+        myList = projectSettings->value("precipitation_daily").toList();
+        foreach(QVariant v, myList)
+        {
+            intList << v.value<int>();
+        }
+        idArkimetDailyMap["Precipitation"] = intList;
+    }
+    if (projectSettings->contains("air_humidity_daily"))
+    {
+        QList<QVariant> myList;
+        QList<int> intList;
+        myList = projectSettings->value("air_humidity_daily").toList();
+        foreach(QVariant v, myList)
+        {
+            intList << v.value<int>();
+        }
+        idArkimetDailyMap["Air Humidity"] = intList;
+    }
+    if (projectSettings->contains("radiation_daily"))
+    {
+        QList<QVariant> myList;
+        QList<int> intList;
+        myList = projectSettings->value("radiation_daily").toList();
+        foreach(QVariant v, myList)
+        {
+            intList << v.value<int>();
+        }
+        idArkimetDailyMap["Radiation"] = intList;
+    }
+    if (projectSettings->contains("wind_daily"))
+    {
+        QList<QVariant> myList;
+        QList<int> intList;
+        myList = projectSettings->value("wind_daily").toList();
+        foreach(QVariant v, myList)
+        {
+            intList << v.value<int>();
+        }
+        idArkimetDailyMap["Wind"] = intList;
+    }
+    projectSettings->endGroup();
+
     return true;
 }
 
@@ -1788,6 +1867,7 @@ void Project::saveInterpolationParameters()
         parameters->setValue("topographicDistance", interpolationSettings.getUseTAD());
         parameters->setValue("optimalDetrending", interpolationSettings.getUseBestDetrending());
         parameters->setValue("useDewPoint", interpolationSettings.getUseDewPoint());
+        parameters->setValue("useInterpolationTemperatureForRH", interpolationSettings.getUseInterpolatedTForRH());
         parameters->setValue("thermalInversion", interpolationSettings.getUseThermalInversion());
         parameters->setValue("minRegressionR2", QString::number(interpolationSettings.getMinRegressionR2()));
     parameters->endGroup();

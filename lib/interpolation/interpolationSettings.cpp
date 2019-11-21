@@ -218,6 +218,16 @@ void Crit3DInterpolationSettings::setSurfaceRoughness(float value)
     surfaceRoughness = value;
 }
 
+bool Crit3DInterpolationSettings::getUseInterpolatedTForRH() const
+{
+    return useInterpolatedTForRH;
+}
+
+void Crit3DInterpolationSettings::setUseInterpolatedTForRH(bool value)
+{
+    useInterpolatedTForRH = value;
+}
+
 Crit3DInterpolationSettings::Crit3DInterpolationSettings()
 {
     initialize();
@@ -237,6 +247,7 @@ void Crit3DInterpolationSettings::initialize()
     useThermalInversion = true;
     useTAD = false;
     useDewPoint = true;
+    useInterpolatedTForRH = true;
     useBestDetrending = false;
     useLapseRateCode = false;
     minRegressionR2 = float(PEARSONSTANDARDTHRESHOLD);

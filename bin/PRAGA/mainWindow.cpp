@@ -596,14 +596,36 @@ void MainWindow::on_actionVariableQualitySpatial_triggered()
 
 void MainWindow::interpolateDemGUI()
 {
+    bool isComputed = false;
+
     meteoVariable myVar = myProject.getCurrentVariable();
 
-    if (myProject.interpolationDemMain(myVar, myProject.getCrit3DCurrentTime(), &(myProject.dataRaster), true))
+    if (myVar == airRelHumidity && myProject.interpolationSettings.getUseDewPoint())
     {
-        setColorScale(myVar, myProject.dataRaster.colorScale);
-        setCurrentRaster(&(myProject.dataRaster));
+        if (! myProject.interpolationDemMain(airTemperature, myProject.getCrit3DCurrentTime(), myProject.hourlyMeteoMaps->mapHourlyTair, true)) return;
 
-        ui->labelRasterScale->setText(QString::fromStdString(getVariableString(myVar)));
+        if (myProject.interpolationSettings.getUseInterpolatedTForRH())
+            myProject.passInterpolatedTemperatureToHumidityPoints(myProject.getCrit3DCurrentTime());
+
+        if (myProject.interpolationDemMain(airDewTemperature, myProject.getCrit3DCurrentTime(), myProject.hourlyMeteoMaps->mapHourlyTdew, true))
+        {
+            if (! myProject.dataRaster.initializeGrid(myProject.DEM)) return;
+
+            myProject.hourlyMeteoMaps->computeRelativeHumidityMap(&myProject.dataRaster);
+            isComputed = true;
+        }
+
+    }
+    else {
+        isComputed = myProject.interpolationDemMain(myVar, myProject.getCrit3DCurrentTime(), &(myProject.dataRaster), true);
+    }
+
+    if (isComputed) {
+        {
+            setColorScale(myVar, myProject.dataRaster.colorScale);
+            setCurrentRaster(&(myProject.dataRaster));
+            ui->labelRasterScale->setText(QString::fromStdString(getVariableString(myVar)));
+        }
     }
 }
 
@@ -2019,6 +2041,9 @@ void MainWindow::on_actionOpen_project_triggered()
         on_actionClose_meteo_grid_triggered();
         on_actionClose_meteo_points_triggered();
         clearDEM();
+
+        this->ui->labelFrequency->setText("None");
+        this->ui->labelVariable->setText(("None"));
     }
 
     if (myProject.loadPragaProject(fileName))
@@ -2040,6 +2065,8 @@ void MainWindow::on_actionClose_project_triggered()
 
     on_actionClose_meteo_grid_triggered();
     on_actionClose_meteo_points_triggered();
+    this->ui->labelFrequency->setText("None");
+    this->ui->labelVariable->setText(("None"));
 
     clearDEM();
 

@@ -45,6 +45,12 @@ DialogInterpolation::DialogInterpolation(Project *myProject)
     useDewPointEdit->setChecked(_interpolationSettings->getUseDewPoint());
     layoutMain->addWidget(useDewPointEdit);
 
+    // temperature interpolation for relative humidity
+    useInterpolTForRH = new QCheckBox(tr("use interpolated temperature (if missing) for relative humidity"));
+    useInterpolTForRH->setChecked(_interpolationSettings->getUseInterpolatedTForRH());
+    layoutMain->addWidget(useInterpolTForRH);
+
+    // use interpolated
     // R2
     QLabel *labelMinR2 = new QLabel(tr("minimum regression R2"));
     QDoubleValidator *doubleValR2 = new QDoubleValidator(0.0, 1.0, 2, this);
@@ -175,6 +181,7 @@ void DialogInterpolation::accept()
     _interpolationSettings->setUseBestDetrending(optimalDetrendingEdit->isChecked());
     _interpolationSettings->setUseThermalInversion(thermalInversionEdit->isChecked());
     _interpolationSettings->setUseDewPoint(useDewPointEdit->isChecked());
+    _interpolationSettings->setUseInterpolatedTForRH((useInterpolTForRH->isChecked()));
     _interpolationSettings->setMinRegressionR2(minRegressionR2Edit.text().toFloat());
 
     _qualityInterpolationSettings->setMinRegressionR2(minRegressionR2Edit.text().toFloat());

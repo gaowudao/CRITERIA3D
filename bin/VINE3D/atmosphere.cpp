@@ -256,9 +256,12 @@ bool interpolationProjectDemMain(Vine3DProject* myProject, meteoVariable myVar, 
                     return false;
             }
 
+            if (myProject->interpolationSettings.getUseInterpolatedTForRH())
+                myProject->passInterpolatedTemperatureToHumidityPoints(myCrit3DTime);
+
             if (vine3DInterpolationDem(myProject, airDewTemperature, myCrit3DTime, isLoadData))
             {
-                myResult = myProject->hourlyMeteoMaps->computeRelativeHumidityMap();
+                myResult = myProject->hourlyMeteoMaps->computeRelativeHumidityMap(myProject->hourlyMeteoMaps->mapHourlyRelHum);
             }
         }
         else

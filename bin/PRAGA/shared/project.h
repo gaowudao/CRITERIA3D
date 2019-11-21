@@ -33,7 +33,6 @@
         #include <fstream>
     #endif
 
-
     class Project {
     private:
         QString appPath;
@@ -65,6 +64,8 @@
         QString dbGridXMLFileName;
         QString parametersFileName;
 
+        std::map<QString, QList<int> > idArkimetHourlyMap;
+        std::map<QString, QList<int> > idArkimetDailyMap;
         std::ofstream logFile;
 
         QSettings* parameters;
@@ -179,6 +180,7 @@
         void checkMeteoPointsDEM();
         bool writeTopographicDistanceMaps(bool onlyWithData);
         bool loadTopographicDistanceMaps();
+        void passInterpolatedTemperatureToHumidityPoints(Crit3DTime myTime);
         bool interpolationDemMain(meteoVariable myVar, const Crit3DTime& myTime, gis::Crit3DRasterGrid *myRaster, bool showInfo);
         bool interpolationDem(meteoVariable myVar, const Crit3DTime& myTime, gis::Crit3DRasterGrid *myRaster, bool showInfo);
         bool interpolateDemRadiation(const Crit3DTime& myTime, gis::Crit3DRasterGrid *myRaster, bool showInfo);

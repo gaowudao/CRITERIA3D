@@ -377,7 +377,6 @@ QStringList FloatVectorToStringList(std::vector <float> myVector)
     return myList;
 }
 
-
 bool removeDirectory(QString myPath)
 {
     QDir myDir(myPath);
