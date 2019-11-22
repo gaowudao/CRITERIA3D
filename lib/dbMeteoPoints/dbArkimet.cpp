@@ -67,9 +67,9 @@ QString DbArkimet::getVarName(int id)
 }
 
 
-int DbArkimet::getId(QString VarName)
+QList<int> DbArkimet::getId(QString VarName)
 {
-    int id = 0;
+    QList<int> idList;
     QSqlQuery qry(_db);
 
     qry.prepare( "SELECT id_arkimet FROM variable_properties WHERE variable = :VarName" );
@@ -81,14 +81,14 @@ int DbArkimet::getId(QString VarName)
     }
     else
     {
-        if (qry.next())
-            id = qry.value(0).toInt();
-
-        else
-            qDebug( "Error: dataset not found" );
+        while (qry.next())
+        {
+            int id = qry.value(0).toInt();
+            idList << id;
+        }
     }
 
-    return id;
+    return idList;
 }
 
 

@@ -58,6 +58,7 @@ void weatherGenerator2D::getWeatherGeneratorOutput()
         if (isLeapYear(i)) nrDays++;
     }
 
+
     float *inputTMin = nullptr;
     float *inputTMax = nullptr;
     float *inputPrec = nullptr;
@@ -70,20 +71,26 @@ void weatherGenerator2D::getWeatherGeneratorOutput()
     inputFirstDate.day = 1;
     inputFirstDate.month = 1;
     inputFirstDate.year = 1;
-
+    float ** monthlySimulatedAveragePrecipitation = nullptr;
+    float ** monthlyClimateAveragePrecipitation = nullptr;
     float** meanAmountsPrecGenerated = nullptr;
     float** cumulatedOccurrencePrecGenerated = nullptr;
-
+    monthlySimulatedAveragePrecipitation = (float**)calloc(nrStations, sizeof(float*));
+    monthlyClimateAveragePrecipitation = (float**)calloc(nrStations, sizeof(float*));
     meanAmountsPrecGenerated = (float**)calloc(nrStations, sizeof(float*));
     cumulatedOccurrencePrecGenerated = (float**)calloc(nrStations, sizeof(float*));
     for (int iStation=0;iStation<nrStations;iStation++)
     {
         meanAmountsPrecGenerated[iStation] = (float*)calloc(12, sizeof(float));
         cumulatedOccurrencePrecGenerated[iStation] = (float*)calloc(12, sizeof(float));
+        monthlySimulatedAveragePrecipitation[iStation] = (float*)calloc(12, sizeof(float));
+        monthlyClimateAveragePrecipitation[iStation] = (float*)calloc(12, sizeof(float));
         for (int j=0;j<12;j++)
         {
             meanAmountsPrecGenerated[iStation][j] = 0;
             cumulatedOccurrencePrecGenerated[iStation][j] = 0;
+            monthlySimulatedAveragePrecipitation[iStation][j] = NODATA;
+            monthlyClimateAveragePrecipitation[iStation][j] = NODATA;
         }
     }
     for (int iStation=0;iStation<nrStations;iStation++)
@@ -181,7 +188,7 @@ void weatherGenerator2D::getWeatherGeneratorOutput()
             }
             counter++;
         }
-        computeWGClimate(nrDays,inputFirstDate,inputTMin,inputTMax,inputPrec,precThreshold,minPrecData,&weatherGenClimate,writeOutput,outputFileName);
+        computeWG2DClimate(nrDays,inputFirstDate,inputTMin,inputTMax,inputPrec,precThreshold,minPrecData,&weatherGenClimate,writeOutput,outputFileName,monthlySimulatedAveragePrecipitation[iStation]);
     }
 
     free(inputTMin);
@@ -208,8 +215,34 @@ void weatherGenerator2D::getWeatherGeneratorOutput()
             inputTMax[i] = obsDataD[iStation][i].tMax;
             inputPrec[i] = obsDataD[iStation][i].prec;
         }
-        computeWGClimate(nrDays,inputFirstDate,inputTMin,inputTMax,inputPrec,precThreshold,minPrecData,&weatherGenClimate,writeOutput,outputFileName);
+        computeWG2DClimate(nrDays,inputFirstDate,inputTMin,inputTMax,inputPrec,precThreshold,minPrecData,&weatherGenClimate,writeOutput,outputFileName,monthlyClimateAveragePrecipitation[iStation]);
+    }
 
+    for (int iStation=0;iStation<nrStations;iStation++)
+    {
+        printf("stazione %d\n",iStation);
+        for (int iMonth=0;iMonth<12;iMonth++)
+        {
+            printf("%f  %f \n",monthlySimulatedAveragePrecipitation[iStation][iMonth],monthlyClimateAveragePrecipitation[iStation][iMonth]);
+        }
+    }
+
+    for (int iStation=0;iStation<nrStations;iStation++)
+    {
+        for (int iDate=0;iDate<parametersModel.yearOfSimulation*365;iDate++)
+        {
+            int doy,day,month;
+            day = month = 0;
+            doy = (iDate+1)%365;
+            weatherGenerator2D::dateFromDoy(doy,2001,&day,&month);
+            if (outputWeatherData[iStation].precipitation[iDate] > parametersModel.precipitationThreshold + EPSILON)
+            {
+                printf("confronto %f  ",outputWeatherData[iStation].precipitation[iDate]);
+                outputWeatherData[iStation].precipitation[iDate] = MAXVALUE(parametersModel.precipitationThreshold + EPSILON,outputWeatherData[iStation].precipitation[iDate]* monthlyClimateAveragePrecipitation[iStation][month-1] / monthlySimulatedAveragePrecipitation[iStation][month-1]);
+                printf("%f\n",outputWeatherData[iStation].precipitation[iDate]);
+            }
+
+        }
     }
 
 }

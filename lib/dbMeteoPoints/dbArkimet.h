@@ -26,7 +26,7 @@
             QString getVarName(int id);
             QList<int> getDailyVar();
             QList<int> getHourlyVar();
-            int getId(QString VarName);
+            QList<int> getId(QString VarName);
             QList<VariablesList> getVariableProperties(QList<int> id);
 
             void initStationsDailyTables(QDate startDate, QDate endDate, QStringList stations);

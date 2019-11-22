@@ -1013,31 +1013,49 @@ bool PragaProject::downloadDailyDataArkimet(QStringList variables, bool prec0024
     QStringList datasetList;
     QList<QStringList> idList;
 
-    QList<int> arkIdAirTemp;
-    arkIdAirTemp << 231 << 232 << 233;
-    int arkIdPrec = 250;
-    QList<int> arkIdRH;
-    arkIdRH << 240 << 241 << 242;
-    int arkIdRadiation = 706;
-    QList<int> arkIdWind;
-    arkIdWind << 227 << 230;
-
     QList<int> arkIdVar;
-    for( int i=0; i < variables.size(); i++ )
-    {
-        if (variables[i] == "Air Temperature")
-            arkIdVar.append(arkIdAirTemp);
-        if (variables[i] == "Precipitation")
-            arkIdVar.append(arkIdPrec);
-        if (variables[i] == "Air Humidity")
-            arkIdVar.append(arkIdRH);
-        if (variables[i] == "Radiation")
-            arkIdVar.append(arkIdRadiation);
-        if (variables[i] == "Wind")
-            arkIdVar.append(arkIdWind);
-    }
-
     Download* myDownload = new Download(meteoPointsDbHandler->getDbName());
+
+    // check if project.ini has [id_arkimet] specified, otherwise take all (read "variable_properties" table)
+    if ( !idArkimetDailyMap.empty() )
+    {
+        for( int i=0; i < variables.size(); i++ )
+        {
+            arkIdVar.append(idArkimetDailyMap[variables[i]]);
+        }
+    }
+    else
+    {
+        for( int i=0; i < variables.size(); i++ )
+        {
+            if (variables[i] == "Air Temperature")
+            {
+                arkIdVar.append(myDownload->getDbArkimet()->getId("DAILY_TMIN"));
+                arkIdVar.append(myDownload->getDbArkimet()->getId("DAILY_TMAX"));
+                arkIdVar.append(myDownload->getDbArkimet()->getId("DAILY_TAVG"));
+            }
+            if (variables[i] == "Precipitation")
+            {
+                arkIdVar.append(myDownload->getDbArkimet()->getId("DAILY_PREC"));
+            }
+            if (variables[i] == "Air Humidity")
+            {
+                arkIdVar.append(myDownload->getDbArkimet()->getId("DAILY_RHMIN"));
+                arkIdVar.append(myDownload->getDbArkimet()->getId("DAILY_RHMAX"));
+                arkIdVar.append(myDownload->getDbArkimet()->getId("DAILY_RHAVG"));
+            }
+            if (variables[i] == "Radiation")
+            {
+                arkIdVar.append(myDownload->getDbArkimet()->getId("DAILY_RAD"));
+            }
+            if (variables[i] == "Wind")
+            {
+                arkIdVar.append(myDownload->getDbArkimet()->getId("DAILY_W_INT_AVG"));
+                arkIdVar.append(myDownload->getDbArkimet()->getId("DAILY_W_DIR"));
+                arkIdVar.append(myDownload->getDbArkimet()->getId("DAILY_W_INT_MAX"));
+            }
+        }
+    }
 
     int index, nrPoints = 0;
     for( int i=0; i < nrMeteoPoints; i++ )
@@ -1101,30 +1119,43 @@ bool PragaProject::downloadHourlyDataArkimet(QStringList variables, QDate startD
 {
     const int MAXDAYS = 7;
 
-    QList<int> arkIdAirTemp;
-    arkIdAirTemp << 78 << 158;
-    QList<int> arkIdPrec;
-    arkIdPrec << 160;
-    QList<int> arkIdRH;
-    arkIdRH << 139 << 140;
-    QList<int> arkIdRadiation;
-    arkIdRadiation << 164 << 409;
-    QList<int> arkIdWind;
-    arkIdWind << 69 << 165 << 166 << 431;
-
     QList<int> arkIdVar;
-    for( int i=0; i < variables.size(); i++ )
+    Download* myDownload = new Download(meteoPointsDbHandler->getDbName());
+
+    // check if project.ini has [id_arkimet] specified, otherwise take all (read "variable_properties" table)
+    if ( !idArkimetHourlyMap.empty() )
     {
-        if (variables[i] == "Air Temperature")
-            arkIdVar.append(arkIdAirTemp);
-        if (variables[i] == "Precipitation")
-            arkIdVar.append(arkIdPrec);
-        if (variables[i] == "Air Humidity")
-            arkIdVar.append(arkIdRH);
-        if (variables[i] == "Radiation")
-            arkIdVar.append(arkIdRadiation);
-        if (variables[i] == "Wind")
-            arkIdVar.append(arkIdWind);
+        for( int i=0; i < variables.size(); i++ )
+        {
+            arkIdVar.append(idArkimetHourlyMap[variables[i]]);
+        }
+    }
+    else
+    {
+        for( int i=0; i < variables.size(); i++ )
+        {
+            if (variables[i] == "Air Temperature")
+            {
+                arkIdVar.append(myDownload->getDbArkimet()->getId("TAVG"));
+            }
+            if (variables[i] == "Precipitation")
+            {
+                arkIdVar.append(myDownload->getDbArkimet()->getId("PREC"));
+            }
+            if (variables[i] == "Air Humidity")
+            {
+                arkIdVar.append(myDownload->getDbArkimet()->getId("RHAVG"));
+            }
+            if (variables[i] == "Radiation")
+            {
+                arkIdVar.append(myDownload->getDbArkimet()->getId("RAD"));
+            }
+            if (variables[i] == "Wind")
+            {
+                arkIdVar.append(myDownload->getDbArkimet()->getId("W_INT_AVG"));
+                arkIdVar.append(myDownload->getDbArkimet()->getId("W_DIR"));
+            }
+        }
     }
 
     int index, nrPoints = 0;
@@ -1155,8 +1186,6 @@ bool PragaProject::downloadHourlyDataArkimet(QStringList variables, QDate startD
             }
         }
     }
-
-    Download* myDownload = new Download(meteoPointsDbHandler->getDbName());
 
     FormInfo myInfo;
     QString infoStr;
