@@ -1724,7 +1724,10 @@ bool Project::loadProjectSettings(QString settingsFileName)
         myList = projectSettings->value("air_temperature_daily").toStringList();
         for (int i = 0; i < myList.size(); i++)
         {
-            intList << myList[i].toInt();
+            if (myList[i].toInt() > 0)
+            {
+                intList << myList[i].toInt();
+            }
         }
         idArkimetDailyMap["Air Temperature"] = intList;
     }
@@ -1734,7 +1737,10 @@ bool Project::loadProjectSettings(QString settingsFileName)
         myList = projectSettings->value("precipitation_daily").toStringList();
         for (int i = 0; i < myList.size(); i++)
         {
-            intList << myList[i].toInt();
+            if (myList[i].toInt() > 0)
+            {
+                intList << myList[i].toInt();
+            }
         }
         idArkimetDailyMap["Precipitation"] = intList;
     }
@@ -1744,7 +1750,10 @@ bool Project::loadProjectSettings(QString settingsFileName)
         myList = projectSettings->value("air_humidity_daily").toStringList();
         for (int i = 0; i < myList.size(); i++)
         {
-            intList << myList[i].toInt();
+            if (myList[i].toInt() > 0)
+            {
+                intList << myList[i].toInt();
+            }
         }
         idArkimetDailyMap["Air Humidity"] = intList;
     }
@@ -1754,7 +1763,10 @@ bool Project::loadProjectSettings(QString settingsFileName)
         myList = projectSettings->value("radiation_daily").toStringList();
         for (int i = 0; i < myList.size(); i++)
         {
-            intList << myList[i].toInt();
+            if (myList[i].toInt() > 0)
+            {
+                intList << myList[i].toInt();
+            }
         }
         idArkimetDailyMap["Radiation"] = intList;
     }
@@ -1764,7 +1776,10 @@ bool Project::loadProjectSettings(QString settingsFileName)
         myList = projectSettings->value("wind_daily").toStringList();
         for (int i = 0; i < myList.size(); i++)
         {
-            intList << myList[i].toInt();
+            if (myList[i].toInt() > 0)
+            {
+                intList << myList[i].toInt();
+            }
         }
         idArkimetDailyMap["Wind"] = intList;
     }
@@ -1775,7 +1790,10 @@ bool Project::loadProjectSettings(QString settingsFileName)
         myList = projectSettings->value("air_temperature_hourly").toStringList();
         for (int i = 0; i < myList.size(); i++)
         {
-            intList << myList[i].toInt();
+            if (myList[i].toInt() > 0)
+            {
+                intList << myList[i].toInt();
+            }
         }
         idArkimetHourlyMap["Air Temperature"] = intList;
     }
@@ -1785,7 +1803,10 @@ bool Project::loadProjectSettings(QString settingsFileName)
         myList = projectSettings->value("precipitation_hourly").toStringList();
         for (int i = 0; i < myList.size(); i++)
         {
-            intList << myList[i].toInt();
+            if (myList[i].toInt() > 0)
+            {
+                intList << myList[i].toInt();
+            }
         }
         idArkimetHourlyMap["Precipitation"] = intList;
     }
@@ -1795,7 +1816,10 @@ bool Project::loadProjectSettings(QString settingsFileName)
         myList = projectSettings->value("air_humidity_hourly").toStringList();
         for (int i = 0; i < myList.size(); i++)
         {
-            intList << myList[i].toInt();
+            if (myList[i].toInt() > 0)
+            {
+                intList << myList[i].toInt();
+            }
         }
         idArkimetHourlyMap["Air Humidity"] = intList;
     }
@@ -1805,7 +1829,10 @@ bool Project::loadProjectSettings(QString settingsFileName)
         myList = projectSettings->value("radiation_hourly").toStringList();
         for (int i = 0; i < myList.size(); i++)
         {
-            intList << myList[i].toInt();
+            if (myList[i].toInt() > 0)
+            {
+                intList << myList[i].toInt();
+            }
         }
         idArkimetHourlyMap["Radiation"] = intList;
     }
@@ -1815,10 +1842,15 @@ bool Project::loadProjectSettings(QString settingsFileName)
         myList = projectSettings->value("wind_hourly").toStringList();
         for (int i = 0; i < myList.size(); i++)
         {
-            intList << myList[i].toInt();
+            if (myList[i].toInt() > 0)
+            {
+                intList << myList[i].toInt();
+            }
+
         }
         idArkimetHourlyMap["Wind"] = intList;
     }
+
     /*
     for(std::map<QString, QList<int> >::const_iterator it = idArkimetDailyMap.begin();
         it != idArkimetDailyMap.end(); ++it)
@@ -1831,6 +1863,7 @@ bool Project::loadProjectSettings(QString settingsFileName)
         qDebug() << "idArkimetHourlyMap " << it->first << ":" << it->second << "\n";
     }
     */
+
     projectSettings->endGroup();
 
     return true;
