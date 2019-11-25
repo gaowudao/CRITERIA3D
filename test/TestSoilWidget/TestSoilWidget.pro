@@ -19,7 +19,11 @@ unix:{
     }
 }
 macx:{
-    TARGET = TestSoilWidget
+    CONFIG(debug, debug|release) {
+        TARGET = debug/TestSoilWidget
+    } else {
+        TARGET = release/TestSoilWidget
+    }
 }
 win32:{
     TARGET = TestSoilWidget
