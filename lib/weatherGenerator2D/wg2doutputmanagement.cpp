@@ -52,12 +52,12 @@ void weatherGenerator2D::getWeatherGeneratorOutput()
     Crit3DDate inputFirstDate;
     TweatherGenClimate weatherGenClimate;
     QString outputFileName;
-
+    /*
     for (int i=1;i<=parametersModel.yearOfSimulation;i++)
     {
         if (isLeapYear(i)) nrDays++;
     }
-
+    */
 
     float *inputTMin = nullptr;
     float *inputTMax = nullptr;
@@ -217,6 +217,9 @@ void weatherGenerator2D::getWeatherGeneratorOutput()
         }
         computeWG2DClimate(nrDays,inputFirstDate,inputTMin,inputTMax,inputPrec,precThreshold,minPrecData,&weatherGenClimate,writeOutput,outputFileName,monthlyClimateAveragePrecipitation[iStation]);
     }
+    free(inputTMin);
+    free(inputTMax);
+    free(inputPrec);
 
     for (int iStation=0;iStation<nrStations;iStation++)
     {
@@ -237,13 +240,57 @@ void weatherGenerator2D::getWeatherGeneratorOutput()
             weatherGenerator2D::dateFromDoy(doy,2001,&day,&month);
             if (outputWeatherData[iStation].precipitation[iDate] > parametersModel.precipitationThreshold + EPSILON)
             {
-                printf("confronto %f  ",outputWeatherData[iStation].precipitation[iDate]);
+                printf("confronto %d %f  ",month,outputWeatherData[iStation].precipitation[iDate]);
                 outputWeatherData[iStation].precipitation[iDate] = MAXVALUE(parametersModel.precipitationThreshold + EPSILON,outputWeatherData[iStation].precipitation[iDate]* monthlyClimateAveragePrecipitation[iStation][month-1] / monthlySimulatedAveragePrecipitation[iStation][month-1]);
                 printf("%f\n",outputWeatherData[iStation].precipitation[iDate]);
             }
 
         }
     }
+
+    nrDays = 365*parametersModel.yearOfSimulation;
+    for (int i=1;i<=parametersModel.yearOfSimulation;i++)
+    {
+        if (isLeapYear(i)) nrDays++;
+    }
+    inputTMin = (float*)calloc(nrDays, sizeof(float));
+    inputTMax = (float*)calloc(nrDays, sizeof(float));
+    inputPrec = (float*)calloc(nrDays, sizeof(float));
+    inputFirstDate.day = 1;
+    inputFirstDate.month = 1;
+    inputFirstDate.year = 1;
+
+
+    for (int iStation=0;iStation<nrStations;iStation++)
+    {
+        outputFileName = "wgSimulation_2_station_" + QString::number(iStation) + ".txt";
+        counter = 0;
+        for (int i=0;i<nrDays;i++)
+        {
+            inputTMin[i]= (float)(outputWeatherData[iStation].minT[counter]);
+            inputTMax[i]= (float)(outputWeatherData[iStation].maxT[counter]);
+            //if (isPrecWG2D)
+            inputPrec[i]= (float)(outputWeatherData[iStation].precipitation[counter]);
+            //else inputPrec[i]= 0;
+            if (isLeapYear(outputWeatherData[iStation].yearSimulated[counter]) && outputWeatherData[iStation].monthSimulated[counter] == 2 && outputWeatherData[iStation].daySimulated[counter] == 28)
+            {
+                ++i;
+                inputTMin[i]= (float)(outputWeatherData[iStation].minT[counter]);
+                inputTMax[i]= (float)(outputWeatherData[iStation].maxT[counter]);
+                //if (isPrecWG2D)
+                inputPrec[i]= (float)(outputWeatherData[iStation].precipitation[counter]);
+                //else inputPrec[i]= 0;
+            }
+            counter++;
+        }
+        computeWG2DClimate(nrDays,inputFirstDate,inputTMin,inputTMax,inputPrec,precThreshold,minPrecData,&weatherGenClimate,writeOutput,outputFileName,monthlySimulatedAveragePrecipitation[iStation]);
+    }
+
+    free(inputTMin);
+    free(inputTMax);
+    free(inputPrec);
+
+
 
 }
 
