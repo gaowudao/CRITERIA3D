@@ -23,6 +23,13 @@ unix:{
         TARGET = release/soilWidget
     }
 }
+macx:{
+    CONFIG(debug, debug|release) {
+        TARGET = debug/soilWidget
+    } else {
+        TARGET = release/soilWidget
+    }
+}
 win32:{
     TARGET = soilWidget
 }
