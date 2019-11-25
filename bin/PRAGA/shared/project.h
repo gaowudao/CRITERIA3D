@@ -63,9 +63,6 @@
         QString dbPointsFileName;
         QString dbGridXMLFileName;
         QString parametersFileName;
-
-        std::map<QString, QList<int> > idArkimetHourlyMap;
-        std::map<QString, QList<int> > idArkimetDailyMap;
         std::ofstream logFile;
 
         QSettings* parameters;

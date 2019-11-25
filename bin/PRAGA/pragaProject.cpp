@@ -137,6 +137,161 @@ bool PragaProject::loadPragaSettings()
             parameters->endGroup();
 
         }
+        else if (group == "id_arkimet")
+        {
+            parameters->beginGroup(group);
+            QStringList myList;
+            QList<int> intList;
+            if (parameters->contains("air_temperature_daily"))
+            {
+                intList.clear();
+                myList = parameters->value("air_temperature_daily").toStringList();
+                for (int i = 0; i < myList.size(); i++)
+                {
+                    if (myList[i].toInt() > 0)
+                    {
+                        intList << myList[i].toInt();
+                    }
+                }
+                idArkimetDailyMap["Air Temperature"] = intList;
+            }
+            if (parameters->contains("precipitation_daily"))
+            {
+                intList.clear();
+                myList = parameters->value("precipitation_daily").toStringList();
+                for (int i = 0; i < myList.size(); i++)
+                {
+                    if (myList[i].toInt() > 0)
+                    {
+                        intList << myList[i].toInt();
+                    }
+                }
+                idArkimetDailyMap["Precipitation"] = intList;
+            }
+            if (parameters->contains("air_humidity_daily"))
+            {
+                intList.clear();
+                myList = parameters->value("air_humidity_daily").toStringList();
+                for (int i = 0; i < myList.size(); i++)
+                {
+                    if (myList[i].toInt() > 0)
+                    {
+                        intList << myList[i].toInt();
+                    }
+                }
+                idArkimetDailyMap["Air Humidity"] = intList;
+            }
+            if (parameters->contains("radiation_daily"))
+            {
+                intList.clear();
+                myList = parameters->value("radiation_daily").toStringList();
+                for (int i = 0; i < myList.size(); i++)
+                {
+                    if (myList[i].toInt() > 0)
+                    {
+                        intList << myList[i].toInt();
+                    }
+                }
+                idArkimetDailyMap["Radiation"] = intList;
+            }
+            if (parameters->contains("wind_daily"))
+            {
+                intList.clear();
+                myList = parameters->value("wind_daily").toStringList();
+                for (int i = 0; i < myList.size(); i++)
+                {
+                    if (myList[i].toInt() > 0)
+                    {
+                        intList << myList[i].toInt();
+                    }
+                }
+                idArkimetDailyMap["Wind"] = intList;
+            }
+
+            if (parameters->contains("air_temperature_hourly"))
+            {
+                intList.clear();
+                myList = parameters->value("air_temperature_hourly").toStringList();
+                for (int i = 0; i < myList.size(); i++)
+                {
+                    if (myList[i].toInt() > 0)
+                    {
+                        intList << myList[i].toInt();
+                    }
+                }
+                idArkimetHourlyMap["Air Temperature"] = intList;
+            }
+            if (parameters->contains("precipitation_hourly"))
+            {
+                intList.clear();
+                myList = parameters->value("precipitation_hourly").toStringList();
+                for (int i = 0; i < myList.size(); i++)
+                {
+                    if (myList[i].toInt() > 0)
+                    {
+                        intList << myList[i].toInt();
+                    }
+                }
+                idArkimetHourlyMap["Precipitation"] = intList;
+            }
+            if (parameters->contains("air_humidity_hourly"))
+            {
+                intList.clear();
+                myList = parameters->value("air_humidity_hourly").toStringList();
+                for (int i = 0; i < myList.size(); i++)
+                {
+                    if (myList[i].toInt() > 0)
+                    {
+                        intList << myList[i].toInt();
+                    }
+                }
+                idArkimetHourlyMap["Air Humidity"] = intList;
+            }
+            if (parameters->contains("radiation_hourly"))
+            {
+                intList.clear();
+                myList = parameters->value("radiation_hourly").toStringList();
+                for (int i = 0; i < myList.size(); i++)
+                {
+                    if (myList[i].toInt() > 0)
+                    {
+                        intList << myList[i].toInt();
+                    }
+                }
+                idArkimetHourlyMap["Radiation"] = intList;
+            }
+            if (parameters->contains("wind_hourly"))
+            {
+                intList.clear();
+                myList = parameters->value("wind_hourly").toStringList();
+                for (int i = 0; i < myList.size(); i++)
+                {
+                    if (myList[i].toInt() > 0)
+                    {
+                        intList << myList[i].toInt();
+                    }
+
+                }
+                idArkimetHourlyMap["Wind"] = intList;
+            }
+
+            /*
+            for(std::map<QString, QList<int> >::const_iterator it = idArkimetDailyMap.begin();
+                it != idArkimetDailyMap.end(); ++it)
+            {
+                qDebug() << "idArkimetDailyMap " << it->first << ":" << it->second << "\n";
+            }
+            for(std::map<QString, QList<int> >::const_iterator it = idArkimetHourlyMap.begin();
+                it != idArkimetHourlyMap.end(); ++it)
+            {
+                qDebug() << "idArkimetHourlyMap " << it->first << ":" << it->second << "\n";
+            }
+            */
+
+            parameters->endGroup();
+
+        }
+
     }
 
     return true;

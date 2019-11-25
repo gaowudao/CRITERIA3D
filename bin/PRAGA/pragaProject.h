@@ -37,6 +37,8 @@
         QString climateIndex;
 
         QSettings* pragaDefaultSettings;
+        std::map<QString, QList<int> > idArkimetHourlyMap;
+        std::map<QString, QList<int> > idArkimetDailyMap;
 
         #ifdef NETCDF
             NetCDFHandler netCDF;
