@@ -11,6 +11,7 @@ QT       += widgets core
 TARGET = HEAT1D
 TEMPLATE = app
 
+INCLUDEPATH += ../../lib/crit3dDate
 INCLUDEPATH += ../../lib/mathFunctions
 INCLUDEPATH += ../../lib/gis
 INCLUDEPATH += ../../lib/soilFluxes3D/header
@@ -26,10 +27,12 @@ CONFIG(debug, debug|release) {
     LIBS += -L../../lib/soilFluxes3D/debug -lsoilFluxes3D
     LIBS += -L../../lib/gis/debug -lgis
     LIBS += -L../../lib/mathFunctions/debug -lmathFunctions
+    LIBS += -L../../lib/mathFunctions/debug -lcrit3dDate
 } else {
     LIBS += -L../../lib/soilFluxes3D/release -lsoilFluxes3D
     LIBS += -L../../lib/gis/release -lgis
     LIBS += -L../../lib/mathFunctions/release -lmathFunctions
+    LIBS += -L../../lib/mathFunctions/release -lcrit3dDate
 }
 
 
@@ -45,10 +48,14 @@ HEADERS  += heat1D.h \
 FORMS    += \
     mainwindow.ui
 
+# insert here path of qwt.prf
 win32:{
     include($$(QWT_ROOT)/features/qwt.prf)
 }
 unix:{
     include(/usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/qwt.prf)
+}
+macx:{
+    include(/usr/local/opt/qwt/features/qwt.prf)
 }
 
