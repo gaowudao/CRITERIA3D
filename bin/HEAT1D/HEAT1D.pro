@@ -27,12 +27,12 @@ CONFIG(debug, debug|release) {
     LIBS += -L../../lib/soilFluxes3D/debug -lsoilFluxes3D
     LIBS += -L../../lib/gis/debug -lgis
     LIBS += -L../../lib/mathFunctions/debug -lmathFunctions
-    LIBS += -L../../lib/mathFunctions/debug -lcrit3dDate
+    LIBS += -L../../lib/crit3dDate/debug -lcrit3dDate
 } else {
     LIBS += -L../../lib/soilFluxes3D/release -lsoilFluxes3D
     LIBS += -L../../lib/gis/release -lgis
     LIBS += -L../../lib/mathFunctions/release -lmathFunctions
-    LIBS += -L../../lib/mathFunctions/release -lcrit3dDate
+    LIBS += -L../../lib/crit3dDate/release -lcrit3dDate
 }
 
 
