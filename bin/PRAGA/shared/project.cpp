@@ -1263,6 +1263,8 @@ bool Project::loadProxyGrids()
     {
         Crit3DProxy* myProxy = interpolationSettings.getProxy(i);
 
+        logInfo("Loading grid for proxy: " + QString::fromStdString(myProxy->getName()));
+
         if (interpolationSettings.getSelectedCombination().getValue(i) || myProxy->getForQualityControl())
         {
             gis::Crit3DRasterGrid* myGrid = myProxy->getGrid();
