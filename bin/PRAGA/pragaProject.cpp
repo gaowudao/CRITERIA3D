@@ -1274,6 +1274,7 @@ bool PragaProject::downloadHourlyDataArkimet(QStringList variables, QDate startD
 {
     const int MAXDAYS = 7;
 
+
     QList<int> arkIdVar;
     Download* myDownload = new Download(meteoPointsDbHandler->getDbName());
 

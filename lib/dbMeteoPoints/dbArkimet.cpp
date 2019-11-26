@@ -173,7 +173,7 @@ void DbArkimet::initStationsHourlyTables(QDate startDate, QDate endDate, QString
         QSqlQuery qry(statement, _db);
         qry.exec();
 
-        statement = QString("DELETE FROM `%1_H` WHERE date_time >= DATE('%2') AND date_time < DATE('%3', '+1 day')")
+        statement = QString("DELETE FROM `%1_H` WHERE date_time >= DATETIME('%2') AND date_time <= DATETIME('%3', '+1 day')")
                         .arg(stations[i]).arg(startDate.toString("yyyy-MM-dd")).arg(endDate.toString("yyyy-MM-dd"));
 
         qry = QSqlQuery(statement, _db);
@@ -398,7 +398,10 @@ bool DbArkimet::saveHourlyData()
     foreach (QString station, stations)
     {
         if (! qry.exec(statement.arg(station)))
+        {
+            qDebug() << "statement error" << statement.arg(station);
             qDebug() << "error in hourly insert " << station << qry.lastError();
+        }
 
         if (! qry.exec(delStationStatement.arg(station)))
             qDebug() << "error in delete " << station << qry.lastError();
