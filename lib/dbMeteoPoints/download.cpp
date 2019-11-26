@@ -1,7 +1,6 @@
 #include "download.h"
 
 #include <QtNetwork>
-#include <iostream> //debug
 
 
 const QByteArray Download::_authorization = QString("Basic " + QString("ugo:Ul1ss&").toLocal8Bit().toBase64()).toLocal8Bit();
@@ -228,7 +227,7 @@ bool Download::downloadDailyData(QDate startDate, QDate endDate, QString dataset
         request.setUrl(url);
         request.setRawHeader("Authorization", _authorization);
 
-        std::cout << "URL: " << url.toString().toStdString(); //debug
+        //std::cout << "URL: " << url.toString().toStdString(); //debug
 
         // GET
         QNetworkReply* reply = manager->get(request);
