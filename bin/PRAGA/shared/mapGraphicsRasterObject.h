@@ -36,6 +36,7 @@
     #include "colorLegend.h"
     #include "geoMap.h"
 
+    #define NOACTIVE -8888
 
     struct RowCol
     {
