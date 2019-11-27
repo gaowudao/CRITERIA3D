@@ -850,7 +850,7 @@ void MainWindow::drawMeteoPoints()
 
     ui->grid->setChecked(false);
 
-    currentPointsVisualization = showLocation;
+    if (currentPointsVisualization == notShown) currentPointsVisualization = showLocation;
     redrawMeteoPoints(currentPointsVisualization, true);
 
     updateDateTime();
@@ -1026,7 +1026,7 @@ void MainWindow::drawMeteoGrid()
     this->ui->actionShowGridElab->setEnabled(false);
     this->ui->actionShowGridClimate->setEnabled(false);
 
-    currentGridVisualization = showLocation;
+    if (currentGridVisualization == notShown) currentGridVisualization = showLocation;
     redrawMeteoGrid(currentGridVisualization, false);
 
     updateMaps();
