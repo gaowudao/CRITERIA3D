@@ -1,6 +1,6 @@
 #include <stdio.h>
 //#include <stdlib.h>
-//#include <math.h>
+#include <math.h>
 #include <malloc.h>
 //#include <time.h>
 #include <iostream>
@@ -240,9 +240,9 @@ void weatherGenerator2D::getWeatherGeneratorOutput()
             weatherGenerator2D::dateFromDoy(doy,2001,&day,&month);
             if (outputWeatherData[iStation].precipitation[iDate] > parametersModel.precipitationThreshold + EPSILON)
             {
-                printf("confronto %d %f  ",month,outputWeatherData[iStation].precipitation[iDate]);
+                //printf("confronto %d %f  ",month,outputWeatherData[iStation].precipitation[iDate]);
                 outputWeatherData[iStation].precipitation[iDate] = MAXVALUE(parametersModel.precipitationThreshold + EPSILON,outputWeatherData[iStation].precipitation[iDate]* monthlyClimateAveragePrecipitation[iStation][month-1] / monthlySimulatedAveragePrecipitation[iStation][month-1]);
-                printf("%f\n",outputWeatherData[iStation].precipitation[iDate]);
+                //printf("%f\n",outputWeatherData[iStation].precipitation[iDate]);
             }
 
         }
@@ -290,8 +290,173 @@ void weatherGenerator2D::getWeatherGeneratorOutput()
     free(inputTMax);
     free(inputPrec);
 
+    weatherGenerator2D::precipitationCorrelationMatricesSimulation();
+
+
+
 
 
 }
 
+void weatherGenerator2D::precipitationCorrelationMatricesSimulation()
+{
+    int counter =0;
+    TcorrelationVar amount,occurrence;
+    TcorrelationMatrix* correlationMatrixSimulation = nullptr;
+    correlationMatrixSimulation = (TcorrelationMatrix*)calloc(12, sizeof(TcorrelationMatrix));
+    for (int iMonth=0;iMonth<12;iMonth++)
+    {
+        correlationMatrixSimulation[iMonth].amount = (double**)calloc(nrStations, sizeof(double*));
+        correlationMatrixSimulation[iMonth].occurrence = (double**)calloc(nrStations, sizeof(double*));
+        for (int i=0;i<nrStations;i++)
+        {
+            correlationMatrixSimulation[iMonth].amount[i]= (double*)calloc(nrStations, sizeof(double));
+            correlationMatrixSimulation[iMonth].occurrence[i]= (double*)calloc(nrStations, sizeof(double));
+            for (int ii=0;ii<nrStations;ii++)
+            {
+                correlationMatrixSimulation[iMonth].amount[i][ii]= NODATA;
+                correlationMatrixSimulation[iMonth].occurrence[i][ii]= NODATA;
+            }
+        }
+    }
+    for (int iMonth=0;iMonth<12;iMonth++)
+    {
+        correlationMatrixSimulation[iMonth].month = iMonth + 1 ; // define the month of the correlation matrix;
+        for (int k=0; k<nrStations;k++) // correlation matrix diagonal elements;
+        {
+            correlationMatrixSimulation[iMonth].amount[k][k] = 1.;
+            correlationMatrixSimulation[iMonth].occurrence[k][k]= 1.;
+        }
 
+        for (int j=0; j<nrStations-1;j++)
+        {
+            for (int i=j+1; i<nrStations;i++)
+            {
+                counter = 0;
+                amount.meanValue1=0.;
+                amount.meanValue2=0.;
+                amount.covariance = amount.variance1 = amount.variance2 = 0.;
+                occurrence.meanValue1=0.;
+                occurrence.meanValue2=0.;
+                occurrence.covariance = occurrence.variance1 = occurrence.variance2 = 0.;
+
+                for (int k=0; k<365*parametersModel.yearOfSimulation;k++) // compute the monthly means
+                {
+                    int doy,day,month;
+                    day = month = 0;
+                    doy = (k+1)%365;
+                    weatherGenerator2D::dateFromDoy(doy,2001,&day,&month);
+                    if (month == (iMonth+1))
+                    {
+                        if (((outputWeatherData[j].precipitation[k] - NODATA) > EPSILON) && ((outputWeatherData[i].precipitation[k] - NODATA) > EPSILON))
+                        {
+                            counter++;
+                            if (outputWeatherData[j].precipitation[k] > parametersModel.precipitationThreshold)
+                            {
+                                amount.meanValue1 += outputWeatherData[j].precipitation[k] ;
+                                occurrence.meanValue1++ ;
+                            }
+                            if (outputWeatherData[i].precipitation[k] > parametersModel.precipitationThreshold)
+                            {
+                                amount.meanValue2 += outputWeatherData[i].precipitation[k];
+                                occurrence.meanValue2++ ;
+                            }
+                        }
+                    }
+                }
+                if (counter != 0)
+                {
+                    amount.meanValue1 /= counter;
+                    occurrence.meanValue1 /= counter;
+                }
+
+                if (counter != 0)
+                {
+                    amount.meanValue2 /= counter;
+                    occurrence.meanValue2 /= counter;
+                }
+                // compute the monthly rho off-diagonal elements
+                for (int k=0; k<365*parametersModel.yearOfSimulation;k++)
+                {
+                    int doy,day,month;
+                    day = month = 0;
+                    doy = (k+1)%365;
+                    weatherGenerator2D::dateFromDoy(doy,2001,&day,&month);
+                    if (month == (iMonth+1))
+                    {
+                        if ((outputWeatherData[j].precipitation[k] != NODATA) && (outputWeatherData[i].precipitation[k] != NODATA))
+                        {
+                            double value1,value2;
+                            if (outputWeatherData[j].precipitation[k] <= parametersModel.precipitationThreshold) value1 = 0.;
+                            else value1 = outputWeatherData[j].precipitation[k];
+                            if (outputWeatherData[i].precipitation[k] <= parametersModel.precipitationThreshold) value2 = 0.;
+                            else value2 = outputWeatherData[i].precipitation[k];
+
+                            amount.covariance += (value1 - amount.meanValue1)*(value2 - amount.meanValue2);
+                            amount.variance1 += (value1 - amount.meanValue1)*(value1 - amount.meanValue1);
+                            amount.variance2 += (value2 - amount.meanValue2)*(value2 - amount.meanValue2);
+
+                            if (outputWeatherData[j].precipitation[k] <= parametersModel.precipitationThreshold) value1 = 0.;
+                            else value1 = 1.;
+                            if (outputWeatherData[i].precipitation[k] <= parametersModel.precipitationThreshold) value2 = 0.;
+                            else value2 = 1.;
+
+                            occurrence.covariance += (value1 - occurrence.meanValue1)*(value2 - occurrence.meanValue2);
+                            occurrence.variance1 += (value1 - occurrence.meanValue1)*(value1 - occurrence.meanValue1);
+                            occurrence.variance2 += (value2 - occurrence.meanValue2)*(value2 - occurrence.meanValue2);
+                        }
+                    }
+                }
+                correlationMatrixSimulation[iMonth].amount[j][i]= amount.covariance / sqrt(amount.variance1*amount.variance2);
+                correlationMatrixSimulation[iMonth].amount[i][j] = correlationMatrixSimulation[iMonth].amount[j][i];
+                correlationMatrixSimulation[iMonth].occurrence[j][i]= occurrence.covariance / sqrt(occurrence.variance1*occurrence.variance2);
+                correlationMatrixSimulation[iMonth].occurrence[i][j] = correlationMatrixSimulation[iMonth].occurrence[j][i];
+            }
+        }
+
+    }
+    FILE* fp;
+    fp = fopen("correlationMatrices.txt","w");
+    for (int iMonth=0;iMonth<12;iMonth++)
+    {
+        printf("month %d \n",iMonth+1);
+        printf("observed\n");
+        fprintf(fp,"month %d \n",iMonth+1);
+        fprintf(fp,"observed\n");
+        for (int i=0;i<nrStations;i++)
+        {
+            for (int j=0;j<nrStations;j++)
+            {
+                printf("%.2f ", correlationMatrix[iMonth].amount[j][i]);
+                fprintf(fp,"%.2f ", correlationMatrix[iMonth].amount[j][i]);
+            }
+            printf("\n");
+            fprintf(fp,"\n");
+        }
+        printf("simulated\n");
+        fprintf(fp,"simulated\n");
+        for (int i=0;i<nrStations;i++)
+        {
+            for (int j=0;j<nrStations;j++)
+            {
+                printf("%.2f ", correlationMatrixSimulation[iMonth].amount[j][i]);
+                fprintf(fp,"%.2f ", correlationMatrixSimulation[iMonth].amount[j][i]);
+            }
+            printf("\n");
+            fprintf(fp,"\n");
+        }
+        //pressEnterToContinue();
+    }
+    fclose(fp);
+    for (int iMonth=0;iMonth<12;iMonth++)
+    {
+        for (int i=0;i<nrStations;i++)
+        {
+            free(correlationMatrixSimulation[iMonth].amount[i]);
+            free(correlationMatrixSimulation[iMonth].occurrence[i]);
+        }
+    }
+    free(correlationMatrixSimulation);
+
+
+}
