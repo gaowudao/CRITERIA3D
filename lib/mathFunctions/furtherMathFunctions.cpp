@@ -357,7 +357,7 @@ namespace interpolation
         short stage=1;
         if (x < xColumn[0]) return yColumn[0] ;
         if (x > xColumn[dimTable-1]) return yColumn[dimTable-1];
-        while (x > xColumn[stage]) stage++ ;
+        while (x > xColumn[stage] && stage <= (dimTable-1)) stage++ ;
         slope = (yColumn[stage]- yColumn[stage-1])/(xColumn[stage] - xColumn[stage-1]);
         offset = -xColumn[stage-1]*slope + yColumn[stage-1];
         //free(firstColumn);
