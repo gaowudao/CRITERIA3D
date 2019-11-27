@@ -27,6 +27,7 @@
 
 
 #include "commonConstants.h"
+#include "basicMath.h"
 #include "mapGraphicsRasterObject.h"
 #include <math.h>
 
@@ -77,7 +78,6 @@ void RasterObject::setDrawBorders(bool value)
     drawBorder = value;
 }
 
-
 void RasterObject::setColorLegend(ColorLegend* myLegend)
 {
     colorScaleLegend = myLegend;
@@ -104,13 +104,12 @@ QPointF RasterObject::getPixel(const QPointF &latLonPoint)
     int heightPixels = view->height() - MAPBORDER*2;
 
     return QRectF( -widthPixels, -heightPixels, widthPixels*2, heightPixels*2);
-}
+ }
 
-
-void RasterObject::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget)
-{
-    Q_UNUSED(option)
-    Q_UNUSED(widget)
+ void RasterObject::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget)
+ {
+     Q_UNUSED(option)
+     Q_UNUSED(widget)
 
     if (isDrawing)
     {
@@ -385,19 +384,21 @@ bool RasterObject::drawRaster(gis::Crit3DRasterGrid *myRaster, QPainter* myPaint
                 if (this->matrix[row][col].row != NODATA)
                     value = myRaster->value[matrix[row][col].row][matrix[row][col].col];
             }
-            if (int(value) != int(myRaster->header->flag) && int(value) != int(INDEX_ERROR))
+
+            if (this->isGrid && drawBorder && ! isEqual(value, myRaster->header->flag))
+            {
+                myPainter->setPen(QColor(64, 64, 64));
+                myPainter->setBrush(Qt::NoBrush);
+                myPainter->drawRect(x0, y0, lx, ly);
+            }
+            else if (! isEqual(value, myRaster->header->flag) && ! isEqual(value, INDEX_ERROR))
             {
                 myColor = myRaster->colorScale->getColor(value);
                 myQColor = QColor(myColor->red, myColor->green, myColor->blue);
                 myPainter->setBrush(myQColor);
                 myPainter->fillRect(x0, y0, lx, ly, myPainter->brush());
             }
-            else if (this->isGrid && value == myRaster->header->flag && drawBorder)
-            {
-                myPainter->setPen(QColor(64, 64, 64));
-                myPainter->setBrush(Qt::NoBrush);
-                myPainter->drawRect(x0, y0, lx, ly);
-            }
+
         }
     }
 
