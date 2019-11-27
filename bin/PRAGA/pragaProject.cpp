@@ -142,23 +142,49 @@ bool PragaProject::loadPragaSettings()
             parameters->beginGroup(group);
             QStringList myList;
             QList<int> intList;
-            if (parameters->contains("air_temperature_daily"))
+            if (parameters->contains("DAILY_TMIN") || parameters->contains("DAILY_TMAX") || parameters->contains("DAILY_TAVG"))
             {
                 intList.clear();
-                myList = parameters->value("air_temperature_daily").toStringList();
-                for (int i = 0; i < myList.size(); i++)
+                if (parameters->contains("DAILY_TMIN"))
                 {
-                    if (myList[i].toInt() > 0)
+                    myList = parameters->value("DAILY_TMIN").toStringList();
+                    for (int i = 0; i < myList.size(); i++)
                     {
-                        intList << myList[i].toInt();
+                        if (myList[i].toInt() > 0 && !intList.contains(myList[i].toInt()))
+                        {
+                            intList << myList[i].toInt();
+                        }
                     }
                 }
+                if (parameters->contains("DAILY_TMAX"))
+                {
+                    myList = parameters->value("DAILY_TMAX").toStringList();
+                    for (int i = 0; i < myList.size(); i++)
+                    {
+                        if (myList[i].toInt() > 0 && !intList.contains(myList[i].toInt()))
+                        {
+                            intList << myList[i].toInt();
+                        }
+                    }
+                }
+                if (parameters->contains("DAILY_TAVG"))
+                {
+                    myList = parameters->value("DAILY_TAVG").toStringList();
+                    for (int i = 0; i < myList.size(); i++)
+                    {
+                        if (myList[i].toInt() > 0 && !intList.contains(myList[i].toInt()) )
+                        {
+                            intList << myList[i].toInt();
+                        }
+                    }
+                }
+
                 idArkimetDailyMap["Air Temperature"] = intList;
             }
-            if (parameters->contains("precipitation_daily"))
+            if (parameters->contains("DAILY_PREC"))
             {
                 intList.clear();
-                myList = parameters->value("precipitation_daily").toStringList();
+                myList = parameters->value("DAILY_PREC").toStringList();
                 for (int i = 0; i < myList.size(); i++)
                 {
                     if (myList[i].toInt() > 0)
@@ -168,23 +194,49 @@ bool PragaProject::loadPragaSettings()
                 }
                 idArkimetDailyMap["Precipitation"] = intList;
             }
-            if (parameters->contains("air_humidity_daily"))
+            if (parameters->contains("DAILY_RHMIN") || parameters->contains("DAILY_RHMAX") || parameters->contains("DAILY_RHAVG"))
             {
                 intList.clear();
-                myList = parameters->value("air_humidity_daily").toStringList();
-                for (int i = 0; i < myList.size(); i++)
+                if (parameters->contains("DAILY_RHMIN"))
                 {
-                    if (myList[i].toInt() > 0)
+                    myList = parameters->value("DAILY_RHMIN").toStringList();
+                    for (int i = 0; i < myList.size(); i++)
                     {
-                        intList << myList[i].toInt();
+                        if (myList[i].toInt() > 0 && !intList.contains(myList[i].toInt()))
+                        {
+                            intList << myList[i].toInt();
+                        }
                     }
                 }
+                if (parameters->contains("DAILY_RHMAX"))
+                {
+                    myList = parameters->value("DAILY_RHMAX").toStringList();
+                    for (int i = 0; i < myList.size(); i++)
+                    {
+                        if (myList[i].toInt() > 0 && !intList.contains(myList[i].toInt()))
+                        {
+                            intList << myList[i].toInt();
+                        }
+                    }
+                }
+                if (parameters->contains("DAILY_RHAVG"))
+                {
+                    myList = parameters->value("DAILY_RHAVG").toStringList();
+                    for (int i = 0; i < myList.size(); i++)
+                    {
+                        if (myList[i].toInt() > 0 && !intList.contains(myList[i].toInt()) )
+                        {
+                            intList << myList[i].toInt();
+                        }
+                    }
+                }
+
                 idArkimetDailyMap["Air Humidity"] = intList;
             }
-            if (parameters->contains("radiation_daily"))
+            if (parameters->contains("DAILY_RAD"))
             {
                 intList.clear();
-                myList = parameters->value("radiation_daily").toStringList();
+                myList = parameters->value("DAILY_RAD").toStringList();
                 for (int i = 0; i < myList.size(); i++)
                 {
                     if (myList[i].toInt() > 0)
@@ -194,24 +246,49 @@ bool PragaProject::loadPragaSettings()
                 }
                 idArkimetDailyMap["Radiation"] = intList;
             }
-            if (parameters->contains("wind_daily"))
+            if (parameters->contains("DAILY_WAVG_INT") || parameters->contains("DAILY_WIND_DIR") || parameters->contains("DAILY_W_INT_MAX"))
             {
                 intList.clear();
-                myList = parameters->value("wind_daily").toStringList();
-                for (int i = 0; i < myList.size(); i++)
+                if (parameters->contains("DAILY_WAVG_INT"))
                 {
-                    if (myList[i].toInt() > 0)
+                    myList = parameters->value("DAILY_WAVG_INT").toStringList();
+                    for (int i = 0; i < myList.size(); i++)
                     {
-                        intList << myList[i].toInt();
+                        if (myList[i].toInt() > 0 && !intList.contains(myList[i].toInt()))
+                        {
+                            intList << myList[i].toInt();
+                        }
                     }
                 }
+                if (parameters->contains("DAILY_WIND_DIR"))
+                {
+                    myList = parameters->value("DAILY_WIND_DIR").toStringList();
+                    for (int i = 0; i < myList.size(); i++)
+                    {
+                        if (myList[i].toInt() > 0 && !intList.contains(myList[i].toInt()))
+                        {
+                            intList << myList[i].toInt();
+                        }
+                    }
+                }
+                if (parameters->contains("DAILY_W_INT_MAX"))
+                {
+                    myList = parameters->value("DAILY_W_INT_MAX").toStringList();
+                    for (int i = 0; i < myList.size(); i++)
+                    {
+                        if (myList[i].toInt() > 0 && !intList.contains(myList[i].toInt()) )
+                        {
+                            intList << myList[i].toInt();
+                        }
+                    }
+                }
+
                 idArkimetDailyMap["Wind"] = intList;
             }
-
-            if (parameters->contains("air_temperature_hourly"))
+            if (parameters->contains("TAVG"))
             {
                 intList.clear();
-                myList = parameters->value("air_temperature_hourly").toStringList();
+                myList = parameters->value("TAVG").toStringList();
                 for (int i = 0; i < myList.size(); i++)
                 {
                     if (myList[i].toInt() > 0)
@@ -221,10 +298,10 @@ bool PragaProject::loadPragaSettings()
                 }
                 idArkimetHourlyMap["Air Temperature"] = intList;
             }
-            if (parameters->contains("precipitation_hourly"))
+            if (parameters->contains("PREC"))
             {
                 intList.clear();
-                myList = parameters->value("precipitation_hourly").toStringList();
+                myList = parameters->value("PREC").toStringList();
                 for (int i = 0; i < myList.size(); i++)
                 {
                     if (myList[i].toInt() > 0)
@@ -234,10 +311,10 @@ bool PragaProject::loadPragaSettings()
                 }
                 idArkimetHourlyMap["Precipitation"] = intList;
             }
-            if (parameters->contains("air_humidity_hourly"))
+            if (parameters->contains("RHAVG"))
             {
                 intList.clear();
-                myList = parameters->value("air_humidity_hourly").toStringList();
+                myList = parameters->value("RHAVG").toStringList();
                 for (int i = 0; i < myList.size(); i++)
                 {
                     if (myList[i].toInt() > 0)
@@ -247,10 +324,10 @@ bool PragaProject::loadPragaSettings()
                 }
                 idArkimetHourlyMap["Air Humidity"] = intList;
             }
-            if (parameters->contains("radiation_hourly"))
+            if (parameters->contains("RAD"))
             {
                 intList.clear();
-                myList = parameters->value("radiation_hourly").toStringList();
+                myList = parameters->value("RAD").toStringList();
                 for (int i = 0; i < myList.size(); i++)
                 {
                     if (myList[i].toInt() > 0)
@@ -260,21 +337,33 @@ bool PragaProject::loadPragaSettings()
                 }
                 idArkimetHourlyMap["Radiation"] = intList;
             }
-            if (parameters->contains("wind_hourly"))
+            if (parameters->contains("W_INT_AVG") || parameters->contains("W_DIR"))
             {
                 intList.clear();
-                myList = parameters->value("wind_hourly").toStringList();
-                for (int i = 0; i < myList.size(); i++)
+                if (parameters->contains("W_INT_AVG"))
                 {
-                    if (myList[i].toInt() > 0)
+                    myList = parameters->value("W_INT_AVG").toStringList();
+                    for (int i = 0; i < myList.size(); i++)
                     {
-                        intList << myList[i].toInt();
+                        if (myList[i].toInt() > 0 && !intList.contains(myList[i].toInt()))
+                        {
+                            intList << myList[i].toInt();
+                        }
                     }
-
+                }
+                if (parameters->contains("W_DIR"))
+                {
+                    myList = parameters->value("W_DIR").toStringList();
+                    for (int i = 0; i < myList.size(); i++)
+                    {
+                        if (myList[i].toInt() > 0 && !intList.contains(myList[i].toInt()))
+                        {
+                            intList << myList[i].toInt();
+                        }
+                    }
                 }
                 idArkimetHourlyMap["Wind"] = intList;
             }
-
             /*
             for(std::map<QString, QList<int> >::const_iterator it = idArkimetDailyMap.begin();
                 it != idArkimetDailyMap.end(); ++it)
@@ -1273,6 +1362,7 @@ bool PragaProject::downloadDailyDataArkimet(QStringList variables, bool prec0024
 bool PragaProject::downloadHourlyDataArkimet(QStringList variables, QDate startDate, QDate endDate, bool showInfo)
 {
     const int MAXDAYS = 7;
+
 
     QList<int> arkIdVar;
     Download* myDownload = new Download(meteoPointsDbHandler->getDbName());

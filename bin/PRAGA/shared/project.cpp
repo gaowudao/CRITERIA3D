@@ -206,7 +206,7 @@ bool Project::addProxyGridSeries(QString name_, std::vector <QString> gridNames,
 
     for (unsigned i=0; i < gridNames.size(); i++)
     {
-        logInfo("Checking grid " + gridNames[i] + " for proxy " + name_ + " (" + QString::number(i) + "/" + QString::number(gridNames.size()));
+        logInfo("Checking grid " + gridNames[i] + " for proxy " + name_ + " (" + QString::number(i+1) + "/" + QString::number(gridNames.size()));
 
         if (gis::readEsriGrid(getCompleteFileName(gridNames[i], PATH_GEO).toStdString(), myGrid, &myError))
             mySeries.addGridToSeries(gridNames[i], signed(gridYears[i]));
@@ -1263,6 +1263,8 @@ bool Project::loadProxyGrids()
     {
         Crit3DProxy* myProxy = interpolationSettings.getProxy(i);
 
+        logInfo("Loading grid for proxy: " + QString::fromStdString(myProxy->getName()));
+
         if (interpolationSettings.getSelectedCombination().getValue(i) || myProxy->getForQualityControl())
         {
             gis::Crit3DRasterGrid* myGrid = myProxy->getGrid();
@@ -1471,9 +1473,14 @@ void Project::passInterpolatedTemperatureToHumidityPoints(Crit3DTime myTime)
         airRelHum = meteoPoints[i].getMeteoPointValue(myTime, airRelHumidity);
         airT = meteoPoints[i].getMeteoPointValue(myTime, airTemperature);
 
-        if (! isEqual(airRelHum, NODATA) && isEqual(airT, NODATA)) {
+        if (! isEqual(airRelHum, NODATA) && isEqual(airT, NODATA))
+        {
             gis::getRowColFromXY(*(hourlyMeteoMaps->mapHourlyTair), meteoPoints[i].point.utm.x, meteoPoints[i].point.utm.y, &row, &col);
-            meteoPoints[i].setMeteoPointValueH(myTime.date, myTime.getHour(), myTime.getMinutes(), airTemperature, hourlyMeteoMaps->mapHourlyRelHum->value[row][col]);
+            if (! gis::isOutOfGridRowCol(row, col, *(hourlyMeteoMaps->mapHourlyTair)))
+            {
+                meteoPoints[i].setMeteoPointValueH(myTime.date, myTime.getHour(), myTime.getMinutes(),
+                                          airTemperature, hourlyMeteoMaps->mapHourlyRelHum->value[row][col]);
+            }
         }
     }
 }
