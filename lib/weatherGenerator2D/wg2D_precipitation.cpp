@@ -1451,14 +1451,14 @@ void weatherGenerator2D::spatialIterationAmounts(double** correlationMatrixSimul
 
    }
 
-   for (int i=0;i<nrStations;i++)
+   /*for (int i=0;i<nrStations;i++)
    {
        for (int j=0;j<nrStations;j++)
        {
             //printf("%.4f ",amountsCorrelationMatrix[i][j]);
        }
        //printf("mat \n");
-   }
+   }*/
    //pressEnterToContinue();
 
    double minimalValueToExitFromCycle = NODATA;
@@ -1689,14 +1689,14 @@ double weatherGenerator2D::inverseGammaFunction(double valueProbability, double 
        {
            rightBound += 25;
            counter++;
-           if (counter == 9) return rightBound;
+           if (counter == 39) return rightBound;
        }
    } while ((valueProbability>y));
 
    //counter = 0;
    x = (rightBound + leftBound)*0.5;
    y = gammaDistributions::incompleteGamma(alpha,x/beta);
-   while ((fabs(valueProbability - y) > accuracy))// && (counter < 200))
+   while ((fabs(valueProbability - y) > accuracy) && (counter < 200))
    {
        if (y > valueProbability)
        {
@@ -1708,7 +1708,7 @@ double weatherGenerator2D::inverseGammaFunction(double valueProbability, double 
        }
        x = (rightBound + leftBound)*0.5;
        y = gammaDistributions::incompleteGamma(alpha,x/beta);
-       //++counter;
+       ++counter;
    }
    x = (rightBound + leftBound)*0.5;
    return x;
