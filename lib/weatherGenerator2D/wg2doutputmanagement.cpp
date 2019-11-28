@@ -433,6 +433,7 @@ void weatherGenerator2D::precipitationCorrelationMatricesSimulation()
             printf("\n");
             fprintf(fp,"\n");
         }
+
         printf("simulated\n");
         fprintf(fp,"simulated\n");
         for (int i=0;i<nrStations;i++)
@@ -445,6 +446,20 @@ void weatherGenerator2D::precipitationCorrelationMatricesSimulation()
             printf("\n");
             fprintf(fp,"\n");
         }
+
+        printf("simulated - observed\n");
+        fprintf(fp,"simulated - observed\n");
+        for (int i=0;i<nrStations;i++)
+        {
+            for (int j=0;j<nrStations;j++)
+            {
+                printf("%.2f ", correlationMatrixSimulation[iMonth].amount[j][i]-correlationMatrix[iMonth].amount[j][i]);
+                fprintf(fp,"%.2f ", correlationMatrixSimulation[iMonth].amount[j][i]-correlationMatrix[iMonth].amount[j][i]);
+            }
+            printf("\n");
+            fprintf(fp,"\n");
+        }
+
         //pressEnterToContinue();
     }
     fclose(fp);
