@@ -11,6 +11,7 @@
 #include "interpolationCmd.h"
 #include "pragaProject.h"
 #include "iostream" //debug
+#include <qdebug.h>
 
 
 PragaProject::PragaProject()
@@ -364,7 +365,7 @@ bool PragaProject::loadPragaSettings()
                 }
                 idArkimetHourlyMap["Wind"] = intList;
             }
-            /*
+/*
             for(std::map<QString, QList<int> >::const_iterator it = idArkimetDailyMap.begin();
                 it != idArkimetDailyMap.end(); ++it)
             {
@@ -375,7 +376,7 @@ bool PragaProject::loadPragaSettings()
             {
                 qDebug() << "idArkimetHourlyMap " << it->first << ":" << it->second << "\n";
             }
-            */
+*/
 
             parameters->endGroup();
 

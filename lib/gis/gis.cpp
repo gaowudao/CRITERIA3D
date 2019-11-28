@@ -444,7 +444,7 @@ namespace gis
             for (int myCol = col0; myCol <= col1; myCol++)
             {
                 myValue = myGrid->value[myRow][myCol];
-                if (myValue != myGrid->header->flag)
+                if ( (myValue != myGrid->header->flag) && (myValue != NODATA))
                 {
                     if (isFirstValue)
                     {
