@@ -420,31 +420,31 @@ void weatherGenerator2D::precipitationCorrelationMatricesSimulation()
     for (int iMonth=0;iMonth<12;iMonth++)
     {
         printf("month %d \n",iMonth+1);
-        printf("observed\n");
+        //printf("observed\n");
         fprintf(fp,"month %d \n",iMonth+1);
-        fprintf(fp,"observed\n");
+        //fprintf(fp,"observed\n");
         for (int i=0;i<nrStations;i++)
         {
             for (int j=0;j<nrStations;j++)
             {
                 printf("%.2f ", correlationMatrix[iMonth].amount[j][i]);
-                fprintf(fp,"%.2f ", correlationMatrix[iMonth].amount[j][i]);
+                //fprintf(fp,"%.2f ", correlationMatrix[iMonth].amount[j][i]);
             }
             printf("\n");
-            fprintf(fp,"\n");
+            //fprintf(fp,"\n");
         }
 
         printf("simulated\n");
-        fprintf(fp,"simulated\n");
+        //fprintf(fp,"simulated\n");
         for (int i=0;i<nrStations;i++)
         {
             for (int j=0;j<nrStations;j++)
             {
                 printf("%.2f ", correlationMatrixSimulation[iMonth].amount[j][i]);
-                fprintf(fp,"%.2f ", correlationMatrixSimulation[iMonth].amount[j][i]);
+                //fprintf(fp,"%.2f ", correlationMatrixSimulation[iMonth].amount[j][i]);
             }
             printf("\n");
-            fprintf(fp,"\n");
+            //fprintf(fp,"\n");
         }
 
         printf("simulated - observed\n");

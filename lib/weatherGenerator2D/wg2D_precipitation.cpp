@@ -1550,6 +1550,7 @@ void weatherGenerator2D::spatialIterationAmounts(double** correlationMatrixSimul
            //printf(" corr_random \n");
        }*/
        //pressEnterToContinue();
+       //printf("first computation %d\n",ii);
        double meanValue,stdDevValue;
        for (int i=0;i<nrStations;i++)
        {
@@ -1567,7 +1568,8 @@ void weatherGenerator2D::spatialIterationAmounts(double** correlationMatrixSimul
            {
                //normRandomVar= (dummyMatrix3[i][j]-meanValue)/stdDevValue;
                uniformRandomVar =0.5*statistics::tabulatedERFC(-(dummyMatrix3[i][j]-meanValue)/stdDevValue/SQRT_2);
-               simulatedPrecipitationAmountsSeasonal[i][j]=0.;
+               uniformRandomVar = MINVALUE(uniformRandomVar,ONELESSEPSILON);
+               //simulatedPrecipitationAmountsSeasonal[i][j]=0.;
                if (occurrences[i][j] > EPSILON)
                {
                    if (parametersModel.distributionPrecipitation == 1)
@@ -1576,6 +1578,7 @@ void weatherGenerator2D::spatialIterationAmounts(double** correlationMatrixSimul
                    }
                    else if (parametersModel.distributionPrecipitation == 2)
                    {
+
                        simulatedPrecipitationAmountsSeasonal[i][j] = weatherGenerator2D::inverseGammaFunction(uniformRandomVar,phatAlpha[i][j],phatBeta[i][j],0.01) + parametersModel.precipitationThreshold;
                        //printf("%.4f ",simulatedPrecipitationAmountsSeasonal[i][j]);
                        // check uniformRandom phatAlpha e phatBeta i dati non vanno bene
@@ -1593,18 +1596,18 @@ void weatherGenerator2D::spatialIterationAmounts(double** correlationMatrixSimul
            }
            //printf("\n");
        }*/
-       printf("%d\n", ii);
+       //printf("second computation %d\n", ii);
        //pressEnterToContinue();
-       for (int i=0;i<nrStations;i++)
-       {
-           for (int j=0;j<nrStations;j++)
-           {
+       //for (int i=0;i<nrStations;i++)
+       //{
+           //for (int j=0;j<nrStations;j++)
+           //{
                statistics::correlationsMatrix(nrStations,simulatedPrecipitationAmountsSeasonal,lengthSeries,correlationMatrixSimulatedData);
                // da verificare dovrebbe esserci correlazione solo per i dati diversi da zero
                //printf("%.4f ",correlationMatrixSimulatedData[i][j]);
-           }
+           //}
            //printf("\n");
-       }
+       //}
        //pressEnterToContinue();
        val = 0;
        for (int i=0;i<nrStations;i++)
@@ -1647,7 +1650,7 @@ void weatherGenerator2D::spatialIterationAmounts(double** correlationMatrixSimul
                }
            }
        }
-
+       printf(" %d\n", ii);
 
    }
    //pressEnterToContinue();
