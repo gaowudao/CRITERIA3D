@@ -1569,7 +1569,7 @@ void weatherGenerator2D::spatialIterationAmounts(double** correlationMatrixSimul
                //normRandomVar= (dummyMatrix3[i][j]-meanValue)/stdDevValue;
                uniformRandomVar =0.5*statistics::tabulatedERFC(-(dummyMatrix3[i][j]-meanValue)/stdDevValue/SQRT_2);
                uniformRandomVar = MINVALUE(uniformRandomVar,ONELESSEPSILON);
-               //simulatedPrecipitationAmountsSeasonal[i][j]=0.;
+               simulatedPrecipitationAmountsSeasonal[i][j]=0.;
                if (occurrences[i][j] > EPSILON)
                {
                    if (parametersModel.distributionPrecipitation == 1)
@@ -1602,7 +1602,7 @@ void weatherGenerator2D::spatialIterationAmounts(double** correlationMatrixSimul
        //{
            //for (int j=0;j<nrStations;j++)
            //{
-               statistics::correlationsMatrix(nrStations,simulatedPrecipitationAmountsSeasonal,lengthSeries,correlationMatrixSimulatedData);
+      statistics::correlationsMatrix(nrStations,simulatedPrecipitationAmountsSeasonal,lengthSeries,correlationMatrixSimulatedData);
                // da verificare dovrebbe esserci correlazione solo per i dati diversi da zero
                //printf("%.4f ",correlationMatrixSimulatedData[i][j]);
            //}
