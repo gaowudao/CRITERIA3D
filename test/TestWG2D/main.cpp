@@ -80,7 +80,7 @@ int main()
     bool firstDay = true;
     int nrStations = 10; // !! da 1 a 10 stazioni
     int distributionType = 1; // 1 multiexponential 2 multigamma 3 Weibull
-    int yearsOfSimulations = 1000; // numero anni
+    int yearsOfSimulations = 100; // numero anni
     int lengthDataSeries = numberMeteoLines;
     int nrVariables = 3;
     int nrDate = 3;
