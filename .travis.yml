@@ -16,3 +16,4 @@ install:
   - sudo apt-get install libqt5quick5 libqt5qml5
   - sudo apt-get install libqt5svg5-dev
   - sudo apt-get install libqt5svg5
+  - sudo apt-get install libqt5svg5 
