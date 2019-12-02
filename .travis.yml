@@ -1,0 +1,10 @@
+language: cpp
+dist: trusty
+compiler: g++
+sudo: required
+
+before_install:
+  - sudo apt-get update
+
+install:
+  - sudo apt-get install qtbase
