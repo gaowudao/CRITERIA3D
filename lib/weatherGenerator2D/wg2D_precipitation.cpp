@@ -685,7 +685,8 @@ void weatherGenerator2D::precipitationMultiDistributionParameterization()
                    //occurrenceIndexSeasonal[ijk].parMultiexp[qq][i][0]=Pmean[i]*Pmean[i]/(PstdDev[i]*PstdDev[i]);
                    //occurrenceIndexSeasonal[ijk].parMultiexp[qq][i][1]=(PstdDev[i]*PstdDev[i])/Pmean[i];
                    //printf("lambda %f\t%f\n",occurrenceIndexSeasonal[ijk].parMultiexp[qq][i][0],occurrenceIndexSeasonal[ijk].parMultiexp[qq][i][1]);
-
+                   //occurrenceIndexSeasonal[ijk].parMultiexp[qq][i][0]=meanPFit[i]*meanPFit[i]/(stdDevFit[i]*stdDevFit[i]);
+                   //occurrenceIndexSeasonal[ijk].parMultiexp[qq][i][1]=(stdDevFit[i]*stdDevFit[i])/meanPFit[i];
                }
                //pressEnterToContinue();
            }
@@ -1579,7 +1580,7 @@ void weatherGenerator2D::spatialIterationAmounts(double** correlationMatrixSimul
                    else if (parametersModel.distributionPrecipitation == 2)
                    {
 
-                       simulatedPrecipitationAmountsSeasonal[i][j] = weatherGenerator2D::inverseGammaFunction(uniformRandomVar,phatAlpha[i][j],phatBeta[i][j],0.01) + parametersModel.precipitationThreshold;
+                       simulatedPrecipitationAmountsSeasonal[i][j] = weatherGenerator2D::inverseGammaFunction(uniformRandomVar,phatAlpha[i][j],phatBeta[i][j],0.0001) + parametersModel.precipitationThreshold;
                        //printf("%.4f ",simulatedPrecipitationAmountsSeasonal[i][j]);
                        // check uniformRandom phatAlpha e phatBeta i dati non vanno bene
                    }
@@ -1690,9 +1691,9 @@ double weatherGenerator2D::inverseGammaFunction(double valueProbability, double 
        y = gammaDistributions::incompleteGamma(alpha,rightBound/beta);
        if (valueProbability>y)
        {
-           rightBound += 25;
+           rightBound *= 2;
            counter++;
-           if (counter == 39) return rightBound;
+           if (counter == 7) return rightBound;
        }
    } while ((valueProbability>y));
 
