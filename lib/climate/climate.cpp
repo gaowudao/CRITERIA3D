@@ -3330,10 +3330,11 @@ bool checkDataType(QString xmlFileName, bool isMeteoGrid, QString *myError)
     int myErrLine, myErrColumn;
     if (!xmlDoc.setContent(&myFile, myError, &myErrLine, &myErrColumn))
     {
-       *myError = "Parse xml failed:" + xmlFileName
-                + " Row: " + QString::number(myErrLine)
-                + " - Column: " + QString::number(myErrColumn)
-                + "\n" + myError;
+       QString completeError = "Parse xml failed:" + xmlFileName
+               + " Row: " + QString::number(myErrLine)
+               + " - Column: " + QString::number(myErrColumn)
+               + "\n" + *myError;
+       *myError = completeError;
         myFile.close();
         return(false);
     }
@@ -3410,10 +3411,11 @@ bool appendXMLElaboration(Crit3DElabList *listXMLElab, QString xmlFileName, QStr
     int myErrLine, myErrColumn;
     if (!xmlDoc.setContent(&myFile, myError, &myErrLine, &myErrColumn))
     {
-       *myError = "Parse xml failed:" + xmlFileName
-                + " Row: " + QString::number(myErrLine)
-                + " - Column: " + QString::number(myErrColumn)
-                + "\n" + myError;
+       QString completeError = "Parse xml failed:" + xmlFileName
+               + " Row: " + QString::number(myErrLine)
+               + " - Column: " + QString::number(myErrColumn)
+               + "\n" + *myError;
+       *myError = completeError;
         myFile.close();
         return false;
     }
@@ -3583,10 +3585,11 @@ bool appendXMLAnomaly(Crit3DAnomalyList *listXMLAnomaly, QString xmlFileName, QS
     int myErrLine, myErrColumn;
     if (!xmlDoc.setContent(&myFile, myError, &myErrLine, &myErrColumn))
     {
-       *myError = "Parse xml failed:" + xmlFileName
-                + " Row: " + QString::number(myErrLine)
-                + " - Column: " + QString::number(myErrColumn)
-                + "\n" + myError;
+       QString completeError = "Parse xml failed:" + xmlFileName
+               + " Row: " + QString::number(myErrLine)
+               + " - Column: " + QString::number(myErrColumn)
+               + "\n" + *myError;
+       *myError = completeError;
         myFile.close();
         return false;
     }
