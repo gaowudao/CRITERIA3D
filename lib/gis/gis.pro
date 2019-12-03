@@ -13,6 +13,7 @@ CONFIG += staticlib
 DEFINES += _CRT_SECURE_NO_WARNINGS
 
 CONFIG += debug_and_release
+QMAKE_CXXFLAGS += -std=c++11
 
 unix:{
     CONFIG(debug, debug|release) {
