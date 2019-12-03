@@ -52,12 +52,7 @@ void weatherGenerator2D::getWeatherGeneratorOutput()
     Crit3DDate inputFirstDate;
     TweatherGenClimate weatherGenClimate;
     QString outputFileName;
-    /*
-    for (int i=1;i<=parametersModel.yearOfSimulation;i++)
-    {
-        if (isLeapYear(i)) nrDays++;
-    }
-    */
+
 
     float *inputTMin = nullptr;
     float *inputTMax = nullptr;
@@ -147,8 +142,6 @@ void weatherGenerator2D::getWeatherGeneratorOutput()
                         outputWeatherData[iStation].precipitation[counter] = precGenerated[iStation][counter];
                     }
                     else {outputWeatherData[iStation].precipitation[counter] = amountsPrecGenerated[counter][iStation];}
-                    //meanAmountsPrecGenerated[iStation][month-1] += amountsPrecGenerated[counter][iStation];
-                    //cumulatedOccurrencePrecGenerated[iStation][month-1] += occurrencePrecGenerated[counter][iStation];
                 }
                 else
                 {
@@ -157,34 +150,29 @@ void weatherGenerator2D::getWeatherGeneratorOutput()
                 counter++;
             }
         }
-        //for (int jMonth=0;jMonth<12;jMonth++)
-            //meanAmountsPrecGenerated[iStation][jMonth] /= cumulatedOccurrencePrecGenerated[iStation][jMonth];
 
-
+        /*
         for(int i=0;i<parametersModel.yearOfSimulation*365;i++)
         {
             //printf("%d %d %.1f %.1f %.1f\n",outputWeatherData[iStation].daySimulated[i],outputWeatherData[iStation].monthSimulated[i],outputWeatherData[iStation].minT[i],outputWeatherData[iStation].maxT[i],outputWeatherData[iStation].precipitation[i]);
             //printf("%d %d %.1f %.1f %.1f\n",outputWeatherData[iStation].daySimulated[i],outputWeatherData[iStation].monthSimulated[i],outputWeatherData[iStation].minT[i],outputWeatherData[iStation].maxT[i],outputWeatherData[iStation].precipitation[i]);
             //printf("%d %d %.1f\n",outputWeatherData[iStation].daySimulated[i],outputWeatherData[iStation].monthSimulated[i],outputWeatherData[iStation].precipitation[i]);
 
-        }
+        }*/
         //pressEnterToContinue();
         counter = 0;
         for (int i=0;i<nrDays;i++)
         {
             inputTMin[i]= (float)(outputWeatherData[iStation].minT[counter]);
             inputTMax[i]= (float)(outputWeatherData[iStation].maxT[counter]);
-            //if (isPrecWG2D)
-            inputPrec[i]= (float)(outputWeatherData[iStation].precipitation[counter]);
-            //else inputPrec[i]= 0;
+            inputPrec[i]= (float)(outputWeatherData[iStation].precipitation[counter]);            
             if (isLeapYear(outputWeatherData[iStation].yearSimulated[counter]) && outputWeatherData[iStation].monthSimulated[counter] == 2 && outputWeatherData[iStation].daySimulated[counter] == 28)
             {
                 ++i;
                 inputTMin[i]= (float)(outputWeatherData[iStation].minT[counter]);
                 inputTMax[i]= (float)(outputWeatherData[iStation].maxT[counter]);
-                //if (isPrecWG2D)
                 inputPrec[i]= (float)(outputWeatherData[iStation].precipitation[counter]);
-                //else inputPrec[i]= 0;
+
             }
             counter++;
         }
@@ -240,9 +228,7 @@ void weatherGenerator2D::getWeatherGeneratorOutput()
             weatherGenerator2D::dateFromDoy(doy,2001,&day,&month);
             if (outputWeatherData[iStation].precipitation[iDate] > parametersModel.precipitationThreshold + EPSILON)
             {
-                //printf("confronto %d %f  ",month,outputWeatherData[iStation].precipitation[iDate]);
-                outputWeatherData[iStation].precipitation[iDate] = MAXVALUE(parametersModel.precipitationThreshold + EPSILON,outputWeatherData[iStation].precipitation[iDate]* monthlyClimateAveragePrecipitation[iStation][month-1] / monthlySimulatedAveragePrecipitation[iStation][month-1]);
-                //printf("%f\n",outputWeatherData[iStation].precipitation[iDate]);
+                outputWeatherData[iStation].precipitation[iDate] = MAXVALUE(parametersModel.precipitationThreshold + EPSILON,outputWeatherData[iStation].precipitation[iDate]* monthlyClimateAveragePrecipitation[iStation][month-1] / monthlySimulatedAveragePrecipitation[iStation][month-1]);                
             }
 
         }
@@ -277,9 +263,7 @@ void weatherGenerator2D::getWeatherGeneratorOutput()
                 ++i;
                 inputTMin[i]= (float)(outputWeatherData[iStation].minT[counter]);
                 inputTMax[i]= (float)(outputWeatherData[iStation].maxT[counter]);
-                //if (isPrecWG2D)
                 inputPrec[i]= (float)(outputWeatherData[iStation].precipitation[counter]);
-                //else inputPrec[i]= 0;
             }
             counter++;
         }
