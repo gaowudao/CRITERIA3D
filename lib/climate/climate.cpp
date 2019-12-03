@@ -2224,10 +2224,11 @@ bool parseXMLElaboration(Crit3DElabList *listXMLElab, Crit3DAnomalyList *listXML
     int myErrLine, myErrColumn;
     if (!xmlDoc.setContent(&myFile, myError, &myErrLine, &myErrColumn))
     {
-       *myError = "Parse xml failed:" + xmlFileName
+        QString completeError = "Parse xml failed:" + xmlFileName
                 + " Row: " + QString::number(myErrLine)
                 + " - Column: " + QString::number(myErrColumn)
-                + "\n" + myError;
+                + "\n" + *myError;
+       *myError = completeError;
         myFile.close();
         return(false);
     }
