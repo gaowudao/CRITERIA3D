@@ -24,7 +24,7 @@
 
 #include <math.h>
 #include <stdlib.h>
-#include <iostream>
+#include <stdio.h>
 #include <time.h>
 #include "commonConstants.h"
 #include "furtherMathFunctions.h"
