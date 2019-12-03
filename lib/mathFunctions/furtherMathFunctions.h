@@ -92,7 +92,7 @@
         void inverse(double** a,double** d,int n);
         void cofactor(double** a,double** d,int n,double determinantOfMatrix);
         double determinant(double** a,int n);
-        void minorMatrix(double** b,double** a,int i,int n);
+        void minor(double** b,double** a,int i,int n);
         int eigenSystemMatrix2x2(double** a, double* eigenvalueA, double** eigenvectorA, int n);
     }
 
