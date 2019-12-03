@@ -18,6 +18,7 @@ INCLUDEPATH +=  ./shared ../../mapGraphics \
                 ../../lib/dbMeteoPoints ../../lib/dbMeteoGrid ../../lib/climate ../../lib/netcdfHandler
 
 CONFIG += debug_and_release
+QMAKE_CXXFLAGS += -std=c++11
 
 DEFINES += NETCDF
 
