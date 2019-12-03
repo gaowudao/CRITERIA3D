@@ -285,7 +285,7 @@ void Crit3DClimateList::parserElaboration()
         if (nrParam > 0)
         {
             pos = pos + 1;
-            if ( words[pos].at(0) == "|" )
+            if ( words[pos].at(0) == '|' )
             {
                 param1IsClimate = true;
                 param1ClimateField = words[pos];
@@ -337,7 +337,7 @@ void Crit3DClimateList::parserElaboration()
             if (nrParam > 0)
             {
                 pos = pos + 1;
-                if ( words[pos].at(0) == "|" )
+                if ( words[pos].at(0) == '|' )
                 {
                     param1IsClimate = true;
                     param1ClimateField = words[pos];
@@ -496,7 +496,7 @@ bool Crit3DClimateList::parserGenericPeriodString(int index)
     if (nrParam > 0)
     {
         pos = pos + 1;
-        if ( words[pos].at(0) == "|" )
+        if ( words[pos].at(0) == '|' )
         {
             clima->setParam1IsClimate(true);
             QString param1ClimateField = words[pos];
@@ -531,7 +531,7 @@ bool Crit3DClimateList::parserGenericPeriodString(int index)
         if (nrParam > 0)
         {
             pos = pos + 1;
-            if ( words[pos].at(0) == "|" )
+            if ( words[pos].at(0) == '|' )
             {
                 clima->setParam1IsClimate(true);
                 QString param1ClimateField = words[pos];
