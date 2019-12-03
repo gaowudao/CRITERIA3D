@@ -29,6 +29,7 @@
 */
 
 #include <math.h>
+#include <stdio.h>
 
 #include "crit3dDate.h"
 #include "commonConstants.h"
