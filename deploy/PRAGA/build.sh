@@ -18,7 +18,7 @@ make
 cd -
 
 # download linuxdeployqt
-wget -c -nv -O "https://github.com/probonopd/linuxdeployqt/releases/download/continuous/linuxdeployqt-continuous-x86_64.AppImage"
+wget -c -nv -O linuxqtdeploy "https://github.com/probonopd/linuxdeployqt/releases/download/continuous/linuxdeployqt-continuous-x86_64.AppImage"
 chmod +x linuxqtdeploy
 
 # build appimage
