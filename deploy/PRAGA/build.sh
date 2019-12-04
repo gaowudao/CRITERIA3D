@@ -22,7 +22,7 @@ wget -c -nv -O linuxqtdeploy "https://github.com/probonopd/linuxdeployqt/release
 chmod +x linuxqtdeploy
 
 # build appimage
-ls bin/Makeall_PRAGA
+ls bin/PRAGA
 
-cp bin/Makeall_PRAGA/PRAGA deploy/PRAGA/appimage/usr/bin/PRAGA
-./linuxdeployqt deploy/PRAGA/appimage/usr/share/applications/PRAGA.desktop -qmake=$QMAKE -qmlimport=/opt/qt512/qml -appimage -always-overwrite
+cp bin/PRAGA/PRAGA deploy/PRAGA/appimage/usr/bin/PRAGA
+./linuxqtdeploy deploy/PRAGA/appimage/usr/share/applications/PRAGA.desktop -qmake=$QMAKE -qmlimport=/opt/qt512/qml -appimage -always-overwrite
