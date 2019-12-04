@@ -22,8 +22,5 @@ wget -c -nv -O linuxqtdeploy "https://github.com/probonopd/linuxdeployqt/release
 chmod +x linuxqtdeploy
 
 # build appimage
-ldd bin/PRAGA/PRAGA
-LD_LIBRARY_PATH=`pwd`/mapGraphics/release ldd bin/PRAGA/PRAGA
-
 cp bin/PRAGA/PRAGA deploy/PRAGA/appimage/usr/bin/PRAGA
 LD_LIBRARY_PATH=`pwd`/mapGraphics/release ./linuxqtdeploy deploy/PRAGA/appimage/usr/share/applications/PRAGA.desktop -qmake=$QMAKE -qmlimport=$QT_DIR/qml -appimage -always-overwrite
