@@ -80,7 +80,7 @@ int main()
     bool firstDay = true;
     int nrStations = 5; // !! da 1 a 10 stazioni
     int distributionType = 1; // 1 multiexponential 2 multigamma 3 Weibull
-    int yearsOfSimulations = 30; // numero anni
+    int yearsOfSimulations = 100; // numero anni
     int lengthDataSeries = numberMeteoLines;
     int nrVariables = 3;
     int nrDate = 3;
@@ -104,6 +104,8 @@ int main()
 
     for (int i=0;i<nrStations;i++)
     {
+
+
         if (i==0)
         {
                fp = fopen("inputData/argelato_1961_2018.txt","r");

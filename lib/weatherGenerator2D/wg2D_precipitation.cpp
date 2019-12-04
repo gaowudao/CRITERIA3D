@@ -1356,26 +1356,7 @@ void weatherGenerator2D::spatialIterationAmounts(double** correlationMatrixSimul
                     dummyMatrix[i][j] = amountsCorrelationMatrix[i][j];
        }
        matricial::choleskyDecompositionTriangularMatrix(dummyMatrix,nrStations,true);
-       /*for (int i=0;i<nrStations;i++)
-       {
-           for (int j=0;j<nrStations;j++)
-           {
-                //printf("%.4f ",dummyMatrix[i][j]);
-           }
-           //printf(" cholesky \n");
-       }*/
-       //pressEnterToContinue();
        matricial::matrixProductNoCheck(dummyMatrix,randomMatrix,nrStations,nrStations,lengthSeries,nrStations,dummyMatrix3);
-       /*for (int i=0;i<lengthSeries;i++)
-       {
-           for (int j=0;j<nrStations;j++)
-           {
-                //printf("%.4f ",dummyMatrix3[j][i]);
-           }
-           //printf(" corr_random \n");
-       }*/
-       //pressEnterToContinue();
-       //printf("first computation %d\n",ii);
        double meanValue,stdDevValueOverSQRT_2;
        for (int i=0;i<nrStations;i++)
        {
@@ -1408,7 +1389,6 @@ void weatherGenerator2D::spatialIterationAmounts(double** correlationMatrixSimul
                }
            }
        }
-
        statistics::correlationsMatrix(nrStations,simulatedPrecipitationAmountsSeasonal,lengthSeries,correlationMatrixSimulatedData);
        val = 0;
        for (int i=0;i<nrStations;i++)
@@ -1427,12 +1407,10 @@ void weatherGenerator2D::spatialIterationAmounts(double** correlationMatrixSimul
        {
            ++counterConvergence;
        }
-
        if (counterConvergence > 20)
        {
            if (val <= fabs(minimalValueToExitFromCycle) + TOLERANCE_MULGETS) exitWhileCycle = true;
        }
-
        if (ii != MAX_ITERATION_MULGETS && val> TOLERANCE_MULGETS && (!exitWhileCycle))
        {
            for (int i=0;i<nrStations;i++)
@@ -1452,7 +1430,6 @@ void weatherGenerator2D::spatialIterationAmounts(double** correlationMatrixSimul
            }
        }
        printf(" iteration step %d\n", ii);
-
    }
    // free memory
    for (int i=0;i<nrStations;i++)
