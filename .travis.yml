@@ -15,8 +15,9 @@ install:
   - sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-8 90
   - sudo apt-get install -qq qt512-meta-minimal
   - sudo apt-get install -qq libx11-xcb-dev libglu1-mesa-dev
-  - export QMAKE=/opt/qt512/bin/qmake
-  - export PATH=/opt/qt512/bin/:$PATH
+  - export QT_DIR=/opt/qt512
+  - export QMAKE=$QT_DIR/bin/qmake
+  - export PATH=$QT_DIR/bin/:$PATH
   #- sudo apt-get install qtbase5-dev libqwt-qt5-dev libqwt-qt5-6
   #- sudo apt-get install qt5-qmake
   #- sudo apt-get install qmlscene
