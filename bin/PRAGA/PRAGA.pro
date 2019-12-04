@@ -145,3 +145,21 @@ FORMS    += mainWindow.ui \
         shared/formInfo.ui \
     shared/formPeriod.ui
 
+# test linuxdeployqt
+unix {
+    isEmpty(PREFIX) {
+        PREFIX = /usr
+    }
+
+    target.path = $$PREFIX/bin
+
+    shortcutfiles.files = misc/PRAGA.desktop
+    shortcutfiles.path = $$PREFIX/share/applications/
+    data.files += misc/PRAGA.xpm
+    data.path = $$PREFIX/share/pixmaps/
+
+    INSTALLS += shortcutfiles
+    INSTALLS += data
+}
+
+INSTALLS += target
