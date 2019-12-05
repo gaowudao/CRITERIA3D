@@ -2952,12 +2952,10 @@
     <property name="title">
      <string>Data spatialization</string>
     </property>
-    <addaction name="actionInterpolation_to_DEM"/>
-    <addaction name="actionInterpolationSettings"/>
-    <addaction name="separator"/>
     <addaction name="actionCompute_solar_radiation"/>
     <addaction name="actionRadiationSettings"/>
     <addaction name="separator"/>
+    <addaction name="actionInterpolationSettings"/>
     <addaction name="actionCompute_AllMeteoMaps"/>
     <addaction name="separator"/>
     <addaction name="actionVariableQualitySpatial"/>
@@ -3089,11 +3087,6 @@
    </property>
    <property name="text">
     <string>Spatial quality control</string>
-   </property>
-  </action>
-  <action name="actionInterpolation_to_DEM">
-   <property name="text">
-    <string>Interpolate current variable</string>
    </property>
   </action>
   <action name="actionLoad_model_parameters">

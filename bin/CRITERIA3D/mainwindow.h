@@ -55,7 +55,6 @@
         void on_actionInterpolationSettings_triggered();
         void on_actionRadiationSettings_triggered();
 
-        void on_actionInterpolation_to_DEM_triggered();
         void on_actionCompute_solar_radiation_triggered();
         void on_actionCompute_AllMeteoMaps_triggered();
 

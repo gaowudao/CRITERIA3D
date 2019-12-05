@@ -636,11 +636,6 @@ void MainWindow::setCurrentRasterOutput(gis::Crit3DRasterGrid *myRaster)
 }
 
 
-void MainWindow::on_actionInterpolation_to_DEM_triggered()
-{
-    interpolateDemGUI();
-}
-
 
 void MainWindow::on_actionInterpolationSettings_triggered()
 {

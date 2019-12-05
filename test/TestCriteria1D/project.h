@@ -1,5 +1,5 @@
-#ifndef PROJECT
-#define PROJECT
+#ifndef CRITERIA1DPROJECT
+#define CRITERIA1DPROJECT
 
     #ifndef CRITERIAMODEL_H
         #include "criteriaModel.h"
@@ -83,5 +83,5 @@
             void logError(QString myErrorStr);
     };
 
-#endif // PROJECT
+#endif // CRITERIA1DPROJECT
 

@@ -1,7 +1,8 @@
 #-----------------------------------------------------
 #
-#   TESTCRITERIA1D
-#   Test for CriteriaModel library
+#   TestCriteria1D
+#
+#   Test for criteriaModel library
 #   This project is part of CRITERIA3D distribution
 #
 #-----------------------------------------------------
