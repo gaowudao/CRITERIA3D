@@ -587,7 +587,11 @@ namespace soil
     }
 
 
-    // It assumes that dbData are loaded
+    /*!
+     * \brief Set soil properties of one horizon starting from data in soil db
+     * \brief it assumes that horizon->dbData and textureClassList are just loaded
+     * \return true if soil properties are correct, false otherwise
+     */
     bool setHorizon(Crit3DHorizon* horizon, Crit3DTextureClass* textureClassList,
                     Crit3DFittingOptions* fittingOptions, std::string* error)
     {
@@ -725,6 +729,11 @@ namespace soil
     }
 
 
+    /*!
+     * \brief fit water retention curve of the horizon
+     * \brief using data in water_retention table in soil db
+     * \return true if success, false otherwise
+     */
     bool fittingWaterRetentionCurve(Crit3DHorizon* horizon, Crit3DFittingOptions* fittingOptions)
     {
         if (! fittingOptions->useWaterRetentionData || horizon->dbData.waterRetention.size() == 0)
@@ -820,7 +829,6 @@ namespace soil
         {
             pdelta[i] = (pmax[i]-pmin[i]) * 0.001;
         }
-
 
         if ( interpolation::fittingMarquardt(pmin, pmax, param, signed(nrParameters), pdelta,
                                    nrIterations, EPSILON, functionCode, x, y, signed(nrValues)) )
