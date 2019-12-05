@@ -1,4 +1,5 @@
-https://travis-ci.org/ARPA-SIMC/CRITERIA3D.svg?branch=master
+[![Build Status](https://travis-ci.org/ARPA-SIMC/CRITERIA3D.svg?branch=master)](https://travis-ci.org/ARPA-SIMC/CRITERIA3D)
+
 
 # CRITERIA3D distribution
 CRITERIA3D distribution provides a set of libraries and executables for agro-meteorological analysis.
