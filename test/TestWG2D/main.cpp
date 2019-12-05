@@ -78,9 +78,9 @@ int main()
     doy = day = month = year = NODATA;
     prec = minT = maxT = meanT = NODATA;
     bool firstDay = true;
-    int nrStations = 5; // !! da 1 a 10 stazioni
+    int nrStations = 400; // !! da 1 a 10 stazioni
     int distributionType = 1; // 1 multiexponential 2 multigamma 3 Weibull
-    int yearsOfSimulations = 100; // numero anni
+    int yearsOfSimulations = 1; // numero anni
     int lengthDataSeries = numberMeteoLines;
     int nrVariables = 3;
     int nrDate = 3;
@@ -101,7 +101,7 @@ int main()
     {
         dateArray[j] = (int *)calloc(nrDate, sizeof(int));
     }
-
+    srand(time(nullptr));
     for (int i=0;i<nrStations;i++)
     {
 
@@ -299,7 +299,7 @@ int main()
             }
             fclose(fp);
         }
-        else if (i==10)
+        /*else if (i==10)
         {
             fp = fopen("inputData/bedonia_1961_2018.txt","r");
             if (fp == nullptr)
@@ -754,11 +754,18 @@ int main()
                 weatherArray[i][j][2] = prec;
             }
             fclose(fp);
+        }*/
+        else
+        {
+            for (int j=0;j<numberMeteoLines;j++)
+            {
+                weatherArray[i][j][0] = weatherArray[i%10][j][0] + (1.0*rand())/RAND_MAX - 0.5;
+                weatherArray[i][j][1] = weatherArray[i%10][j][1] + (1.0*rand())/RAND_MAX - 0.5;
+                weatherArray[i][j][2] = MAXVALUE(0,weatherArray[i%10][j][2] + (1.0*rand())/RAND_MAX - 0.5);
+            }
         }
 
     }
-
-
     TObsDataD** observedDataDaily = (TObsDataD **)calloc(nrStations, sizeof(TObsDataD*));
     for (int i=0;i<nrStations;i++)
     {
