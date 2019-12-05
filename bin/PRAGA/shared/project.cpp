@@ -1958,7 +1958,7 @@ bool Project::start(QString appPath)
     setApplicationPath(appPath);
 
     QString defaultProject = getApplicationPath() + "default.ini";
-    qDebug() << "defaultProject " << defaultProject;
+    logError(defaultProject); //debug
 
     if (! QFile(defaultProject).exists())
     {
