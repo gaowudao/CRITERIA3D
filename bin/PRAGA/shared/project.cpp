@@ -667,10 +667,12 @@ QString Project::getApplicationPath()
     appImagePath = getenv ("APPIMAGE");
     if (appImagePath!=nullptr)
     {
+        qDebug() << "getApplicationPath " << QString::fromStdString(appImagePath);
         return QString::fromStdString(appImagePath);
     }
     else
     {
+        qDebug() << "getApplicationPath " << this->appPath;
         return this->appPath;
     }
 }
