@@ -667,12 +667,10 @@ QString Project::getApplicationPath()
     appImagePath = getenv ("APPIMAGE");
     if (appImagePath!=nullptr)
     {
-        qDebug() << "getApplicationPath " << QString::fromStdString(appImagePath);
         return QString::fromStdString(appImagePath);
     }
     else
     {
-        qDebug() << "getApplicationPath " << this->appPath;
         return this->appPath;
     }
 }
@@ -1739,6 +1737,7 @@ bool Project::loadProjectSettings(QString settingsFileName)
 bool Project::searchDefaultPath(QString* path)
 {
     QString myPath = getApplicationPath();
+    logError(myPath); //debug
     QString myVolumeDOS = myPath.left(3);
 
     bool isFound = false;
