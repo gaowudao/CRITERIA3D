@@ -1,13 +1,14 @@
-#------------------------------------------------------------------
+#----------------------------------------------------------------
 #
 #   criteriaModel library
-#   Mono-dimensional water balance.
-#   Algorithms for soil water infiltration, redistribution,
+#
+#   Water balance 1D
+#   algorithms for soil water infiltration, redistribution,
 #   capillary rise, crop water demand and irrigation.
 #
 #   This library is part of CRITERIA3D distribution
 #
-#------------------------------------------------------------------
+#----------------------------------------------------------------
 
 QT      += core sql
 QT      -= gui
@@ -32,18 +33,18 @@ INCLUDEPATH +=  ../crit3dDate ../mathFunctions ../gis ../meteo \
                 ../soil ../crop ../utilities
 
 SOURCES += \
+    dbMeteoCriteria1D.cpp \
     modelCore.cpp \
     water1D.cpp \
     croppingSystem.cpp \
-    criteriaModel.cpp \
-    dbToolsMOSES.cpp
+    criteriaModel.cpp
 
 HEADERS += \
+    dbMeteoCriteria1D.h \
     modelCore.h \
     water1D.h \
     croppingSystem.h \
-    criteriaModel.h \
-    dbToolsMOSES.h
+    criteriaModel.h
 
 unix {
     target.path = /usr/lib
