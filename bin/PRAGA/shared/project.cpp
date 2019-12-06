@@ -668,7 +668,7 @@ QString Project::getApplicationPath()
     if (appImagePath!=nullptr)
     {
         QDir d = QFileInfo(appImagePath).absoluteDir();
-        QString absolute = d.absolutePath();
+        QString absolute = d.absolutePath()+"/";
         return absolute;
     }
     else
