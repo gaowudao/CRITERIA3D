@@ -1739,7 +1739,6 @@ bool Project::loadProjectSettings(QString settingsFileName)
 bool Project::searchDefaultPath(QString* path)
 {
     QString myPath = getApplicationPath();
-    logError(myPath); //debug
     QString myVolumeDOS = myPath.left(3);
 
     bool isFound = false;
