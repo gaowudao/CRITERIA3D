@@ -664,7 +664,7 @@ void Project::setApplicationPath(QString myPath)
 QString Project::getApplicationPath()
 {
     char* appImagePath;
-    appImagePath = getenv ("APPIMAGE");
+    appImagePath = getenv ("APPDIR");
     if (appImagePath!=nullptr)
     {
         return QString::fromStdString(appImagePath);
