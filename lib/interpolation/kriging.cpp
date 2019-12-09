@@ -19,6 +19,7 @@
     double *D, *V, *weight, *VM, *pos, *val;
 
 
+
     /*!
      * \brief no pivoting - assume rank n
      * \param A matrix double pointer
