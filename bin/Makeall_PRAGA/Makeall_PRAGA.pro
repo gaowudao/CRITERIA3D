@@ -8,4 +8,6 @@ SUBDIRS =       ../../lib/crit3dDate ../../lib/mathFunctions ../../lib/gis  \
 
 CONFIG += ordered
 
+DEFINES += NETCDF
+
 

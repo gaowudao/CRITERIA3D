@@ -20,7 +20,7 @@ INCLUDEPATH +=  ./shared ../PRAGA/shared  \
                 ../../lib/interpolation ../../lib/solarRadiation  \
                 ../../lib/soilWidget ../../lib/utilities  \
                 ../../lib/dbMeteoPoints ../../lib/dbMeteoGrid \
-                ../../lib/netcdfHandler ../../lib/project
+                ../../lib/project
 
 unix:{
     INCLUDEPATH += /usr/include/qwt/
@@ -44,7 +44,6 @@ win32:{
 
 CONFIG(debug, debug|release) {
     LIBS += -L../../lib/project/debug -lproject
-    LIBS += -L../../lib/netcdfHandler/debug -lnetcdfHandler
     LIBS += -L../../lib/dbMeteoGrid/debug -ldbMeteoGrid
     LIBS += -L../../lib/dbMeteoPoints/debug -ldbMeteoPoints
     LIBS += -L../../lib/soilWidget/debug -lsoilWidget
@@ -61,7 +60,6 @@ CONFIG(debug, debug|release) {
 
 } else {
     LIBS += -L../../lib/project/release -lproject
-    LIBS += -L../../lib/netcdfHandler/release -lnetcdfHandler
     LIBS += -L../../lib/dbMeteoGrid/release -ldbMeteoGrid
     LIBS += -L../../lib/dbMeteoPoints/release -ldbMeteoPoints
     LIBS += -L../../lib/soilWidget/release -lsoilWidget
