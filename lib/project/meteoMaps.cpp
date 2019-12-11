@@ -139,19 +139,21 @@ Crit3DHourlyMeteoMaps::Crit3DHourlyMeteoMaps(const gis::Crit3DRasterGrid& DEM)
     mapHourlyTair = new gis::Crit3DRasterGrid;
     mapHourlyPrec = new gis::Crit3DRasterGrid;
     mapHourlyRelHum = new gis::Crit3DRasterGrid;
-    mapHourlyWindInt = new gis::Crit3DRasterGrid;
     mapHourlyET0 = new gis::Crit3DRasterGrid;
     mapHourlyTdew = new gis::Crit3DRasterGrid;
-    mapHourlyWindDir = new gis::Crit3DRasterGrid;
+    mapHourlyWindVectorInt = new gis::Crit3DRasterGrid;
+    mapHourlyWindVectorDir = new gis::Crit3DRasterGrid;
+    mapHourlyWindScalarInt = new gis::Crit3DRasterGrid;
     mapHourlyLeafW = new gis::Crit3DRasterGrid;
 
     mapHourlyTair->initializeGrid(DEM);
     mapHourlyPrec->initializeGrid(DEM);
     mapHourlyRelHum->initializeGrid(DEM);
-    mapHourlyWindInt->initializeGrid(DEM);
     mapHourlyET0->initializeGrid(DEM);
     mapHourlyTdew->initializeGrid(DEM);
-    mapHourlyWindDir->initializeGrid(DEM);
+    mapHourlyWindVectorInt->initializeGrid(DEM);
+    mapHourlyWindVectorDir->initializeGrid(DEM);
+    mapHourlyWindScalarInt->initializeGrid(DEM);
     mapHourlyLeafW->initializeGrid(DEM);
 
     isComputed = false;
@@ -169,8 +171,9 @@ void Crit3DHourlyMeteoMaps::clear()
     mapHourlyTair->clear();
     mapHourlyPrec->clear();
     mapHourlyRelHum->clear();
-    mapHourlyWindInt->clear();
-    mapHourlyWindDir->clear();
+    mapHourlyWindVectorInt->clear();
+    mapHourlyWindVectorDir->clear();
+    mapHourlyWindScalarInt->clear();
     mapHourlyTdew->clear();
     mapHourlyET0->clear();
     mapHourlyLeafW->clear();
@@ -178,8 +181,9 @@ void Crit3DHourlyMeteoMaps::clear()
     delete mapHourlyTair;
     delete mapHourlyPrec;
     delete mapHourlyRelHum;
-    delete mapHourlyWindInt;
-    delete mapHourlyWindDir;
+    delete mapHourlyWindVectorInt;
+    delete mapHourlyWindVectorDir;
+    delete mapHourlyWindScalarInt;
     delete mapHourlyTdew;
     delete mapHourlyET0;
     delete mapHourlyLeafW;
@@ -196,12 +200,14 @@ gis::Crit3DRasterGrid* Crit3DHourlyMeteoMaps::getMapFromVar(meteoVariable myVar)
         return mapHourlyPrec;
     else if (myVar == airRelHumidity)
         return mapHourlyRelHum;
-    else if (myVar == windIntensity)
-        return mapHourlyWindInt;
+    else if (myVar == windScalarIntensity)
+        return mapHourlyWindScalarInt;
+    else if (myVar == windVectorIntensity)
+        return mapHourlyWindVectorInt;
+    else if (myVar == windVectorDirection)
+        return mapHourlyWindVectorDir;
     else if (myVar == referenceEvapotranspiration)
         return mapHourlyET0;
-    else if (myVar == windDirection)
-        return mapHourlyWindDir;
     else if (myVar == airDewTemperature)
         return mapHourlyTdew;
     else if (myVar == leafWetness)
@@ -229,13 +235,13 @@ bool Crit3DHourlyMeteoMaps::computeET0PMMap(const gis::Crit3DRasterGrid& DEM, Cr
                 transmissivity = radMaps->transmissivityMap->value[row][col];
                 temperature = this->mapHourlyTair->value[row][col];
                 relHumidity = this->mapHourlyRelHum->value[row][col];
-                windSpeed = this->mapHourlyWindInt->value[row][col];
+                windSpeed = this->mapHourlyWindScalarInt->value[row][col];
 
                 if (! isEqual(globalRadiation, radMaps->globalRadiationMap->header->flag)
                         && ! isEqual(transmissivity, radMaps->transmissivityMap->header->flag)
                         && ! isEqual(temperature, mapHourlyTair->header->flag)
                         && ! isEqual(relHumidity, mapHourlyRelHum->header->flag)
-                        && ! isEqual(windSpeed, mapHourlyWindInt->header->flag))
+                        && ! isEqual(windSpeed, mapHourlyWindScalarInt->header->flag))
                 {
                     this->mapHourlyET0->value[row][col] = float(ET0_Penman_hourly(double(height), double(transmissivity / clearSkyTransmissivity),
                                       double(globalRadiation), double(temperature), double(relHumidity), double(windSpeed)));

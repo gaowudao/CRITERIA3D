@@ -514,7 +514,7 @@ bool setColorScale(meteoVariable variable, Crit3DColorScale *colorScale)
         case globalIrradiance: case dailyGlobalRadiation: case atmTransmissivity:
             setRadiationScale(colorScale);
             break;
-        case windIntensity: case dailyWindIntensityAvg: case dailyWindIntensityMax:
+        case windVectorIntensity: case windScalarIntensity: case dailyWindVectorIntensityAvg: case dailyWindVectorIntensityMax: case dailyWindScalarIntensityAvg: case dailyWindScalarIntensityMax:
             setWindIntensityScale(colorScale);
             break;
         case anomaly:
@@ -535,47 +535,55 @@ bool setColorScale(meteoVariable variable, Crit3DColorScale *colorScale)
 std::string getVariableString(meteoVariable myVar)
 {
     if (myVar == airTemperature || myVar == dailyAirTemperatureAvg)
-        return "Air temperature °C";
-    else if (myVar == dailyAirTemperatureRange)
-        return "Air temerature range °C";
-    else if (myVar == airRelHumidity || myVar == dailyAirRelHumidityAvg)
-        return "Relative humidity %";
-    else if (myVar == airDewTemperature || myVar == dailyAirDewTemperatureAvg)
-        return "Air dew temperature °C";
-    else if ((myVar == dailyPrecipitation ||  myVar == precipitation))
-        return "Precipitation mm";
+        return "Air temperature (°C)";
     else if (myVar == dailyAirTemperatureMax)
-        return "Max. air temperature °C";
+        return "Maximum air temperature (°C)";
     else if (myVar == dailyAirTemperatureMin)
-        return "Min. air temperature °C";
-    else if (myVar == dailyGlobalRadiation)
-        return "Solar radiation MJ m-2";
+        return "Minimum air temperature (°C)";
+    else if (myVar == dailyAirTemperatureRange)
+        return "Air temperature range (°C)";
+    else if (myVar == airRelHumidity || myVar == dailyAirRelHumidityAvg)
+        return "Air relative humidity (%)";
     else if (myVar == dailyAirRelHumidityMax)
-        return "Max. relative humidity %";
+        return "Maximum relative humidity (%)";
     else if (myVar == dailyAirRelHumidityMin)
-        return "Min. relative humidity %";
+        return "Minimum relative humidity (%)";
+    else if (myVar == airDewTemperature || myVar == dailyAirDewTemperatureAvg)
+        return "Air dew temperature (°C)";
+    else if ((myVar == dailyPrecipitation ||  myVar == precipitation))
+        return "Precipitation (mm)";
+    else if (myVar == dailyGlobalRadiation)
+        return "Solar radiation (MJ m-2)";
     else if (myVar == globalIrradiance)
-        return "Solar irradiance W m-2";
+        return "Solar irradiance (W m-2)";
     else if (myVar == atmTransmissivity)
-        return "Atm. transmissivity [-]";
-    else if (myVar == windIntensity)
-        return "Wind intensity m s-1";
-	else if (myVar == dailyWindIntensityAvg)
-        return "Avg wind intensity m s-1";
-    else if (myVar == dailyWindIntensityMax)
-        return "Max. wind intensity m s-1";
-    else if (myVar == dailyWindDirectionPrevailing)
-        return "Prev. wind direction °";
+        return "Atmospheric transmissivity [-]";
+    else if (myVar == windVectorIntensity)
+        return "Wind vector intensity (m s-1)";
+    else if (myVar == windVectorDirection)
+        return "Wind vector direction (deg)";
+    else if (myVar == windScalarIntensity)
+        return "Wind scalar intensity (m s-1)";
+    else if (myVar == dailyWindVectorIntensityAvg)
+        return "Average wind vector intensity (m s-1)";
+    else if (myVar == dailyWindVectorIntensityMax)
+        return "Maximum wind vector intensity (m s-1)";
+    else if (myVar == dailyWindVectorDirectionPrevailing)
+        return "Prevailing wind direction (deg)";
+    else if (myVar == dailyWindScalarIntensityAvg)
+        return "Average wind scalar intensity (m s-1)";
+    else if (myVar == dailyWindScalarIntensityMax)
+        return "Maximum wind scalar intensity (m s-1)";
     else if (myVar == referenceEvapotranspiration ||
              myVar == dailyReferenceEvapotranspirationHS ||
              myVar == dailyReferenceEvapotranspirationPM)
-        return "Ref. evapotranspiration mm";
+        return "Reference evapotranspiration (mm)";
     else if (myVar == leafWetness || myVar == dailyLeafWetness)
-        return "Leaf wetness h";
+        return "Leaf wetness (h)";
     else if (myVar == dailyBIC)
-        return "Hydro-climatic balance mm";
+        return "Hydroclimatic balance (mm)";
     else if (myVar == noMeteoTerrain)
-        return "Elevation m";
+        return "Elevation (m)";
 
     else
         return "No variable";
@@ -687,24 +695,60 @@ meteoVariable getDailyMeteoVarFromHourly(meteoVariable myVar, aggregationMethod 
         else if (myAggregation == aggrAverage)
             return dailyAirRelHumidityAvg;
     }
-    else if (myVar == windIntensity)
-        return dailyWindIntensityAvg;
+    else if (myVar == windVectorIntensity)
+    {
+        if (myAggregation == aggrAverage)
+            return dailyWindVectorIntensityAvg;
+        else if (myAggregation == aggrMax)
+            return dailyWindVectorIntensityMax;
+    }
+    else if (myVar == windVectorDirection)
+    {
+        if (myAggregation == aggrPrevailing)
+            return dailyWindVectorDirectionPrevailing;
+    }
+    else if (myVar == windScalarIntensity)
+    {
+        if (myAggregation == aggrAverage)
+            return dailyWindScalarIntensityAvg;
+        else if (myAggregation == aggrMax)
+            return dailyWindScalarIntensityMax;
+    }
     else if (myVar == precipitation)
-        return dailyPrecipitation;
+    {
+        if (myAggregation == aggrSum)
+            return dailyPrecipitation;
+    }
     else if (myVar == referenceEvapotranspiration)
-        return dailyReferenceEvapotranspirationPM;
-    else if (myVar == actualEvaporation)
-        return actualEvaporation;
+    {
+        if (myAggregation == aggrSum)
+            return dailyReferenceEvapotranspirationPM;
+    }
     else if (myVar == globalIrradiance)
-        return dailyGlobalRadiation;
+    {
+        if (myAggregation == aggrIntegral)
+            return dailyGlobalRadiation;
+    }
     else if (myVar == directIrradiance)
-        return dailyDirectRadiation;
+    {
+        if (myAggregation == aggrIntegral)
+            return dailyDirectRadiation;
+    }
     else if (myVar == diffuseIrradiance)
-        return dailyDiffuseRadiation;
+    {
+        if (myAggregation == aggrIntegral)
+            return dailyDiffuseRadiation;
+    }
     else if (myVar == reflectedIrradiance)
-        return dailyReflectedRadiation;
+    {
+        if (myAggregation == aggrIntegral)
+            return dailyReflectedRadiation;
+    }
     else if (myVar == leafWetness)
-        return dailyLeafWetness;
+    {
+        if (myAggregation == aggrSum)
+            return dailyLeafWetness;
+    }
 
     return noMeteoVar;
 }

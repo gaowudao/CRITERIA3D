@@ -131,9 +131,9 @@ quality::Range* Crit3DQuality::getQualityRange(meteoVariable myVar)
         return qualityTransmissivity;
     else if (myVar == airRelHumidity)
         return qualityHourlyRH;
-    else if (myVar == windIntensity)
+    else if (myVar == windScalarIntensity || myVar == windVectorIntensity)
         return qualityHourlyWInt;
-    else if (myVar == windDirection)
+    else if (myVar == windVectorDirection || myVar == dailyWindVectorDirectionPrevailing)
         return qualityHourlyWDir;
     else if (myVar == airDewTemperature)
         return qualityHourlyTd;
@@ -155,7 +155,7 @@ quality::Range* Crit3DQuality::getQualityRange(meteoVariable myVar)
     else if (myVar == dailyGlobalRadiation)
         return qualityDailyGRad;
 
-    else if (myVar == dailyWindIntensityAvg || myVar == dailyWindIntensityMax)
+    else if (myVar == dailyWindScalarIntensityAvg || myVar == dailyWindScalarIntensityMax || myVar == dailyWindVectorIntensityAvg || myVar == dailyWindVectorIntensityMax)
         return qualityDailyWInt;
 
     else

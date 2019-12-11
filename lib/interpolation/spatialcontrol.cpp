@@ -41,9 +41,12 @@ float findThreshold(meteoVariable myVar, float value, float stdDev, float nrStdD
         distWeight = minDistance / 1000.f;
         threshold += zWeight + distWeight + stdDev * nrStdDev;
     }
-    else if (   myVar == windIntensity
-             || myVar == dailyWindIntensityAvg
-             || myVar == dailyWindIntensityMax)
+    else if (   myVar == windScalarIntensity
+             || myVar == windVectorIntensity
+             || myVar == dailyWindScalarIntensityAvg
+             || myVar == dailyWindScalarIntensityMax
+             || myVar == dailyWindVectorIntensityAvg
+             || myVar == dailyWindVectorIntensityMax)
     {
         threshold = 1.f;
         zWeight = stdDevZ / 50.f;

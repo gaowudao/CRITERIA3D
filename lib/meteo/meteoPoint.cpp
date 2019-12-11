@@ -103,7 +103,9 @@ void Crit3DMeteoPoint::initializeObsDataH(int myHourlyFraction, int numberOfDays
         obsDataH[i].tDew = new float[nrDailyValues];
         obsDataH[i].irradiance = new float[nrDailyValues];
         obsDataH[i].et0 = new float[nrDailyValues];
-        obsDataH[i].windInt = new float[nrDailyValues];
+        obsDataH[i].windVecInt = new float[nrDailyValues];
+        obsDataH[i].windVecDir = new float[nrDailyValues];
+        obsDataH[i].windScalInt = new float[nrDailyValues];
         obsDataH[i].leafW = new int[nrDailyValues];
         obsDataH[i].transmissivity = new float[nrDailyValues];
 
@@ -115,7 +117,9 @@ void Crit3DMeteoPoint::initializeObsDataH(int myHourlyFraction, int numberOfDays
             obsDataH[i].tDew[j] = NODATA;
             obsDataH[i].irradiance[j] = NODATA;
             obsDataH[i].et0[j] = NODATA;
-            obsDataH[i].windInt[j] = NODATA;
+            obsDataH[i].windVecInt[j] = NODATA;
+            obsDataH[i].windVecDir[j] = NODATA;
+            obsDataH[i].windScalInt[j] = NODATA;
             obsDataH[i].leafW[j] = NODATA;
             obsDataH[i].transmissivity[j] = NODATA;
         }
@@ -148,8 +152,11 @@ void Crit3DMeteoPoint::initializeObsDataD(int numberOfDays, const Crit3DDate& fi
         obsDataD[i].globRad = NODATA;
         obsDataD[i].et0_hs = NODATA;
         obsDataD[i].et0_pm = NODATA;
-        obsDataD[i].windIntAvg = NODATA;
-        obsDataD[i].windDirPrev = NODATA;
+        obsDataD[i].windVecIntAvg = NODATA;
+        obsDataD[i].windVecIntMax = NODATA;
+        obsDataD[i].windVecDirPrev = NODATA;
+        obsDataD[i].windScalIntAvg = NODATA;
+        obsDataD[i].windScalIntMax = NODATA;
         obsDataD[i].waterTable = NODATA;
         ++myDate;
     }
@@ -217,8 +224,12 @@ void Crit3DMeteoPoint::emptyVarObsDataH(meteoVariable myVar, const Crit3DDate& m
                     obsDataH[i].tDew[j] = NODATA;
                 else if (myVar == globalIrradiance)
                     obsDataH[i].irradiance[j] = NODATA;
-                else if (myVar == windIntensity)
-                    obsDataH[i].windInt[j] = NODATA;
+                else if (myVar == windScalarIntensity)
+                    obsDataH[i].windScalInt[j] = NODATA;
+                else if (myVar == windVectorIntensity)
+                    obsDataH[i].windVecInt[j] = NODATA;
+                else if (myVar == windVectorDirection)
+                    obsDataH[i].windVecDir[j] = NODATA;
                 else if (myVar == leafWetness)
                     obsDataH[i].leafW[j] = NODATA;
                 else if (myVar == atmTransmissivity)
@@ -250,8 +261,12 @@ void Crit3DMeteoPoint::emptyVarObsDataH(meteoVariable myVar, const Crit3DDate& d
                 obsDataH[i].tDew[j] = NODATA;
             else if (myVar == globalIrradiance)
                 obsDataH[i].irradiance[j] = NODATA;
-            else if (myVar == windIntensity)
-                obsDataH[i].windInt[j] = NODATA;
+            else if (myVar == windScalarIntensity)
+                obsDataH[i].windScalInt[j] = NODATA;
+            else if (myVar == windVectorIntensity)
+                obsDataH[i].windVecInt[j] = NODATA;
+            else if (myVar == windVectorDirection)
+                obsDataH[i].windVecDir[j] = NODATA;
             else if (myVar == leafWetness)
                 obsDataH[i].leafW[j] = NODATA;
             else if (myVar == atmTransmissivity)
@@ -286,8 +301,16 @@ void Crit3DMeteoPoint::emptyVarObsDataD(meteoVariable myVar, const Crit3DDate& d
             obsDataD[i].rhAvg = NODATA;
         else if (myVar == dailyGlobalRadiation)
             obsDataD[i].globRad = NODATA;
-        else if (myVar == dailyWindIntensityAvg)
-            obsDataD[i].windIntAvg = NODATA;
+        else if (myVar == dailyWindScalarIntensityAvg)
+            obsDataD[i].windScalIntAvg = NODATA;
+        else if (myVar == dailyWindScalarIntensityMax)
+            obsDataD[i].windScalIntMax = NODATA;
+        else if (myVar == dailyWindVectorIntensityAvg)
+            obsDataD[i].windVecIntAvg = NODATA;
+        else if (myVar == dailyWindVectorIntensityMax)
+            obsDataD[i].windVecIntMax = NODATA;
+        else if (myVar == dailyWindVectorDirectionPrevailing)
+            obsDataD[i].windVecDirPrev = NODATA;
         else if (myVar == dailyReferenceEvapotranspirationHS)
             obsDataD[i].et0_hs = NODATA;
         else if (myVar == dailyReferenceEvapotranspirationPM)
@@ -397,7 +420,9 @@ void Crit3DMeteoPoint::cleanObsDataH()
             delete [] obsDataH[i].rhAir;
             delete [] obsDataH[i].tDew;
             delete [] obsDataH[i].irradiance;
-            delete [] obsDataH[i].windInt;
+            delete [] obsDataH[i].windScalInt;
+            delete [] obsDataH[i].windVecInt;
+            delete [] obsDataH[i].windVecDir;
             delete [] obsDataH[i].leafW;
             delete [] obsDataH[i].transmissivity;
         }
@@ -454,8 +479,12 @@ bool Crit3DMeteoPoint::setMeteoPointValueH(const Crit3DDate& myDate, int myHour,
         obsDataH[i].irradiance[h] = myValue;
     else if (myVar == referenceEvapotranspiration)
         obsDataH[i].et0[h] = myValue;
-    else if (myVar == windIntensity)
-        obsDataH[i].windInt[h] = myValue;
+    else if (myVar == windScalarIntensity)
+        obsDataH[i].windScalInt[h] = myValue;
+    else if (myVar == windVectorIntensity)
+        obsDataH[i].windVecInt[h] = myValue;
+    else if (myVar == windVectorDirection)
+        obsDataH[i].windVecDir[h] = myValue;
     else if (myVar == leafWetness)
         obsDataH[i].leafW[h] = int(myValue);
     else if (myVar == atmTransmissivity)
@@ -481,8 +510,12 @@ bool Crit3DMeteoPoint::setMeteoPointValueH(const Crit3DDate& myDate, int myHour,
             obsDataH[i].irradiance[h] = myValue;
         else if (myVar == referenceEvapotranspiration)
             obsDataH[i].et0[h] = myValue;
-        else if (myVar == windIntensity)
-            obsDataH[i].windInt[h] = myValue;
+        else if (myVar == windScalarIntensity)
+            obsDataH[i].windScalInt[h] = myValue;
+        else if (myVar == windVectorIntensity)
+            obsDataH[i].windVecInt[h] = myValue;
+        else if (myVar == windVectorDirection)
+            obsDataH[i].windVecDir[h] = myValue;
         else if (myVar == leafWetness)
             obsDataH[i].leafW[h] = int(myValue);
         else if (myVar == atmTransmissivity)
@@ -521,12 +554,16 @@ bool Crit3DMeteoPoint::setMeteoPointValueD(const Crit3DDate& myDate, meteoVariab
          obsDataD[i].et0_hs = myValue;
     else if (myVar == dailyReferenceEvapotranspirationPM)
          obsDataD[i].et0_pm = myValue;
-    else if (myVar == dailyWindIntensityAvg)
-        obsDataD[i].windIntAvg = myValue;
-    else if (myVar == dailyWindDirectionPrevailing)
-        obsDataD[i].windDirPrev = myValue;
-    else if (myVar == dailyWindIntensityMax)
-        obsDataD[i].windIntMax = myValue;
+    else if (myVar == dailyWindScalarIntensityAvg)
+        obsDataD[i].windScalIntAvg = myValue;
+    else if (myVar == dailyWindScalarIntensityMax)
+        obsDataD[i].windScalIntMax = myValue;
+    else if (myVar == dailyWindVectorIntensityAvg)
+        obsDataD[i].windVecIntAvg = myValue;
+    else if (myVar == dailyWindVectorIntensityMax)
+        obsDataD[i].windVecIntMax = myValue;
+    else if (myVar == dailyWindVectorDirectionPrevailing)
+        obsDataD[i].windVecDirPrev = myValue;
     else if (myVar == dailyLeafWetness)
         obsDataD[i].leafW = myValue;					
     else if (myVar == dailyWaterTableDepth)
@@ -592,8 +629,12 @@ float Crit3DMeteoPoint::getMeteoPointValueH(const Crit3DDate& myDate, int myHour
         return (obsDataH[d].irradiance[h]);
     else if (myVar == referenceEvapotranspiration)
         return (obsDataH[d].et0[h]);
-    else if (myVar == windIntensity)
-        return (obsDataH[d].windInt[h]);
+    else if (myVar == windScalarIntensity)
+        return (obsDataH[d].windScalInt[h]);
+    else if (myVar == windVectorIntensity)
+        return (obsDataH[d].windVecInt[h]);
+    else if (myVar == windVectorDirection)
+        return (obsDataH[d].windVecDir[h]);
     else if (myVar == leafWetness)
         return float(obsDataH[d].leafW[h]);
     else if (myVar == atmTransmissivity)
@@ -634,12 +675,16 @@ float Crit3DMeteoPoint::getMeteoPointValueD(const Crit3DDate& myDate, meteoVaria
         return (obsDataD[i].et0_hs);
     else if (myVar == dailyReferenceEvapotranspirationPM)
         return (obsDataD[i].et0_pm);
-    else if (myVar == dailyWindIntensityAvg)
-        return (obsDataD[i].windIntAvg);
-    else if (myVar == dailyWindDirectionPrevailing)
-        return (obsDataD[i].windDirPrev);
-    else if (myVar == dailyWindIntensityMax)
-        return (obsDataD[i].windIntMax);
+    else if (myVar == dailyWindScalarIntensityAvg)
+        return (obsDataD[i].windScalIntAvg);
+    else if (myVar == dailyWindScalarIntensityMax)
+        return (obsDataD[i].windScalIntMax);
+    else if (myVar == dailyWindVectorIntensityAvg)
+        return (obsDataD[i].windVecIntAvg);
+    else if (myVar == dailyWindVectorIntensityMax)
+        return (obsDataD[i].windVecIntMax);
+    else if (myVar == dailyWindVectorDirectionPrevailing)
+        return (obsDataD[i].windVecDirPrev);
     else if (myVar == dailyLeafWetness)
         return (obsDataD[i].leafW);
     else if (myVar == dailyWaterTableDepth)
