@@ -1,6 +1,6 @@
 #-----------------------------------------------------
 #
-#   dbMeteoPoints library
+#   project library
 #   This project is part of CRITERIA-3D distribution
 #
 #-----------------------------------------------------
@@ -17,31 +17,15 @@ QMAKE_CXXFLAGS += -std=c++11
 
 unix:{
     CONFIG(debug, debug|release) {
-        TARGET = debug/dbMeteoPoints
+        TARGET = debug/project
     } else {
-        TARGET = release/dbMeteoPoints
+        TARGET = release/project
     }
 }
 win32:{
-    TARGET = dbMeteoPoints
+    TARGET = project
 }
 
-DEFINES += DBMETEOPOINTS_LIBRARY
-
 INCLUDEPATH += ../crit3dDate ../mathFunctions ../gis ../meteo ../interpolation ../utilities
-
-SOURCES += \
-    dbAggregationsHandler.cpp \
-    download.cpp \
-    dbArkimet.cpp \
-    dbMeteoPointsHandler.cpp \
-    variablesList.cpp
-
-HEADERS += \
-    download.h \
-    dbArkimet.h \
-    dbMeteoPointsHandler.h \
-    dbAggregationsHandler.h \
-    variablesList.h
 
 

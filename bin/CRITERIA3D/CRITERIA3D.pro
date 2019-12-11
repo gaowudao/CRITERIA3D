@@ -2,7 +2,7 @@
 #
 #   CRITERIA3D
 #   3D soil water balance
-#   This project is part of CRITERIA3D distribution
+#   This project is part of CRITERIA-3D distribution
 #
 #-----------------------------------------------------
 
@@ -19,7 +19,8 @@ INCLUDEPATH +=  ./shared ../PRAGA/shared  \
                 ../../lib/crop ../../lib/soil ../../lib/meteo ../../lib/gis \
                 ../../lib/interpolation ../../lib/solarRadiation  \
                 ../../lib/soilWidget ../../lib/utilities  \
-                ../../lib/dbMeteoPoints ../../lib/dbMeteoGrid
+                ../../lib/dbMeteoPoints ../../lib/dbMeteoGrid \
+                ../../lib/project
 
 unix:{
     INCLUDEPATH += /usr/include/qwt/
@@ -42,6 +43,7 @@ win32:{
 }
 
 CONFIG(debug, debug|release) {
+    LIBS += -L../../lib/project/debug -lproject
     LIBS += -L../../lib/dbMeteoGrid/debug -ldbMeteoGrid
     LIBS += -L../../lib/dbMeteoPoints/debug -ldbMeteoPoints
     LIBS += -L../../lib/soilWidget/debug -lsoilWidget
@@ -57,7 +59,7 @@ CONFIG(debug, debug|release) {
     LIBS += -L../../lib/crit3dDate/debug -lcrit3dDate
 
 } else {
-
+    LIBS += -L../../lib/project/release -lproject
     LIBS += -L../../lib/dbMeteoGrid/release -ldbMeteoGrid
     LIBS += -L../../lib/dbMeteoPoints/release -ldbMeteoPoints
     LIBS += -L../../lib/soilWidget/release -lsoilWidget
@@ -75,19 +77,9 @@ CONFIG(debug, debug|release) {
 
 
 SOURCES += mainwindow.cpp \
-    ../PRAGA/shared/aggregation.cpp \
-    ../PRAGA/shared/dialogRadiation.cpp \
-    ../PRAGA/shared/dialogSelection.cpp \
-    ../PRAGA/shared/formPeriod.cpp \
     ../PRAGA/shared/stationMarker.cpp \
-    ../PRAGA/shared/dialogSettings.cpp \
-    ../PRAGA/shared/dialogInterpolation.cpp \
-    ../PRAGA/shared/interpolationCmd.cpp \
     ../PRAGA/shared/mapGraphicsRasterObject.cpp \
     ../PRAGA/shared/colorLegend.cpp \
-    ../PRAGA/shared/project.cpp \
-    ../PRAGA/shared/formInfo.cpp \
-    ../PRAGA/shared/meteoMaps.cpp \
     shared/project3D.cpp \
     viewer3d.cpp \
     crit3dProject.cpp \
@@ -96,28 +88,16 @@ SOURCES += mainwindow.cpp \
 
 
 HEADERS += mainwindow.h \
-    ../PRAGA/shared/aggregation.h \
-    ../PRAGA/shared/dialogRadiation.h \
-    ../PRAGA/shared/dialogSelection.h \
-    ../PRAGA/shared/formPeriod.h \
     ../PRAGA/shared/stationMarker.h \
-    ../PRAGA/shared/dialogSettings.h \
-    ../PRAGA/shared/dialogInterpolation.h \
-    ../PRAGA/shared/interpolationCmd.h  \
     ../PRAGA/shared/mapGraphicsRasterObject.h \
     ../PRAGA/shared/colorLegend.h \
-    ../PRAGA/shared/project.h \
-    ../PRAGA/shared/formInfo.h \
-    ../PRAGA/shared/meteoMaps.h \
     shared/project3D.h \
     viewer3d.h \
     crit3dProject.h
 
 
 
-FORMS += mainwindow.ui \
-    ../PRAGA/shared/formInfo.ui \
-    ../PRAGA/shared/formPeriod.ui
+FORMS += mainwindow.ui
 
 
 # insert here path of qwt.prf
