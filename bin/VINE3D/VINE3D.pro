@@ -20,7 +20,7 @@ INCLUDEPATH +=  ../../lib/crit3dDate ../../lib/mathFunctions ../../lib/gis ../..
                 ../../lib/soilFluxes3D/header ../../lib/crop ../../lib/grapevine \
                 ../../lib/utilities ../../lib/dbMeteoPoints ../../lib/dbMeteoGrid \
                 ../../lib/soilWidget ../../mapGraphics \
-                ../PRAGA/shared ../CRITERIA3D/shared
+                ../../lib/project ../CRITERIA3D/shared ../PRAGA/shared/
 
 CONFIG += debug_and_release
 
@@ -37,6 +37,7 @@ win32:{
 
 CONFIG(debug, debug|release) {
 
+    LIBS += -L../../lib/project/debug -lproject
     LIBS += -L../../lib/soilWidget/debug -lsoilWidget
     LIBS += -L../../lib/soil/debug -lsoil
     LIBS += -L../../lib/soilFluxes3D/debug -lsoilFluxes3D
@@ -52,6 +53,7 @@ CONFIG(debug, debug|release) {
     LIBS += -L../../lib/mathFunctions/debug -lmathFunctions
 } else {
 
+    LIBS += -L../../lib/project/release -lproject
     LIBS += -L../../lib/soilWidget/release -lsoilWidget
     LIBS += -L../../lib/soil/release -lsoil
     LIBS += -L../../lib/soilFluxes3D/release -lsoilFluxes3D 
@@ -68,20 +70,10 @@ CONFIG(debug, debug|release) {
 }
 
 SOURCES += \
-    ../PRAGA/shared/aggregation.cpp \
-    ../PRAGA/shared/dialogRadiation.cpp \
-    ../PRAGA/shared/interpolationCmd.cpp \
-    ../PRAGA/shared/project.cpp \
-    ../PRAGA/shared/formInfo.cpp \
-    ../PRAGA/shared/dialogSettings.cpp \
-    ../PRAGA/shared/dialogSelection.cpp \
-    ../PRAGA/shared/shell.cpp \
     ../PRAGA/shared/stationMarker.cpp \
-    ../PRAGA/shared/dialogInterpolation.cpp \
     ../PRAGA/shared/mapGraphicsRasterObject.cpp \
     ../PRAGA/shared/rubberBand.cpp \
     ../PRAGA/shared/colorLegend.cpp \
-    ../PRAGA/shared/formPeriod.cpp \
     atmosphere.cpp \
     dataHandler.cpp \
     disease.cpp \
@@ -92,24 +84,13 @@ SOURCES += \
     waterBalance.cpp \
     vine3DProject.cpp \
     mainWindow.cpp \
-    ../CRITERIA3D/shared/project3D.cpp \
-    ../PRAGA/shared/meteoMaps.cpp
+    ../CRITERIA3D/shared/project3D.cpp
 
 HEADERS  += \
-    ../PRAGA/shared/aggregation.h \
-    ../PRAGA/shared/dialogRadiation.h \
-    ../PRAGA/shared/interpolationCmd.h \
-    ../PRAGA/shared/project.h \
-    ../PRAGA/shared/formInfo.h \
-    ../PRAGA/shared/dialogSettings.h \
-    ../PRAGA/shared/dialogSelection.h \
-    ../PRAGA/shared/shell.h \
     ../PRAGA/shared/stationMarker.h \
-    ../PRAGA/shared/dialogInterpolation.h \
     ../PRAGA/shared/mapGraphicsRasterObject.h \
     ../PRAGA/shared/rubberBand.h \
     ../PRAGA/shared/colorLegend.h \
-    ../PRAGA/shared/formPeriod.h \
     atmosphere.h \
     dataHandler.h \
     disease.h \
@@ -119,10 +100,7 @@ HEADERS  += \
     waterBalance.h \
     vine3DProject.h \
     mainWindow.h \
-    ../CRITERIA3D/shared/project3D.h \
-    ../PRAGA/shared/meteoMaps.h
+    ../CRITERIA3D/shared/project3D.h
 
 FORMS    += \
-    ../PRAGA/shared/formInfo.ui \
-    ../PRAGA/shared/formPeriod.ui \
     mainWindow.ui \
