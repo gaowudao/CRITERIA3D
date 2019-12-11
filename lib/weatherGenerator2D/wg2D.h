@@ -1,6 +1,11 @@
 #ifndef WEATHERGENERATOR2D_H
 #define WEATHERGENERATOR2D_H
 
+/*
+ * Code translated from the MulGets model:
+ * https://it.mathworks.com/matlabcentral/fileexchange/47537-multi-site-stochstic-weather-generator--mulgets-
+*/
+
     #ifndef METEOPOINT_H
         #include "meteoPoint.h"
     #endif
