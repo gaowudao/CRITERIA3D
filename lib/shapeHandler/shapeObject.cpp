@@ -121,7 +121,7 @@ void ShapeObject::assign(const SHPObject* obj)
             // assign if the part is an hole
             if (!isClockWise(part))
             {
-                part->hole = true;  //HOLE
+                part->hole = true;
             }
             else
             {

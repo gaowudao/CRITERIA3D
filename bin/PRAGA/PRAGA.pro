@@ -24,6 +24,9 @@ QMAKE_CXXFLAGS += -std=c++11
 
 DEFINES += NETCDF
 
+
+LIBS += -L../../mapGraphics/release -lMapGraphics
+
 win32:{
     LIBS += -L$$(NC4_INSTALL_DIR)/lib -lnetcdf
 }
@@ -34,9 +37,9 @@ macx:{
     LIBS += -L/usr/local/lib/ -lnetcdf
 }
 
+
 CONFIG(debug, debug|release) {
     LIBS += -L../../lib/graphics/debug -lgraphics
-    LIBS += -L../../mapGraphics/debug -lMapGraphics
     LIBS += -L../../lib/project/debug -lproject
     LIBS += -L../../lib/climate/debug -lclimate
     LIBS += -L../../lib/netcdfHandler/debug -lnetcdfHandler
@@ -52,7 +55,6 @@ CONFIG(debug, debug|release) {
 
 } else {
     LIBS += -L../../lib/graphics/release -lgraphics
-    LIBS += -L../../mapGraphics/release -lMapGraphics
     LIBS += -L../../lib/project/release -lproject
     LIBS += -L../../lib/climate/release -lclimate
     LIBS += -L../../lib/netcdfHandler/release -lnetcdfHandler

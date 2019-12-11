@@ -3,10 +3,9 @@
 #include "commonConstants.h"
 #include <float.h>
 #include <math.h>
-#include "formInfo.h"
+//#include "formInfo.h"
 #include "gis.h"
 
-#define HOLE -8888 // LC scegliere flag per hole a piacere
 
 gis::Crit3DRasterGrid* initializeRasterFromShape(Crit3DShapeHandler* shape, gis::Crit3DRasterGrid* raster, double cellSize)
 {
@@ -45,7 +44,7 @@ gis::Crit3DRasterGrid* initializeRasterFromShape(Crit3DShapeHandler* shape, gis:
 void fillRasterWithShapeNumber(gis::Crit3DRasterGrid* raster, Crit3DShapeHandler *shapeHandler, bool showInfo)
 {
     ShapeObject object;
-    FormInfo formInfo;
+    //FormInfo formInfo;
     double x, y;
     Box<double> bounds;
     int r0, r1, c0, c1;
@@ -53,12 +52,12 @@ void fillRasterWithShapeNumber(gis::Crit3DRasterGrid* raster, Crit3DShapeHandler
 
     if (showInfo)
     {
-        formInfo.start("Rasterize shape...", nShape);
+        //formInfo.start("Rasterize shape...", nShape);
     }
 
     for (int shapeIndex = 0; shapeIndex < nShape; shapeIndex++)
     {
-        if (showInfo) formInfo.setValue(shapeIndex);
+        //if (showInfo) formInfo.setValue(shapeIndex);
 
         shapeHandler->getShape(shapeIndex, object);
 
@@ -88,14 +87,14 @@ void fillRasterWithShapeNumber(gis::Crit3DRasterGrid* raster, Crit3DShapeHandler
         }
     }
 
-    if (showInfo) formInfo.close();
+    //if (showInfo) formInfo.close();
 }
 
 
 void fillRasterWithField(gis::Crit3DRasterGrid* raster, Crit3DShapeHandler* shapeHandler, std::string valField, bool showInfo)
 {
     ShapeObject object;
-    FormInfo formInfo;
+    //FormInfo formInfo;
     double x, y, fieldValue;
     int fieldIndex = shapeHandler->getDBFFieldIndex(valField.c_str());
     int nShape = shapeHandler->getShapeCount();
@@ -105,12 +104,12 @@ void fillRasterWithField(gis::Crit3DRasterGrid* raster, Crit3DShapeHandler* shap
 
     if (showInfo)
     {
-        formInfo.start("Rasterize shape...", nShape);
+        //formInfo.start("Rasterize shape...", nShape);
     }
 
     for (int shapeIndex = 0; shapeIndex < nShape; shapeIndex++)
     {
-        if (showInfo) formInfo.setValue(shapeIndex);
+        //if (showInfo) formInfo.setValue(shapeIndex);
 
         shapeHandler->getShape(shapeIndex, object);
 
@@ -153,7 +152,7 @@ void fillRasterWithField(gis::Crit3DRasterGrid* raster, Crit3DShapeHandler* shap
         }
     }
 
-    if (showInfo) formInfo.close();
+    //if (showInfo) formInfo.close();
 }
 
 
