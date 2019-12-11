@@ -1,12 +1,12 @@
-#----------------------------------------------------
+#-----------------------------------------------------
 #
 #   VINE3D
 #   Simulations of vineyard ecosystem
 #   with 3D soil water balance
 #
-#   this project is part of CRITERIA3D distribution
+#   this project is part of CRITERIA-3D distribution
 #
-#----------------------------------------------------
+#-----------------------------------------------------
 
 QT  += core gui widgets xml sql network
 
@@ -19,24 +19,18 @@ INCLUDEPATH +=  ../../lib/crit3dDate ../../lib/mathFunctions ../../lib/gis ../..
                 ../../lib/interpolation ../../lib/solarRadiation ../../lib/soil  \
                 ../../lib/soilFluxes3D/header ../../lib/crop ../../lib/grapevine \
                 ../../lib/utilities ../../lib/dbMeteoPoints ../../lib/dbMeteoGrid \
-                ../../lib/soilWidget ../../mapGraphics \
-                ../../lib/project ../CRITERIA3D/shared ../PRAGA/shared/
+                ../../lib/soilWidget  ../../lib/project ../../lib/graphics  \
+                ../../mapGraphics ../CRITERIA3D/shared
 
 CONFIG += debug_and_release
 
-unix:{
-    LIBS += -L../../mapGraphics/release -lMapGraphics
-}
-win32:{
-    CONFIG(debug, debug|release) {
-         LIBS += -L../../mapGraphics/debug -lMapGraphics
-    } else {
-        LIBS += -L../../mapGraphics/release -lMapGraphics
-    }
-}
+
+LIBS += -L../../mapGraphics/release -lMapGraphics
+
 
 CONFIG(debug, debug|release) {
 
+    LIBS += -L../../lib/graphics/debug -lgraphics
     LIBS += -L../../lib/project/debug -lproject
     LIBS += -L../../lib/soilWidget/debug -lsoilWidget
     LIBS += -L../../lib/soil/debug -lsoil
@@ -53,6 +47,7 @@ CONFIG(debug, debug|release) {
     LIBS += -L../../lib/mathFunctions/debug -lmathFunctions
 } else {
 
+    LIBS += -L../../lib/graphics/release -lgraphics
     LIBS += -L../../lib/project/release -lproject
     LIBS += -L../../lib/soilWidget/release -lsoilWidget
     LIBS += -L../../lib/soil/release -lsoil
@@ -70,10 +65,6 @@ CONFIG(debug, debug|release) {
 }
 
 SOURCES += \
-    ../PRAGA/shared/stationMarker.cpp \
-    ../PRAGA/shared/mapGraphicsRasterObject.cpp \
-    ../PRAGA/shared/rubberBand.cpp \
-    ../PRAGA/shared/colorLegend.cpp \
     atmosphere.cpp \
     dataHandler.cpp \
     disease.cpp \
@@ -86,11 +77,7 @@ SOURCES += \
     mainWindow.cpp \
     ../CRITERIA3D/shared/project3D.cpp
 
-HEADERS  += \
-    ../PRAGA/shared/stationMarker.h \
-    ../PRAGA/shared/mapGraphicsRasterObject.h \
-    ../PRAGA/shared/rubberBand.h \
-    ../PRAGA/shared/colorLegend.h \
+HEADERS += \
     atmosphere.h \
     dataHandler.h \
     disease.h \
@@ -102,5 +89,5 @@ HEADERS  += \
     mainWindow.h \
     ../CRITERIA3D/shared/project3D.h
 
-FORMS    += \
+FORMS += \
     mainWindow.ui \

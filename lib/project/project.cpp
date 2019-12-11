@@ -1,5 +1,3 @@
-#include <QMessageBox>
-
 #include "project.h"
 #include "formInfo.h"
 #include "commonConstants.h"
@@ -17,8 +15,11 @@
     #include "netcdfHandler.h"
 #endif
 
-#include <iostream> //debug
-#include <QtSql>
+#include <iostream>
+#include <QDir>
+#include <QFile>
+#include <QSqlQuery>
+#include <QMessageBox>
 
 
 Project::Project()
@@ -26,8 +27,6 @@ Project::Project()
     // TODO remove pointers
     meteoSettings = new Crit3DMeteoSettings();
     quality = new Crit3DQuality();
-
-    // TODO ???
     meteoPointsColorScale = new Crit3DColorScale();
 
     // They not change after loading default settings
@@ -49,6 +48,12 @@ void Project::initializeProject()
     errorString = "";
     currentTileMap = "";
 
+    nrMeteoPoints = 0;
+    meteoPoints = nullptr;
+    meteoPointsDbHandler = nullptr;
+    meteoGridDbHandler = nullptr;
+    aggregationDbHandler = nullptr;
+
     meteoSettings->initialize();
     quality->initialize();
 
@@ -61,7 +66,6 @@ void Project::initializeProject()
 
     parameters = nullptr;
     projectSettings = nullptr;
-    aggregationDbHandler = nullptr;
     radiationMaps = nullptr;
     hourlyMeteoMaps = nullptr;
 

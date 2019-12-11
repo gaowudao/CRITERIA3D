@@ -51,6 +51,7 @@ RasterObject::RasterObject(MapGraphicsView* _view, MapGraphicsObject *parent) :
     referencePixel = QPointF(NODATA, NODATA);
     isDrawing = false;
     drawBorder = false;
+    utmZone = NODATA;
 
     longitudeShift = 0;
 }

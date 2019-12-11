@@ -46,7 +46,7 @@ void Crit3DProxyGridSeries::addGridToSeries(QString name_, int year_)
     gridYear.push_back(year_);
 }
 
-bool interpolateProxyGridSeries(Crit3DProxyGridSeries mySeries, QDate myDate, const gis::Crit3DRasterGrid& gridBase, gis::Crit3DRasterGrid* gridOut)
+bool interpolateProxyGridSeries(const Crit3DProxyGridSeries& mySeries, QDate myDate, const gis::Crit3DRasterGrid& gridBase, gis::Crit3DRasterGrid* gridOut)
 {
     std::string myError;
     std::vector <QString> gridNames = mySeries.getGridName();
