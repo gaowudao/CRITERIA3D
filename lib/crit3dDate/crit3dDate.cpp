@@ -32,8 +32,11 @@
 #include <stdio.h>
 
 #include "crit3dDate.h"
-#include "commonConstants.h"
 
+
+#ifndef NODATA
+    #define NODATA -9999
+#endif
 
 const long daysInMonth[12] = {31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31};
 

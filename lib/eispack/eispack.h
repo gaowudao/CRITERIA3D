@@ -2,7 +2,7 @@
 #define EISPACK_H
 
     // downloaded from https://people.sc.fsu.edu/~jburkardt/c_src/eispack/eispack.html
-    // LICENSING: GNU LGPL license
+    // GNU LGPL license
 
     namespace eigenproblem {
 
@@ -109,6 +109,7 @@
 
         void timestamp ( );
     }
+
 
 #endif // EISPACK_H
 

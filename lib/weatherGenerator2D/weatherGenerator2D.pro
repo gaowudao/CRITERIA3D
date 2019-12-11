@@ -3,7 +3,7 @@
 #   weatherGenerator2D library
 #   Spatial weather generator model
 #
-#   This project is part of CRITERIA3D distribution
+#   This project is part of CRITERIA-3D distribution
 #
 #   Code translated from the MulGets model available online on:
 #   https://it.mathworks.com/matlabcentral/fileexchange/47537-multi-site-stochstic-weather-generator--mulgets-
@@ -28,7 +28,7 @@ TEMPLATE = lib
 CONFIG += staticlib
 
 INCLUDEPATH += ../mathFunctions
-INCLUDEPATH += ../specialMathFunctions
+INCLUDEPATH += ../eispack
 INCLUDEPATH += ../crit3dDate
 INCLUDEPATH += ../meteo
 INCLUDEPATH += ../gis

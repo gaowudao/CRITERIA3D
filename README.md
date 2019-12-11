@@ -1,3 +1,6 @@
+[![Build Status](https://travis-ci.org/ARPA-SIMC/CRITERIA3D.svg?branch=master)](https://travis-ci.org/ARPA-SIMC/CRITERIA3D)
+
+
 # CRITERIA3D distribution
 CRITERIA3D distribution provides a set of libraries and executables for agro-meteorological analysis.
 It includes a numerical solution for three-dimensional water and heat flow in the soil, water balance, meteorological data interpolation, daily weather generator, radiation budget, snow accumulation and melt, crop development and crop water uptake. 

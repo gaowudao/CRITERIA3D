@@ -6,19 +6,21 @@
 
 #include "commonConstants.h"
 #include "crit3dDate.h"
-#include "dbToolsMOSES.h"
+#include "dbMeteoCriteria1D.h"
 #include "utilities.h"
 #include "meteoPoint.h"
 
 
 /*!
- * \brief readMOSESMeteoData
- * \param query
- * \param myError
+ * \brief read daily meteo data from a table in the criteria-1D format
+ * \brief (`date`,`tmin`,`tmax`,`tavg`,`prec`,`etp`,`watertable`)
+ * \details mandatory: date, tmin, tmax, prec
+ * \details not mandatory: tavg, etp, watertable
+ * \details date format: "yyyy-mm-dd"
  * \return true if data are correctly loaded
  * \note meteoPoint have to be initialized BEFORE function
  */
-bool readMOSESDailyData(QSqlQuery *query, Crit3DMeteoPoint *meteoPoint, QString *myError)
+bool readDailyDataCriteria1D(QSqlQuery *query, Crit3DMeteoPoint *meteoPoint, QString *myError)
 {
     const int MAX_MISSING_DAYS = 3;
     QDate myDate, expectedDate, previousDate;

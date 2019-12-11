@@ -403,12 +403,13 @@ bool updateWaterRetentionData(QSqlDatabase* dbSoil, QString soilCode, soil::Crit
     QVariantList water_potential;
     QVariantList water_content;
 
-    for (unsigned int i=0; i < mySoil->horizon[horizon-1].dbData.waterRetention.size(); i++)
+    unsigned int horizon_index = unsigned(horizon-1);
+    for (unsigned int i=0; i < mySoil->horizon[horizon_index].dbData.waterRetention.size(); i++)
     {
         soil_code << soilCode;
         horizon_nr << horizon;
-        water_potential << mySoil->horizon[horizon-1].dbData.waterRetention[i].water_potential;
-        water_content << mySoil->horizon[horizon-1].dbData.waterRetention[i].water_content;
+        water_potential << mySoil->horizon[horizon_index].dbData.waterRetention[i].water_potential;
+        water_content << mySoil->horizon[horizon_index].dbData.waterRetention[i].water_content;
     }
 
     qry.addBindValue(soil_code);
@@ -424,6 +425,7 @@ bool updateWaterRetentionData(QSqlDatabase* dbSoil, QString soilCode, soil::Crit
     else
         return true;
 }
+
 
 bool insertSoilData(QSqlDatabase* dbSoil, int soilID, QString soilCode, QString soilName, QString soilInfo, QString *error)
 {

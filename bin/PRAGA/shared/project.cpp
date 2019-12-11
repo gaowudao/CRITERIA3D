@@ -663,7 +663,18 @@ void Project::setApplicationPath(QString myPath)
 
 QString Project::getApplicationPath()
 {
-    return this->appPath;
+    char* appImagePath;
+    appImagePath = getenv ("APPIMAGE");
+    if (appImagePath!=nullptr)
+    {
+        QDir d = QFileInfo(appImagePath).absoluteDir();
+        QString absolute = d.absolutePath()+"/";
+        return absolute;
+    }
+    else
+    {
+        return this->appPath;
+    }
 }
 
 void Project::setDefaultPath(QString myPath)
@@ -1956,7 +1967,6 @@ bool Project::start(QString appPath)
 {
     if (appPath.right(1) != "/") appPath += "/";
     setApplicationPath(appPath);
-
     QString defaultProject = getApplicationPath() + "default.ini";
 
     if (! QFile(defaultProject).exists())

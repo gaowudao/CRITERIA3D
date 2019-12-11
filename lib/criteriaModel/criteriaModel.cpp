@@ -37,7 +37,7 @@
 #include "criteriaModel.h"
 #include "crit3dDate.h"
 #include "utilities.h"
-#include "dbToolsMOSES.h"
+#include "dbMeteoCriteria1D.h"
 #include "soilDbTools.h"
 #include "meteo.h"
 #include "root.h"
@@ -254,7 +254,7 @@ bool CriteriaModel::loadMeteo(QString idMeteo, QString idForecast, QString *myEr
     this->meteoPoint.initializeObsDataD(nrDays, getCrit3DDate(firstObsDate));
 
     // Read observed data
-    if (! readMOSESDailyData(&query, &meteoPoint, myError)) return false;
+    if (! readDailyDataCriteria1D(&query, &meteoPoint, myError)) return false;
 
     // Add Short-Term forecast
     if (this->isShortTermForecast)
@@ -314,7 +314,7 @@ bool CriteriaModel::loadMeteo(QString idMeteo, QString idForecast, QString *myEr
         }
 
         // Read forecast data
-        if (! readMOSESDailyData(&query, &meteoPoint, myError)) return false;
+        if (! readDailyDataCriteria1D(&query, &meteoPoint, myError)) return false;
 
         // fill temperature (only forecast)
         // estende il dato precedente se mancante

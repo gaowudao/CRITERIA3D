@@ -1,13 +1,25 @@
 #ifndef CRIT3DDATE_H
 #define CRIT3DDATE_H
 
-
     #ifndef _STRING_
         #include <string>
     #endif
 
-    #define NO_DATE Crit3DDate(0,0,0)
-    #define NO_DATETIME Crit3DTime(NO_DATE,0)
+    #ifndef HOUR_SECONDS
+        #define HOUR_SECONDS 3600
+    #endif
+
+    #ifndef DAY_SECONDS
+        #define DAY_SECONDS 86400
+    #endif
+
+    #ifndef NO_DATE
+        #define NO_DATE Crit3DDate(0,0,0)
+    #endif
+
+    #ifndef NO_DATETIME
+        #define NO_DATETIME Crit3DTime(NO_DATE, 0)
+    #endif
 
     class Crit3DDate
     {
@@ -63,11 +75,9 @@
 
         std::string toISOString();
         std::string toString();
-
     };
 
 
-    // functions
     Crit3DTime getNullTime();
     Crit3DDate getNullDate();
     bool isNullDate(Crit3DDate);
@@ -83,5 +93,6 @@
     Crit3DDate min(const Crit3DDate& myDate1, const Crit3DDate& myDate2);
 
     int difference(Crit3DDate firstDate, Crit3DDate lastDate);
+
 
 #endif // CRIT3DDATE_H
