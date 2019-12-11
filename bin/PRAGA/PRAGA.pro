@@ -92,7 +92,6 @@ SOURCES += main.cpp\
     mainWindow.cpp \
     saveClimaLayout.cpp \
     pragaProject.cpp \
-    shared/colorLegend.cpp \
     dialogMeteoComputation.cpp \
     dialogDownloadMeteoData.cpp \
     dialogClimateFields.cpp \
