@@ -1,9 +1,9 @@
-#-----------------------------------------------------
+#------------------------------------------------------
 #
-#   project library
+#   dbMeteoPoints library
 #   This project is part of CRITERIA-3D distribution
 #
-#-----------------------------------------------------
+#------------------------------------------------------
 
 QT       += network sql
 
@@ -17,13 +17,13 @@ QMAKE_CXXFLAGS += -std=c++11
 
 unix:{
     CONFIG(debug, debug|release) {
-        TARGET = debug/project
+        TARGET = debug/dbMeteoPoints
     } else {
-        TARGET = release/project
+        TARGET = release/dbMeteoPoints
     }
 }
 win32:{
-    TARGET = project
+    TARGET = dbMeteoPoints
 }
 
 INCLUDEPATH += ../crit3dDate ../mathFunctions ../gis ../meteo ../interpolation ../utilities
