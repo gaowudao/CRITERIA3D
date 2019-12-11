@@ -39,11 +39,15 @@ CONFIG(debug, debug|release) {
     LIBS += -L../../lib/project/debug -lproject
     LIBS += -L../../lib/climate/debug -lclimate
     LIBS += -L../../lib/netcdfHandler/debug -lnetcdfHandler
+
     win32:{
         LIBS += -L$$(NC4_INSTALL_DIR)/lib -lnetcdf
     }
-    else:{
+    unix:{
         LIBS += -lnetcdf
+    }
+    macx:{
+        LIBS += -L/usr/local/lib/ -lnetcdf
     }
 
     LIBS += -L../../lib/dbMeteoGrid/debug -ldbMeteoGrid
@@ -61,6 +65,7 @@ CONFIG(debug, debug|release) {
     LIBS += -L../../lib/project/release -lproject
     LIBS += -L../../lib/climate/release -lclimate
     LIBS += -L../../lib/netcdfHandler/release -lnetcdfHandler
+
     win32:{
         LIBS += -L$$(NC4_INSTALL_DIR)/lib -lnetcdf
     }
@@ -70,6 +75,7 @@ CONFIG(debug, debug|release) {
     macx:{
         LIBS += -L/usr/local/lib/ -lnetcdf
     }
+
     LIBS += -L../../lib/dbMeteoGrid/release -ldbMeteoGrid
     LIBS += -L../../lib/dbMeteoPoints/release -ldbMeteoPoints
     LIBS += -L../../lib/utilities/release -lutilities
