@@ -2,7 +2,10 @@
 #define COLORLEGEND_H
 
     #include <QWidget>
-    #include "color.h"
+
+    #ifndef CRIT3DCOLOR_H
+        #include "color.h"
+    #endif
 
     class ColorLegend : public QWidget
     {

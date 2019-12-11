@@ -12,11 +12,12 @@ QT       += core gui widgets network sql xml
 TARGET = PRAGA
 TEMPLATE = app
 
-INCLUDEPATH +=  ./shared ../../mapGraphics \
+INCLUDEPATH +=  ../../mapGraphics \
                 ../../lib/crit3dDate ../../lib/mathFunctions ../../lib/meteo ../../lib/gis  \
                 ../../lib/interpolation ../../lib/solarRadiation ../../lib/utilities  \
-                ../../lib/dbMeteoPoints ../../lib/dbMeteoGrid ../../lib/climate ../../lib/netcdfHandler  \
-                ../../lib/project
+                ../../lib/dbMeteoPoints ../../lib/dbMeteoGrid ../../lib/climate \
+                ../../lib/netcdfHandler  ../../lib/shapeHandler  \
+                ../../lib/graphics ../../lib/project
 
 CONFIG += debug_and_release
 QMAKE_CXXFLAGS += -std=c++11
@@ -24,32 +25,21 @@ QMAKE_CXXFLAGS += -std=c++11
 DEFINES += NETCDF
 
 win32:{
-    CONFIG(debug, debug|release) {
-         LIBS += -L../../mapGraphics/debug -lMapGraphics
-    } else {
-        LIBS += -L../../mapGraphics/release -lMapGraphics
-    }
+    LIBS += -L$$(NC4_INSTALL_DIR)/lib -lnetcdf
 }
-else:{
-    LIBS += -L../../mapGraphics/release -lMapGraphics
+unix:{
+    LIBS += -lnetcdf
+}
+macx:{
+    LIBS += -L/usr/local/lib/ -lnetcdf
 }
 
 CONFIG(debug, debug|release) {
-
+    LIBS += -L../../lib/graphics/debug -lgraphics
+    LIBS += -L../../mapGraphics/debug -lMapGraphics
     LIBS += -L../../lib/project/debug -lproject
     LIBS += -L../../lib/climate/debug -lclimate
     LIBS += -L../../lib/netcdfHandler/debug -lnetcdfHandler
-
-    win32:{
-        LIBS += -L$$(NC4_INSTALL_DIR)/lib -lnetcdf
-    }
-    unix:{
-        LIBS += -lnetcdf
-    }
-    macx:{
-        LIBS += -L/usr/local/lib/ -lnetcdf
-    }
-
     LIBS += -L../../lib/dbMeteoGrid/debug -ldbMeteoGrid
     LIBS += -L../../lib/dbMeteoPoints/debug -ldbMeteoPoints
     LIBS += -L../../lib/utilities/debug -lutilities
@@ -61,21 +51,11 @@ CONFIG(debug, debug|release) {
     LIBS += -L../../lib/mathFunctions/debug -lmathFunctions
 
 } else {
-
+    LIBS += -L../../lib/graphics/release -lgraphics
+    LIBS += -L../../mapGraphics/release -lMapGraphics
     LIBS += -L../../lib/project/release -lproject
     LIBS += -L../../lib/climate/release -lclimate
     LIBS += -L../../lib/netcdfHandler/release -lnetcdfHandler
-
-    win32:{
-        LIBS += -L$$(NC4_INSTALL_DIR)/lib -lnetcdf
-    }
-    unix:{
-        LIBS += -lnetcdf
-    }
-    macx:{
-        LIBS += -L/usr/local/lib/ -lnetcdf
-    }
-
     LIBS += -L../../lib/dbMeteoGrid/release -ldbMeteoGrid
     LIBS += -L../../lib/dbMeteoPoints/release -ldbMeteoPoints
     LIBS += -L../../lib/utilities/release -lutilities
@@ -89,10 +69,6 @@ CONFIG(debug, debug|release) {
 
 
 SOURCES += main.cpp\
-    shared/stationMarker.cpp \
-    shared/rubberBand.cpp \
-    shared/mapGraphicsRasterObject.cpp \
-    shared/colorLegend.cpp \
     dialogPragaProject.cpp \
     mainWindow.cpp \
     saveClimaLayout.cpp \
@@ -102,16 +78,12 @@ SOURCES += main.cpp\
     dialogClimateFields.cpp \
     dialogPragaSettings.cpp \
     dialogSeriesOnZones.cpp \
+    dialogXMLComputation.cpp \
     dialogAnomaly.cpp \
-    pragaShell.cpp \
-    dialogXMLComputation.cpp
+    pragaShell.cpp
 
 
 HEADERS  += mainWindow.h \
-    shared/stationMarker.h \
-    shared/rubberBand.h \
-    shared/mapGraphicsRasterObject.h \
-    shared/colorLegend.h \
     dialogPragaProject.h \
     saveClimaLayout.h \
     pragaProject.h \
@@ -120,9 +92,9 @@ HEADERS  += mainWindow.h \
     dialogClimateFields.h \
     dialogPragaSettings.h \
     dialogSeriesOnZones.h \
+    dialogXMLComputation.h \
     dialogAnomaly.h \
-    pragaShell.h \
-    dialogXMLComputation.h
+    pragaShell.h
 
 
 FORMS    += mainWindow.ui

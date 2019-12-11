@@ -33,10 +33,14 @@
     #include "MapGraphicsObject.h"
     #include "MapGraphicsView.h"
     #include "Position.h"
-    #include "colorLegend.h"
-    #include "geoMap.h"
 
-    #define NOACTIVE -8888
+    #ifndef COLORLEGEND_H
+        #include "colorLegend.h"
+    #endif
+
+    #ifndef MAP_H
+        #include "geoMap.h"
+    #endif
 
     struct RowCol
     {

@@ -24,7 +24,7 @@
 
     #include <string>
     #include <vector>
-    #include <shapefil.h>
+    #include <shapelib/shapefil.h>
 
     template<typename T>
     struct Point

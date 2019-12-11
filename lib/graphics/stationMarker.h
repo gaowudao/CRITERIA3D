@@ -1,12 +1,11 @@
 #ifndef STATIONMARKER_H
 #define STATIONMARKER_H
 
-#include "MapGraphics_global.h"
-#include "CircleObject.h"
-#include "MapGraphicsView.h"
+    #include "MapGraphics_global.h"
+    #include "CircleObject.h"
+    #include "MapGraphicsView.h"
 
     class Crit3DMeteoPoint;
-    class Project;
 
     class StationMarker : public CircleObject
     {
@@ -20,7 +19,7 @@
             MapGraphicsView* _view;
 
         protected:
-            void mousePressEvent(Project *project, QGraphicsSceneMouseEvent *event);
+            void mousePressEvent(QGraphicsSceneMouseEvent *event);
             //void mouseDoubleClickEvent(QGraphicsSceneMouseEvent * event);
 
     };

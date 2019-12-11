@@ -3,7 +3,7 @@
 
     #include <string>
     #include <vector>
-    #include <shapefil.h>
+    #include <shapelib/shapefil.h>
     #include "shapeObject.h"
 
     class Crit3DShapeHandler
@@ -49,7 +49,9 @@
         std::string readStringAttribute(int shapeNumber, int fieldPos);
         bool writeStringAttribute(int shapeNumber, int fieldPos, const char* pszFieldValue);
         bool deleteRecord(int shapeNumber);
+
         //bool addRecord(std::vector<std::string> fields);
+
         bool addField(const char * fieldName, int type, int nWidth, int nDecimals );
         bool removeField(int iField);
         std::string getFilepath() const;
