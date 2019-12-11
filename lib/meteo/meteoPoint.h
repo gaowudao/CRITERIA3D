@@ -25,7 +25,9 @@
         float* tDew;
         float* irradiance;
         float* et0;
-        float* windInt;
+        float* windVecInt;
+        float* windScalInt;
+        float* windVecDir;
         int* leafW;
         float* transmissivity;
     };
@@ -42,8 +44,11 @@
         float globRad;
         float et0_hs;
         float et0_pm;
-        float windIntAvg;
-        float windDirPrev;
+        float windVecIntAvg;
+        float windVecIntMax;
+        float windScalIntAvg;
+        float windScalIntMax;
+        float windVecDirPrev;
         float windIntMax;
         float leafW;
         float waterTable;       // [m]

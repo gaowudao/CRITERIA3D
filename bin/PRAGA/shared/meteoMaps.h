@@ -49,8 +49,9 @@
         gis::Crit3DRasterGrid* mapHourlyTdew;
         gis::Crit3DRasterGrid* mapHourlyPrec;
         gis::Crit3DRasterGrid* mapHourlyRelHum;
-        gis::Crit3DRasterGrid* mapHourlyWindInt;
-        gis::Crit3DRasterGrid* mapHourlyWindDir;
+        gis::Crit3DRasterGrid* mapHourlyWindVectorInt;
+        gis::Crit3DRasterGrid* mapHourlyWindVectorDir;
+        gis::Crit3DRasterGrid* mapHourlyWindScalarInt;
         gis::Crit3DRasterGrid* mapHourlyET0;
         gis::Crit3DRasterGrid* mapHourlyLeafW;
 

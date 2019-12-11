@@ -858,7 +858,7 @@ bool Crit3DMeteoPointsDbHandler::importHourlyMeteoData(QString csvFileName, bool
     QString idPrec = QString::number(getIdfromMeteoVar(precipitation));
     QString idRH = QString::number(getIdfromMeteoVar(airRelHumidity));
     QString idRad = QString::number(getIdfromMeteoVar(globalIrradiance));
-    QString idWind = QString::number(getIdfromMeteoVar(windIntensity));
+    QString idWind = QString::number(getIdfromMeteoVar(windScalarIntensity));
 
     Crit3DQuality dataQuality;
     QStringList line;
@@ -916,7 +916,7 @@ bool Crit3DMeteoPointsDbHandler::importHourlyMeteoData(QString csvFileName, bool
         queryStr.append(getNewDataEntry(3, line, dateTimeStr, idPrec, precipitation, &nrMissingData, &nrWrongData, &dataQuality));
         queryStr.append(getNewDataEntry(4, line, dateTimeStr, idRH, airRelHumidity, &nrMissingData, &nrWrongData, &dataQuality));
         queryStr.append(getNewDataEntry(5, line, dateTimeStr, idRad, globalIrradiance, &nrMissingData, &nrWrongData, &dataQuality));
-        queryStr.append(getNewDataEntry(6, line, dateTimeStr, idWind, windIntensity, &nrMissingData, &nrWrongData, &dataQuality));
+        queryStr.append(getNewDataEntry(6, line, dateTimeStr, idWind, windScalarIntensity, &nrMissingData, &nrWrongData, &dataQuality));
     }
     myFile.close();
 

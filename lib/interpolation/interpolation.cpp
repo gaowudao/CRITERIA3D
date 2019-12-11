@@ -1240,7 +1240,7 @@ float interpolate(vector <Crit3DInterpolationDataPoint> &myPoints, Crit3DInterpo
         myResult = MAXVALUE(MINVALUE(myResult, 100), 0);
     else if (myVar == dailyAirTemperatureRange || myVar == leafWetness || myVar == dailyLeafWetness
              || myVar == globalIrradiance || myVar == dailyGlobalRadiation || myVar == atmTransmissivity
-             || myVar == windIntensity || myVar == dailyWindIntensityAvg || myVar == dailyWindIntensityMax
+             || myVar == windScalarIntensity || myVar == windVectorIntensity || myVar == dailyWindScalarIntensityAvg || myVar == dailyWindScalarIntensityMax || myVar == dailyWindVectorIntensityAvg || myVar == dailyWindVectorIntensityMax
              || myVar == atmPressure)
         myResult = MAXVALUE(myResult, 0);
 

@@ -66,12 +66,12 @@ meteoVariable chooseColorScale()
     myDialog.setWindowTitle("Choose color scale");
     myDialog.setFixedWidth(400);
 
-    QRadioButton Dem("Elevation m");
-    QRadioButton Temp("Temperature °C");
-    QRadioButton Prec("Precipitation mm");
-    QRadioButton RH("Relative humidity %");
-    QRadioButton Rad("Solar radiation MJ m-2");
-    QRadioButton Wind("Wind intensity m s-1");
+    QRadioButton Dem("Elevation");
+    QRadioButton Temp("Air temperature");
+    QRadioButton Prec("Precipitation");
+    QRadioButton RH("Air relative humidity");
+    QRadioButton Rad("Solar radiation");
+    QRadioButton Wind("Wind intensity");
     QRadioButton Anomaly("Anomaly");
 
     layoutVariable.addWidget(&Dem);
@@ -108,7 +108,7 @@ meteoVariable chooseColorScale()
     else if (Rad.isChecked())
         return globalIrradiance;
     else if (Wind.isChecked())
-        return windIntensity;
+        return windScalarIntensity;
     else if (Anomaly.isChecked())
         return anomaly;
     else
@@ -173,16 +173,28 @@ meteoVariable chooseMeteoVariable(Project* myProject)
     myDialog.setWindowTitle("Choose variable");
     myDialog.setFixedWidth(300);
 
-    QRadioButton Tavg("Average temperature (°C)");
-    QRadioButton Tmin("Minimum temperature (°C)");
-    QRadioButton Tmax("Maximum temperature (°C)");
-    QRadioButton Prec("Precipitation (mm)");
-    QRadioButton RHavg("Average relative humidity (%)");
-    QRadioButton RHmin("Minimum relative humidity (%)");
-    QRadioButton RHmax("Maximum relative humidity (%)");
-    QRadioButton Rad("Solar radiation (MJ m-2)");
-    QRadioButton Wind("Average wind intensity (m s-1)");
+    QRadioButton Tavg("Average air temperature");
+    QRadioButton Tmin("Minimum air temperature");
+    QRadioButton Tmax("Maximum air temperature");
+    QRadioButton Prec("Precipitation");
+    QRadioButton RHavg("Average air relative humidity");
+    QRadioButton RHmin("Minimum air relative humidity");
+    QRadioButton RHmax("Maximum air relative humidity");
+    QRadioButton Rad("Solar radiation");
+    QRadioButton WindVAvg("Average wind vector intensity");
+    QRadioButton WindVMax("Maximum wind vector intensity");
+    QRadioButton WindVDir("Prevailing wind vector direction");
+    QRadioButton WindSAvg("Average wind scalar intensity");
+    QRadioButton WindSMax("Maximum wind scalar intensity");
     QRadioButton DewT("Air dew temperature (°C)");
+
+    QRadioButton T("Air temperature");
+    QRadioButton P("Precipitation");
+    QRadioButton RH("Air relative humidity");
+    QRadioButton Irr("Solar irradiance");
+    QRadioButton WSInt("Wind scalar intensity");
+    QRadioButton WVInt("Wind vector intensity");
+    QRadioButton WVDir("Wind vector direction");
 
     if (myProject->getCurrentFrequency() == daily)
     {
@@ -194,21 +206,21 @@ meteoVariable chooseMeteoVariable(Project* myProject)
         layoutVariable.addWidget(&RHavg);
         layoutVariable.addWidget(&RHmax);
         layoutVariable.addWidget(&Rad);
-        layoutVariable.addWidget(&Wind);
+        layoutVariable.addWidget(&WindSAvg);
+        layoutVariable.addWidget(&WindSMax);
+        layoutVariable.addWidget(&WindVAvg);
+        layoutVariable.addWidget(&WindVMax);
+        layoutVariable.addWidget(&WindVDir);
     }
     else if (myProject->getCurrentFrequency() == hourly)
     {
-        Tavg.setText("Average temperature (°C)");
-        Prec.setText("Precipitation (mm)");
-        RHavg.setText("Average relative humidity (%)");
-        Rad.setText("Solar irradiance (W m-2)");
-
-        layoutVariable.addWidget(&Tavg);
-        layoutVariable.addWidget(&Prec);
-        layoutVariable.addWidget(&RHavg);
-        layoutVariable.addWidget(&Rad);
-        layoutVariable.addWidget(&Wind);
-        layoutVariable.addWidget(&DewT);
+        layoutVariable.addWidget(&T);
+        layoutVariable.addWidget(&P);
+        layoutVariable.addWidget(&RH);
+        layoutVariable.addWidget(&Irr);
+        layoutVariable.addWidget(&WSInt);
+        layoutVariable.addWidget(&WVInt);
+        layoutVariable.addWidget(&WVDir);
     }
     else return noMeteoVar;
 
@@ -247,22 +259,34 @@ meteoVariable chooseMeteoVariable(Project* myProject)
            return (dailyAirRelHumidityMax);
        else if (RHavg.isChecked())
            return (dailyAirRelHumidityAvg);
-       else if (Wind.isChecked())
-           return (dailyWindIntensityAvg);
+       else if (WindSAvg.isChecked())
+           return (dailyWindScalarIntensityAvg);
+       else if (WindSMax.isChecked())
+           return (dailyWindScalarIntensityMax);
+       else if (WindVAvg.isChecked())
+           return (dailyWindVectorIntensityAvg);
+       else if (WindVMax.isChecked())
+           return (dailyWindVectorIntensityMax);
+       else if (WindVDir.isChecked())
+           return (dailyWindVectorDirectionPrevailing);
    }
 
    if (myProject->getCurrentFrequency() == hourly)
    {
-       if (Tavg.isChecked())
+       if (T.isChecked())
            return (airTemperature);
-       else if (RHavg.isChecked())
+       else if (RH.isChecked())
            return (airRelHumidity);
-       else if (Prec.isChecked())
+       else if (P.isChecked())
            return (precipitation);
-       else if (Rad.isChecked())
+       else if (Irr.isChecked())
            return (globalIrradiance);
-       else if (Wind.isChecked())
-           return (windIntensity);
+       else if (WSInt.isChecked())
+           return (windScalarIntensity);
+       else if (WVInt.isChecked())
+           return windVectorIntensity;
+       else if (WVDir.isChecked())
+           return windVectorDirection;
        else if (DewT.isChecked())
            return (airDewTemperature);
    }
