@@ -77,11 +77,10 @@ CONFIG(debug, debug|release) {
 }
 
 
-SOURCES += main.cpp\
-    dialogPragaProject.cpp \
+SOURCES += \
+    main.cpp \
     mainWindow.cpp \
-    saveClimaLayout.cpp \
-    pragaProject.cpp \
+    dialogPragaProject.cpp \
     dialogMeteoComputation.cpp \
     dialogDownloadMeteoData.cpp \
     dialogClimateFields.cpp \
@@ -89,13 +88,15 @@ SOURCES += main.cpp\
     dialogSeriesOnZones.cpp \
     dialogXMLComputation.cpp \
     dialogAnomaly.cpp \
+    saveClimaLayout.cpp \
+    pragaProject.cpp \
     pragaShell.cpp
 
 
-HEADERS  += mainWindow.h \
+
+HEADERS  += \
+    mainWindow.h \
     dialogPragaProject.h \
-    saveClimaLayout.h \
-    pragaProject.h \
     dialogMeteoComputation.h \
     dialogDownloadMeteoData.h \
     dialogClimateFields.h \
@@ -103,6 +104,8 @@ HEADERS  += mainWindow.h \
     dialogSeriesOnZones.h \
     dialogXMLComputation.h \
     dialogAnomaly.h \
+    saveClimaLayout.h \
+    pragaProject.h \
     pragaShell.h
 
 
