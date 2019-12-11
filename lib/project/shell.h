@@ -2,7 +2,6 @@
 #define SHELL_H
 
     #include <string>
-
     class QString;
     class QStringList;
     class Project;
