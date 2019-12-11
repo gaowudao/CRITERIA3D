@@ -12,7 +12,7 @@ TARGET = CRITERIA3D
 TEMPLATE = app
 
 
-INCLUDEPATH +=  ./shared ../PRAGA/shared  \
+INCLUDEPATH +=  ./shared  \
                 ../../mapGraphics \
                 ../../lib/soilFluxes3D/header  \
                 ../../lib/crit3dDate ../../lib/mathFunctions \
@@ -20,7 +20,7 @@ INCLUDEPATH +=  ./shared ../PRAGA/shared  \
                 ../../lib/interpolation ../../lib/solarRadiation  \
                 ../../lib/soilWidget ../../lib/utilities  \
                 ../../lib/dbMeteoPoints ../../lib/dbMeteoGrid \
-                ../../lib/project
+                ../../lib/project ../../lib/graphics
 
 unix:{
     INCLUDEPATH += /usr/include/qwt/
@@ -31,18 +31,11 @@ macx:{
 
 CONFIG += debug_and_release
 
-unix:{
-    LIBS += -L../../mapGraphics/release -lMapGraphics
-}
-win32:{
-    CONFIG(debug, debug|release) {
-         LIBS += -L../../mapGraphics/debug -lMapGraphics
-    } else {
-        LIBS += -L../../mapGraphics/release -lMapGraphics
-    }
-}
+LIBS += -L../../mapGraphics/release -lMapGraphics
+
 
 CONFIG(debug, debug|release) {
+    LIBS += -L../../lib/graphics/debug -lgraphics
     LIBS += -L../../lib/project/debug -lproject
     LIBS += -L../../lib/dbMeteoGrid/debug -ldbMeteoGrid
     LIBS += -L../../lib/dbMeteoPoints/debug -ldbMeteoPoints
@@ -59,6 +52,7 @@ CONFIG(debug, debug|release) {
     LIBS += -L../../lib/crit3dDate/debug -lcrit3dDate
 
 } else {
+    LIBS += -L../../lib/graphics/release -lgraphics
     LIBS += -L../../lib/project/release -lproject
     LIBS += -L../../lib/dbMeteoGrid/release -ldbMeteoGrid
     LIBS += -L../../lib/dbMeteoPoints/release -ldbMeteoPoints
@@ -77,24 +71,16 @@ CONFIG(debug, debug|release) {
 
 
 SOURCES += mainwindow.cpp \
-    ../PRAGA/shared/stationMarker.cpp \
-    ../PRAGA/shared/mapGraphicsRasterObject.cpp \
-    ../PRAGA/shared/colorLegend.cpp \
     shared/project3D.cpp \
     viewer3d.cpp \
     crit3dProject.cpp \
     main.cpp
 
 
-
 HEADERS += mainwindow.h \
-    ../PRAGA/shared/stationMarker.h \
-    ../PRAGA/shared/mapGraphicsRasterObject.h \
-    ../PRAGA/shared/colorLegend.h \
     shared/project3D.h \
     viewer3d.h \
     crit3dProject.h
-
 
 
 FORMS += mainwindow.ui

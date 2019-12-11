@@ -58,16 +58,16 @@ void StationMarker::mousePressEvent(QGraphicsSceneMouseEvent *event)
         if ( color ==  Qt::white )
         {
             this->setFillColor(QColor((Qt::red)));
-            *meteoPointsSelected << pointSelected;
+            project_->meteoPointsSelected << pointSelected;
         }
         else
         {
             this->setFillColor(QColor((Qt::white)));
-            for (int i = 0; i < (*meteoPointsSelected).size(); i++)
+            for (int i = 0; i < project_->meteoPointsSelected.size(); i++)
             {
-                if ((*meteoPointsSelected)[i].latitude == pointSelected.latitude
-                    && (*meteoPointsSelected)[i].longitude == pointSelected.longitude)
-                    (*meteoPointsSelected).removeAt(i);
+                if (project_->meteoPointsSelected[i].latitude == pointSelected.latitude
+                    && project_->meteoPointsSelected[i].longitude == pointSelected.longitude)
+                    project_->meteoPointsSelected.removeAt(i);
             }
         }
     }

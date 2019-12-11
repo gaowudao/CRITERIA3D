@@ -6,7 +6,7 @@ SUBDIRS =       ../../lib/soilFluxes3D  \
                 ../../lib/interpolation ../../lib/solarRadiation  \
                 ../../lib/utilities ../../lib/soilWidget  \
                 ../../lib/dbMeteoPoints ../../lib/dbMeteoGrid  \
-                ../../lib/project ../CRITERIA3D
+                ../../lib/project ../../lib/graphics ../CRITERIA3D
 
 CONFIG += ordered
 

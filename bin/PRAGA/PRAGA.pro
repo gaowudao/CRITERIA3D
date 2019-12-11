@@ -16,8 +16,7 @@ INCLUDEPATH +=  ../../mapGraphics \
                 ../../lib/crit3dDate ../../lib/mathFunctions ../../lib/meteo ../../lib/gis  \
                 ../../lib/interpolation ../../lib/solarRadiation ../../lib/utilities  \
                 ../../lib/dbMeteoPoints ../../lib/dbMeteoGrid ../../lib/climate \
-                ../../lib/netcdfHandler  ../../lib/shapeHandler  \
-                ../../lib/graphics ../../lib/project
+                ../../lib/netcdfHandler  ../../lib/graphics ../../lib/project
 
 CONFIG += debug_and_release
 QMAKE_CXXFLAGS += -std=c++11
@@ -27,22 +26,21 @@ DEFINES += NETCDF
 
 LIBS += -L../../mapGraphics/release -lMapGraphics
 
-win32:{
-    LIBS += -L$$(NC4_INSTALL_DIR)/lib -lnetcdf
-}
-unix:{
-    LIBS += -lnetcdf
-}
-macx:{
-    LIBS += -L/usr/local/lib/ -lnetcdf
-}
-
 
 CONFIG(debug, debug|release) {
     LIBS += -L../../lib/graphics/debug -lgraphics
     LIBS += -L../../lib/project/debug -lproject
     LIBS += -L../../lib/climate/debug -lclimate
     LIBS += -L../../lib/netcdfHandler/debug -lnetcdfHandler
+    win32:{
+        LIBS += -L$$(NC4_INSTALL_DIR)/lib -lnetcdf
+    }
+    unix:{
+        LIBS += -lnetcdf
+    }
+    macx:{
+        LIBS += -L/usr/local/lib/ -lnetcdf
+    }
     LIBS += -L../../lib/dbMeteoGrid/debug -ldbMeteoGrid
     LIBS += -L../../lib/dbMeteoPoints/debug -ldbMeteoPoints
     LIBS += -L../../lib/utilities/debug -lutilities
@@ -58,6 +56,15 @@ CONFIG(debug, debug|release) {
     LIBS += -L../../lib/project/release -lproject
     LIBS += -L../../lib/climate/release -lclimate
     LIBS += -L../../lib/netcdfHandler/release -lnetcdfHandler
+    win32:{
+        LIBS += -L$$(NC4_INSTALL_DIR)/lib -lnetcdf
+    }
+    unix:{
+        LIBS += -lnetcdf
+    }
+    macx:{
+        LIBS += -L/usr/local/lib/ -lnetcdf
+    }
     LIBS += -L../../lib/dbMeteoGrid/release -ldbMeteoGrid
     LIBS += -L../../lib/dbMeteoPoints/release -ldbMeteoPoints
     LIBS += -L../../lib/utilities/release -lutilities
