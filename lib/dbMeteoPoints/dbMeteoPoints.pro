@@ -28,4 +28,18 @@ win32:{
 
 INCLUDEPATH += ../crit3dDate ../mathFunctions ../gis ../meteo ../interpolation ../utilities
 
+HEADERS += \
+    dbAggregationsHandler.h \
+    dbArkimet.h \
+    dbMeteoPointsHandler.h \
+    download.h \
+    variablesList.h
+
+SOURCES += \
+    dbAggregationsHandler.cpp \
+    dbArkimet.cpp \
+    dbMeteoPointsHandler.cpp \
+    download.cpp \
+    variablesList.cpp
+
 
