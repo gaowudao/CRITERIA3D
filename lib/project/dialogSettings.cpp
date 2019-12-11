@@ -1,6 +1,7 @@
 #include "dialogSettings.h"
 #include "commonConstants.h"
 
+
 #define EDIT_SIZE 100
 
 

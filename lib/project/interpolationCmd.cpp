@@ -1,4 +1,5 @@
 #include <QDate>
+#include <QString>
 
 #include "formInfo.h"
 #include "gis.h"
@@ -139,6 +140,7 @@ bool checkProxyGridSeries(Crit3DInterpolationSettings* mySettings, const gis::Cr
 
     return false;
 }
+
 
 bool interpolationRaster(std::vector <Crit3DInterpolationDataPoint> &myPoints, Crit3DInterpolationSettings* mySettings,
                         gis::Crit3DRasterGrid* myGrid, const gis::Crit3DRasterGrid& raster, meteoVariable myVar, bool showInfo)

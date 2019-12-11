@@ -2952,11 +2952,11 @@
     <property name="title">
      <string>Data spatialization</string>
     </property>
-    <addaction name="actionCompute_solar_radiation"/>
-    <addaction name="actionRadiationSettings"/>
-    <addaction name="separator"/>
     <addaction name="actionInterpolationSettings"/>
     <addaction name="actionCompute_AllMeteoMaps"/>
+    <addaction name="separator"/>
+    <addaction name="actionRadiationSettings"/>
+    <addaction name="actionCompute_solar_radiation"/>
     <addaction name="separator"/>
     <addaction name="actionVariableQualitySpatial"/>
     <addaction name="separator"/>

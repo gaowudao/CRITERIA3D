@@ -1496,6 +1496,7 @@ void Project::passInterpolatedTemperatureToHumidityPoints(Crit3DTime myTime)
     }
 }
 
+
 bool Project::interpolationDem(meteoVariable myVar, const Crit3DTime& myTime, gis::Crit3DRasterGrid *myRaster, bool showInfo)
 {
     std::vector <Crit3DInterpolationDataPoint> interpolationPoints;
@@ -1505,7 +1506,7 @@ bool Project::interpolationDem(meteoVariable myVar, const Crit3DTime& myTime, gi
                                          &qualityInterpolationSettings, &interpolationSettings, &climateParameters, interpolationPoints,
                                          checkSpatialQuality))
     {
-        logError("No data available");
+        logError("No data available: " + QString::fromStdString(getVariableString(myVar)));
         return false;
     }
 

@@ -1,4 +1,5 @@
 // downloaded from https://people.sc.fsu.edu/~jburkardt/c_src/eispack/eispack.html
+// GNU LGPL license
 
 # include <math.h>
 # include <stdbool.h>
@@ -6,6 +7,7 @@
 # include <stdio.h>
 # include <time.h>
 # include "eispack.h"
+
 #define DBL_EPSILON 2.2204460492503131e-16 // to not include <float.h>
 
 namespace eigenproblem {

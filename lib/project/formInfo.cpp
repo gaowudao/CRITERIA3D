@@ -9,7 +9,6 @@ FormInfo::FormInfo(QWidget *parent) :
     ui->setupUi(this);
 }
 
-
 FormInfo::~FormInfo()
 {
     delete ui;
@@ -35,20 +34,17 @@ int FormInfo::start(QString info, int nrValues)
     return std::max(1, int(nrValues / 50));
 }
 
-
 void FormInfo::setValue(int myValue)
 {
     this->ui->progressBar->setValue(myValue);
     qApp->processEvents();
 }
 
-
 void FormInfo::setText(QString myText)
 {
     this->ui->label->setText(myText);
     qApp->processEvents();
 }
-
 
 void FormInfo::showInfo(QString info)
 {

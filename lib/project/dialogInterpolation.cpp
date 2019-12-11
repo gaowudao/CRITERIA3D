@@ -1,4 +1,3 @@
-
 #include <QtWidgets>
 #include <QStringList>
 
@@ -6,6 +5,7 @@
 #include "utilities.h"
 #include "aggregation.h"
 #include "dialogInterpolation.h"
+
 
 DialogInterpolation::DialogInterpolation(Project *myProject)
 {
@@ -126,7 +126,7 @@ DialogInterpolation::DialogInterpolation(Project *myProject)
 void DialogInterpolation::redrawProxies()
 {
     proxyListCheck->clear();
-    for (int i = 0; i < _interpolationSettings->getProxyNr(); i++)
+    for (unsigned int i = 0; i < _interpolationSettings->getProxyNr(); i++)
     {
          Crit3DProxy* myProxy = _interpolationSettings->getProxy(i);
          QListWidgetItem *chkProxy = new QListWidgetItem(QString::fromStdString(myProxy->getName()), proxyListCheck);
@@ -168,7 +168,7 @@ void DialogInterpolation::accept()
     }
 
     for (int i = 0; i < proxyListCheck->count(); i++)
-        _interpolationSettings->setValueSelectedCombination(i, proxyListCheck->item(i)->checkState());
+        _interpolationSettings->setValueSelectedCombination(unsigned(i), proxyListCheck->item(i)->checkState());
 
     QString algorithmString = algorithmEdit.itemData(algorithmEdit.currentIndex()).toString();
     _interpolationSettings->setInterpolationMethod(interpolationMethodNames.at(algorithmString.toStdString()));
@@ -208,12 +208,12 @@ void ProxyDialog::changedProxy()
 
     if (proxyIndex != _proxyCombo.currentIndex())
     {
-        Crit3DProxy *myProxy = &(_proxy.at(proxyIndex));
+        Crit3DProxy *myProxy = &(_proxy.at(unsigned(proxyIndex)));
         saveProxy(myProxy);
     }
 
     proxyIndex = _proxyCombo.currentIndex();
-    Crit3DProxy *myProxy = &(_proxy.at(proxyIndex));
+    Crit3DProxy *myProxy = &(_proxy.at(unsigned(proxyIndex)));
 
     int index = _table.findText(QString::fromStdString(myProxy->getProxyTable()));
     _table.setCurrentIndex(index);
@@ -245,7 +245,7 @@ void ProxyDialog::listProxies()
     _proxyCombo.blockSignals(true);
 
     _proxyCombo.clear();
-    for (int i = 0; i < _proxy.size(); i++)
+    for (unsigned int i = 0; i < _proxy.size(); i++)
          _proxyCombo.addItem(QString::fromStdString(_proxy[i].getName()));
 
     _proxyCombo.blockSignals(false);

@@ -1,9 +1,9 @@
-#-----------------------------------------------------
+#------------------------------------------------------
 #
 #   dbMeteoPoints library
 #   This project is part of CRITERIA-3D distribution
 #
-#-----------------------------------------------------
+#------------------------------------------------------
 
 QT       += network sql
 
@@ -26,22 +26,6 @@ win32:{
     TARGET = dbMeteoPoints
 }
 
-DEFINES += DBMETEOPOINTS_LIBRARY
-
 INCLUDEPATH += ../crit3dDate ../mathFunctions ../gis ../meteo ../interpolation ../utilities
-
-SOURCES += \
-    dbAggregationsHandler.cpp \
-    download.cpp \
-    dbArkimet.cpp \
-    dbMeteoPointsHandler.cpp \
-    variablesList.cpp
-
-HEADERS += \
-    download.h \
-    dbArkimet.h \
-    dbMeteoPointsHandler.h \
-    dbAggregationsHandler.h \
-    variablesList.h
 
 

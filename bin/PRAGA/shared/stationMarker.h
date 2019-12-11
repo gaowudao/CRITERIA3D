@@ -13,7 +13,7 @@
         Q_OBJECT
 
         public:
-            explicit StationMarker(qreal radius, bool sizeIsZoomInvariant, QColor fillColor, MapGraphicsView* view, MapGraphicsObject *parent = 0);
+            explicit StationMarker(qreal radius, bool sizeIsZoomInvariant, QColor fillColor, MapGraphicsView* view, MapGraphicsObject *parent = nullptr);
             void setToolTip(Crit3DMeteoPoint* meteoPoint_);
 
         private:
