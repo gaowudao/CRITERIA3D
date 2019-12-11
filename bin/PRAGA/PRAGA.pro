@@ -13,9 +13,10 @@ TARGET = PRAGA
 TEMPLATE = app
 
 INCLUDEPATH +=  ./shared ../../mapGraphics \
-                ../../lib/crit3dDate ../../lib/mathFunctions ../../lib/meteo ../../lib/gis \
-                ../../lib/interpolation ../../lib/solarRadiation ../../lib/utilities \
-                ../../lib/dbMeteoPoints ../../lib/dbMeteoGrid ../../lib/climate ../../lib/netcdfHandler
+                ../../lib/crit3dDate ../../lib/mathFunctions ../../lib/meteo ../../lib/gis  \
+                ../../lib/interpolation ../../lib/solarRadiation ../../lib/utilities  \
+                ../../lib/dbMeteoPoints ../../lib/dbMeteoGrid ../../lib/climate ../../lib/netcdfHandler  \
+                ../../lib/project
 
 CONFIG += debug_and_release
 QMAKE_CXXFLAGS += -std=c++11
@@ -44,6 +45,7 @@ CONFIG(debug, debug|release) {
         LIBS += -lnetcdf
     }
 
+    LIBS += -L../../lib/project/debug -lproject
     LIBS += -L../../lib/dbMeteoGrid/debug -ldbMeteoGrid
     LIBS += -L../../lib/dbMeteoPoints/debug -ldbMeteoPoints
     LIBS += -L../../lib/utilities/debug -lutilities
@@ -68,6 +70,7 @@ CONFIG(debug, debug|release) {
         LIBS += -L/usr/local/lib/ -lnetcdf
     }
 
+    LIBS += -L../../lib/project/release -lproject
     LIBS += -L../../lib/dbMeteoGrid/release -ldbMeteoGrid
     LIBS += -L../../lib/dbMeteoPoints/release -ldbMeteoPoints
     LIBS += -L../../lib/utilities/release -lutilities
@@ -81,68 +84,43 @@ CONFIG(debug, debug|release) {
 
 
 SOURCES += main.cpp\
+    shared/stationMarker.cpp \
+    shared/rubberBand.cpp \
+    shared/mapGraphicsRasterObject.cpp \
+    shared/colorLegend.cpp \
     dialogPragaProject.cpp \
     mainWindow.cpp \
     saveClimaLayout.cpp \
-    shared/aggregation.cpp \
-    shared/dialogProject.cpp \
-    shared/meteoMaps.cpp \
-    shared/stationMarker.cpp \
-    shared/rubberBand.cpp \
-    shared/formInfo.cpp \
-    shared/mapGraphicsRasterObject.cpp \
-    shared/interpolationCmd.cpp \
-    shared/project.cpp \
     pragaProject.cpp \
     shared/colorLegend.cpp \
     dialogMeteoComputation.cpp \
     dialogDownloadMeteoData.cpp \
-    shared/dialogSelection.cpp \
-    shared/dialogInterpolation.cpp \
-    shared/dialogSettings.cpp \
     dialogClimateFields.cpp \
     dialogPragaSettings.cpp \
     dialogSeriesOnZones.cpp \
     dialogAnomaly.cpp \
-    shared/shell.cpp \
     pragaShell.cpp \
-    shared/dialogRadiation.cpp \
-    shared/formPeriod.cpp \
     dialogXMLComputation.cpp
 
 
 HEADERS  += mainWindow.h \
-    dialogPragaProject.h \
-    saveClimaLayout.h \
-    shared/aggregation.h \
-    shared/dialogProject.h \
-    shared/meteoMaps.h \
     shared/stationMarker.h \
     shared/rubberBand.h \
-    shared/formInfo.h \
     shared/mapGraphicsRasterObject.h \
-    shared/interpolationCmd.h \
-    shared/project.h \
-    pragaProject.h \
     shared/colorLegend.h \
+    dialogPragaProject.h \
+    saveClimaLayout.h \
+    pragaProject.h \
     dialogMeteoComputation.h \
     dialogDownloadMeteoData.h \
-    shared/dialogSelection.h \
-    shared/dialogInterpolation.h \
-    shared/dialogSettings.h \
     dialogClimateFields.h \
     dialogPragaSettings.h \
     dialogSeriesOnZones.h \
     dialogAnomaly.h \
-    shared/shell.h \
     pragaShell.h \
-    shared/dialogRadiation.h \
-    shared/formPeriod.h \
     dialogXMLComputation.h
 
 
-FORMS    += mainWindow.ui \
-        shared/formInfo.ui \
-    shared/formPeriod.ui
+FORMS    += mainWindow.ui
 
 
