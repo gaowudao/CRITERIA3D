@@ -22,25 +22,25 @@
 		<prefix>q</prefix>
 		<postfix>g</postfix>
 		
-                <varcode>
+        <varcode>
 			<varfield>ET_H_SMR</varfield>
 			<varcode>323</varcode>
-			<varpraganame>DAILY_ET0</varpraganame>
+			<varpraganame>DAILY_ET0_HS</varpraganame>
 		</varcode>
                 <varcode>
 			<varfield>VENTO_SMR</varfield>
-			<varpraganame>DAILY_W_INT_AVG</varpraganame>
+			<varpraganame>DAILY_W_VEC_INT_AVG</varpraganame>
 			<varcode>227</varcode>
 		</varcode>
                 <varcode>
 			<varfield>VD_SMR</varfield>
 			<varcode>230</varcode>
-			<varpraganame>DAILY_W_DIR</varpraganame>
+			<varpraganame>DAILY_W_VEC_DIR_PREV</varpraganame>
 		</varcode>
                 <varcode>
 			<varfield>VMAX_SMR</varfield>
 			<varcode>229</varcode>
-			<varpraganame>DAILY_W_INT_MAX</varpraganame>
+			<varpraganame>DAILY_W_VEC_INT_MAX</varpraganame>
 		</varcode>
                 <varcode>
 			<varfield>TEMP_MIN_SMR</varfield>
