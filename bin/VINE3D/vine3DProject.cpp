@@ -18,7 +18,6 @@
 #include "plant.h"
 #include "dataHandler.h"
 #include "modelCore.h"
-#include "parserXML.h"
 #include "atmosphere.h"
 #include "disease.h"
 #include "vine3DShell.h"
@@ -1028,8 +1027,8 @@ bool Vine3DProject::loadObsDataSubHourly(int indexPoint, meteoVariable myVar, QD
                 myPoint->obsDataH[i].rhAir[j] = myValue;
             else if (myVar == globalIrradiance)
                 myPoint->obsDataH[i].irradiance[j] = myValue;
-            else if (myVar == windIntensity)
-                myPoint->obsDataH[i].windInt[j] = myValue;
+            else if (myVar == windScalarIntensity)
+                myPoint->obsDataH[i].windScalInt[j] = myValue;
         }
     }
 
@@ -1137,10 +1136,10 @@ bool Vine3DProject::loadObsDataHourly(int indexPoint, QDate d1, QDate d2, QStrin
                         if ((myValue >= 0)&&(myValue < 1360))
                         myPoint->obsDataH[i].irradiance[j] = myValue;
                     }
-                    else if (myVar == windIntensity)
+                    else if (myVar == windScalarIntensity)
                     {
                         if ((myValue >= 0)&&(myValue < 75))
-                        myPoint->obsDataH[i].windInt[j] = myValue;
+                        myPoint->obsDataH[i].windScalInt[j] = myValue;
                     }
                     else if (myVar == leafWetness)
                     {
@@ -1246,8 +1245,8 @@ bool Vine3DProject::loadObsDataHourlyVar(int indexPoint, meteoVariable myVar, QD
                         myPoint->obsDataH[i].rhAir[j] = myValue;
                     else if (myVar == globalIrradiance)
                         myPoint->obsDataH[i].irradiance[j] = myValue;
-                    else if (myVar == windIntensity)
-                        myPoint->obsDataH[i].windInt[j] = myValue;
+                    else if (myVar == windScalarIntensity)
+                        myPoint->obsDataH[i].windScalInt[j] = myValue;
                     else if (myVar == leafWetness)
                         myPoint->obsDataH[i].leafW[j] = myValue;
                 }
@@ -1392,7 +1391,7 @@ bool Vine3DProject::loadObsDataFilled(QDateTime firstTime, QDateTime lastTime)
             this->logError("Weather data missing: " + getQDateTime(myTime).toString("yyyyMMdd hh:mm"));
             return(false);
         }
-        checkLackOfData(this, windIntensity, myTime, &nrReplacedData);
+        checkLackOfData(this, windScalarIntensity, myTime, &nrReplacedData);
         myTime = myTime.addSeconds(3600);
     }
 
@@ -1489,7 +1488,7 @@ bool Vine3DProject::runModels(QDateTime dateTime1, QDateTime dateTime2, bool sav
                 aggregateAndSaveDailyMap(airRelHumidity, aggrMin, getCrit3DDate(myDate), myOutputPathDaily, myOutputPathHourly, myArea);
                 aggregateAndSaveDailyMap(airRelHumidity, aggrMax, getCrit3DDate(myDate), myOutputPathDaily, myOutputPathHourly, myArea);
                 aggregateAndSaveDailyMap(airRelHumidity, aggrAverage, getCrit3DDate(myDate), myOutputPathDaily, myOutputPathHourly, myArea);
-                aggregateAndSaveDailyMap(windIntensity, aggrAverage, getCrit3DDate(myDate), myOutputPathDaily, myOutputPathHourly, myArea);
+                aggregateAndSaveDailyMap(windScalarIntensity, aggrAverage, getCrit3DDate(myDate), myOutputPathDaily, myOutputPathHourly, myArea);
                 aggregateAndSaveDailyMap(globalIrradiance, aggrSum, getCrit3DDate(myDate), myOutputPathDaily, myOutputPathHourly, myArea);
                 aggregateAndSaveDailyMap(leafWetness, aggrSum, getCrit3DDate(myDate), myOutputPathDaily, myOutputPathHourly, myArea);
 

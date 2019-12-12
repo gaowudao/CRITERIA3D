@@ -120,7 +120,7 @@ bool modelDailyCycle(bool isInitialState, Crit3DDate myDate, int nrHours,
         interpolateAndSaveHourlyMeteo(myProject, airTemperature, myCurrentTime, myOutputPath, saveOutput, myArea);
         interpolateAndSaveHourlyMeteo(myProject, precipitation, myCurrentTime, myOutputPath, saveOutput, myArea);
         interpolateAndSaveHourlyMeteo(myProject, airRelHumidity, myCurrentTime, myOutputPath, saveOutput, myArea);
-        interpolateAndSaveHourlyMeteo(myProject, windIntensity, myCurrentTime, myOutputPath, saveOutput, myArea);
+        interpolateAndSaveHourlyMeteo(myProject, windScalarIntensity, myCurrentTime, myOutputPath, saveOutput, myArea);
         interpolateAndSaveHourlyMeteo(myProject, globalIrradiance, myCurrentTime, myOutputPath, saveOutput, myArea);
 
         // ET0
@@ -161,7 +161,7 @@ bool modelDailyCycle(bool isInitialState, Crit3DDate myDate, int nrHours,
                                 double(myProject->radiationMaps->globalRadiationMap->value[row][col]),
                                 double(myProject->hourlyMeteoMaps->mapHourlyPrec->value[row][col]),
                                 double(myProject->hourlyMeteoMaps->mapHourlyRelHum->value[row][col]),
-                                double(myProject->hourlyMeteoMaps->mapHourlyWindInt->value[row][col]),
+                                double(myProject->hourlyMeteoMaps->mapHourlyWindScalarInt->value[row][col]),
                                 PRESS)) {
                         myProject->errorString = grapevineError(myCurrentTime, row, col, "Weather data missing");
                         return(false);

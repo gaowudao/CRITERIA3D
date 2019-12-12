@@ -91,7 +91,7 @@ bool checkLackOfData(Vine3DProject* myProject, meteoVariable myVar, Crit3DTime m
     //------------------------------------------------------
     // STEP 3: use default values for some variables
     //------------------------------------------------------
-    if (myVar == windIntensity)
+    if (myVar == windScalarIntensity)
     {
         myProject->meteoPoints[indexPoint].setMeteoPointValueH(currentDate, hour, minutes, myVar, myProject->meteoSettings->getWindIntensityDefault());
         (*nrReplacedData)++;
@@ -112,7 +112,7 @@ bool postInterpolation(meteoVariable myVar, gis::Crit3DRasterGrid* myGrid)
         setRelativeHumidityScale(myGrid->colorScale);
     else if (myVar == globalIrradiance)
         setRadiationScale(myGrid->colorScale);
-    else if (myVar == windIntensity)
+    else if (myVar == windScalarIntensity)
         setWindIntensityScale(myGrid->colorScale);
     else if (myVar == leafWetness)
         setLeafWetnessScale(myGrid->colorScale);
@@ -267,13 +267,13 @@ bool interpolationProjectDemMain(Vine3DProject* myProject, meteoVariable myVar, 
         else
             myResult = vine3DInterpolationDem(myProject, airRelHumidity, myCrit3DTime, isLoadData);
     }
-    else if (myVar == windIntensity)
+    else if (myVar == windScalarIntensity)
     {
-        myResult = vine3DInterpolationDem(myProject, windIntensity, myCrit3DTime, isLoadData);
+        myResult = vine3DInterpolationDem(myProject, windScalarIntensity, myCrit3DTime, isLoadData);
         if (myResult == false)
         {
-            myProject->hourlyMeteoMaps->mapHourlyWindInt->setConstantValueWithBase(myProject->meteoSettings->getWindIntensityDefault(), myProject->DEM);
-            myResult = postInterpolation(windIntensity, myProject->hourlyMeteoMaps->mapHourlyWindInt);
+            myProject->hourlyMeteoMaps->mapHourlyWindScalarInt->setConstantValueWithBase(myProject->meteoSettings->getWindIntensityDefault(), myProject->DEM);
+            myResult = postInterpolation(windScalarIntensity, myProject->hourlyMeteoMaps->mapHourlyWindScalarInt);
         }
     }
     else

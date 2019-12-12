@@ -138,10 +138,10 @@ meteoVariable getMeteoVariable(int myVar)
     else if (myVar == 15) return(precipitation);
     else if (myVar == 16) return(airRelHumidity);
     else if (myVar == 17) return(globalIrradiance);
-    else if (myVar == 18) return(windIntensity);
+    else if (myVar == 18) return(windScalarIntensity);
     else if (myVar == 20) return(leafWetness);
     else if (myVar == 21) return(atmPressure);
-    else if (myVar == 43) return(windDirection);
+    else if (myVar == 43) return(windVectorDirection);
     else return(noMeteoVar);
 }
 
@@ -151,10 +151,10 @@ int getMeteoVarIndex(meteoVariable myVar)
     else if (myVar == precipitation)return 15;
     else if (myVar == airRelHumidity) return 16;
     else if (myVar == globalIrradiance) return 17;
-    else if (myVar == windIntensity) return 18;
+    else if (myVar == windScalarIntensity) return 18;
     else if (myVar == leafWetness) return 20;
     else if (myVar == atmPressure) return 21;
-    else if (myVar == windDirection) return 43;
+    else if (myVar == windVectorDirection) return 43;
     else
         return NODATA;
 }
