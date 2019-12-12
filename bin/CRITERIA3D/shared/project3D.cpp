@@ -1001,7 +1001,7 @@ bool Project3D::modelHourlyCycle(bool isInitialState, QDateTime myTime, const QS
     if (! interpolateAndSaveHourlyMeteo(airTemperature, myTime, hourlyPath, saveOutput)) return false;
     if (! interpolateAndSaveHourlyMeteo(precipitation, myTime, hourlyPath, saveOutput)) return false;
     if (! interpolateAndSaveHourlyMeteo(airRelHumidity, myTime, hourlyPath, saveOutput)) return false;
-    if (! interpolateAndSaveHourlyMeteo(windIntensity, myTime, hourlyPath, saveOutput)) return false;
+    if (! interpolateAndSaveHourlyMeteo(windScalarIntensity, myTime, hourlyPath, saveOutput)) return false;
 
     // radiation model
     if (! interpolateAndSaveHourlyMeteo(globalIrradiance, myTime, hourlyPath, saveOutput)) return false;

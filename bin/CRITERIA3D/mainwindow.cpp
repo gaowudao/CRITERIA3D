@@ -426,8 +426,8 @@ void MainWindow::updateVariable()
     else if (myProject.getCurrentVariable() == dailyGlobalRadiation)
         myProject.setCurrentVariable(globalIrradiance);
 
-    else if (myProject.getCurrentVariable() == dailyWindIntensityAvg)
-        myProject.setCurrentVariable(windIntensity);
+    else if (myProject.getCurrentVariable() == dailyWindScalarIntensityAvg)
+        myProject.setCurrentVariable(windScalarIntensity);
 
     std::string myString = getVariableString(myProject.getCurrentVariable());
     ui->labelVariable->setText(QString::fromStdString(myString));
@@ -848,9 +848,9 @@ void MainWindow::showMeteoVariable(meteoVariable var)
             setMeteoVariable(airRelHumidity, myProject.hourlyMeteoMaps->mapHourlyRelHum);
         break;
 
-    case windIntensity:
+    case windScalarIntensity:
         if (checkMapVariable(myProject.hourlyMeteoMaps->getComputed()))
-            setMeteoVariable(windIntensity, myProject.hourlyMeteoMaps->mapHourlyWindInt);
+            setMeteoVariable(windScalarIntensity, myProject.hourlyMeteoMaps->mapHourlyWindScalarInt);
         break;
 
     case globalIrradiance:
@@ -906,7 +906,7 @@ void MainWindow::on_actionView_Air_relative_humidity_triggered()
 
 void MainWindow::on_actionView_Wind_intensity_triggered()
 {
-    showMeteoVariable(windIntensity);
+    showMeteoVariable(windScalarIntensity);
 }
 
 

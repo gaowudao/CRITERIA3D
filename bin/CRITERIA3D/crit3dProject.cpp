@@ -301,7 +301,7 @@ bool Crit3DProject::computeAllMeteoMaps(const QDateTime& myTime, bool showInfo)
         myInfo.setValue(3);
     }
 
-    if (! interpolateHourlyMeteoVar(windIntensity, myTime, false))
+    if (! interpolateHourlyMeteoVar(windScalarIntensity, myTime, false))
         return false;
 
     if (showInfo)
