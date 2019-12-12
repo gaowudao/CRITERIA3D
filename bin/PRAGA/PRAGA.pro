@@ -24,7 +24,16 @@ QMAKE_CXXFLAGS += -std=c++11
 DEFINES += NETCDF
 
 
-LIBS += -L../../mapGraphics/release -lMapGraphics
+    win32:{
+        CONFIG(debug, debug|release) {
+            LIBS += -L../../mapGraphics/debug -lMapGraphics
+        } else {
+            LIBS += -L../../mapGraphics/release -lMapGraphics
+        }
+    }
+    unix:{
+        LIBS += -L../../mapGraphics/release -lMapGraphics
+    }
 
 
 CONFIG(debug, debug|release) {
