@@ -752,9 +752,11 @@ void MainWindow::on_timeEdit_timeChanged(const QTime &time)
         else
             meteoGridObj->initializeUTM(&(myProject.netCDF.dataGrid), myProject.gisSettings, true);
 
-        myProject.netCDF.dataGrid.emptyGrid();
+        myProject.netCDF.dataGrid.setConstantValue(0);
+
         updateMaps();
     }
+
 
     void MainWindow::closeNetCDF()
     {
