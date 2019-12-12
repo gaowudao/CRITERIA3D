@@ -1,23 +1,21 @@
 #ifndef PRAGAPROJECT_H
 #define PRAGAPROJECT_H
 
+    #ifndef CRIT3DCLIMATE_H
+        #include "crit3dClimate.h"
+    #endif
 
-#ifndef CRIT3DCLIMATE_H
-    #include "crit3dClimate.h"
-#endif
+    #ifndef PROJECT_H
+        #include "project.h"
+    #endif
 
-#ifndef PROJECT_H
-    #include "project.h"
-#endif
+    #ifndef METEOMAPS_H
+        #include "meteoMaps.h"
+    #endif
 
-#ifndef METEOMAPS_H
-    #include "meteoMaps.h"
-#endif
-
-#ifdef NETCDF
-    #include "netcdfHandler.h"
-#endif
-
+    #ifdef NETCDF
+        #include "netcdfHandler.h"
+    #endif
 
     class PragaProject : public Project
     {
@@ -59,7 +57,8 @@
         bool downloadDailyDataArkimet(QStringList variables, bool prec0024, QDate startDate, QDate endDate, bool showInfo);
         bool downloadHourlyDataArkimet(QStringList variables, QDate startDate, QDate endDate, bool showInfo);
 
-        bool interpolationMeteoGrid(meteoVariable myVar, frequencyType myFrequency, const Crit3DTime& myTime, gis::Crit3DRasterGrid *myRaster, bool showInfo);
+        bool interpolationMeteoGrid(meteoVariable myVar, frequencyType myFrequency, const Crit3DTime& myTime,
+                                    gis::Crit3DRasterGrid *myRaster, bool showInfo);
         bool interpolationMeteoGridPeriod(QDate dateIni, QDate dateFin, QList <meteoVariable> variables, bool saveRasters);
         bool saveGrid(meteoVariable myVar, frequencyType myFrequency, const Crit3DTime& myTime, bool showInfo);
 
@@ -72,12 +71,20 @@
         bool deleteClima(bool isMeteoGrid, QString climaSelected);
         bool climatePointsCycle(bool showInfo);
         bool climatePointsCycleGrid(bool showInfo);
-        bool averageSeriesOnZonesMeteoGrid(meteoVariable variable, meteoComputation elab1MeteoComp, aggregationMethod spatialElab, float threshold, gis::Crit3DRasterGrid* zoneGrid, QDate startDate, QDate endDate, QString periodType, std::vector<float> &outputValues, bool showInfo);
-        bool exportXMLElabGridToNetcdf(QString xmlName);
+        bool averageSeriesOnZonesMeteoGrid(meteoVariable variable, meteoComputation elab1MeteoComp,
+                                           aggregationMethod spatialElab, float threshold, gis::Crit3DRasterGrid* zoneGrid,
+                                           QDate startDate, QDate endDate, QString periodType,
+                                           std::vector<float> &outputValues, bool showInfo);
         bool getIsElabMeteoPointsValue() const;
         void setIsElabMeteoPointsValue(bool value);
 
         bool executePragaCommand(QStringList argumentList, bool* isCommandFound);
+
+        #ifdef NETCDF
+                bool exportMeteoGridToNetCDF(QString fileName);
+                bool exportXMLElabGridToNetcdf(QString xmlName);
+        #endif
     };
+
 
 #endif // PRAGAPROJECT_H

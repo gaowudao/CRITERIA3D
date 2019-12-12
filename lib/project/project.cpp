@@ -11,10 +11,6 @@
 #include "utilities.h"
 #include "aggregation.h"
 
-#ifdef NETCDF
-    #include "netcdfHandler.h"
-#endif
-
 #include <iostream>
 #include <QDir>
 #include <QFile>
@@ -2076,41 +2072,6 @@ void Project::importHourlyMeteoData(const QString& csvFileName, bool importAllFi
     }
 }
 
-
-
-#ifdef NETCDF
-
-    bool Project::exportMeteoGridToNetCDF(QString fileName)
-    {
-        if (! checkMeteoGridForExport()) return false;
-
-        NetCDFHandler* netcdf = new NetCDFHandler();
-
-        if (! netcdf->createNewFile(fileName.toStdString()))
-        {
-            logError("Wrong filename: " + fileName);
-            return false;
-        }
-
-        if (! netcdf->writeGeoDimensions(meteoGridDbHandler->gridStructure().header()))
-        {
-            logError("Error in writing geo dimensions.");
-            return false;
-        }
-
-        if (! netcdf->writeData_NoTime(meteoGridDbHandler->meteoGrid()->dataMeteoGrid))
-        {
-            logError("Error in writing data.");
-            return false;
-        }
-
-        netcdf->close();
-        delete netcdf;
-
-        return true;
-    }
-
-#endif
 
 
 /* ---------------------------------------------

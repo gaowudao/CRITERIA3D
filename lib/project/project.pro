@@ -14,7 +14,6 @@ CONFIG += debug_and_release
 QMAKE_CXXFLAGS += -std=c++11
 
 DEFINES += _CRT_SECURE_NO_WARNINGS
-DEFINES += NETCDF
 
 unix:{
     CONFIG(debug, debug|release) {

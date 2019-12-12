@@ -1785,170 +1785,205 @@ bool PragaProject::interpolationMeteoGrid(meteoVariable myVar, frequencyType myF
     return true;
 }
 
-bool PragaProject::exportXMLElabGridToNetcdf(QString xmlName)
-{
-    if (meteoGridDbHandler == nullptr)
-    {
-        return false;
-    }
-    Crit3DElabList *listXMLElab = new Crit3DElabList();
-    Crit3DAnomalyList *listXMLAnomaly = new Crit3DAnomalyList();
 
-    if (xmlName == "")
+
+#ifdef NETCDF
+    bool PragaProject::exportMeteoGridToNetCDF(QString fileName)
     {
-        errorString = "Empty XML name";
+        if (! checkMeteoGridForExport()) return false;
+
+        NetCDFHandler* netcdf = new NetCDFHandler();
+
+        if (! netcdf->createNewFile(fileName.toStdString()))
+        {
+            logError("Wrong filename: " + fileName);
+            return false;
+        }
+
+        if (! netcdf->writeGeoDimensions(meteoGridDbHandler->gridStructure().header()))
+        {
+            logError("Error in writing geo dimensions.");
+            return false;
+        }
+
+        if (! netcdf->writeData_NoTime(meteoGridDbHandler->meteoGrid()->dataMeteoGrid))
+        {
+            logError("Error in writing data.");
+            return false;
+        }
+
+        netcdf->close();
+        delete netcdf;
+
+        return true;
+    }
+
+    bool PragaProject::exportXMLElabGridToNetcdf(QString xmlName)
+    {
+        if (meteoGridDbHandler == nullptr)
+        {
+            return false;
+        }
+        Crit3DElabList *listXMLElab = new Crit3DElabList();
+        Crit3DAnomalyList *listXMLAnomaly = new Crit3DAnomalyList();
+
+        if (xmlName == "")
+        {
+            errorString = "Empty XML name";
+            delete listXMLElab;
+            delete listXMLAnomaly;
+            return false;
+        }
+        if (!parseXMLElaboration(listXMLElab, listXMLAnomaly, xmlName, &errorString))
+        {
+            delete listXMLElab;
+            delete listXMLAnomaly;
+            return false;
+        }
+        if (listXMLElab->isMeteoGrid() == false)
+        {
+            errorString = "Datatype is not Grid";
+            delete listXMLElab;
+            delete listXMLAnomaly;
+            return false;
+        }
+        if (listXMLElab->listAll().isEmpty() && listXMLAnomaly->listAll().isEmpty())
+        {
+            errorString = "There are not valid Elaborations or Anomalies";
+            delete listXMLElab;
+            delete listXMLAnomaly;
+            return false;
+        }
+        if (clima == nullptr)
+        {
+            clima = new Crit3DClimate();
+        }
+        if (referenceClima == nullptr && !listXMLAnomaly->listAll().isEmpty())
+        {
+            referenceClima = new Crit3DClimate();
+        }
+
+        for (int i = 0; i<listXMLElab->listAll().size(); i++)
+        {
+            clima->setVariable(listXMLElab->listVariable()[i]);
+            clima->setYearStart(listXMLElab->listYearStart()[i]);
+            clima->setYearEnd(listXMLElab->listYearEnd()[i]);
+            clima->setPeriodStr(listXMLElab->listPeriodStr()[i]);
+            clima->setPeriodType(listXMLElab->listPeriodType()[i]);
+
+            clima->setGenericPeriodDateStart(listXMLElab->listDateStart()[i]);
+            clima->setGenericPeriodDateEnd(listXMLElab->listDateEnd()[i]);
+            clima->setNYears(listXMLElab->listNYears()[i]);
+            clima->setElab1(listXMLElab->listElab1()[i]);
+
+            if (!listXMLElab->listParam1IsClimate()[i])
+            {
+                clima->setParam1IsClimate(false);
+                clima->setParam1(listXMLElab->listParam1()[i]);
+            }
+            else
+            {
+                clima->setParam1IsClimate(true);
+                clima->setParam1ClimateField(listXMLElab->listParam1ClimateField()[i]);
+                int climateIndex = getClimateIndexFromElab(listXMLElab->listDateStart()[i], listXMLElab->listParam1ClimateField()[i]);
+                clima->setParam1ClimateIndex(climateIndex);
+
+            }
+            clima->setElab2(listXMLElab->listElab2()[i]);
+            clima->setParam2(listXMLElab->listParam2()[i]);
+
+            elaborationPointsCycleGrid(false, false);
+            meteoGridDbHandler->meteoGrid()->fillMeteoRasterElabValue();
+            QString netcdfName = getCompleteFileName("ELAB_"+listXMLElab->listAll()[i]+".nc", PATH_PROJECT);
+            exportMeteoGridToNetCDF(netcdfName);
+            // reset param
+            clima->resetParam();
+            // reset current values
+            clima->resetCurrentValues();
+        }
+
+        for (int i = 0; i<listXMLAnomaly->listAll().size(); i++)
+        {
+            clima->setVariable(listXMLAnomaly->listVariable()[i]);
+            clima->setYearStart(listXMLAnomaly->listYearStart()[i]);
+            clima->setYearEnd(listXMLAnomaly->listYearEnd()[i]);
+            clima->setPeriodStr(listXMLAnomaly->listPeriodStr()[i]);
+            clima->setPeriodType(listXMLAnomaly->listPeriodType()[i]);
+
+            clima->setGenericPeriodDateStart(listXMLAnomaly->listDateStart()[i]);
+            clima->setGenericPeriodDateEnd(listXMLAnomaly->listDateEnd()[i]);
+            clima->setNYears(listXMLAnomaly->listNYears()[i]);
+            clima->setElab1(listXMLAnomaly->listElab1()[i]);
+
+            if (!listXMLAnomaly->listParam1IsClimate()[i])
+            {
+                clima->setParam1IsClimate(false);
+                clima->setParam1(listXMLAnomaly->listParam1()[i]);
+            }
+            else
+            {
+                clima->setParam1IsClimate(true);
+                clima->setParam1ClimateField(listXMLAnomaly->listParam1ClimateField()[i]);
+                int climateIndex = getClimateIndexFromElab(listXMLAnomaly->listDateStart()[i], listXMLElab->listParam1ClimateField()[i]);
+                clima->setParam1ClimateIndex(climateIndex);
+
+            }
+            clima->setElab2(listXMLAnomaly->listElab2()[i]);
+            clima->setParam2(listXMLAnomaly->listParam2()[i]);
+
+            referenceClima->setVariable(listXMLAnomaly->listVariable()[i]);
+            referenceClima->setYearStart(listXMLAnomaly->listRefYearStart()[i]);
+            referenceClima->setYearEnd(listXMLAnomaly->listRefYearEnd()[i]);
+            referenceClima->setPeriodStr(listXMLAnomaly->listRefPeriodStr()[i]);
+            referenceClima->setPeriodType(listXMLAnomaly->listRefPeriodType()[i]);
+
+            referenceClima->setGenericPeriodDateStart(listXMLAnomaly->listRefDateStart()[i]);
+            referenceClima->setGenericPeriodDateEnd(listXMLAnomaly->listRefDateEnd()[i]);
+            referenceClima->setNYears(listXMLAnomaly->listRefNYears()[i]);
+            referenceClima->setElab1(listXMLAnomaly->listRefElab1()[i]);
+
+            if (!listXMLAnomaly->listRefParam1IsClimate()[i])
+            {
+                referenceClima->setParam1IsClimate(false);
+                referenceClima->setParam1(listXMLAnomaly->listRefParam1()[i]);
+            }
+            else
+            {
+                referenceClima->setParam1IsClimate(true);
+                referenceClima->setParam1ClimateField(listXMLAnomaly->listRefParam1ClimateField()[i]);
+                int climateIndex = getClimateIndexFromElab(listXMLAnomaly->listRefDateStart()[i], listXMLAnomaly->listRefParam1ClimateField()[i]);
+                referenceClima->setParam1ClimateIndex(climateIndex);
+            }
+            referenceClima->setElab2(listXMLAnomaly->listRefElab2()[i]);
+            referenceClima->setParam2(listXMLAnomaly->listRefParam2()[i]);
+
+            elaborationPointsCycleGrid(false, false);
+            elaborationPointsCycleGrid(true, false);
+            QString netcdfName;
+            if (!listXMLAnomaly->isPercentage()[i])
+            {
+                meteoGridDbHandler->meteoGrid()->fillMeteoRasterAnomalyValue();
+                netcdfName = getCompleteFileName("ANOMALY_"+listXMLAnomaly->listAll()[i]+".nc", PATH_PROJECT);
+            }
+            else
+            {
+                meteoGridDbHandler->meteoGrid()->fillMeteoRasterAnomalyPercValue();
+                netcdfName = getCompleteFileName("ANOMALY_"+listXMLAnomaly->listAll()[i]+".nc", PATH_PROJECT);
+            }
+
+            exportMeteoGridToNetCDF(netcdfName);
+            // reset param
+            clima->resetParam();
+            referenceClima->resetParam();
+            // reset current values
+            clima->resetCurrentValues();
+            referenceClima->resetCurrentValues();
+        }
+
         delete listXMLElab;
         delete listXMLAnomaly;
-        return false;
-    }
-    if (!parseXMLElaboration(listXMLElab, listXMLAnomaly, xmlName, &errorString))
-    {
-        delete listXMLElab;
-        delete listXMLAnomaly;
-        return false;
-    }
-    if (listXMLElab->isMeteoGrid() == false)
-    {
-        errorString = "Datatype is not Grid";
-        delete listXMLElab;
-        delete listXMLAnomaly;
-        return false;
-    }
-    if (listXMLElab->listAll().isEmpty() && listXMLAnomaly->listAll().isEmpty())
-    {
-        errorString = "There are not valid Elaborations or Anomalies";
-        delete listXMLElab;
-        delete listXMLAnomaly;
-        return false;
-    }
-    if (clima == nullptr)
-    {
-        clima = new Crit3DClimate();
-    }
-    if (referenceClima == nullptr && !listXMLAnomaly->listAll().isEmpty())
-    {
-        referenceClima = new Crit3DClimate();
+        return true;
     }
 
-    for (int i = 0; i<listXMLElab->listAll().size(); i++)
-    {
-        clima->setVariable(listXMLElab->listVariable()[i]);
-        clima->setYearStart(listXMLElab->listYearStart()[i]);
-        clima->setYearEnd(listXMLElab->listYearEnd()[i]);
-        clima->setPeriodStr(listXMLElab->listPeriodStr()[i]);
-        clima->setPeriodType(listXMLElab->listPeriodType()[i]);
-
-        clima->setGenericPeriodDateStart(listXMLElab->listDateStart()[i]);
-        clima->setGenericPeriodDateEnd(listXMLElab->listDateEnd()[i]);
-        clima->setNYears(listXMLElab->listNYears()[i]);
-        clima->setElab1(listXMLElab->listElab1()[i]);
-
-        if (!listXMLElab->listParam1IsClimate()[i])
-        {
-            clima->setParam1IsClimate(false);
-            clima->setParam1(listXMLElab->listParam1()[i]);
-        }
-        else
-        {
-            clima->setParam1IsClimate(true);
-            clima->setParam1ClimateField(listXMLElab->listParam1ClimateField()[i]);
-            int climateIndex = getClimateIndexFromElab(listXMLElab->listDateStart()[i], listXMLElab->listParam1ClimateField()[i]);
-            clima->setParam1ClimateIndex(climateIndex);
-
-        }
-        clima->setElab2(listXMLElab->listElab2()[i]);
-        clima->setParam2(listXMLElab->listParam2()[i]);
-
-        elaborationPointsCycleGrid(false, false);
-        meteoGridDbHandler->meteoGrid()->fillMeteoRasterElabValue();
-        QString netcdfName = getCompleteFileName("ELAB_"+listXMLElab->listAll()[i]+".nc", PATH_PROJECT);
-        exportMeteoGridToNetCDF(netcdfName);
-        // reset param
-        clima->resetParam();
-        // reset current values
-        clima->resetCurrentValues();
-    }
-
-    for (int i = 0; i<listXMLAnomaly->listAll().size(); i++)
-    {
-        clima->setVariable(listXMLAnomaly->listVariable()[i]);
-        clima->setYearStart(listXMLAnomaly->listYearStart()[i]);
-        clima->setYearEnd(listXMLAnomaly->listYearEnd()[i]);
-        clima->setPeriodStr(listXMLAnomaly->listPeriodStr()[i]);
-        clima->setPeriodType(listXMLAnomaly->listPeriodType()[i]);
-
-        clima->setGenericPeriodDateStart(listXMLAnomaly->listDateStart()[i]);
-        clima->setGenericPeriodDateEnd(listXMLAnomaly->listDateEnd()[i]);
-        clima->setNYears(listXMLAnomaly->listNYears()[i]);
-        clima->setElab1(listXMLAnomaly->listElab1()[i]);
-
-        if (!listXMLAnomaly->listParam1IsClimate()[i])
-        {
-            clima->setParam1IsClimate(false);
-            clima->setParam1(listXMLAnomaly->listParam1()[i]);
-        }
-        else
-        {
-            clima->setParam1IsClimate(true);
-            clima->setParam1ClimateField(listXMLAnomaly->listParam1ClimateField()[i]);
-            int climateIndex = getClimateIndexFromElab(listXMLAnomaly->listDateStart()[i], listXMLElab->listParam1ClimateField()[i]);
-            clima->setParam1ClimateIndex(climateIndex);
-
-        }
-        clima->setElab2(listXMLAnomaly->listElab2()[i]);
-        clima->setParam2(listXMLAnomaly->listParam2()[i]);
-
-        referenceClima->setVariable(listXMLAnomaly->listVariable()[i]);
-        referenceClima->setYearStart(listXMLAnomaly->listRefYearStart()[i]);
-        referenceClima->setYearEnd(listXMLAnomaly->listRefYearEnd()[i]);
-        referenceClima->setPeriodStr(listXMLAnomaly->listRefPeriodStr()[i]);
-        referenceClima->setPeriodType(listXMLAnomaly->listRefPeriodType()[i]);
-
-        referenceClima->setGenericPeriodDateStart(listXMLAnomaly->listRefDateStart()[i]);
-        referenceClima->setGenericPeriodDateEnd(listXMLAnomaly->listRefDateEnd()[i]);
-        referenceClima->setNYears(listXMLAnomaly->listRefNYears()[i]);
-        referenceClima->setElab1(listXMLAnomaly->listRefElab1()[i]);
-
-        if (!listXMLAnomaly->listRefParam1IsClimate()[i])
-        {
-            referenceClima->setParam1IsClimate(false);
-            referenceClima->setParam1(listXMLAnomaly->listRefParam1()[i]);
-        }
-        else
-        {
-            referenceClima->setParam1IsClimate(true);
-            referenceClima->setParam1ClimateField(listXMLAnomaly->listRefParam1ClimateField()[i]);
-            int climateIndex = getClimateIndexFromElab(listXMLAnomaly->listRefDateStart()[i], listXMLAnomaly->listRefParam1ClimateField()[i]);
-            referenceClima->setParam1ClimateIndex(climateIndex);
-        }
-        referenceClima->setElab2(listXMLAnomaly->listRefElab2()[i]);
-        referenceClima->setParam2(listXMLAnomaly->listRefParam2()[i]);
-
-        elaborationPointsCycleGrid(false, false);
-        elaborationPointsCycleGrid(true, false);
-        QString netcdfName;
-        if (!listXMLAnomaly->isPercentage()[i])
-        {
-            meteoGridDbHandler->meteoGrid()->fillMeteoRasterAnomalyValue();
-            netcdfName = getCompleteFileName("ANOMALY_"+listXMLAnomaly->listAll()[i]+".nc", PATH_PROJECT);
-        }
-        else
-        {
-            meteoGridDbHandler->meteoGrid()->fillMeteoRasterAnomalyPercValue();
-            netcdfName = getCompleteFileName("ANOMALY_"+listXMLAnomaly->listAll()[i]+".nc", PATH_PROJECT);
-        }
-
-        exportMeteoGridToNetCDF(netcdfName);
-        // reset param
-        clima->resetParam();
-        referenceClima->resetParam();
-        // reset current values
-        clima->resetCurrentValues();
-        referenceClima->resetCurrentValues();
-    }
-
-    delete listXMLElab;
-    delete listXMLAnomaly;
-    return true;
-}
+#endif
 

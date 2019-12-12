@@ -189,11 +189,6 @@
 
         gis::Crit3DRasterGrid* getHourlyMeteoRaster(meteoVariable myVar);
 
-
-        #ifdef NETCDF
-            bool exportMeteoGridToNetCDF(QString fileName);
-        #endif
-
     };
 
 

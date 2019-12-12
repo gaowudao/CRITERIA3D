@@ -28,4 +28,10 @@ class DialogPragaProject : public DialogProject
 
 };
 
+
+#ifdef NETCDF
+    bool chooseNetCDFVariable(NetCDFHandler* netCDF, int *varId, QDateTime *firstDate, QDateTime *lastDate);
+#endif
+
+
 #endif // DIALOGPRAGAPROJECT_H
