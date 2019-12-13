@@ -1269,7 +1269,7 @@ void MainWindow::on_variableButton_clicked()
 
 void MainWindow::on_frequencyButton_clicked()
 {
-   frequencyType myFrequency = chooseFrequency();
+   frequencyType myFrequency = chooseFrequency(&myProject);
 
    if (myFrequency != noFrequency)
    {

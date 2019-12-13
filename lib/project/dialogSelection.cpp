@@ -116,7 +116,7 @@ meteoVariable chooseColorScale()
 }
 
 
-frequencyType chooseFrequency()
+frequencyType chooseFrequency(Project* project_)
 {
     QDialog myDialog;
     QVBoxLayout mainLayout;
@@ -131,6 +131,13 @@ frequencyType chooseFrequency()
 
     layoutFrequency.addWidget(&Daily);
     layoutFrequency.addWidget(&Hourly);
+
+    frequencyType myFreq = project_->getCurrentFrequency();
+
+    if (myFreq == daily)
+        Daily.setChecked(true);
+    else if (myFreq == hourly)
+        Hourly.setChecked(true);
 
     QDialogButtonBox buttonBox(QDialogButtonBox::Ok | QDialogButtonBox::Cancel);
 
@@ -245,11 +252,11 @@ meteoVariable chooseMeteoVariable(Project* myProject)
         else if (myCurrentVar == dailyBIC)
             BIC.setChecked(true);
         else if (myCurrentVar == dailyWindScalarIntensityAvg)
-            WindVAvg.setChecked(true);
-        else if (myCurrentVar == dailyWindScalarIntensityMax)
-            WindVMax.setChecked(true);
-        else if (myCurrentVar == dailyWindVectorIntensityAvg)
             WindSAvg.setChecked(true);
+        else if (myCurrentVar == dailyWindScalarIntensityMax)
+            WindSMax.setChecked(true);
+        else if (myCurrentVar == dailyWindVectorIntensityAvg)
+            WindVAvg.setChecked(true);
         else if (myCurrentVar == dailyWindVectorIntensityMax)
             WindVMax.setChecked(true);
         else if (myCurrentVar == dailyWindVectorDirectionPrevailing)

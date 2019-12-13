@@ -11,8 +11,7 @@
     QString editValue(QString windowsTitle, QString defaultValue);
 
     meteoVariable chooseColorScale();
-    frequencyType chooseFrequency();
-
+    frequencyType chooseFrequency(Project *project_);
     meteoVariable chooseMeteoVariable(Project *project_);
 
 
