@@ -56,6 +56,11 @@
         float frequencyPositive(std::vector<float> values, int nValue);
         float trend(std::vector<float> values, int nValues, float myFirstYear);
         float mannKendall(std::vector<float> values, int nValues);
+
+        double meanNoCheck(double *myList, int nrList);
+        double varianceNoCheck(double *myList, int nrList);
+        double covarianceNoCheck(double *myList1, int nrList1,double *myList2, int nrList2);
+        void correlationsMatrixNoCheck(int nrRowCol, double**myLists,int nrLists, double** c);
     }
 
 #endif // STATISTICS_H

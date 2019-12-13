@@ -570,6 +570,81 @@ namespace statistics
         return (prodDiff / (nrValidValues - 1));
     }
 
+    double meanNoCheck(double *myList, int nrList)
+    {
+        double sum=0.;
+        //int i;// nrValidValues;
+
+        //if (nrList < 1) return NODATA;
+        //nrValidValues = 0;
+
+        for (int i = 0; i < nrList; i++)
+        {
+            //if (myList[i]!= NODATA)
+            //{
+                sum += myList[i];
+                //nrValidValues++;
+            //}
+        }
+
+        //if (nrValidValues > 0)
+            return (sum/(nrList));
+        //else
+            //return NODATA;
+    }
+    double covarianceNoCheck(double *myList1, int nrList1,double *myList2, int nrList2)
+    {
+        double myMean1,myMean2,myDiff1,myDiff2,prodDiff;
+        int i;//, nrValidValues;
+
+        //if (nrList1 <= 1) return NODATA;
+        //if (nrList2 <= 1) return NODATA;
+        //if (nrList2 != nrList1) return NODATA;
+
+        myMean1 = meanNoCheck(myList1,nrList1);
+        myMean2 = meanNoCheck(myList2,nrList2);
+        prodDiff = 0;
+        //nrValidValues = 0;
+        for (i = 0;i<nrList1;i++)
+        {
+            //if ((myList1[i]!= NODATA)&&myList2[i]!=NODATA)
+            //{
+                myDiff1 = (myList1[i] - myMean1);
+                myDiff2 = (myList2[i] - myMean2);
+                prodDiff += myDiff1*myDiff2;
+                //nrValidValues++;
+            //}
+        }
+        return (prodDiff / (--nrList1));
+    }
+
+    double varianceNoCheck(double *myList, int nrList)
+    {
+        double myMean, myDiff, squareDiff;
+        int i;//, nrValidValues;
+
+        //if (nrList <= 1) return NODATA;
+
+        myMean = meanNoCheck(myList,nrList);
+
+        squareDiff = 0;
+        //nrValidValues = 0;
+        for (i = 0; i<nrList; i++)
+        {
+            //if (myList[i]!= NODATA)
+            //{
+                myDiff = (myList[i] - myMean);
+                squareDiff += (myDiff * myDiff);
+                //nrValidValues++;
+            //}
+        }
+
+        //if (nrValidValues > 1)
+            return (squareDiff / (--nrList));
+        //else
+            //return NODATA;
+    }
+
     float coefficientPearson(float *myList1, int nrList1,float *myList2, int nrList2)
     {
         return (covariance(myList1,nrList1,myList2,nrList2)/(standardDeviation(myList1,nrList1)*standardDeviation(myList2,nrList2)));
@@ -607,6 +682,25 @@ namespace statistics
             {
                 c[i][j]= covariance(myLists[i],nrLists,myLists[j],nrLists);
                 if (c[i][j] != 0) c[i][j] /= sqrt(variance(myLists[i],nrLists)*variance(myLists[j],nrLists));
+                c[j][i] = c[i][j];
+            }
+
+        }
+    }
+
+    void correlationsMatrixNoCheck(int nrRowCol, double**myLists,int nrLists, double** c)
+    {
+        // input: myLists matrix
+        // output: c matrix
+
+        for(int i = 0;i<nrRowCol;i++)
+        {
+            c[i][i]=1.;
+            for(int j = i+1;j<nrRowCol;j++)
+            {
+                c[i][j]= covarianceNoCheck(myLists[i],nrLists,myLists[j],nrLists);
+                if (c[i][j] != 0)
+                    c[i][j] /= sqrt(varianceNoCheck(myLists[i],nrLists)*varianceNoCheck(myLists[j],nrLists));
                 c[j][i] = c[i][j];
             }
 
