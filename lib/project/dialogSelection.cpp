@@ -173,6 +173,8 @@ meteoVariable chooseMeteoVariable(Project* myProject)
     myDialog.setWindowTitle("Choose variable");
     myDialog.setFixedWidth(300);
 
+    meteoVariable myCurrentVar = myProject->getCurrentVariable();
+
     QRadioButton Tavg("Average air temperature");
     QRadioButton Tmin("Minimum air temperature");
     QRadioButton Tmax("Maximum air temperature");
@@ -181,20 +183,25 @@ meteoVariable chooseMeteoVariable(Project* myProject)
     QRadioButton RHmin("Minimum air relative humidity");
     QRadioButton RHmax("Maximum air relative humidity");
     QRadioButton Rad("Solar radiation");
+    QRadioButton ET0HS("Reference evapotranspiration (Hargreaves)");
+    QRadioButton ET0PM("Reference evapotranspiration (Penman-Monteith)");
+    QRadioButton BIC("Hydroclimatic balance");
     QRadioButton WindVAvg("Average wind vector intensity");
     QRadioButton WindVMax("Maximum wind vector intensity");
     QRadioButton WindVDir("Prevailing wind vector direction");
     QRadioButton WindSAvg("Average wind scalar intensity");
     QRadioButton WindSMax("Maximum wind scalar intensity");
-    QRadioButton DewT("Air dew temperature (°C)");
 
     QRadioButton T("Air temperature");
     QRadioButton P("Precipitation");
     QRadioButton RH("Air relative humidity");
+    QRadioButton DewT("Air dew temperature (°C)");
     QRadioButton Irr("Solar irradiance");
+    QRadioButton ET0PMh("Reference evapotranspiration (Penman-Monteith");
     QRadioButton WSInt("Wind scalar intensity");
     QRadioButton WVInt("Wind vector intensity");
     QRadioButton WVDir("Wind vector direction");
+    QRadioButton LW("Leaf wetness");
 
     if (myProject->getCurrentFrequency() == daily)
     {
@@ -206,21 +213,81 @@ meteoVariable chooseMeteoVariable(Project* myProject)
         layoutVariable.addWidget(&RHavg);
         layoutVariable.addWidget(&RHmax);
         layoutVariable.addWidget(&Rad);
+        layoutVariable.addWidget(&ET0HS);
+        layoutVariable.addWidget(&ET0PM);
+        layoutVariable.addWidget(&BIC);
         layoutVariable.addWidget(&WindSAvg);
         layoutVariable.addWidget(&WindSMax);
         layoutVariable.addWidget(&WindVAvg);
         layoutVariable.addWidget(&WindVMax);
         layoutVariable.addWidget(&WindVDir);
+
+        if (myCurrentVar == dailyAirTemperatureMin)
+            Tmin.setChecked(true);
+        else if (myCurrentVar == dailyAirTemperatureMax)
+            Tmax.setChecked(true);
+        else if (myCurrentVar == dailyAirTemperatureAvg)
+            Tavg.setChecked(true);
+        else if (myCurrentVar == dailyPrecipitation)
+            Prec.setChecked(true);
+        else if (myCurrentVar == dailyAirRelHumidityMin)
+            RHmin.setChecked(true);
+        else if (myCurrentVar == dailyAirRelHumidityMax)
+            RHmax.setChecked(true);
+        else if (myCurrentVar == dailyAirRelHumidityAvg)
+            RHavg.setChecked(true);
+        else if (myCurrentVar == dailyGlobalRadiation)
+            Rad.setChecked(true);
+        else if (myCurrentVar == dailyReferenceEvapotranspirationHS)
+            ET0HS.setChecked(true);
+        else if (myCurrentVar == dailyReferenceEvapotranspirationPM)
+            ET0PM.setChecked(true);
+        else if (myCurrentVar == dailyBIC)
+            BIC.setChecked(true);
+        else if (myCurrentVar == dailyWindScalarIntensityAvg)
+            WindVAvg.setChecked(true);
+        else if (myCurrentVar == dailyWindScalarIntensityMax)
+            WindVMax.setChecked(true);
+        else if (myCurrentVar == dailyWindVectorIntensityAvg)
+            WindSAvg.setChecked(true);
+        else if (myCurrentVar == dailyWindVectorIntensityMax)
+            WindVMax.setChecked(true);
+        else if (myCurrentVar == dailyWindVectorDirectionPrevailing)
+            WindVDir.setChecked(true);
     }
     else if (myProject->getCurrentFrequency() == hourly)
     {
         layoutVariable.addWidget(&T);
         layoutVariable.addWidget(&P);
         layoutVariable.addWidget(&RH);
+        layoutVariable.addWidget(&DewT);
         layoutVariable.addWidget(&Irr);
+        layoutVariable.addWidget(&ET0PMh);
         layoutVariable.addWidget(&WSInt);
         layoutVariable.addWidget(&WVInt);
         layoutVariable.addWidget(&WVDir);
+        layoutVariable.addWidget(&LW);
+
+        if (myCurrentVar == airTemperature)
+            T.setChecked(true);
+        else if (myCurrentVar == precipitation)
+            P.setChecked(true);
+        else if (myCurrentVar == airRelHumidity)
+            RH.setChecked(true);
+        else if (myCurrentVar == airDewTemperature)
+            DewT.setChecked(true);
+        else if (myCurrentVar == globalIrradiance)
+            Irr.setChecked(true);
+        else if (myCurrentVar == referenceEvapotranspiration)
+            ET0PMh.setChecked(true);
+        else if (myCurrentVar == windScalarIntensity)
+            WSInt.setChecked(true);
+        else if (myCurrentVar == windVectorIntensity)
+            WVInt.setChecked(true);
+        else if (myCurrentVar == windVectorDirection)
+            WVDir.setChecked(true);
+        else if (myCurrentVar == leafWetness)
+            LW.setChecked(true);
     }
     else return noMeteoVar;
 
@@ -259,6 +326,12 @@ meteoVariable chooseMeteoVariable(Project* myProject)
            return (dailyAirRelHumidityMax);
        else if (RHavg.isChecked())
            return (dailyAirRelHumidityAvg);
+       else if (ET0HS.isChecked())
+           return (dailyReferenceEvapotranspirationHS);
+       else if (ET0PM.isChecked())
+           return (dailyReferenceEvapotranspirationPM);
+       else if (BIC.isChecked())
+           return (dailyBIC);
        else if (WindSAvg.isChecked())
            return (dailyWindScalarIntensityAvg);
        else if (WindSMax.isChecked())
@@ -289,6 +362,10 @@ meteoVariable chooseMeteoVariable(Project* myProject)
            return windVectorDirection;
        else if (DewT.isChecked())
            return (airDewTemperature);
+       else if (LW.isChecked())
+           return (leafWetness);
+       else if (ET0PMh.isChecked())
+           return (referenceEvapotranspiration);
    }
 
    return noMeteoVar;
