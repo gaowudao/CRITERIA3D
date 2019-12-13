@@ -644,6 +644,8 @@ void MainWindow::interpolateGridGUI()
 
 void MainWindow::updateVariable()
 {
+    meteoVariable myVar = myProject.getCurrentVariable();
+
     // FREQUENCY
     if (myProject.getCurrentFrequency() == noFrequency)
     {
@@ -656,17 +658,38 @@ void MainWindow::updateVariable()
             this->ui->labelFrequency->setText("Daily");
 
             //check
-            if (myProject.getCurrentVariable() == airTemperature)
+            if (myVar == airTemperature)
                 myProject.setCurrentVariable(dailyAirTemperatureAvg);
 
-            else if (myProject.getCurrentVariable() == precipitation)
+            else if (myVar == precipitation)
                 myProject.setCurrentVariable(dailyPrecipitation);
 
-            else if (myProject.getCurrentVariable() == globalIrradiance)
+            else if (myVar == globalIrradiance)
                 myProject.setCurrentVariable(dailyGlobalRadiation);
 
-            else if (myProject.getCurrentVariable() == airRelHumidity)
+            else if (myVar == airRelHumidity)
                 myProject.setCurrentVariable(dailyAirRelHumidityAvg);
+
+            else if (myVar == airDewTemperature)
+                myProject.setCurrentVariable(dailyAirDewTemperatureAvg);
+
+            else if (myVar == thom)
+                myProject.setCurrentVariable(dailyThomAvg);
+
+            else if (myVar == windScalarIntensity)
+                myProject.setCurrentVariable(dailyWindScalarIntensityAvg);
+
+            else if (myVar== windVectorIntensity)
+                myProject.setCurrentVariable(dailyWindVectorIntensityAvg);
+
+            else if (myVar == windVectorDirection)
+                myProject.setCurrentVariable(dailyWindVectorDirectionPrevailing);
+
+            else if (myVar == leafWetness)
+                myProject.setCurrentVariable(dailyLeafWetness);
+
+            else if (myVar == referenceEvapotranspiration)
+                myProject.setCurrentVariable(dailyReferenceEvapotranspirationHS);
         }
 
         else if (myProject.getCurrentFrequency() == hourly)
@@ -674,21 +697,47 @@ void MainWindow::updateVariable()
             this->ui->labelFrequency->setText("Hourly");
 
             //check
-            if ((myProject.getCurrentVariable() == dailyAirTemperatureAvg)
-                    || (myProject.getCurrentVariable() == dailyAirTemperatureMax)
-                    || (myProject.getCurrentVariable() == dailyAirTemperatureMin))
+            if (myVar == dailyAirTemperatureAvg || myVar == dailyAirTemperatureMax || myVar == dailyAirTemperatureMin || myVar == dailyAirTemperatureRange)
                 myProject.setCurrentVariable(airTemperature);
 
-            else if ((myProject.getCurrentVariable() == dailyAirRelHumidityAvg)
-                     || (myProject.getCurrentVariable() == dailyAirRelHumidityMax)
-                     || (myProject.getCurrentVariable() == dailyAirRelHumidityMin))
-                 myProject.setCurrentVariable(airRelHumidity);
+            else if (myVar == dailyAirRelHumidityAvg || myVar == dailyAirRelHumidityMax || myVar == dailyAirRelHumidityMin)
+                myProject.setCurrentVariable(airRelHumidity);
 
-            else if (myProject.getCurrentVariable() == dailyPrecipitation)
-                    myProject.setCurrentVariable(precipitation);
+            else if (myVar == dailyAirDewTemperatureAvg || myVar == dailyAirDewTemperatureMax || myVar == dailyAirDewTemperatureMin)
+                myProject.setCurrentVariable(airDewTemperature);
 
-            else if (myProject.getCurrentVariable() == dailyGlobalRadiation)
+            else if (myVar == dailyPrecipitation)
+                myProject.setCurrentVariable(precipitation);
+
+            else if (myVar == dailyGlobalRadiation)
                 myProject.setCurrentVariable(globalIrradiance);
+
+            else if (myVar == dailyDirectRadiation)
+                myProject.setCurrentVariable(directIrradiance);
+
+            else if (myVar == dailyDiffuseRadiation)
+                myProject.setCurrentVariable(diffuseIrradiance);
+
+            else if (myVar == dailyReflectedRadiation)
+                myProject.setCurrentVariable(reflectedIrradiance);
+
+            else if (myVar == dailyThomAvg || myVar == dailyThomMax || myVar == dailyThomHoursAbove || myVar == dailyThomDaytime || myVar == dailyThomNighttime)
+                myProject.setCurrentVariable(thom);
+
+            else if (myVar == dailyWindScalarIntensityAvg || myVar == dailyWindScalarIntensityMax)
+                myProject.setCurrentVariable(windScalarIntensity);
+
+            else if (myVar == dailyWindVectorIntensityAvg || myVar == dailyWindVectorIntensityMax)
+                myProject.setCurrentVariable(windVectorIntensity);
+
+            else if (myVar == dailyWindVectorDirectionPrevailing)
+                myProject.setCurrentVariable(windVectorDirection);
+
+            else if (myVar == dailyLeafWetness)
+                myProject.setCurrentVariable(leafWetness);
+
+            else if (myVar == dailyReferenceEvapotranspirationHS || myVar == dailyReferenceEvapotranspirationPM)
+                myProject.setCurrentVariable(referenceEvapotranspiration);
         }
     }
 
@@ -1220,7 +1269,7 @@ void MainWindow::on_variableButton_clicked()
 
 void MainWindow::on_frequencyButton_clicked()
 {
-   frequencyType myFrequency = chooseFrequency();
+   frequencyType myFrequency = chooseFrequency(&myProject);
 
    if (myFrequency != noFrequency)
    {
