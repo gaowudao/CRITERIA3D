@@ -1697,6 +1697,9 @@ bool PragaProject::interpolationMeteoGridPeriod(QDate dateIni, QDate dateFin, QL
                         if (! interpolationDemMain(airDewTemperature, getCrit3DTime(myDate, myHour), hourlyMeteoMaps->mapHourlyTdew, false)) return false;
                         hourlyMeteoMaps->computeRelativeHumidityMap(hourlyMeteoMaps->mapHourlyRelHum);
                     }
+                    if (myVar == windVectorDirection || myVar == windVectorIntensity) {
+
+                    }
                     else if (myVar == leafWetness) {
                         hourlyMeteoMaps->computeLeafWetnessMap() ;
                     }
