@@ -13,6 +13,10 @@
         #include "meteoMaps.h"
     #endif
 
+    #ifndef PRAGAMETEOMAPS_H
+        #include "pragaMeteoMaps.h"
+    #endif
+
     #ifdef NETCDF
         #include "netcdfHandler.h"
     #endif
@@ -24,6 +28,7 @@
     public:
 
         Crit3DDailyMeteoMaps* pragaDailyMaps;
+        PragaHourlyMeteoMaps* pragaHourlyMaps;
 
         aggregationMethod grdAggrMethod;
 
