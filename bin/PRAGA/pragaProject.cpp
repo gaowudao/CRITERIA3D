@@ -1717,13 +1717,13 @@ bool PragaProject::interpolationMeteoGridPeriod(QDate dateIni, QDate dateFin, QL
                         hourlyMeteoMaps->computeET0PMMap(DEM, radiationMaps);
                     }
                     else {
-                        if (! interpolationDemMain(myVar, getCrit3DTime(myDate, myHour), hourlyMeteoMaps->getMapFromVar(myVar), false)) return false;
+                        if (! interpolationDemMain(myVar, getCrit3DTime(myDate, myHour), getPragaMapFromVar(myVar), false)) return false;
                     }
 
                     // scalar/vector wind???
 
                     //save raster
-                    if (saveRasters) gis::writeEsriGrid(getProjectPath().toStdString() + PATH_METEOGRID + getMapFileOutName(myVar, myDate, myHour).toStdString(), hourlyMeteoMaps->getMapFromVar(myVar), &errString);
+                    if (saveRasters) gis::writeEsriGrid(getProjectPath().toStdString() + PATH_METEOGRID + getMapFileOutName(myVar, myDate, myHour).toStdString(), getPragaMapFromVar(myVar), &errString);
 
                     meteoGridDbHandler->meteoGrid()->aggregateMeteoGrid(myVar, hourly, getCrit3DDate(myDate), myHour, 0, &DEM, myGrid, interpolationSettings.getMeteoGridAggrMethod());
 
