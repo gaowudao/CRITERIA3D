@@ -769,6 +769,7 @@ bool Crit3DMeteoGridDbHandler::openDatabase(QString *myError)
     _db.setDatabaseName(_connection.name);
     _db.setUserName(_connection.user);
     _db.setPassword(_connection.password);
+    _db.setConnectOptions("SSL_KEY=-1;SSL_CERT=-1;SSL_CA=-1;SSL_CAPATH=-1;SSL_CIPHER=-1");
 
     if (!_db.open())
     {
