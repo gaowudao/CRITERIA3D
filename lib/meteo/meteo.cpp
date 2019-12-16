@@ -26,6 +26,7 @@
 #include <math.h>
 
 #include "commonConstants.h"
+#include "basicMath.h"
 #include "physics.h"
 #include "meteo.h"
 #include "color.h"
@@ -488,6 +489,20 @@ float computeThomIndex(float temp, float relHum)
         return NODATA;
 }
 
+bool computeWindCartesian(float intensity, float direction, float* u, float* v)
+{
+    if (isEqual(intensity, NODATA) || isEqual(direction, NODATA))
+        return false;
+
+    float angle;
+    angle = 90 - direction;
+    if (angle < 0) angle = angle + 360;
+
+    *u = -intensity * cos(angle * DEG_TO_RAD);
+    *v = -intensity * sin(angle * DEG_TO_RAD);
+
+    return true;
+}
 
 bool setColorScale(meteoVariable variable, Crit3DColorScale *colorScale)
 {

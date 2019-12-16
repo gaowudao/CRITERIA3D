@@ -211,6 +211,8 @@
         float getClimateVar(meteoVariable myVar, Crit3DDate myDate, int myHour);
     };
 
+    bool computeWindCartesian(float intensity, float direction, float* u, float* v);
+
     float relHumFromTdew(float dewT, float airT);
 
     float tDewFromRelHum(float rhAir, float airT);
