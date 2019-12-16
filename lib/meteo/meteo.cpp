@@ -562,6 +562,10 @@ std::string getVariableString(meteoVariable myVar)
         return "Wind vector intensity (m s-1)";
     else if (myVar == windVectorDirection)
         return "Wind vector direction (deg)";
+    else if (myVar == windVectorX)
+        return "Wind vector component X (m s-1)";
+    else if (myVar == windVectorY)
+        return "Wind vector component Y (m s-1)";
     else if (myVar == windScalarIntensity)
         return "Wind scalar intensity (m s-1)";
     else if (myVar == dailyWindVectorIntensityAvg)

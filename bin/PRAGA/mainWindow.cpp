@@ -679,7 +679,7 @@ void MainWindow::updateVariable()
             else if (myVar == windScalarIntensity)
                 myProject.setCurrentVariable(dailyWindScalarIntensityAvg);
 
-            else if (myVar== windVectorIntensity)
+            else if (myVar== windVectorIntensity || myVar == windVectorX || myVar == windVectorY)
                 myProject.setCurrentVariable(dailyWindVectorIntensityAvg);
 
             else if (myVar == windVectorDirection)

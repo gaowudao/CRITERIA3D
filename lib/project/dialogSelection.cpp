@@ -208,6 +208,8 @@ meteoVariable chooseMeteoVariable(Project* myProject)
     QRadioButton WSInt("Wind scalar intensity");
     QRadioButton WVInt("Wind vector intensity");
     QRadioButton WVDir("Wind vector direction");
+    QRadioButton WX("Wind vector component X");
+    QRadioButton WY("Wind vector component Y");
     QRadioButton LW("Leaf wetness");
 
     if (myProject->getCurrentFrequency() == daily)
@@ -273,6 +275,8 @@ meteoVariable chooseMeteoVariable(Project* myProject)
         layoutVariable.addWidget(&WSInt);
         layoutVariable.addWidget(&WVInt);
         layoutVariable.addWidget(&WVDir);
+        layoutVariable.addWidget(&WX);
+        layoutVariable.addWidget(&WY);
         layoutVariable.addWidget(&LW);
 
         if (myCurrentVar == airTemperature)
@@ -293,6 +297,10 @@ meteoVariable chooseMeteoVariable(Project* myProject)
             WVInt.setChecked(true);
         else if (myCurrentVar == windVectorDirection)
             WVDir.setChecked(true);
+        else if (myCurrentVar == windVectorX)
+            WX.setChecked(true);
+        else if (myCurrentVar == windVectorY)
+            WY.setChecked(true);
         else if (myCurrentVar == leafWetness)
             LW.setChecked(true);
     }
@@ -367,6 +375,10 @@ meteoVariable chooseMeteoVariable(Project* myProject)
            return windVectorIntensity;
        else if (WVDir.isChecked())
            return windVectorDirection;
+       else if (WX.isChecked())
+           return windVectorX;
+       else if (WY.isChecked())
+           return windVectorY;
        else if (DewT.isChecked())
            return (airDewTemperature);
        else if (LW.isChecked())
