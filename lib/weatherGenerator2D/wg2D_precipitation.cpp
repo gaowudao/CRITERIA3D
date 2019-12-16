@@ -724,16 +724,16 @@ void weatherGenerator2D::precipitationMultisiteAmountsGeneration()
    double** amountCorrelationMatrixMAM = (double **)calloc(nrStations, sizeof(double*));
    double** amountCorrelationMatrixJJA = (double **)calloc(nrStations, sizeof(double*));
    double** amountCorrelationMatrixSON = (double **)calloc(nrStations, sizeof(double*));
-   double** amountCorrelationMatrixSeason = (double **)calloc(nrStations, sizeof(double*));
-   double** amountCorrelationMatrixSeasonSimulated = (double **)calloc(nrStations, sizeof(double*));
+   //double** amountCorrelationMatrixSeason = (double **)calloc(nrStations, sizeof(double*));
+   //double** amountCorrelationMatrixSeasonSimulated = (double **)calloc(nrStations, sizeof(double*));
    for (int i=0;i<nrStations;i++)
    {
        amountCorrelationMatrixDJF[i] = (double *)calloc(nrStations, sizeof(double));
        amountCorrelationMatrixMAM[i] = (double *)calloc(nrStations, sizeof(double));
        amountCorrelationMatrixJJA[i] = (double *)calloc(nrStations, sizeof(double));
        amountCorrelationMatrixSON[i] = (double *)calloc(nrStations, sizeof(double));
-       amountCorrelationMatrixSeason[i] = (double *)calloc(nrStations, sizeof(double));
-       amountCorrelationMatrixSeasonSimulated[i] = (double *)calloc(nrStations, sizeof(double));
+       //amountCorrelationMatrixSeason[i] = (double *)calloc(nrStations, sizeof(double));
+       //amountCorrelationMatrixSeasonSimulated[i] = (double *)calloc(nrStations, sizeof(double));
    }
 
    int counterDJF, counterMAM, counterJJA, counterSON;
@@ -747,11 +747,11 @@ void weatherGenerator2D::precipitationMultisiteAmountsGeneration()
            amountMatrixSeasonJJA[i][j] = NODATA;
            amountMatrixSeasonSON[i][j] = NODATA;
        }
-       for (int j=0;j<nrStations;j++)
-       {
-           amountCorrelationMatrixSeason[i][j]= NODATA;
-           amountCorrelationMatrixSeasonSimulated[i][j]= NODATA;
-       }
+       //for (int j=0;j<nrStations;j++)
+       //{
+           //amountCorrelationMatrixSeason[i][j]= NODATA;
+           //amountCorrelationMatrixSeasonSimulated[i][j]= NODATA;
+       //}
 
        counterDJF = counterJJA = counterMAM = counterSON = 0;
        for (int j=0;j<nrData;j++)
@@ -823,7 +823,7 @@ void weatherGenerator2D::precipitationMultisiteAmountsGeneration()
               for (int j=0;j<nrStations;j++)
               {
                   wSeason[i][j] = wDJF[i][j];
-                  amountCorrelationMatrixSeason[i][j]= amountCorrelationMatrixDJF[i][j];
+                  simulatedPrecipitationAmounts[iSeason].matrixM[i][j]= amountCorrelationMatrixDJF[i][j];
               }
               for (int j=0;j<lengthSeason[iSeason]*parametersModel.yearOfSimulation;j++)
               {
@@ -839,7 +839,7 @@ void weatherGenerator2D::precipitationMultisiteAmountsGeneration()
               for (int j=0;j<nrStations;j++)
               {
                   wSeason[i][j] = wMAM[i][j];
-                  amountCorrelationMatrixSeason[i][j]= amountCorrelationMatrixMAM[i][j];
+                  simulatedPrecipitationAmounts[iSeason].matrixM[i][j]= amountCorrelationMatrixMAM[i][j];
                   //printf("%f ",wMAM[i][j]);
               }
               for (int j=0;j<lengthSeason[iSeason]*parametersModel.yearOfSimulation;j++)
@@ -856,7 +856,7 @@ void weatherGenerator2D::precipitationMultisiteAmountsGeneration()
               for (int j=0;j<nrStations;j++)
               {
                   wSeason[i][j] = wJJA[i][j];
-                  amountCorrelationMatrixSeason[i][j]= amountCorrelationMatrixJJA[i][j];
+                  simulatedPrecipitationAmounts[iSeason].matrixM[i][j]= amountCorrelationMatrixJJA[i][j];
               }
               for (int j=0;j<lengthSeason[iSeason]*parametersModel.yearOfSimulation;j++)
               {
@@ -871,7 +871,7 @@ void weatherGenerator2D::precipitationMultisiteAmountsGeneration()
               for (int j=0;j<nrStations;j++)
               {
                   wSeason[i][j] = wSON[i][j];
-                  amountCorrelationMatrixSeason[i][j]= amountCorrelationMatrixSON[i][j];
+                  simulatedPrecipitationAmounts[iSeason].matrixM[i][j]= amountCorrelationMatrixSON[i][j];
               }
               for (int j=0;j<lengthSeason[iSeason]*parametersModel.yearOfSimulation;j++)
               {
@@ -972,7 +972,6 @@ void weatherGenerator2D::precipitationMultisiteAmountsGeneration()
           //{
               //randomMatrixNormalDistribution[i][j] = arrayRandomNormalNumbers[countRandom];
               //countRandom++;
-              //printf("%f  ",randomMatrixNormalDistribution[i][j]);
           //}
           //printf("\n");
       //}
@@ -981,15 +980,10 @@ void weatherGenerator2D::precipitationMultisiteAmountsGeneration()
       // fine parte da togliere
 
       printf("step 9/9 substep %d/4\n",iSeason+1);
-      weatherGenerator2D::spatialIterationAmounts(amountCorrelationMatrixSeasonSimulated , amountCorrelationMatrixSeason,randomMatrixNormalDistribution,lengthSeason[iSeason]*parametersModel.yearOfSimulation,occurrenceSeason,phatAlpha,phatBeta,simulatedPrecipitationAmountsSeasonal);
+      weatherGenerator2D::spatialIterationAmounts(simulatedPrecipitationAmounts[iSeason].matrixK , simulatedPrecipitationAmounts[iSeason].matrixM,randomMatrixNormalDistribution,lengthSeason[iSeason]*parametersModel.yearOfSimulation,occurrenceSeason,phatAlpha,phatBeta,simulatedPrecipitationAmountsSeasonal);
 
       for (int i=0;i<nrStations;i++)
       {
-           for (int j=0;j<nrStations;j++)
-           {
-               simulatedPrecipitationAmounts[iSeason].matrixK[i][j] = amountCorrelationMatrixSeasonSimulated[i][j];
-               simulatedPrecipitationAmounts[iSeason].matrixM[i][j] = amountCorrelationMatrixSeason[i][j];
-           }
            for (int j=0;j<lengthSeason[iSeason]*parametersModel.yearOfSimulation;j++)
            {
                simulatedPrecipitationAmounts[iSeason].matrixAmounts[i][j]= simulatedPrecipitationAmountsSeasonal[i][j];
@@ -1019,10 +1013,7 @@ void weatherGenerator2D::precipitationMultisiteAmountsGeneration()
 
    }
 
-
     weatherGenerator2D::createAmountOutputSerie();
-
-
 
     //printf("parte 5 fine\n");
    // free the memory step 5
@@ -1047,16 +1038,16 @@ void weatherGenerator2D::precipitationMultisiteAmountsGeneration()
        free(amountCorrelationMatrixJJA[i]);
        free(amountCorrelationMatrixMAM[i]);
        free(amountCorrelationMatrixSON[i]);
-       free(amountCorrelationMatrixSeason[i]);
-       free(amountCorrelationMatrixSeasonSimulated[i]);
+       //free(amountCorrelationMatrixSeason[i]);
+       //free(amountCorrelationMatrixSeasonSimulated[i]);
    }
 
    free(amountCorrelationMatrixDJF);
    free(amountCorrelationMatrixJJA);
    free(amountCorrelationMatrixMAM);
    free(amountCorrelationMatrixSON);
-   free(amountCorrelationMatrixSeason);
-   free(amountCorrelationMatrixSeasonSimulated);
+   //free(amountCorrelationMatrixSeason);
+   //free(amountCorrelationMatrixSeasonSimulated);
 
    // free the memory of arrays declared in step 4 but used in 5
    for (int i=0;i<nrStations;i++)
@@ -1389,7 +1380,7 @@ void weatherGenerator2D::spatialIterationAmounts(double** correlationMatrixSimul
                }
            }
        }
-       statistics::correlationsMatrix(nrStations,simulatedPrecipitationAmountsSeasonal,lengthSeries,correlationMatrixSimulatedData);
+       statistics::correlationsMatrixNoCheck(nrStations,simulatedPrecipitationAmountsSeasonal,lengthSeries,correlationMatrixSimulatedData);
        val = 0;
        for (int i=0;i<nrStations;i++)
        {
