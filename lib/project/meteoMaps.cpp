@@ -141,8 +141,6 @@ Crit3DHourlyMeteoMaps::Crit3DHourlyMeteoMaps(const gis::Crit3DRasterGrid& DEM)
     mapHourlyRelHum = new gis::Crit3DRasterGrid;
     mapHourlyET0 = new gis::Crit3DRasterGrid;
     mapHourlyTdew = new gis::Crit3DRasterGrid;
-    mapHourlyWindVectorInt = new gis::Crit3DRasterGrid;
-    mapHourlyWindVectorDir = new gis::Crit3DRasterGrid;
     mapHourlyWindScalarInt = new gis::Crit3DRasterGrid;
     mapHourlyLeafW = new gis::Crit3DRasterGrid;
 
@@ -151,8 +149,6 @@ Crit3DHourlyMeteoMaps::Crit3DHourlyMeteoMaps(const gis::Crit3DRasterGrid& DEM)
     mapHourlyRelHum->initializeGrid(DEM);
     mapHourlyET0->initializeGrid(DEM);
     mapHourlyTdew->initializeGrid(DEM);
-    mapHourlyWindVectorInt->initializeGrid(DEM);
-    mapHourlyWindVectorDir->initializeGrid(DEM);
     mapHourlyWindScalarInt->initializeGrid(DEM);
     mapHourlyLeafW->initializeGrid(DEM);
 
@@ -171,8 +167,6 @@ void Crit3DHourlyMeteoMaps::clear()
     mapHourlyTair->clear();
     mapHourlyPrec->clear();
     mapHourlyRelHum->clear();
-    mapHourlyWindVectorInt->clear();
-    mapHourlyWindVectorDir->clear();
     mapHourlyWindScalarInt->clear();
     mapHourlyTdew->clear();
     mapHourlyET0->clear();
@@ -181,8 +175,6 @@ void Crit3DHourlyMeteoMaps::clear()
     delete mapHourlyTair;
     delete mapHourlyPrec;
     delete mapHourlyRelHum;
-    delete mapHourlyWindVectorInt;
-    delete mapHourlyWindVectorDir;
     delete mapHourlyWindScalarInt;
     delete mapHourlyTdew;
     delete mapHourlyET0;
@@ -202,10 +194,6 @@ gis::Crit3DRasterGrid* Crit3DHourlyMeteoMaps::getMapFromVar(meteoVariable myVar)
         return mapHourlyRelHum;
     else if (myVar == windScalarIntensity)
         return mapHourlyWindScalarInt;
-    else if (myVar == windVectorIntensity)
-        return mapHourlyWindVectorInt;
-    else if (myVar == windVectorDirection)
-        return mapHourlyWindVectorDir;
     else if (myVar == referenceEvapotranspiration)
         return mapHourlyET0;
     else if (myVar == airDewTemperature)

@@ -97,6 +97,7 @@ SOURCES += \
     dialogSeriesOnZones.cpp \
     dialogXMLComputation.cpp \
     dialogAnomaly.cpp \
+    pragaMeteoMaps.cpp \
     saveClimaLayout.cpp \
     pragaProject.cpp \
     pragaShell.cpp
@@ -113,6 +114,7 @@ HEADERS  += \
     dialogSeriesOnZones.h \
     dialogXMLComputation.h \
     dialogAnomaly.h \
+    pragaMeteoMaps.h \
     saveClimaLayout.h \
     pragaProject.h \
     pragaShell.h
