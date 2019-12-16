@@ -1631,6 +1631,16 @@ QString getMapFileOutName(meteoVariable myVar, QDate myDate, int myHour)
     return name;
 }
 
+gis::Crit3DRasterGrid* PragaProject::getPragaMapFromVar(meteoVariable myVar)
+{
+    gis::Crit3DRasterGrid* myGrid = nullptr;
+
+    myGrid = hourlyMeteoMaps->getMapFromVar(myVar);
+    if (myGrid == nullptr) myGrid = pragaHourlyMaps->getMapFromVar(myVar);
+
+    return myGrid;
+}
+
 bool PragaProject::interpolationMeteoGridPeriod(QDate dateIni, QDate dateFin, QList <meteoVariable> variables, bool saveRasters)
 {
     // check meteo point
