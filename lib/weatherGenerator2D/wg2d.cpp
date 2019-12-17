@@ -701,12 +701,12 @@ void weatherGenerator2D::precipitationMultisiteOccurrenceGeneration()
 void weatherGenerator2D::spatialIterationOccurrence(double ** M, double** K,double** occurrences, double** matrixOccurrence, double** normalizedMatrixRandom,double ** transitionNormal,int lengthSeries)
 {
     // M and K matrices are also used as ancillary dummy matrices
-    double val=5;
-    int ii=0;
-    double kiter=0.1;   // iteration parameter in calculation of new estimate of matrix 'mat'
-    double* eigenvalues =(double*)calloc(nrStations, sizeof(double));
-    double* eigenvectors =(double*)calloc(nrStations*nrStations, sizeof(double));
-    double* correlationArray =(double*)calloc(nrStations*nrStations, sizeof(double));
+    double val = 5;
+    int ii = 0;
+    double kiter = 0.1;   // iteration parameter in calculation of new estimate of matrix 'mat'
+    double* eigenvalues = (double*)calloc(nrStations, sizeof(double));
+    double* eigenvectors = (double*)calloc(nrStations*nrStations, sizeof(double));
+    double* correlationArray = (double*)calloc(nrStations*nrStations, sizeof(double));
     double** dummyMatrix = (double**)calloc(nrStations, sizeof(double*));
     double** dummyMatrix2 = (double**)calloc(nrStations, sizeof(double*));
     double** dummyMatrix3 = (double**)calloc(nrStations, sizeof(double*));
@@ -800,7 +800,6 @@ void weatherGenerator2D::spatialIterationOccurrence(double ** M, double** K,doub
             for (int i=0;i<nrStations;i++)
                 for (int j=0;j<nrStations;j++) dummyMatrix[i][j] = M[i][j];
         }
-        //printf("eigenvaluesless than 0\n");
         //bool isLowerDiagonal = true;
         matricial::choleskyDecompositionTriangularMatrix(dummyMatrix,nrStations,true);
         //printf("cholesky\n");
