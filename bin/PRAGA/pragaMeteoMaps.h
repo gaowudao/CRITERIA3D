@@ -23,6 +23,7 @@
 
         void clear();
         gis::Crit3DRasterGrid* getMapFromVar(meteoVariable myVar);
+        bool computeWindVector();
     };
 
 #endif // PRAGAMETEOMAPS_H

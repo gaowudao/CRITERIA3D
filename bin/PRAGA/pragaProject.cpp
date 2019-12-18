@@ -1708,7 +1708,9 @@ bool PragaProject::interpolationMeteoGridPeriod(QDate dateIni, QDate dateFin, QL
                         hourlyMeteoMaps->computeRelativeHumidityMap(hourlyMeteoMaps->mapHourlyRelHum);
                     }
                     if (myVar == windVectorDirection || myVar == windVectorIntensity) {
-
+                        if (! interpolationDemMain(myVar, getCrit3DTime(myDate, myHour), getPragaMapFromVar(windVectorX), false)) return false;
+                        if (! interpolationDemMain(myVar, getCrit3DTime(myDate, myHour), getPragaMapFromVar(windVectorY), false)) return false;
+                        if (! pragaHourlyMaps->computeWindVector()) return false;
                     }
                     else if (myVar == leafWetness) {
                         hourlyMeteoMaps->computeLeafWetnessMap() ;
@@ -1719,8 +1721,6 @@ bool PragaProject::interpolationMeteoGridPeriod(QDate dateIni, QDate dateFin, QL
                     else {
                         if (! interpolationDemMain(myVar, getCrit3DTime(myDate, myHour), getPragaMapFromVar(myVar), false)) return false;
                     }
-
-                    // scalar/vector wind???
 
                     //save raster
                     if (saveRasters) gis::writeEsriGrid(getProjectPath().toStdString() + PATH_METEOGRID + getMapFileOutName(myVar, myDate, myHour).toStdString(), getPragaMapFromVar(myVar), &errString);

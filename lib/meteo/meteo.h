@@ -212,6 +212,7 @@
     };
 
     bool computeWindCartesian(float intensity, float direction, float* u, float* v);
+    bool computeWindPolar(float u, float v, float* intensity, float* direction);
 
     float relHumFromTdew(float dewT, float airT);
 
