@@ -26,6 +26,8 @@
     bool isEqual(float value1, float value2);
     bool isEqual(double value1, double value2);
     char* decimal_to_binary(unsigned int n, int nrBits);
+    float getSinDecimalDegree(float angle);
+    float getCosDecimalDegree(float angle);
 
     namespace sorting
     {

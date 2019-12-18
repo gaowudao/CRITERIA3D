@@ -635,6 +635,18 @@ float Crit3DMeteoPoint::getMeteoPointValueH(const Crit3DDate& myDate, int myHour
         return (obsDataH[d].windVecInt[h]);
     else if (myVar == windVectorDirection)
         return (obsDataH[d].windVecDir[h]);
+    else if (myVar == windVectorX)
+    {
+        float u,v;
+        computeWindCartesian(*obsDataH[d].windVecInt, *obsDataH[d].windVecDir, &u, &v);
+        return u;
+    }
+    else if (myVar == windVectorX)
+    {
+        float u,v;
+        computeWindCartesian(*obsDataH[d].windVecInt, *obsDataH[d].windVecDir, &u, &v);
+        return v;
+    }
     else if (myVar == leafWetness)
         return float(obsDataH[d].leafW[h]);
     else if (myVar == atmTransmissivity)

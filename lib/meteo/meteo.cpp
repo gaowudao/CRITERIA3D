@@ -498,8 +498,8 @@ bool computeWindCartesian(float intensity, float direction, float* u, float* v)
     angle = 90 - direction;
     if (angle < 0) angle = angle + 360;
 
-    *u = -intensity * cos(angle * DEG_TO_RAD);
-    *v = -intensity * sin(angle * DEG_TO_RAD);
+    *u = -intensity * getCosDecimalDegree(angle);
+    *v = -intensity * getSinDecimalDegree(angle);
 
     return true;
 }

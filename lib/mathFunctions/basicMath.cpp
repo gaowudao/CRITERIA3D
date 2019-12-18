@@ -207,6 +207,19 @@
        return  pointer;
     }
 
+    float getSinDecimalDegree(float angle)
+    {
+        while (angle > 360) angle -= 360 ;
+        while (angle < -360) angle +=360 ;
+        return float(sin(double(angle) * DEG_TO_RAD));
+    }
+
+    float getCosDecimalDegree(float angle)
+    {
+        while (angle > 360) angle -= 360 ;
+        while (angle < -360) angle +=360 ;
+        return float(cos(double(angle) * DEG_TO_RAD));
+    }
 
     namespace sorting
     {
