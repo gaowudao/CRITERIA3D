@@ -504,6 +504,34 @@ bool computeWindCartesian(float intensity, float direction, float* u, float* v)
     return true;
 }
 
+bool computeWindPolar(float u, float v, float* intensity, float* direction)
+{
+    *intensity = NODATA;
+    *direction = NODATA;
+
+    if (isEqual(u, NODATA) || isEqual(v, NODATA)) return false;
+
+    *intensity = sqrt(u * u + v * v);
+
+    if (isEqual(u, 0))
+    {
+        if (v < 0)
+            *direction = 360;
+        else
+            *direction = 180;
+
+        return true;
+    }
+
+    *direction = 90 - float(atan(double(v) / double(u)) * RAD_TO_DEG);
+
+    if (*direction < 0) *direction += 360;
+
+    if (u > 0) *direction += 180;
+
+    return true;
+}
+
 bool setColorScale(meteoVariable variable, Crit3DColorScale *colorScale)
 {
     if (colorScale == nullptr) return false;
