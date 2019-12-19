@@ -3,7 +3,8 @@ from subprocess import Popen
 
 env = dict(os.environ)
 env['LD_LIBRARY_PATH'] = '/home/laura/CRITERIA3D/mapGraphics/release/'
-args = ['/home/laura/CRITERIA3D/bin/PRAGA/PRAGA /home/laura/CRITERIA3D/script/command']
+#args = ['/home/laura/CRITERIA3D/bin/PRAGA/PRAGA /home/laura/CRITERIA3D/script/command']
+args = ['/home/laura/CRITERIA3D/bin/PRAGA/PRAGA-fdcfaa9-x86_64.AppImage /home/laura/CRITERIA3D/script/command_radicchio']
 p = subprocess.Popen(args, shell=True, env=env).communicate()
 
 directory = os.fsencode('/home/laura/CRITERIA3D/DATA/PROJECT/')

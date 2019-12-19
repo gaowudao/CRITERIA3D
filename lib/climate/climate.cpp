@@ -2293,6 +2293,7 @@ bool parseXMLElaboration(Crit3DElabList *listXMLElab, Crit3DAnomalyList *listXML
             {
                 listXMLElab->eraseElement(nElab);
                 ancestor = ancestor.nextSibling(); // something is wrong, go to next elab
+                qDebug() << "parseXMLPeriodType ";
                 continue;
             }
 
@@ -2314,6 +2315,7 @@ bool parseXMLElaboration(Crit3DElabList *listXMLElab, Crit3DAnomalyList *listXML
                     if (var == noMeteoVar)
                     {
                         listXMLElab->eraseElement(nElab);
+                        qDebug() << "noMeteoVar ";
                         errorElab = true;
                     }
                     else
@@ -2331,6 +2333,7 @@ bool parseXMLElaboration(Crit3DElabList *listXMLElab, Crit3DAnomalyList *listXML
                     if (checkYears(firstYear, lastYear) == false)
                     {
                         listXMLElab->eraseElement(nElab);
+                        qDebug() << "checkYears ";
                         errorElab = true;
                     }
                 }
@@ -2339,6 +2342,7 @@ bool parseXMLElaboration(Crit3DElabList *listXMLElab, Crit3DAnomalyList *listXML
                     if (parseXMLPeriodTag(child, listXMLElab, listXMLAnomaly, false, false, period, firstYear, myError) == false)
                     {
                         listXMLElab->eraseElement(nElab);
+                        qDebug() << "parseXMLPeriodTag ";
                         errorElab = true;
                     }
                 }
@@ -2363,6 +2367,7 @@ bool parseXMLElaboration(Crit3DElabList *listXMLElab, Crit3DAnomalyList *listXML
                         if (elabParam1.isEmpty())
                         {
                             listXMLElab->eraseElement(nElab);
+                            qDebug() << "elabParam1 ";
                             errorElab = true;
                         }
                         else
@@ -2375,6 +2380,7 @@ bool parseXMLElaboration(Crit3DElabList *listXMLElab, Crit3DAnomalyList *listXML
                         if (checkElabParam(child.toElement().text(), elabParam1) == false)
                         {
                             listXMLElab->eraseElement(nElab);
+                            qDebug() << "checkElabParam ";
                             errorElab = true;
                         }
                         else if (elabParam1.isEmpty())
