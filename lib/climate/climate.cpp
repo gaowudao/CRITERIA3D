@@ -2850,6 +2850,7 @@ bool parseXMLPeriodType(QDomNode ancestor, QString attributePeriod, Crit3DElabLi
 {
 
     enum period periodType;
+    qDebug() << "ancestor.toElement().attribute(attributePeriod).toUpper()" << ancestor.toElement().attribute(attributePeriod).toUpper();
     if (ancestor.toElement().attribute(attributePeriod).toUpper() == "GENERIC")
     {
         *period = "Generic";
