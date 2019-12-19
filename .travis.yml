@@ -5,8 +5,8 @@ sudo: required
 
 before_install:
   - sudo apt-get update
-  - sudo apt-get -y remove postgres* mysql-server*
-  - sudo apt-get -y dist-upgrade
+  - sudo apt-get -y remove postgres* mysql-server* #not update postgres* mysql-server*
+  - sudo apt-get -y dist-upgrade 
 
 install:
   - sudo add-apt-repository -y ppa:ubuntu-toolchain-r/test
@@ -19,15 +19,7 @@ install:
   - sudo apt-get install -qq libx11-xcb-dev libglu1-mesa-dev
   - sudo update-alternatives --install /usr/bin/qmake qmake /opt/qt512/bin/qmake 90
   - export QT_DIR=/opt/qt512
-  #- export QMAKE=$QT_DIR/bin/qmake
   - export PATH=$QT_DIR/bin/:$PATH
-  #- sudo apt-get install qtbase5-dev libqwt-qt5-dev libqwt-qt5-6
-  #- sudo apt-get install qt5-qmake
-  #- sudo apt-get install qmlscene
-  #- sudo apt-get install qtbase5-dev-tools
-  #- sudo apt-get install libqt5quick5 libqt5qml5
-  #- sudo apt-get install libqt5svg5-dev
-  #- sudo apt-get install libqt5svg5 
   - sudo apt-get install libnetcdf-dev libnetcdf11
   
 before_script:
