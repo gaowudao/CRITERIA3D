@@ -2259,7 +2259,7 @@ bool parseXMLElaboration(Crit3DElabList *listXMLElab, Crit3DAnomalyList *listXML
     QString refElab2;
     QString refElabParam1;
     QString refElabParam2;
-    bool param1IsClimate;
+    bool param1IsClimate = false;
     bool refParam1IsClimate;
     bool anomalyIsClimate;
     QString elabParam2;
@@ -2850,7 +2850,6 @@ bool parseXMLPeriodType(QDomNode ancestor, QString attributePeriod, Crit3DElabLi
 {
 
     enum period periodType;
-    qDebug() << "ancestor.toElement().attribute(attributePeriod).toUpper()" << ancestor.toElement().attribute(attributePeriod).toUpper();
     if (ancestor.toElement().attribute(attributePeriod).toUpper() == "GENERIC")
     {
         *period = "Generic";
