@@ -3001,6 +3001,7 @@ bool parseXMLPeriodType(QDomNode ancestor, QString attributePeriod, Crit3DElabLi
         *myError = "Invalid PeriodType attribute";
         return false;
     }
+    return true;
 }
 
 bool parseXMLPeriodTag(QDomNode child, Crit3DElabList *listXMLElab, Crit3DAnomalyList *listXMLAnomaly, bool isAnomaly, bool isRefPeriod,
