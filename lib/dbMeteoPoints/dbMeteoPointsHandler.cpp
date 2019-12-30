@@ -376,12 +376,19 @@ bool Crit3DMeteoPointsDbHandler::loadHourlyData(Crit3DDate dateStart, Crit3DDate
             d = QDateTime::fromString(dateStr,"yyyy-MM-dd HH:mm:ss");
 
             idVar = qry.value(1).toInt();
-            variable = _mapIdMeteoVar.at(idVar);
+            try {
+                variable = _mapIdMeteoVar.at(idVar);
+            }
+            catch (const std::out_of_range& ) {
+                variable = noMeteoVar;
+            }
 
-            value = qry.value(2).toFloat();
-
-            meteoPoint->setMeteoPointValueH(Crit3DDate(d.date().day(), d.date().month(), d.date().year()),
-                                                   d.time().hour(), d.time().minute(), variable, value);
+            if (variable != noMeteoVar)
+            {
+                value = qry.value(2).toFloat();
+                meteoPoint->setMeteoPointValueH(Crit3DDate(d.date().day(), d.date().month(), d.date().year()),
+                                                       d.time().hour(), d.time().minute(), variable, value);
+            }
         }
     }
     return true;
@@ -695,7 +702,7 @@ bool Crit3DMeteoPointsDbHandler::loadVariableProperties()
     QString tableName = "variable_properties";
     int id_variable;
     QString variable;
-    std::string stdVar;
+    std::string varStdString;
     meteoVariable meteoVar;
     std::pair<std::map<int, meteoVariable>::iterator,bool> ret;
 
@@ -711,13 +718,13 @@ bool Crit3DMeteoPointsDbHandler::loadVariableProperties()
         {
             getValue(qry.value("id_variable"), &id_variable);
             getValue(qry.value("variable"), &variable);
-            stdVar = variable.toStdString();
+            varStdString = variable.toStdString();
             try {
-              meteoVar = MapDailyMeteoVar.at(stdVar);
+              meteoVar = MapDailyMeteoVar.at(varStdString);
             }
             catch (const std::out_of_range& ) {
                 try {
-                    meteoVar = MapHourlyMeteoVar.at(stdVar);
+                    meteoVar = MapHourlyMeteoVar.at(varStdString);
                 }
                 catch (const std::out_of_range& ) {
                     meteoVar = noMeteoVar;
@@ -729,7 +736,13 @@ bool Crit3DMeteoPointsDbHandler::loadVariableProperties()
                 if (ret.second==false)
                 {
                     error = "element 'z' already existed";
+                    return false;
                 }
+            }
+            else
+            {
+                error = "variable " + variable + "is not correct";
+                return false;
             }
         }
     }

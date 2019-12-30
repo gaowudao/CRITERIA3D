@@ -10,6 +10,7 @@
 QT       += widgets network sql
 
 TEMPLATE = lib
+QMAKE_CXXFLAGS += -std=c++11
 
 unix:{
     CONFIG += release

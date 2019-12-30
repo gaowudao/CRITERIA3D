@@ -211,9 +211,11 @@
 
         double waterConductivity(double Se, Crit3DHorizon* horizon);
 
+        double estimateOrganicMatter(double upperDepth);
         double estimateBulkDensity(Crit3DHorizon* horizon, double totalPorosity, bool increaseWithDepth);
         double estimateSaturatedConductivity(Crit3DHorizon* horizon, double bulkDensity);
         double estimateTotalPorosity(Crit3DHorizon* horizon, double bulkDensity);
+        double estimateThetaSat(Crit3DHorizon* horizon, double bulkDensity);
 
         double getVolumetricWaterContent(Crit3DLayer* layer);
         double getWaterContentFromPsi(double signPsi, Crit3DLayer* layer);

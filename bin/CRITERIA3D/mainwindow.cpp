@@ -23,7 +23,7 @@
 extern Crit3DProject myProject;
 
 #define MAPBORDER 10
-#define TOOLSWIDTH 260
+#define TOOLSWIDTH 270
 
 
 MainWindow::MainWindow(QWidget *parent) :

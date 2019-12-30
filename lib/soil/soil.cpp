@@ -308,6 +308,18 @@ namespace soil
     }
 
 
+    double estimateThetaSat(Crit3DHorizon* horizon, double bulkDensity)
+    {
+        double totalPorosity = estimateTotalPorosity(horizon, bulkDensity);
+        if (int(totalPorosity) == int(NODATA)) return NODATA;
+
+        if (horizon->texture.clay > 40)
+            return totalPorosity * 0.95;
+        else
+            return totalPorosity * 0.97;
+    }
+
+
     double estimateSaturatedConductivity(Crit3DHorizon* horizon, double bulkDensity)
     {
         if (int(bulkDensity) == int(NODATA)) return NODATA;
@@ -588,6 +600,21 @@ namespace soil
 
 
     /*!
+      * \brief default organic matter [-]
+      * surface 2%
+      * sub-surface 0.5%
+      */
+    double estimateOrganicMatter(double upperDepth)
+    {
+        if (upperDepth == 0.0) return 0.02;
+
+        if (upperDepth > 0 && upperDepth < 0.5) return 0.01;
+
+        return 0.005;
+    }
+
+
+    /*!
      * \brief Set soil properties of one horizon starting from data in soil db
      * \brief it assumes that horizon->dbData and textureClassList are just loaded
      * \return true if soil properties are correct, false otherwise
@@ -631,8 +658,7 @@ namespace soil
         }
         else
         {
-            // default: 0.5%
-            horizon->organicMatter = 0.005;
+            horizon->organicMatter = estimateOrganicMatter(horizon->upperDepth);
         }
 
         // sand, silt, clay [%]
@@ -676,7 +702,7 @@ namespace soil
         }
         else if(horizon->bulkDensity != NODATA)
         {
-            horizon->vanGenuchten.thetaS = soil::estimateTotalPorosity(horizon, horizon->bulkDensity);
+            horizon->vanGenuchten.thetaS = soil::estimateThetaSat(horizon, horizon->bulkDensity);
         }
 
         if (horizon->bulkDensity == NODATA)

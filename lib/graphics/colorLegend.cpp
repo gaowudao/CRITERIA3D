@@ -36,12 +36,14 @@ void ColorLegend::paintEvent(QPaintEvent *event)
     const int DELTA = 20;
     int legendWidth = painter.window().width() - DELTA*2;
     int nrStep = this->colorScale->nrColors;
-    float step = (colorScale->maximum - colorScale->minimum) / float(nrStep);
-    float dx = float(legendWidth) / float(nrStep+1);
+    float step = (colorScale->maximum - colorScale->minimum) / nrStep;
+    double dx = double(legendWidth) / double(nrStep+1);
     int stepText = MAXVALUE(nrStep / 4, 1);
+    QString valueStr;
+    int nrDigits;
 
     float value = this->colorScale->minimum;
-    for (int i = 0; i<=nrStep; i++)
+    for (int i = 0; i <= nrStep; i++)
     {
         myColor = this->colorScale->getColor(value);
         painter.setBrush(QColor(myColor->red, myColor->green, myColor->blue));
@@ -49,19 +51,25 @@ void ColorLegend::paintEvent(QPaintEvent *event)
 
         if ((i % stepText) == 0)
         {
+            nrDigits = int(ceil(log10(double(value))));
             if (isEqual(int(value), value))
             {
-                painter.drawText(int(DELTA*0.5f + dx*i), 36, QString::number(int(value)));
+                valueStr = QString::number(int(value));
             }
-            else if (fabs(int(value * 10) - (value * 10)) < 0.01f)
+            else if (abs(int(value*10) - (value*10)) < 0.1)
             {
-                painter.drawText(int(DELTA*0.5f + dx*i), 36, QString::number(double(value),'f',1));
+                valueStr = QString::number(double(value), 'f', 1);
+                nrDigits += 1;
             }
             else
             {
-                painter.drawText(int(DELTA*0.5f + dx*i), 36, QString::number(double(value),'f',2));
+                valueStr = QString::number(double(value), 'f', 2);
+                nrDigits += 2;
             }
+
+            painter.drawText(int(DELTA*(1.0 / nrDigits) + dx*i), 36, valueStr);
         }
+
         value += step;
     }
 }

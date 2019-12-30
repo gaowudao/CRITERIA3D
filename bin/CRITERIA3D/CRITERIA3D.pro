@@ -8,8 +8,11 @@
 
 QT       += core gui network widgets sql xml 3dcore 3drender 3dextras
 
-TARGET = CRITERIA3D
 TEMPLATE = app
+TARGET = CRITERIA3D
+
+CONFIG += debug_and_release
+QMAKE_CXXFLAGS += -std=c++11
 
 
 INCLUDEPATH +=  ./shared  \
@@ -29,13 +32,20 @@ macx:{
     INCLUDEPATH += /usr/local/opt/qwt/lib/qwt.framework/Headers/
 }
 
-CONFIG += debug_and_release
 
-LIBS += -L../../mapGraphics/release -lMapGraphics
+win32:{
+    CONFIG(debug, debug|release) {
+        LIBS += -L../../mapGraphics/debug -lMapGraphics
+    } else {
+        LIBS += -L../../mapGraphics/release -lMapGraphics
+    }
+}
+unix:{
+    LIBS += -L../../mapGraphics/release -lMapGraphics
+}
 
 
 CONFIG(debug, debug|release) {
-    LIBS += -L../../lib/graphics/debug -lgraphics
     LIBS += -L../../lib/project/debug -lproject
     LIBS += -L../../lib/dbMeteoGrid/debug -ldbMeteoGrid
     LIBS += -L../../lib/dbMeteoPoints/debug -ldbMeteoPoints
@@ -52,7 +62,6 @@ CONFIG(debug, debug|release) {
     LIBS += -L../../lib/crit3dDate/debug -lcrit3dDate
 
 } else {
-    LIBS += -L../../lib/graphics/release -lgraphics
     LIBS += -L../../lib/project/release -lproject
     LIBS += -L../../lib/dbMeteoGrid/release -ldbMeteoGrid
     LIBS += -L../../lib/dbMeteoPoints/release -ldbMeteoPoints
@@ -71,6 +80,9 @@ CONFIG(debug, debug|release) {
 
 
 SOURCES += mainwindow.cpp \
+    ../../lib/graphics/colorLegend.cpp \
+    ../../lib/graphics/stationMarker.cpp \
+    mapGraphicsRasterObject.cpp \
     shared/project3D.cpp \
     viewer3d.cpp \
     crit3dProject.cpp \
@@ -78,6 +90,9 @@ SOURCES += mainwindow.cpp \
 
 
 HEADERS += mainwindow.h \
+    ../../lib/graphics/colorLegend.h \
+    ../../lib/graphics/stationMarker.h \
+    mapGraphicsRasterObject.h \
     shared/project3D.h \
     viewer3d.h \
     crit3dProject.h

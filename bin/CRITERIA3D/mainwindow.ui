@@ -485,9 +485,9 @@
    <widget class="QWidget" name="widgetMap" native="true">
     <property name="geometry">
      <rect>
-      <x>270</x>
+      <x>290</x>
       <y>40</y>
-      <width>741</width>
+      <width>721</width>
       <height>491</height>
      </rect>
     </property>
@@ -505,7 +505,7 @@
      <rect>
       <x>0</x>
       <y>260</y>
-      <width>260</width>
+      <width>271</width>
       <height>111</height>
      </rect>
     </property>
@@ -975,7 +975,7 @@
       <rect>
        <x>20</x>
        <y>20</y>
-       <width>211</width>
+       <width>231</width>
        <height>22</height>
       </rect>
      </property>
@@ -1012,7 +1012,7 @@
       <rect>
        <x>1</x>
        <y>60</y>
-       <width>256</width>
+       <width>266</width>
        <height>42</height>
       </rect>
      </property>
@@ -1032,7 +1032,7 @@
       <rect>
        <x>20</x>
        <y>40</y>
-       <width>221</width>
+       <width>241</width>
        <height>21</height>
       </rect>
      </property>
@@ -1090,7 +1090,7 @@
      <rect>
       <x>0</x>
       <y>380</y>
-      <width>260</width>
+      <width>271</width>
       <height>111</height>
      </rect>
     </property>
@@ -1560,7 +1560,7 @@
       <rect>
        <x>20</x>
        <y>20</y>
-       <width>211</width>
+       <width>231</width>
        <height>22</height>
       </rect>
      </property>
@@ -1597,7 +1597,7 @@
       <rect>
        <x>1</x>
        <y>60</y>
-       <width>256</width>
+       <width>266</width>
        <height>42</height>
       </rect>
      </property>
@@ -1617,7 +1617,7 @@
       <rect>
        <x>20</x>
        <y>40</y>
-       <width>221</width>
+       <width>241</width>
        <height>21</height>
       </rect>
      </property>
@@ -1675,7 +1675,7 @@
      <rect>
       <x>0</x>
       <y>100</y>
-      <width>260</width>
+      <width>271</width>
       <height>151</height>
      </rect>
     </property>
@@ -2142,7 +2142,7 @@
       <rect>
        <x>20</x>
        <y>30</y>
-       <width>111</width>
+       <width>121</width>
        <height>31</height>
       </rect>
      </property>
@@ -2274,7 +2274,7 @@
     <widget class="QTimeEdit" name="timeEdit">
      <property name="geometry">
       <rect>
-       <x>150</x>
+       <x>170</x>
        <y>30</y>
        <width>81</width>
        <height>31</height>
@@ -2387,7 +2387,7 @@
       <rect>
        <x>100</x>
        <y>70</y>
-       <width>151</width>
+       <width>171</width>
        <height>21</height>
       </rect>
      </property>
@@ -2444,7 +2444,7 @@
       <rect>
        <x>1</x>
        <y>100</y>
-       <width>256</width>
+       <width>266</width>
        <height>42</height>
       </rect>
      </property>
@@ -2467,7 +2467,7 @@
      <x>0</x>
      <y>0</y>
      <width>1280</width>
-     <height>21</height>
+     <height>26</height>
     </rect>
    </property>
    <property name="palette">

@@ -2040,7 +2040,7 @@ gis::Crit3DRasterGrid* Project::getHourlyMeteoRaster(meteoVariable myVar)
     \name importHourlyMeteoData
     \brief import hourly meteo data from .csv files
     \details format:
-    DATE(yyyy-mm-dd), HOUR, TAVG, PREC, RHAVG, RAD, W_INT_AVG
+    DATE(yyyy-mm-dd), HOUR, TAVG, PREC, RHAVG, RAD, W_SCAL_INT
 */
 void Project::importHourlyMeteoData(const QString& csvFileName, bool importAllFiles, bool deletePreviousData)
 {
