@@ -1,7 +1,7 @@
 #ifndef VIEWER3D_H
 #define VIEWER3D_H
 
-#include "crit3dProject.h"
+#include "criteria3DProject.h"
 
 #include <Qt3DExtras>
 #include <QWidget>

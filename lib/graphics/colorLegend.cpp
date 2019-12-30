@@ -33,7 +33,7 @@ void ColorLegend::paintEvent(QPaintEvent *event)
     painter.setBrush(Qt::white);
     painter.fillRect(0, 0, painter.window().width(), painter.window().height(), painter.brush());
 
-    const int DELTA = 20;
+    const int DELTA = 16;
     int legendWidth = painter.window().width() - DELTA*2;
     int nrStep = this->colorScale->nrColors;
     float step = (colorScale->maximum - colorScale->minimum) / nrStep;

@@ -736,7 +736,6 @@ bool Crit3DMeteoPointsDbHandler::loadVariableProperties()
                 if (ret.second==false)
                 {
                     error = "element 'z' already existed";
-                    return false;
                 }
             }
             else

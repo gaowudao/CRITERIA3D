@@ -1,8 +1,6 @@
 #ifndef CRITERIA3DPROJECT_H
 #define CRITERIA3DPROJECT_H
 
-    #define CRITERIA3D
-
     #ifndef SOIL_H
         #include "soil.h"
     #endif

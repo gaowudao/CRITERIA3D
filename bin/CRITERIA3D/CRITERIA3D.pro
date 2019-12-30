@@ -81,21 +81,21 @@ CONFIG(debug, debug|release) {
 
 SOURCES += mainwindow.cpp \
     ../../lib/graphics/colorLegend.cpp \
+    ../../lib/graphics/mapGraphicsRasterObject.cpp \
     ../../lib/graphics/stationMarker.cpp \
-    mapGraphicsRasterObject.cpp \
+    criteria3DProject.cpp \
     shared/project3D.cpp \
     viewer3d.cpp \
-    crit3dProject.cpp \
     main.cpp
 
 
 HEADERS += mainwindow.h \
     ../../lib/graphics/colorLegend.h \
+    ../../lib/graphics/mapGraphicsRasterObject.h \
     ../../lib/graphics/stationMarker.h \
-    mapGraphicsRasterObject.h \
+    criteria3DProject.h \
     shared/project3D.h \
-    viewer3d.h \
-    crit3dProject.h
+    viewer3d.h
 
 
 FORMS += mainwindow.ui

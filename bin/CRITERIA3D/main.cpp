@@ -3,7 +3,7 @@
 #include <QMessageBox>
 
 #include "mainwindow.h"
-#include "crit3dProject.h"
+#include "criteria3DProject.h"
 
 
 Crit3DProject myProject;

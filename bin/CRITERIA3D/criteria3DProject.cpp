@@ -28,7 +28,7 @@
 #include "commonConstants.h"
 #include "formInfo.h"
 #include "utilities.h"
-#include "crit3dProject.h"
+#include "criteria3DProject.h"
 #include "soilDbTools.h"
 #include "gis.h"
 #include "statistics.h"

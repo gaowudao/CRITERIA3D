@@ -7,7 +7,7 @@
 #include "formInfo.h"
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
-#include "crit3dProject.h"
+#include "criteria3DProject.h"
 #include "soilDbTools.h"
 #include "dialogSelection.h"
 #include "spatialControl.h"
@@ -16,7 +16,7 @@
 #include "dialogRadiation.h"
 
 #include "utilities.h"
-#include "crit3dProject.h"
+#include "criteria3DProject.h"
 #include "formPeriod.h"
 
 
