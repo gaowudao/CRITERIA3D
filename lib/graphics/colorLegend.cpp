@@ -41,19 +41,21 @@ void ColorLegend::paintEvent(QPaintEvent *event)
     int stepText = MAXVALUE(nrStep / 4, 1);
     QString valueStr;
     int nrDigits;
+    double dblValue, shiftFatctor;
 
     float value = this->colorScale->minimum;
-    double dblValue = double(value);
-    double shiftFatctor;
     for (int i = 0; i <= nrStep; i++)
     {
+        dblValue = double(value);
         myColor = this->colorScale->getColor(value);
         painter.setBrush(QColor(myColor->red, myColor->green, myColor->blue));
         painter.fillRect(int(DELTA + dx*i +1), 0, int(ceil(dx)), 20, painter.brush());
 
         if ((i % stepText) == 0)
         {
-            nrDigits = int(ceil(log10(dblValue)));
+            nrDigits = int(ceil(log10(abs(dblValue))));
+            if (dblValue < 0) nrDigits++;
+
             if (isEqual(int(dblValue), dblValue))
             {
                 valueStr = QString::number(int(dblValue));
@@ -69,8 +71,8 @@ void ColorLegend::paintEvent(QPaintEvent *event)
                 nrDigits += 2;
             }
 
-            shiftFatctor=  1.0 / double(nrDigits);
-            painter.drawText(int(double(DELTA)*shiftFatctor + dx*i), 36, valueStr);
+            shiftFatctor = 1.0 / nrDigits;
+            painter.drawText(int(DELTA*shiftFatctor + dx*i), 36, valueStr);
         }
 
         value += step;
