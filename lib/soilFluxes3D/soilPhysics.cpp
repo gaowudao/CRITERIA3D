@@ -342,14 +342,14 @@
      * \brief estimate particle density
      * \param fractionOrganicMatter
      * \return particle density (Mg m-3)
-     * \ from Driessen (1992), according also to Pilatti (2006)
-     * \ equivalent to 2.65 (quartz) when organic matter = 0
+     * [Driessen, 1986]
      */
     double ParticleDensity(double fractionOrganicMatter)
     {
         if (fractionOrganicMatter == NODATA)
-            fractionOrganicMatter = 0.0;
-        return (1./(0.377 + 0.57 * fractionOrganicMatter));
+            fractionOrganicMatter = 0.02;
+
+        return 1.0 / ((1.0 - fractionOrganicMatter) / QUARTZ_DENSITY + fractionOrganicMatter / 1.43);
     }
 
     /*!
@@ -365,13 +365,6 @@
         particleDensity = ParticleDensity(myNode[i].Soil->organicMatter);
 
         totalPorosity = myNode[i].Soil->Theta_s;
-
-        // very small pores not water fillable
-        if (myNode[i].Soil->clay > 0.4)
-            totalPorosity *= 1.03;
-        else
-            totalPorosity *= 1.05;
-
 
         return (1. - totalPorosity) * particleDensity;
     }

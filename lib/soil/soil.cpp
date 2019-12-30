@@ -266,14 +266,14 @@ namespace soil
 
     double getSpecificDensity(double organicMatter)
     {
-        const double MINIMUM_ORGANIC_MATTER = 0.01;
+        const double MINIMUM_ORGANIC_MATTER = 0.02;
 
         if (int(organicMatter) == int(NODATA))
         {
             organicMatter = MINIMUM_ORGANIC_MATTER;
         }
 
-        /*! [Driessen] */
+        /*! [Driessen, 1986] */
         return 1.0 / ((1.0 - organicMatter) / QUARTZ_DENSITY + organicMatter / 1.43);
     }
 
@@ -282,7 +282,7 @@ namespace soil
     double estimateBulkDensity(Crit3DHorizon* horizon, double totalPorosity, bool increaseWithDepth = false)
     {
         if (int(totalPorosity) == int(NODATA))
-            totalPorosity = horizon->vanGenuchten.refThetaS;
+            totalPorosity = (horizon->vanGenuchten.refThetaS);
 
         double specificDensity = getSpecificDensity(horizon->organicMatter);
         double refBulkDensity = (1 - totalPorosity) * specificDensity;
@@ -311,12 +311,10 @@ namespace soil
     double estimateThetaSat(Crit3DHorizon* horizon, double bulkDensity)
     {
         double totalPorosity = estimateTotalPorosity(horizon, bulkDensity);
-        if (int(totalPorosity) == int(NODATA)) return NODATA;
-
-        if (horizon->texture.clay > 40)
-            return totalPorosity * 0.95;
+        if (int(totalPorosity) == int(NODATA))
+            return NODATA;
         else
-            return totalPorosity * 0.97;
+            return totalPorosity;
     }
 
 
@@ -600,16 +598,17 @@ namespace soil
 
 
     /*!
-      * \brief default organic matter [-]
-      * surface 2%
-      * sub-surface 0.5%
+      * \brief estimate organic matter as function of depth
+      * \param upperDepth: upper depth of soil layer [m]
+      * \return organic matter [-]
       */
     double estimateOrganicMatter(double upperDepth)
     {
+        // surface 2%
         if (upperDepth == 0.0) return 0.02;
-
+        // first layers 1%
         if (upperDepth > 0 && upperDepth < 0.5) return 0.01;
-
+        // sub-surface 0.5%
         return 0.005;
     }
 
