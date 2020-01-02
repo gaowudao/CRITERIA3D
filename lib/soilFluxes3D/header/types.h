@@ -87,8 +87,9 @@
         double waterSinkSource;     /*!< [m^3 s^-1] water sink source */
         double Qw;                  /*!< [m^3 s^-1] water flow */
 
-        double volume_area;         /*!< [m^3] volume of sub-surface elements : [m^2] area of surface nodes */
-        float x, y, z;              /*!< [m] coordinates of the center of the element */
+        double volume_area;         /*!< [m^3] sub-surface: volume of voxel   */
+                                    /*!< [m^2] surface: area of voxel   */
+        float x, y, z;              /*!< [m] coordinates of the center of the voxel */
 
         Tsoil *Soil;                /*!< soil pointer */
         Tboundary *boundary;        /*!< boundary pointer */
