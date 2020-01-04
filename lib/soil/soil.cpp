@@ -264,27 +264,28 @@ namespace soil
     }
 
 
-    double getSpecificDensity(double organicMatter)
+    double estimateSpecificDensity(double organicMatter)
     {
-        const double MINIMUM_ORGANIC_MATTER = 0.02;
-
         if (int(organicMatter) == int(NODATA))
         {
             organicMatter = MINIMUM_ORGANIC_MATTER;
         }
 
-        /*! [Driessen, 1986] */
-        return 1.0 / ((1.0 - organicMatter) / QUARTZ_DENSITY + organicMatter / 1.43);
+        /*! Driessen (1986) */
+        // return 1 / ((1 - organicMatter) / QUARTZ_DENSITY + organicMatter / 1.43);
+
+        /*! Rühlmann et al. (2006) */
+        return 1 / ((1 - organicMatter) / QUARTZ_DENSITY + organicMatter / (1.127 + 0.373*organicMatter));
     }
 
 
     // estimate bulk density from total porosity
-    double estimateBulkDensity(Crit3DHorizon* horizon, double totalPorosity, bool increaseWithDepth = false)
+    double estimateBulkDensity(Crit3DHorizon* horizon, double totalPorosity, bool increaseWithDepth)
     {
         if (int(totalPorosity) == int(NODATA))
             totalPorosity = (horizon->vanGenuchten.refThetaS);
 
-        double specificDensity = getSpecificDensity(horizon->organicMatter);
+        double specificDensity = estimateSpecificDensity(horizon->organicMatter);
         double refBulkDensity = (1 - totalPorosity) * specificDensity;
 
         // increase/decrease with depth, reference theta sat at 33cm
@@ -303,7 +304,7 @@ namespace soil
     {
         if (int(bulkDensity) == int(NODATA)) return NODATA;
 
-        double specificDensity = getSpecificDensity(horizon->organicMatter);
+        double specificDensity = estimateSpecificDensity(horizon->organicMatter);
         return 1 - (bulkDensity /specificDensity);
     }
 
@@ -323,13 +324,12 @@ namespace soil
         if (int(bulkDensity) == int(NODATA)) return NODATA;
 
         double refTotalPorosity = horizon->vanGenuchten.refThetaS;
-        double specificDensity = getSpecificDensity(horizon->organicMatter);
+        double specificDensity = estimateSpecificDensity(horizon->organicMatter);
         double refBulkDensity = (1 - refTotalPorosity) * specificDensity;
-        double ratio = 1 - bulkDensity / refBulkDensity;
 
-        double refKsat = horizon->waterConductivity.kSat;
-        double factor = pow(10, 2 * ratio);
-        return refKsat * factor;
+        double ratio = 1 - (bulkDensity / refBulkDensity);
+        double factor = pow(10, ratio*4);
+        return horizon->waterConductivity.kSat * factor;
     }
 
 
@@ -609,7 +609,7 @@ namespace soil
         // first layers 1%
         if (upperDepth > 0 && upperDepth < 0.5) return 0.01;
         // sub-surface 0.5%
-        return 0.005;
+        return MINIMUM_ORGANIC_MATTER;
     }
 
 

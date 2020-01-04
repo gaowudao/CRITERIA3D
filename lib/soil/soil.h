@@ -8,6 +8,7 @@
         #include <vector>
     #endif
 
+    #define MINIMUM_ORGANIC_MATTER 0.005
 
     namespace soil {
 
@@ -212,6 +213,7 @@
         double waterConductivity(double Se, Crit3DHorizon* horizon);
 
         double estimateOrganicMatter(double upperDepth);
+        double estimateSpecificDensity(double organicMatter);
         double estimateBulkDensity(Crit3DHorizon* horizon, double totalPorosity, bool increaseWithDepth);
         double estimateSaturatedConductivity(Crit3DHorizon* horizon, double bulkDensity);
         double estimateTotalPorosity(Crit3DHorizon* horizon, double bulkDensity);
