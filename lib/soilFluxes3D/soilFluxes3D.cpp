@@ -567,7 +567,7 @@ namespace soilFluxes3D {
     /*!
      * \brief return water content
      * \param nodeIndex
-     * \return  surface: [m] surface water height , sub-surface: [m^3 m^-3] volumetric water content
+     * \return  surface: [m] surface water level , sub-surface: [m^3 m^-3] volumetric water content
      */
 	double DLL_EXPORT __STDCALL getWaterContent(long nodeIndex)
 
@@ -587,7 +587,7 @@ namespace soilFluxes3D {
     /*!
      * \brief return available water content (over wilting point)
      * \param index
-     * \return  surface: [m] 0-1 water presence, sub-surface: [m^3 m^-3] awc
+     * \return  surface: [m] water level, sub-surface: [m^3 m^-3] awc
      */
 	double DLL_EXPORT __STDCALL getAvailableWaterContent(long index)
  {

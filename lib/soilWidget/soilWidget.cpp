@@ -333,6 +333,7 @@ void Crit3DSoilWidget::on_actionOpenSoilDB()
     wrDataTab->resetHorizonChanged();
 }
 
+
 void Crit3DSoilWidget::cleanInfoGroup()
 {
     soilName = QString::fromStdString(mySoil.name);
@@ -364,7 +365,6 @@ void Crit3DSoilWidget::on_actionChooseSoil(QString soilCode)
     // somethig has been modified, ask for saving
     if (changed)
     {
-
         QString soilCodeChanged = QString::fromStdString(mySoil.code);
         QMessageBox::StandardButton confirm;
         QString msg = "Do you want to save changes to soil "+ soilCodeChanged + " ?";
@@ -395,7 +395,6 @@ void Crit3DSoilWidget::on_actionChooseSoil(QString soilCode)
     }
     changed = false;
     wrDataTab->resetHorizonChanged();
-
 
     horizonsTab->resetAll();
     wrDataTab->resetAll();
@@ -573,11 +572,6 @@ void Crit3DSoilWidget::on_actionParameterRestriction()
 void Crit3DSoilWidget::on_actionSave()
 {
     QString error;
-    if (!changed)
-    {
-        QMessageBox::critical(nullptr, "Warning", "The soil has already been updated");
-        return;
-    }
     QString soilCodeChanged = QString::fromStdString(mySoil.code);
 
     if (!updateSoilData(&dbSoil, soilCodeChanged, &mySoil, &error))
@@ -595,12 +589,13 @@ void Crit3DSoilWidget::on_actionSave()
             QMessageBox::critical(nullptr, "Error!", error);
             return;
         }
-
     }
+
     savedSoil = mySoil;
     changed = false;
     wrDataTab->resetHorizonChanged();
 }
+
 
 void Crit3DSoilWidget::on_actionRestoreData()
 {
@@ -789,10 +784,9 @@ void Crit3DSoilWidget::tabChanged(int index)
                 hydraConducCurveTab->resetAll();
             }
         }
-
     }
-
 }
+
 
 void Crit3DSoilWidget::updateAll()
 {

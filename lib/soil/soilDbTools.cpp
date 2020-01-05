@@ -187,7 +187,7 @@ bool loadSoilData(QSqlDatabase* dbSoil, QString soilCode, soil::Crit3DSoil* mySo
     mySoil->initialize(soilCode.toStdString(), nrHorizons);
 
     unsigned int i = 0;
-    float sand, silt, clay;
+    double sand, silt, clay;
     double organicMatter, coarseFragments, lowerDepth, upperDepth, bulkDensity, theta_sat, ksat;
 
     query.first();
@@ -372,6 +372,7 @@ bool updateSoilData(QSqlDatabase* dbSoil, QString soilCode, soil::Crit3DSoil* my
     else
         return true;
 }
+
 
 bool updateWaterRetentionData(QSqlDatabase* dbSoil, QString soilCode, soil::Crit3DSoil* mySoil, int horizon, QString *error)
 {

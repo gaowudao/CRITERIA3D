@@ -87,7 +87,7 @@ namespace soil
         this->classNameUSDA = "UNDEFINED";
     }
 
-    Crit3DTexture::Crit3DTexture (float mySand, float mySilt, float myClay)
+    Crit3DTexture::Crit3DTexture (double mySand, double mySilt, double myClay)
     {
         this->sand = mySand;
         this->silt = mySilt;

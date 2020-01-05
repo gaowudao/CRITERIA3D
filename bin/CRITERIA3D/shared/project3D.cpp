@@ -746,7 +746,7 @@ double Project3D::computeEvaporation(int row, int col, double lai)
     double depthCoeff, thickCoeff, layerCoeff;
     double residualEvap, layerEvap, availableWater, flow;
 
-    double const MAX_PROF_EVAPORATION = 0.15;           //[m]
+    double const MAX_PROF_EVAPORATION = 0.2;           //[m]
     int lastEvapLayer = getSoilLayerIndex(MAX_PROF_EVAPORATION);
     double area = DEM.header->cellSize * DEM.header->cellSize;
 
@@ -759,26 +759,26 @@ double Project3D::computeEvaporation(int row, int col, double lai)
     {
         long nodeIndex = long(indexMap.at(layer).value[row][col]);
 
-        // [m]
-        availableWater = getCriteria3DVar(availableWaterContent, nodeIndex);
-
-        // conversion [m]->[mm]
-        availableWater *= 1000;
-
         // layer coefficient
         if (layer == 0)
         {
-            // surface
-            layerCoeff = 1.0;
+            // surface: [m] water level
+            availableWater = getCriteria3DVar(availableWaterContent, nodeIndex);
+            layerCoeff = 1;
         }
         else
         {
-            // sub-surface
-            availableWater *= layerThickness[layer];
+            // sub-surface: [m^3 m^-3]
+            availableWater = getCriteria3DVar(availableWaterContent, nodeIndex);
+            availableWater *= layerThickness[layer];                // [m]
+
             depthCoeff = layerDepth[layer] / MAX_PROF_EVAPORATION;
             thickCoeff = layerThickness[layer] / 0.04;
             layerCoeff = exp(-EULER * depthCoeff) * thickCoeff;
         }
+
+        // [m]->[mm]
+        availableWater *= 1000;
 
         residualEvap = potentialEvaporation - realEvap;
         layerEvap = MINVALUE(potentialEvaporation * layerCoeff, residualEvap);

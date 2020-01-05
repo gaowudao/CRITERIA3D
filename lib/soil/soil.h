@@ -31,7 +31,7 @@
         public:
             int horizonNr;
             double upperDepth, lowerDepth;      /*!<   [cm]         */
-            float sand, silt, clay;             /*!<   [%]          */
+            double sand, silt, clay;            /*!<   [%]          */
             double coarseFragments;             /*!<   [%]          */
             double organicMatter;               /*!<   [%]          */
             double bulkDensity;                 /*!<   [g cm^-3]    */
@@ -47,9 +47,9 @@
         class Crit3DTexture
         {
         public:
-            float sand;
-            float silt;
-            float clay;
+            double sand;
+            double silt;
+            double clay;
             int classUSDA;
             int classNL;
             std::string classNameUSDA;
@@ -61,7 +61,7 @@
              * \param silt fraction of silt [-]
              * \param clay fraction of clay [-]
              */
-            Crit3DTexture (float sand, float silt, float clay);
+            Crit3DTexture (double sand, double silt, double clay);
         };
 
 
