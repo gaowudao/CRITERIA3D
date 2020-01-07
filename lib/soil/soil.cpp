@@ -328,7 +328,7 @@ namespace soil
         double specificDensity = estimateSpecificDensity(horizon->organicMatter);
         double refBulkDensity = (1 - refTotalPorosity) * specificDensity;
 
-        if (bulkDensity < refBulkDensity)
+        if (bulkDensity <= refBulkDensity)
             return horizon->waterConductivity.kSat;
         else
         {
