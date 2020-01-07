@@ -327,9 +327,14 @@ namespace soil
         double specificDensity = estimateSpecificDensity(horizon->organicMatter);
         double refBulkDensity = (1 - refTotalPorosity) * specificDensity;
 
-        double ratio = 1 - (bulkDensity / refBulkDensity);
-        double factor = pow(10, ratio*4);
-        return horizon->waterConductivity.kSat * factor;
+        if (bulkDensity < refBulkDensity)
+            return horizon->waterConductivity.kSat;
+        else
+        {
+            // soil compaction
+            double ratio = 1 - (bulkDensity / refBulkDensity);
+            return horizon->waterConductivity.kSat * exp(10*ratio);
+        }
     }
 
 
