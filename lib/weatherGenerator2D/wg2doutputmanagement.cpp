@@ -68,10 +68,14 @@ void weatherGenerator2D::getWeatherGeneratorOutput()
     inputFirstDate.year = 1;
     float ** monthlySimulatedAveragePrecipitation = nullptr;
     float ** monthlyClimateAveragePrecipitation = nullptr;
+    float ** monthlySimulatedAveragePrecipitationInternalFunction = nullptr;
+    float ** monthlyClimateAveragePrecipitationInternalFunction = nullptr;
     float** meanAmountsPrecGenerated = nullptr;
     float** cumulatedOccurrencePrecGenerated = nullptr;
     monthlySimulatedAveragePrecipitation = (float**)calloc(nrStations, sizeof(float*));
     monthlyClimateAveragePrecipitation = (float**)calloc(nrStations, sizeof(float*));
+    monthlySimulatedAveragePrecipitationInternalFunction = (float**)calloc(nrStations, sizeof(float*));
+    monthlyClimateAveragePrecipitationInternalFunction = (float**)calloc(nrStations, sizeof(float*));
     meanAmountsPrecGenerated = (float**)calloc(nrStations, sizeof(float*));
     cumulatedOccurrencePrecGenerated = (float**)calloc(nrStations, sizeof(float*));
     for (int iStation=0;iStation<nrStations;iStation++)
@@ -80,12 +84,16 @@ void weatherGenerator2D::getWeatherGeneratorOutput()
         cumulatedOccurrencePrecGenerated[iStation] = (float*)calloc(12, sizeof(float));
         monthlySimulatedAveragePrecipitation[iStation] = (float*)calloc(12, sizeof(float));
         monthlyClimateAveragePrecipitation[iStation] = (float*)calloc(12, sizeof(float));
+        monthlySimulatedAveragePrecipitationInternalFunction[iStation] = (float*)calloc(12, sizeof(float));
+        monthlyClimateAveragePrecipitationInternalFunction[iStation] = (float*)calloc(12, sizeof(float));
         for (int j=0;j<12;j++)
         {
             meanAmountsPrecGenerated[iStation][j] = 0;
             cumulatedOccurrencePrecGenerated[iStation][j] = 0;
             monthlySimulatedAveragePrecipitation[iStation][j] = NODATA;
             monthlyClimateAveragePrecipitation[iStation][j] = NODATA;
+            monthlySimulatedAveragePrecipitationInternalFunction[iStation][j] = 0;
+            monthlyClimateAveragePrecipitationInternalFunction[iStation][j] = 0;
         }
     }
     for (int iStation=0;iStation<nrStations;iStation++)
@@ -208,14 +216,16 @@ void weatherGenerator2D::getWeatherGeneratorOutput()
     free(inputTMin);
     free(inputTMax);
     free(inputPrec);
-
+    weatherGenerator2D::precipitationMonthlyAverage(monthlySimulatedAveragePrecipitationInternalFunction,monthlyClimateAveragePrecipitationInternalFunction);
     for (int iStation=0;iStation<nrStations;iStation++)
     {
         printf("stazione %d\n",iStation);
         for (int iMonth=0;iMonth<12;iMonth++)
         {
             printf("%f  %f \n",monthlySimulatedAveragePrecipitation[iStation][iMonth],monthlyClimateAveragePrecipitation[iStation][iMonth]);
+            printf("%f  %f \n",monthlySimulatedAveragePrecipitationInternalFunction[iStation][iMonth],monthlyClimateAveragePrecipitationInternalFunction[iStation][iMonth]);
         }
+        pressEnterToContinue();
     }
 
     for (int iStation=0;iStation<nrStations;iStation++)
@@ -458,4 +468,54 @@ void weatherGenerator2D::precipitationCorrelationMatricesSimulation()
     free(correlationMatrixSimulation);
 
 
+}
+
+void weatherGenerator2D::precipitationMonthlyAverage(float** averageSimulation, float** averageClimate)
+{
+    for (int iStation=0 ; iStation < nrStations ; iStation++)
+    {
+        int counterMonth[12] = {0,0,0,0,0,0,0,0,0,0,0,0};
+        int doy,day,month;
+        doy = day = month = 0;
+
+        for (int i=0; i<365*parametersModel.yearOfSimulation; i++)
+        {
+            doy = (i+1)%365;
+            weatherGenerator2D::dateFromDoy(doy,2001,&day,&month);
+            if (outputWeatherData[iStation].precipitation[i] > parametersModel.precipitationThreshold)
+            {
+                averageSimulation[iStation][month-1] += outputWeatherData[iStation].precipitation[i];
+                ++counterMonth[month-1];
+            }
+        }
+        for (int iMonth=0; iMonth<12; iMonth++)
+        {
+            averageSimulation[iStation][iMonth] /= parametersModel.yearOfSimulation;
+        }
+    }
+
+    for (int iStation=0 ; iStation < nrStations ; iStation++)
+    {
+        int counterMonth[12] = {0,0,0,0,0,0,0,0,0,0,0,0};
+        int doy,day,month;
+        doy = day = month = 0;
+        for (int i=0; i<nrData; i++)
+        {
+            //doy = (i+1)%365;
+            //weatherGenerator2D::dateFromDoy(doy,2001,&day,&month);
+            month = obsDataD[iStation][i].date.month;
+            if (obsDataD[iStation][i].prec > parametersModel.precipitationThreshold) // including that prec != -9999
+            {
+                averageClimate[iStation][month-1] += obsDataD[iStation][i].prec;
+                ++counterMonth[month-1];
+            }
+        }
+
+        for (int iMonth=0; iMonth<12; iMonth++)
+        {
+            averageClimate[iStation][iMonth] /= (obsDataD[iStation][nrData-1].date.year - obsDataD[iStation][0].date.year);
+            //printf("prova %f  %d",averageClimate[iStation][iMonth],counterMonth[iMonth]);
+        }
+        //pressEnterToContinue();
+    }
 }
