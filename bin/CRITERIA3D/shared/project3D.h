@@ -24,7 +24,7 @@
         void computeNrLayers();
         void setLayersDepth();
         bool setIndexMaps();
-        bool setBoundary();
+        bool setLateralBoundary();
         bool setCrit3DSurfaces();
         bool setCrit3DSoils();
         bool setCrit3DTopography();

@@ -19,7 +19,7 @@ INCLUDEPATH +=  ./shared  \
                 ../../mapGraphics \
                 ../../lib/soilFluxes3D/header  \
                 ../../lib/crit3dDate ../../lib/mathFunctions \
-                ../../lib/crop ../../lib/soil ../../lib/meteo ../../lib/gis \
+                ../../agrolib/crop ../../lib/soil ../../lib/meteo ../../lib/gis \
                 ../../lib/interpolation ../../lib/solarRadiation  \
                 ../../lib/soilWidget ../../lib/utilities  \
                 ../../lib/dbMeteoPoints ../../lib/dbMeteoGrid \
@@ -50,7 +50,7 @@ CONFIG(debug, debug|release) {
     LIBS += -L../../lib/dbMeteoGrid/debug -ldbMeteoGrid
     LIBS += -L../../lib/dbMeteoPoints/debug -ldbMeteoPoints
     LIBS += -L../../lib/soilWidget/debug -lsoilWidget
-    LIBS += -L../../lib/crop/debug -lcrop
+    LIBS += -L../../agrolib/crop/debug -lcrop
     LIBS += -L../../lib/soil/debug -lsoil
     LIBS += -L../../lib/utilities/debug -lutilities
     LIBS += -L../../lib/solarRadiation/debug -lsolarRadiation
@@ -66,7 +66,7 @@ CONFIG(debug, debug|release) {
     LIBS += -L../../lib/dbMeteoGrid/release -ldbMeteoGrid
     LIBS += -L../../lib/dbMeteoPoints/release -ldbMeteoPoints
     LIBS += -L../../lib/soilWidget/release -lsoilWidget
-    LIBS += -L../../lib/crop/release -lcrop
+    LIBS += -L../../agrolib/crop/release -lcrop
     LIBS += -L../../lib/soil/release -lsoil
     LIBS += -L../../lib/utilities/release -lutilities
     LIBS += -L../../lib/solarRadiation/release -lsolarRadiation
