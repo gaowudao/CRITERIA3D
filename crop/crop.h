@@ -11,14 +11,6 @@
         #include "root.h"
     #endif
 
-<<<<<<< HEAD
-<<<<<<< HEAD
-    #define PROVA
-
-=======
->>>>>>> da220242806dabfe1bc12091418391af0efcca9a
-=======
->>>>>>> 4e6f39c2a37d9395c6190bd134a47cab50a5edfa
     enum speciesType {HERBACEOUS_ANNUAL, HERBACEOUS_PERENNIAL, HORTICULTURAL, GRASS, FALLOW, FRUIT_TREE};
 
     /*!
