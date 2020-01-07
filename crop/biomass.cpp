@@ -8,5 +8,3 @@ namespace photosynthesis
 namespace biomass
 { }
 
-
-// test Gabri-->Faust
