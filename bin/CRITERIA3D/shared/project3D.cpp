@@ -111,8 +111,8 @@ bool Project3D::initializeWaterBalance3D()
     waterSinkSource.resize(nrNodes);
 
     // Boundary
-    if (!setBoundary()) return false;
-    logInfo("Boundary computed");
+    if (!setLateralBoundary()) return false;
+    logInfo("Lateral boundary computed");
 
     // Initiale soil fluxes
     int myResult = soilFluxes3D::initialize(long(nrNodes), int(nrLayers), nrLateralLink, true, false, false);
@@ -256,7 +256,7 @@ bool Project3D::setIndexMaps()
 }
 
 
-bool Project3D::setBoundary()
+bool Project3D::setLateralBoundary()
 {
     if (! this->DEM.isLoaded)
     {

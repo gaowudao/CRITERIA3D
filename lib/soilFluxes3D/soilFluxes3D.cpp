@@ -131,6 +131,7 @@ namespace soilFluxes3D {
 		{return(initializeArrays());}
  }
 
+
 	int DLL_EXPORT __STDCALL setNumericalParameters(float minDeltaT, float maxDeltaT, int maxIterationNumber,
                         int maxApproximationsNumber, int ResidualTolerance, float MBRThreshold)
  {
