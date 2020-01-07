@@ -78,7 +78,7 @@ int main()
     doy = day = month = year = NODATA;
     prec = minT = maxT = meanT = NODATA;
     bool firstDay = true;
-    int nrStations = 5; // !! da 1 a 10 stazioni
+    int nrStations = 2; // !! da 1 a 10 stazioni
     int distributionType = 1; // 1 multiexponential 2 multigamma 3 Weibull
     int yearsOfSimulations = 100; // numero anni
     int lengthDataSeries = numberMeteoLines;
