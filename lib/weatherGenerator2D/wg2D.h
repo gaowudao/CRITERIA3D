@@ -196,6 +196,7 @@
         void getPrecipitationAmount();
         void spatialIterationAmountsMonthly(int iMonth, double** correlationMatrixSimulatedData,double ** amountsCorrelationMatrix , double** randomMatrix, int lengthSeries, double** occurrences, double** simulatedPrecipitationAmountsSeasonal);
         void precipitationCorrelationMatricesSimulation();
+        void precipitationMonthlyAverage(float** averageSimulation, float** averageClimate);
 
         // variables only for temperatures
         TtemperatureCoefficients* temperatureCoefficients;
