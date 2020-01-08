@@ -53,6 +53,6 @@
     #define      SHADEDGRASS true
     #define      SUNLITGRASS false
 
-    #define      TEST 5555
+    #define      TEST 4444
 
 #endif // BIOMASS_H
