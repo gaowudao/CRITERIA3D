@@ -1,12 +1,13 @@
 TEMPLATE = subdirs
 
 SUBDIRS =       ../../lib/soilFluxes3D  \
-                ../../lib/crit3dDate ../../lib/mathFunctions  \
-                ../../lib/gis ../../lib/meteo ../../lib/soil ../../agrolib/crop \
-                ../../lib/interpolation ../../lib/solarRadiation  \
-                ../../lib/utilities ../../lib/soilWidget  \
-                ../../lib/dbMeteoPoints ../../lib/dbMeteoGrid  \
-                ../../lib/project ../CRITERIA3D
+                ../../agrolib/crit3dDate ../../agrolib/mathFunctions  \
+                ../../agrolib/gis ../../agrolib/meteo ../../lib/soil ../../agrolib/crop \
+                ../../agrolib/interpolation ../../agrolib/solarRadiation  \
+                ../../agrolib/utilities ../../lib/soilWidget  \
+                ../../agrolib/dbMeteoPoints ../../agrolib/dbMeteoGrid  \
+                ../../agrolib/project \
+                ../CRITERIA3D
 
 CONFIG += ordered
 

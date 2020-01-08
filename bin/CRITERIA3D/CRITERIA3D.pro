@@ -80,9 +80,9 @@ CONFIG(debug, debug|release) {
 
 
 SOURCES += mainwindow.cpp \
-    ../../lib/graphics/colorLegend.cpp \
-    ../../lib/graphics/mapGraphicsRasterObject.cpp \
-    ../../lib/graphics/stationMarker.cpp \
+    ../../agrolib/graphics/colorLegend.cpp \
+    ../../agrolib/graphics/mapGraphicsRasterObject.cpp \
+    ../../agrolib/graphics/stationMarker.cpp \
     criteria3DProject.cpp \
     shared/project3D.cpp \
     viewer3d.cpp \
@@ -90,9 +90,9 @@ SOURCES += mainwindow.cpp \
 
 
 HEADERS += mainwindow.h \
-    ../../lib/graphics/colorLegend.h \
-    ../../lib/graphics/mapGraphicsRasterObject.h \
-    ../../lib/graphics/stationMarker.h \
+    ../../agrolib/graphics/colorLegend.h \
+    ../../agrolib/graphics/mapGraphicsRasterObject.h \
+    ../../agrolib/graphics/stationMarker.h \
     criteria3DProject.h \
     shared/project3D.h \
     viewer3d.h
