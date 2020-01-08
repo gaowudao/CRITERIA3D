@@ -8,4 +8,3 @@ SUBDIRS =       ../agrolib/crit3dDate  ../agrolib/mathFunctions  ../agrolib/gis 
                 ../src/PRAGA.pro
 
 CONFIG += ordered
-
