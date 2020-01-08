@@ -1,10 +1,10 @@
 TEMPLATE = subdirs
 
-SUBDIRS =       ../../lib/crit3dDate ../../lib/mathFunctions ../../lib/gis  \
-                ../../lib/meteo ../../lib/interpolation ../../lib/solarRadiation  \
-                ../../lib/utilities  ../../lib/dbMeteoPoints ../../lib/dbMeteoGrid  \
-                ../../lib/climate ../../lib/netcdfHandler \
-                ../../lib/project ../../lib/graphics ../PRAGA \
+SUBDIRS =       ../../agrolib/crit3dDate ../../agrolib/mathFunctions ../../agrolib/gis  \
+                ../../agrolib/meteo ../../agrolib/interpolation ../../agrolib/solarRadiation  \
+                ../../agrolib/utilities  ../../agrolib/dbMeteoPoints ../../agrolib/dbMeteoGrid  \
+                ../../agrolib/climate ../../agrolib/netcdfHandler \
+                ../../agrolib/project ../../agrolib/graphics ../PRAGA \
 
 CONFIG += ordered
 

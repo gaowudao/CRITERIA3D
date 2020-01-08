@@ -13,10 +13,10 @@ TARGET = PRAGA
 TEMPLATE = app
 
 INCLUDEPATH +=  ../../mapGraphics \
-                ../../lib/crit3dDate ../../lib/mathFunctions ../../lib/meteo ../../lib/gis  \
-                ../../lib/interpolation ../../lib/solarRadiation ../../lib/utilities  \
-                ../../lib/dbMeteoPoints ../../lib/dbMeteoGrid ../../lib/climate \
-                ../../lib/netcdfHandler  ../../lib/graphics ../../lib/project
+                ../../agrolib/crit3dDate ../../agrolib/mathFunctions ../../agrolib/meteo ../../agrolib/gis  \
+                ../../agrolib/interpolation ../../agrolib/solarRadiation ../../agrolib/utilities  \
+                ../../agrolib/dbMeteoPoints ../../agrolib/dbMeteoGrid ../../agrolib/climate \
+                ../../agrolib/netcdfHandler  ../../agrolib/graphics ../../agrolib/project
 
 CONFIG += debug_and_release
 QMAKE_CXXFLAGS += -std=c++11
@@ -37,10 +37,10 @@ DEFINES += NETCDF
 
 
 CONFIG(debug, debug|release) {
-    LIBS += -L../../lib/graphics/debug -lgraphics
-    LIBS += -L../../lib/project/debug -lproject
-    LIBS += -L../../lib/climate/debug -lclimate
-    LIBS += -L../../lib/netcdfHandler/debug -lnetcdfHandler
+    LIBS += -L../../agrolib/graphics/debug -lgraphics
+    LIBS += -L../../agrolib/project/debug -lproject
+    LIBS += -L../../agrolib/climate/debug -lclimate
+    LIBS += -L../../agrolib/netcdfHandler/debug -lnetcdfHandler
     win32:{
         LIBS += -L$$(NC4_INSTALL_DIR)/lib -lnetcdf
     }
@@ -50,21 +50,21 @@ CONFIG(debug, debug|release) {
     macx:{
         LIBS += -L/usr/local/lib/ -lnetcdf
     }
-    LIBS += -L../../lib/dbMeteoGrid/debug -ldbMeteoGrid
-    LIBS += -L../../lib/dbMeteoPoints/debug -ldbMeteoPoints
-    LIBS += -L../../lib/utilities/debug -lutilities
-    LIBS += -L../../lib/solarRadiation/debug -lsolarRadiation
-    LIBS += -L../../lib/interpolation/debug -linterpolation
-    LIBS += -L../../lib/meteo/debug -lmeteo
-    LIBS += -L../../lib/gis/debug -lgis
-    LIBS += -L../../lib/crit3dDate/debug -lcrit3dDate
-    LIBS += -L../../lib/mathFunctions/debug -lmathFunctions
+    LIBS += -L../../agrolib/dbMeteoGrid/debug -ldbMeteoGrid
+    LIBS += -L../../agrolib/dbMeteoPoints/debug -ldbMeteoPoints
+    LIBS += -L../../agrolib/utilities/debug -lutilities
+    LIBS += -L../../agrolib/solarRadiation/debug -lsolarRadiation
+    LIBS += -L../../agrolib/interpolation/debug -linterpolation
+    LIBS += -L../../agrolib/meteo/debug -lmeteo
+    LIBS += -L../../agrolib/gis/debug -lgis
+    LIBS += -L../../agrolib/crit3dDate/debug -lcrit3dDate
+    LIBS += -L../../agrolib/mathFunctions/debug -lmathFunctions
 
 } else {
-    LIBS += -L../../lib/graphics/release -lgraphics
-    LIBS += -L../../lib/project/release -lproject
-    LIBS += -L../../lib/climate/release -lclimate
-    LIBS += -L../../lib/netcdfHandler/release -lnetcdfHandler
+    LIBS += -L../../agrolib/graphics/release -lgraphics
+    LIBS += -L../../agrolib/project/release -lproject
+    LIBS += -L../../agrolib/climate/release -lclimate
+    LIBS += -L../../agrolib/netcdfHandler/release -lnetcdfHandler
     win32:{
         LIBS += -L$$(NC4_INSTALL_DIR)/lib -lnetcdf
     }
@@ -74,15 +74,15 @@ CONFIG(debug, debug|release) {
     macx:{
         LIBS += -L/usr/local/lib/ -lnetcdf
     }
-    LIBS += -L../../lib/dbMeteoGrid/release -ldbMeteoGrid
-    LIBS += -L../../lib/dbMeteoPoints/release -ldbMeteoPoints
-    LIBS += -L../../lib/utilities/release -lutilities
-    LIBS += -L../../lib/solarRadiation/release -lsolarRadiation
-    LIBS += -L../../lib/interpolation/release -linterpolation
-    LIBS += -L../../lib/meteo/release -lmeteo
-    LIBS += -L../../lib/gis/release -lgis
-    LIBS += -L../../lib/crit3dDate/release -lcrit3dDate
-    LIBS += -L../../lib/mathFunctions/release -lmathFunctions
+    LIBS += -L../../agrolib/dbMeteoGrid/release -ldbMeteoGrid
+    LIBS += -L../../agrolib/dbMeteoPoints/release -ldbMeteoPoints
+    LIBS += -L../../agrolib/utilities/release -lutilities
+    LIBS += -L../../agrolib/solarRadiation/release -lsolarRadiation
+    LIBS += -L../../agrolib/interpolation/release -linterpolation
+    LIBS += -L../../agrolib/meteo/release -lmeteo
+    LIBS += -L../../agrolib/gis/release -lgis
+    LIBS += -L../../agrolib/crit3dDate/release -lcrit3dDate
+    LIBS += -L../../agrolib/mathFunctions/release -lmathFunctions
 }
 
 
