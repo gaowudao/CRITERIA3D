@@ -1,6 +1,6 @@
 #include "biomass.h"
 
-#define TESTGAB 1111
+#define TESTGAB 2222
 
 namespace photosynthesis
 { }
