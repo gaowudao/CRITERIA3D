@@ -217,7 +217,7 @@ void weatherGenerator2D::getWeatherGeneratorOutput()
     free(inputTMax);
     free(inputPrec);
     weatherGenerator2D::precipitationMonthlyAverage(monthlySimulatedAveragePrecipitationInternalFunction,monthlyClimateAveragePrecipitationInternalFunction);
-    for (int iStation=0;iStation<nrStations;iStation++)
+    /*for (int iStation=0;iStation<nrStations;iStation++)
     {
         printf("stazione %d\n",iStation);
         for (int iMonth=0;iMonth<12;iMonth++)
@@ -226,7 +226,7 @@ void weatherGenerator2D::getWeatherGeneratorOutput()
             printf("%f  %f \n",monthlySimulatedAveragePrecipitationInternalFunction[iStation][iMonth],monthlyClimateAveragePrecipitationInternalFunction[iStation][iMonth]);
         }
         pressEnterToContinue();
-    }
+    }*/
 
     for (int iStation=0;iStation<nrStations;iStation++)
     {
@@ -238,7 +238,7 @@ void weatherGenerator2D::getWeatherGeneratorOutput()
             weatherGenerator2D::dateFromDoy(doy,2001,&day,&month);
             if (outputWeatherData[iStation].precipitation[iDate] > parametersModel.precipitationThreshold + EPSILON)
             {
-                outputWeatherData[iStation].precipitation[iDate] = MAXVALUE(parametersModel.precipitationThreshold + EPSILON,outputWeatherData[iStation].precipitation[iDate]* monthlyClimateAveragePrecipitation[iStation][month-1] / monthlySimulatedAveragePrecipitation[iStation][month-1]);                
+                outputWeatherData[iStation].precipitation[iDate] = MAXVALUE(parametersModel.precipitationThreshold + EPSILON,outputWeatherData[iStation].precipitation[iDate]* monthlyClimateAveragePrecipitationInternalFunction[iStation][month-1] / monthlySimulatedAveragePrecipitationInternalFunction[iStation][month-1]);
             }
 
         }
