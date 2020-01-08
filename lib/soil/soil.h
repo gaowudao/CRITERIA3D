@@ -191,8 +191,8 @@
 
         int getUSDATextureClass(Crit3DTexture texture);
         int getNLTextureClass(Crit3DTexture texture);
-        int getUSDATextureClass(float sand, float silt, float clay);
-        int getNLTextureClass(float sand, float silt, float clay);
+        int getUSDATextureClass(double sand, double silt, double clay);
+        int getNLTextureClass(double sand, double silt, double clay);
 
         int getHorizonIndex(Crit3DSoil* soil, double depth);
         double getFieldCapacity(Crit3DHorizon* horizon, soil::units unit);

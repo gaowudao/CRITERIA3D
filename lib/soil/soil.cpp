@@ -190,8 +190,9 @@ namespace soil
         return getUSDATextureClass(texture.sand, texture.silt, texture.clay);
     }
 
+
     // [%]
-    int getUSDATextureClass(float sand, float silt, float clay)
+    int getUSDATextureClass(double sand, double silt, double clay)
     {
         if (int(sand) == int(NODATA) || int(silt) == int(NODATA) || int(clay) == int(NODATA))
             return NODATA;
@@ -207,24 +208,24 @@ namespace soil
         /*! sandy clay */
         if ((clay >= 35) && (sand >= 45)) myClass = 10;
         /*! silty loam */
-        if (((clay < 27.5f) && (silt >= 50) & (silt <= 80)) || ((clay >= 12.5f) && (silt >= 80))) myClass = 4;
+        if (((clay < 27.5) && (silt >= 50) & (silt <= 80)) || ((clay >= 12.5) && (silt >= 80))) myClass = 4;
         /*! silt */
-        if ((clay < 12.5f) && (silt >= 80)) myClass = 6;
+        if ((clay < 12.5) && (silt >= 80)) myClass = 6;
         /*! silty clay loam */
-        if ((clay < 40) && (sand < 20) && (clay >= 27.5f)) myClass = 8;
+        if ((clay < 40) && (sand < 20) && (clay >= 27.5)) myClass = 8;
         /*! sandy loam  */
-        if (((clay < 20) && (sand >= 52.5f)) ||
-           ((clay < 7.5f) && (silt < 50) && (sand >= 42.5f) && (sand <= 52.5f))) myClass = 3;
+        if (((clay < 20) && (sand >= 52.5)) ||
+           ((clay < 7.5) && (silt < 50) && (sand >= 42.5) && (sand <= 52.5))) myClass = 3;
         /*! loamy sand */
         if ((sand >= 70) && (clay <= (sand - 70))) myClass = 2;
         /*! sand */
         if ((sand >= 85) && (clay <= (2 * sand -170))) myClass = 1;
         /*! sandy clay loam */
-        if ((clay >= 20) && (clay < 35) && (sand >= 45) && (silt < 27.5f)) myClass = 7;
+        if ((clay >= 20) && (clay < 35) && (sand >= 45) && (silt < 27.5)) myClass = 7;
         /*! loam */
-        if ((clay >= 7.5f) && (clay < 27.5f) && (sand < 52.5f)  && (silt >= 27.5f) & (silt < 50)) myClass = 5;
+        if ((clay >= 7.5) && (clay < 27.5) && (sand < 52.5)  && (silt >= 27.5) & (silt < 50)) myClass = 5;
         /*! clay loam */
-        if ((clay >= 27.5f) && (clay < 40) && (sand >= 20) && (sand < 45)) myClass = 9;
+        if ((clay >= 27.5) && (clay < 40) && (sand >= 20) && (sand < 45)) myClass = 9;
 
         return myClass;
     }
@@ -242,12 +243,12 @@ namespace soil
      * \param clay
      * \return result
      */
-    int getNLTextureClass(float sand, float silt, float clay)
+    int getNLTextureClass(double sand, double silt, double clay)
     {
         if (int(sand) == int(NODATA) || int(silt) == int(NODATA) || int(clay) == int(NODATA))
             return NODATA;
 
-        if (fabs(double(sand + clay + silt) - 100) > 2.0)
+        if (fabs(double(sand + clay + silt) - 100) > 2)
             return NODATA;
 
         /*! heavy clay */
@@ -327,9 +328,14 @@ namespace soil
         double specificDensity = estimateSpecificDensity(horizon->organicMatter);
         double refBulkDensity = (1 - refTotalPorosity) * specificDensity;
 
-        double ratio = 1 - (bulkDensity / refBulkDensity);
-        double factor = pow(10, ratio*4);
-        return horizon->waterConductivity.kSat * factor;
+        if (bulkDensity <= refBulkDensity)
+            return horizon->waterConductivity.kSat;
+        else
+        {
+            // soil compaction
+            double ratio = 1 - (bulkDensity / refBulkDensity);
+            return horizon->waterConductivity.kSat * exp(10*ratio);
+        }
     }
 
 

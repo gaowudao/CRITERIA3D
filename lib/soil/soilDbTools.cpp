@@ -300,7 +300,6 @@ bool loadSoil(QSqlDatabase* dbSoil, QString soilCode, soil::Crit3DSoil* mySoil,
 
 bool updateSoilData(QSqlDatabase* dbSoil, QString soilCode, soil::Crit3DSoil* mySoil, QString *error)
 {
-
     QSqlQuery qry(*dbSoil);
     if (soilCode.isEmpty())
     {
@@ -341,14 +340,34 @@ bool updateSoilData(QSqlDatabase* dbSoil, QString soilCode, soil::Crit3DSoil* my
         horizon_nr << i+1;
         upper_depth << mySoil->horizon[i].dbData.upperDepth;
         lower_depth << mySoil->horizon[i].dbData.lowerDepth;
-        coarse_fragment << mySoil->horizon[i].dbData.coarseFragments;
-        organic_matter << mySoil->horizon[i].dbData.organicMatter;
         sand << mySoil->horizon[i].dbData.sand;
         silt << mySoil->horizon[i].dbData.silt;
         clay << mySoil->horizon[i].dbData.clay;
-        bulk_density << mySoil->horizon[i].dbData.bulkDensity;
-        theta_sat << mySoil->horizon[i].dbData.thetaSat;
-        k_sat << mySoil->horizon[i].dbData.kSat;
+
+        if (mySoil->horizon[i].dbData.coarseFragments != NODATA)
+            coarse_fragment << mySoil->horizon[i].dbData.coarseFragments;
+        else
+            coarse_fragment << "";
+
+        if (mySoil->horizon[i].dbData.organicMatter != NODATA)
+            organic_matter << mySoil->horizon[i].dbData.organicMatter;
+        else
+            organic_matter << "";
+
+        if (mySoil->horizon[i].dbData.bulkDensity != NODATA)
+            bulk_density << mySoil->horizon[i].dbData.bulkDensity;
+        else
+            bulk_density << "";
+
+        if (mySoil->horizon[i].dbData.thetaSat != NODATA)
+            theta_sat << mySoil->horizon[i].dbData.thetaSat;
+        else
+            theta_sat << "";
+
+        if (mySoil->horizon[i].dbData.kSat != NODATA)
+            k_sat << mySoil->horizon[i].dbData.kSat;
+        else
+            k_sat << "";
     }
 
     qry.addBindValue(soil_code);

@@ -1,5 +1,6 @@
 #include "biomass.h"
 
+#define TESTGAB 2222
 
 namespace photosynthesis
 { }
@@ -8,5 +9,3 @@ namespace photosynthesis
 namespace biomass
 { }
 
-
-// test Faust2 --> Gabri
