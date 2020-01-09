@@ -1,7 +1,7 @@
 #------------------------------------------------------
 #
-#   PRAGA GIS
-#   Simple gis for shapefile functions
+#   WANDERER
+#   simple gis for shapefile functions
 #   This project is part of CRITERIA-3D distribution
 #
 #------------------------------------------------------
@@ -9,30 +9,31 @@
 
 QT    += core gui network widgets
 
-TARGET = PRAGA_GIS
 TEMPLATE = app
+TARGET = WANDERER
 
-INCLUDEPATH += ../../mapGraphics ../../lib/graphics  \
-               ../../lib/crit3dDate ../../lib/mathFunctions ../../lib/gis  \
-               ../../lib/shapeHandler ../../lib/shapeHandler/shapelib
+INCLUDEPATH +=  ../../mapGraphics \
+                ../../agrolib/crit3dDate ../../agrolib/mathFunctions ../../agrolib/gis  \
+                ../../agrolib/graphics ../../agrolib/shapeHandler \
+                ../../agrolib/shapeHandler/shapelib
 
 CONFIG += debug_and_release
 
 
 CONFIG(debug, debug|release) {
-    LIBS += -L../../lib/graphics/debug -lgraphics
+    LIBS += -L../../agrolib/graphics/debug -lgraphics
     LIBS += -L../../mapGraphics/debug -lMapGraphics
-    LIBS += -L../../lib/shapeHandler/debug -lshapeHandler
-    LIBS += -L../../lib/gis/debug -lgis
-    LIBS += -L../../lib/crit3dDate/debug -lcrit3dDate
-    LIBS += -L../../lib/mathFunctions/debug -lmathFunctions
+    LIBS += -L../../agrolib/shapeHandler/debug -lshapeHandler
+    LIBS += -L../../agrolib/gis/debug -lgis
+    LIBS += -L../../agrolib/crit3dDate/debug -lcrit3dDate
+    LIBS += -L../../agrolib/mathFunctions/debug -lmathFunctions
 } else {
-    LIBS += -L../../lib/graphics/release -lgraphics
+    LIBS += -L../../agrolib/graphics/release -lgraphics
     LIBS += -L../../mapGraphics/release -lMapGraphics
-    LIBS += -L../../lib/shapeHandler/release -lshapeHandler
-    LIBS += -L../../lib/gis/release -lgis
-    LIBS += -L../../lib/crit3dDate/release -lcrit3dDate
-    LIBS += -L../../lib/mathFunctions/release -lmathFunctions
+    LIBS += -L../../agrolib/shapeHandler/release -lshapeHandler
+    LIBS += -L../../agrolib/gis/release -lgis
+    LIBS += -L../../agrolib/crit3dDate/release -lcrit3dDate
+    LIBS += -L../../agrolib/mathFunctions/release -lmathFunctions
 }
 
 

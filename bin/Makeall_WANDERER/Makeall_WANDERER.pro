@@ -1,7 +1,7 @@
 TEMPLATE = subdirs
 
-SUBDIRS =       ../../lib/crit3dDate ../../lib/mathFunctions ../../lib/gis  \
-                ../../lib/shapeHandler ../../lib/graphics \
-                ../PRAGA_GIS \
+SUBDIRS =       ../../agrolib/crit3dDate ../../agrolib/mathFunctions ../../agrolib/gis  \
+                ../../agrolib/shapeHandler ../../agrolib/graphics \
+                ../WANDERER
 
 CONFIG += ordered
