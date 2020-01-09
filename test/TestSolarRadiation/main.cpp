@@ -37,6 +37,37 @@
 #include "solarRadiation.h"
 
 
+bool searchDefaultPath(QString inputPath, QString* outputPath)
+{
+    QString myPath = inputPath;
+    QString myVolumeDOS = inputPath.left(3);
+
+    bool isFound = false;
+    while (! isFound)
+    {
+        if (QDir(myPath + "DATA").exists())
+        {
+            isFound = true;
+            break;
+        }
+
+        if (QDir::cleanPath(myPath) == "/" || QDir::cleanPath(myPath) == myVolumeDOS)
+            break;
+
+        myPath += "../";
+    }
+
+    if (! isFound)
+    {
+        std::cout << "\nDATA directory is missing";
+        return false;
+    }
+
+    *outputPath = QDir::cleanPath(myPath) + "/DATA/";
+    return true;
+}
+
+
 int main(int argc, char *argv[])
 {
     QCoreApplication a(argc, argv);
@@ -57,10 +88,10 @@ int main(int argc, char *argv[])
     std::cout << "Date: " << myDate->toStdString() << " hour: " << myHour << " UTC" << std::endl;
 
     // Digital Elevation Model
-    QString path = a.applicationDirPath() + "/";
-    QString fileName = path + "../../../DATA/DEM/dem_ravone";
-    fileName = QDir::cleanPath(fileName);
-    std::string inputFileName = fileName.toStdString();
+    QString path;
+    QString appPath = a.applicationDirPath() + "/";
+    if (! searchDefaultPath(appPath, &path)) return -1;
+    std::string inputFileName = path.toStdString() + + "DEM/dem_ravone";
 
     gis::Crit3DRasterGrid* DEM = new gis::Crit3DRasterGrid();
     std::string* error = new std::string();
@@ -100,5 +131,4 @@ int main(int argc, char *argv[])
 
     return a.exec();
 }
-
 
