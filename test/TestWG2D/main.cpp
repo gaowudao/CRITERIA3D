@@ -10,6 +10,8 @@
 #include "readPragaFormatData.h"
 
 
+#define NR_SIMULATION_YEARS 5
+
 weatherGenerator2D WG2D;
 
 
@@ -78,9 +80,9 @@ int main()
     doy = day = month = year = NODATA;
     prec = minT = maxT = meanT = NODATA;
     bool firstDay = true;
-    int nrStations = 10; // !! da 1 a 10 stazioni
+    int nrStations = 1; // !! da 1 a 10 stazioni
     int distributionType = 1; // 1 multiexponential 2 multigamma 3 Weibull
-    int yearsOfSimulations = 500; // numero anni
+    int yearsOfSimulations = NR_SIMULATION_YEARS;
     int lengthDataSeries = numberMeteoLines;
     int nrVariables = 3;
     int nrDate = 3;

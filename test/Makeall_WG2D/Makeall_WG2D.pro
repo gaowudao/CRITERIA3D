@@ -1,7 +1,7 @@
 TEMPLATE = subdirs
 
-SUBDIRS =   ../../lib/crit3dDate ../../lib/mathFunctions ../../lib/eispack  \
-            ../../lib/meteo ../../lib/gis ../../lib/weatherGenerator ../../lib/weatherGenerator2D  \
+SUBDIRS =   ../../agrolib/crit3dDate ../../agrolib/mathFunctions ../../agrolib/eispack  \
+            ../../agrolib/meteo ../../agrolib/gis ../../agrolib/weatherGenerator ../../agrolib/weatherGenerator2D  \
             ../TestWG2D
 
 CONFIG += ordered
