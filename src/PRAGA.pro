@@ -40,13 +40,13 @@ CONFIG(debug, debug|release) {
     LIBS += -L../agrolib/climate/debug -lclimate
     LIBS += -L../agrolib/netcdfHandler/debug -lnetcdfHandler
     win32:{
-        LIBS += -L$$(NC4_INSTALL_DIR)/lib -lnetcdf
+        LIBS += -L$$(NC4_INSTALL_DIR)/agrolib -lnetcdf
     }
     unix:{
         LIBS += -lnetcdf
     }
     macx:{
-        LIBS += -L/usr/local/lib/ -lnetcdf
+        LIBS += -L/usr/local/agrolib/ -lnetcdf
     }
     LIBS += -L../agrolib/dbMeteoGrid/debug -ldbMeteoGrid
     LIBS += -L../agrolib/dbMeteoPoints/debug -ldbMeteoPoints
@@ -64,13 +64,13 @@ CONFIG(debug, debug|release) {
     LIBS += -L../agrolib/climate/release -lclimate
     LIBS += -L../agrolib/netcdfHandler/release -lnetcdfHandler
     win32:{
-        LIBS += -L$$(NC4_INSTALL_DIR)/lib -lnetcdf
+        LIBS += -L$$(NC4_INSTALL_DIR)/agrolib -lnetcdf
     }
     unix:{
         LIBS += -lnetcdf
     }
     macx:{
-        LIBS += -L/usr/local/lib/ -lnetcdf
+        LIBS += -L/usr/local/agrolib/ -lnetcdf
     }
     LIBS += -L../agrolib/dbMeteoGrid/release -ldbMeteoGrid
     LIBS += -L../agrolib/dbMeteoPoints/release -ldbMeteoPoints
