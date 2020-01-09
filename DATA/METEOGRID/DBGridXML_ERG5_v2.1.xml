@@ -54,19 +54,11 @@
 		</varcode>
 		<varcode>
 			<varcode>9</varcode>
-			<varpraganame>DAILY_W_INT_AVG</varpraganame>
+			<varpraganame>DAILY_ET0_HS</varpraganame>
 		</varcode>
 		<varcode>
 			<varcode>10</varcode>
-			<varpraganame>DAILY_W_DIR</varpraganame>
-		</varcode>
-		<varcode>
-			<varcode>11</varcode>
-			<varpraganame>DAILY_W_INT_MAX</varpraganame>
-		</varcode>
-		<varcode>
-			<varcode>12</varcode>
-			<varpraganame>DAILY_ET0</varpraganame>
+			<varpraganame>DAILY_ET0_PM</varpraganame>
 		</varcode>
 	</tabledaily>
 	
@@ -104,6 +96,18 @@
 		<varcode>
 			<varcode>108</varcode>
 			<varpraganame>ET0</varpraganame>
+		</varcode>
+		<varcode>
+			<varcode>109</varcode>
+			<varpraganame>W_SCAL_INT</varpraganame>
+		</varcode>
+		<varcode>
+			<varcode>110</varcode>
+			<varpraganame>W_VEC_INT</varpraganame>
+		</varcode>
+		<varcode>
+			<varcode>111</varcode>
+			<varpraganame>W_VEC_DIR</varpraganame>
 		</varcode>
 	</tablehourly>
 	
