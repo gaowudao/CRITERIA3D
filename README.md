@@ -13,12 +13,6 @@ Surface water flow is described by the two-dimensional parabolic approximation o
 
 Water fluxes equations may be coupled with the heat flux equations, which include diffusive, latent and advective terms. Atmospheric data (net irradiance, air temperature and relative humidity, wind speed) could be used as top boundary conditions. See [CRITERIA3D](http://www.sciencedirect.com/science/article/pii/S0309170809001754) for more information.
 
-## PRAGA (PRogram for AGrometeorological Analysis)
-![](https://github.com/ARPA-SIMC/CRITERIA3D/blob/master/DOC/img/PRAGA_screenshot.png)
-
-PRAGA is a geographical application for agrometeorological and climate analysis.  
-See [PRAGA wiki](https://github.com/ARPA-SIMC/CRITERIA3D/wiki/PRAGA) for more informations.
-
 ## TestCriteria1D
 Test program for the 1D water balance using criteriaModel, crop and soil libraries.  
 To compile it, use the project `test/Makeall_CRITERIA1D`. An example project is available in `DATA/PROJECT/kiwifruit` directory.
