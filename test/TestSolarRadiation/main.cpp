@@ -41,13 +41,10 @@ int main(int argc, char *argv[])
 {
     QCoreApplication a(argc, argv);
 
-    // Digital Elevation Model INPUT
-    QString path = a.applicationDirPath() + "/";
-    QString fileName = path + "../../../DATA/DEM/dem_ravone";
-    fileName = QDir::cleanPath(fileName);
-    std::string inputFileName = fileName.toStdString();
+    std::cout << "\nTEST Solar Radiation library" << std::endl;
+    std::cout << "Compute a map of global solar irradiance (clear sky)" << std::endl;
 
-    // GIS SETTINGS (UTM zone, Time zone)
+    // GIS SETTINGS (UTM zone, time zone)
     gis::Crit3DGisSettings* gisSettings = new gis::Crit3DGisSettings();
     gisSettings->utmZone = 32;
     gisSettings->timeZone = 1;
@@ -56,12 +53,15 @@ int main(int argc, char *argv[])
     Crit3DDate* myDate = new Crit3DDate(1, 7, 2018);
     int myHour = 12;
 
-    std::cout << "\nTEST Solar Radiation library" << std::endl;
-    std::cout << "Compute a map of global solar irradiance (clear sky)" << std::endl;
     std::cout << "UTM zone: " << gisSettings->utmZone << std::endl;
     std::cout << "Date: " << myDate->toStdString() << " hour: " << myHour << " UTC" << std::endl;
 
-    // READ Digital Elevation Model
+    // Digital Elevation Model
+    QString path = a.applicationDirPath() + "/";
+    QString fileName = path + "../../../DATA/DEM/dem_ravone";
+    fileName = QDir::cleanPath(fileName);
+    std::string inputFileName = fileName.toStdString();
+
     gis::Crit3DRasterGrid* DEM = new gis::Crit3DRasterGrid();
     std::string* error = new std::string();
     if (gis::readEsriGrid(inputFileName, DEM, error))

@@ -29,8 +29,8 @@ win32:{
     TARGET = TestSoilWidget
 }
 
-INCLUDEPATH +=  ../../lib/crit3dDate ../../lib/mathFunctions  \
-                ../../lib/utilities ../../lib/soil ../../lib/soilWidget
+INCLUDEPATH +=  ../../agrolib/crit3dDate ../../agrolib/mathFunctions  \
+                ../../agrolib/utilities ../../agrolib/soil ../../agrolib/soilWidget
 unix:{
     INCLUDEPATH += /usr/include/qwt/
 }
@@ -39,18 +39,18 @@ macx:{
 }
 
 CONFIG(debug, debug|release) {
-    LIBS += -L../../lib/soilWidget/debug -lsoilWidget
-    LIBS += -L../../lib/soil/debug -lsoil
-    LIBS += -L../../lib/utilities/debug -lutilities
-    LIBS += -L../../lib/mathFunctions/debug -lmathFunctions
-    LIBS += -L../../lib/crit3dDate/debug -lcrit3dDate
+    LIBS += -L../../agrolib/soilWidget/debug -lsoilWidget
+    LIBS += -L../../agrolib/soil/debug -lsoil
+    LIBS += -L../../agrolib/utilities/debug -lutilities
+    LIBS += -L../../agrolib/mathFunctions/debug -lmathFunctions
+    LIBS += -L../../agrolib/crit3dDate/debug -lcrit3dDate
 } else {
 
-    LIBS += -L../../lib/soilWidget/release -lsoilWidget
-    LIBS += -L../../lib/soil/release -lsoil
-    LIBS += -L../../lib/utilities/release -lutilities
-    LIBS += -L../../lib/mathFunctions/release -lmathFunctions
-    LIBS += -L../../lib/crit3dDate/release -lcrit3dDate
+    LIBS += -L../../agrolib/soilWidget/release -lsoilWidget
+    LIBS += -L../../agrolib/soil/release -lsoil
+    LIBS += -L../../agrolib/utilities/release -lutilities
+    LIBS += -L../../agrolib/mathFunctions/release -lmathFunctions
+    LIBS += -L../../agrolib/crit3dDate/release -lcrit3dDate
 }
 
 

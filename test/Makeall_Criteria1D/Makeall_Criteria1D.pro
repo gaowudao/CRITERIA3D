@@ -1,7 +1,7 @@
 TEMPLATE = subdirs
 
-SUBDIRS =   ../../lib/crit3dDate ../../lib/mathFunctions ../../lib/gis ../../lib/meteo  \
-            ../../lib/soil ../../lib/crop ../../lib/utilities ../../lib/criteriaModel  \
+SUBDIRS =   ../../agrolib/crit3dDate ../../agrolib/mathFunctions ../../agrolib/gis ../../agrolib/meteo  \
+            ../../agrolib/soil ../../agrolib/crop ../../agrolib/utilities ../../agrolib/criteriaModel  \
             ../TestCriteria1D
 
 CONFIG += ordered

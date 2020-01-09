@@ -26,20 +26,20 @@ win32:{
     TARGET = TestSolarRadiation
 }
 
-INCLUDEPATH += ../../lib/crit3dDate ../../lib/mathFunctions ../../lib/gis ../../lib/solarRadiation
+INCLUDEPATH += ../../agrolib/crit3dDate ../../agrolib/mathFunctions ../../agrolib/gis ../../agrolib/solarRadiation
 
 CONFIG += debug_and_release
 
 CONFIG(debug, debug|release) {
-    LIBS += -L../../lib/solarRadiation/debug -lsolarRadiation
-    LIBS += -L../../lib/gis/debug -lgis
-    LIBS += -L../../lib/mathFunctions/debug -lmathFunctions
-    LIBS += -L../../lib/crit3dDate/debug -lcrit3dDate
+    LIBS += -L../../agrolib/solarRadiation/debug -lsolarRadiation
+    LIBS += -L../../agrolib/gis/debug -lgis
+    LIBS += -L../../agrolib/mathFunctions/debug -lmathFunctions
+    LIBS += -L../../agrolib/crit3dDate/debug -lcrit3dDate
 } else {
-    LIBS += -L../../lib/solarRadiation/release -lsolarRadiation
-    LIBS += -L../../lib/gis/release -lgis
-    LIBS += -L../../lib/mathFunctions/release -lmathFunctions
-    LIBS += -L../../lib/crit3dDate/release -lcrit3dDate
+    LIBS += -L../../agrolib/solarRadiation/release -lsolarRadiation
+    LIBS += -L../../agrolib/gis/release -lgis
+    LIBS += -L../../agrolib/mathFunctions/release -lmathFunctions
+    LIBS += -L../../agrolib/crit3dDate/release -lcrit3dDate
 }
 
 SOURCES += main.cpp

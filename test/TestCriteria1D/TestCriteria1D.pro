@@ -39,29 +39,29 @@ SOURCES += main.cpp \
 HEADERS += \
     project.h \
 
-INCLUDEPATH +=  ../../lib/crit3dDate ../../lib/mathFunctions ../../lib/gis ../../lib/meteo \
-                ../../lib/soil ../../lib/crop ../../lib/utilities \
-                ../../lib/criteriaModel
+INCLUDEPATH +=  ../../agrolib/crit3dDate ../../agrolib/mathFunctions ../../agrolib/gis ../../agrolib/meteo \
+                ../../agrolib/soil ../../agrolib/crop ../../agrolib/utilities \
+                ../../agrolib/criteriaModel
 
 CONFIG(debug, debug|release) {
-    LIBS += -L../../lib/criteriaModel/debug -lcriteriaModel
-    LIBS += -L../../lib/crop/debug -lcrop
-    LIBS += -L../../lib/soil/debug -lsoil
-    LIBS += -L../../lib/utilities/debug -lutilities
-    LIBS += -L../../lib/meteo/debug -lmeteo
-    LIBS += -L../../lib/gis/debug -lgis
-    LIBS += -L../../lib/crit3dDate/debug -lcrit3dDate
-    LIBS += -L../../lib/mathFunctions/debug -lmathFunctions
+    LIBS += -L../../agrolib/criteriaModel/debug -lcriteriaModel
+    LIBS += -L../../agrolib/crop/debug -lcrop
+    LIBS += -L../../agrolib/soil/debug -lsoil
+    LIBS += -L../../agrolib/utilities/debug -lutilities
+    LIBS += -L../../agrolib/meteo/debug -lmeteo
+    LIBS += -L../../agrolib/gis/debug -lgis
+    LIBS += -L../../agrolib/crit3dDate/debug -lcrit3dDate
+    LIBS += -L../../agrolib/mathFunctions/debug -lmathFunctions
 
 } else {
 
-    LIBS += -L../../lib/criteriaModel/release -lcriteriaModel
-    LIBS += -L../../lib/crop/release -lcrop
-    LIBS += -L../../lib/soil/release -lsoil
-    LIBS += -L../../lib/utilities/release -lutilities
-    LIBS += -L../../lib/meteo/release -lmeteo
-    LIBS += -L../../lib/gis/release -lgis
-    LIBS += -L../../lib/crit3dDate/release -lcrit3dDate
-    LIBS += -L../../lib/mathFunctions/release -lmathFunctions
+    LIBS += -L../../agrolib/criteriaModel/release -lcriteriaModel
+    LIBS += -L../../agrolib/crop/release -lcrop
+    LIBS += -L../../agrolib/soil/release -lsoil
+    LIBS += -L../../agrolib/utilities/release -lutilities
+    LIBS += -L../../agrolib/meteo/release -lmeteo
+    LIBS += -L../../agrolib/gis/release -lgis
+    LIBS += -L../../agrolib/crit3dDate/release -lcrit3dDate
+    LIBS += -L../../agrolib/mathFunctions/release -lmathFunctions
 }
 
