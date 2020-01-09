@@ -11,6 +11,8 @@
 
 
 #define NR_SIMULATION_YEARS 5
+// [ 1 - 10 ]
+#define NR_STATIONS 2
 
 weatherGenerator2D WG2D;
 
@@ -64,7 +66,7 @@ int main()
     fclose(fp);
     WG2D.initializeRandomNumbers(randomSeries);
 
-    fp = fopen("inputData/budrio_1961_2018.txt", "r");
+    fp = fopen("inputData/argelato_1961_2018.txt", "r");
     if (fp == nullptr)
     {
         printf("Error! File not found\n");
@@ -80,7 +82,7 @@ int main()
     doy = day = month = year = NODATA;
     prec = minT = maxT = meanT = NODATA;
     bool firstDay = true;
-    int nrStations = 1; // !! da 1 a 10 stazioni
+    int nrStations = NR_STATIONS;
     int distributionType = 1; // 1 multiexponential 2 multigamma 3 Weibull
     int yearsOfSimulations = NR_SIMULATION_YEARS;
     int lengthDataSeries = numberMeteoLines;
