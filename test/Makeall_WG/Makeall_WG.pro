@@ -1,6 +1,6 @@
 TEMPLATE = subdirs
 
-SUBDIRS =   ../../lib/crit3dDate ../../lib/mathFunctions ../../lib/weatherGenerator  \
+SUBDIRS =   ../../agrolib/crit3dDate ../../agrolib/mathFunctions ../../agrolib/weatherGenerator  \
             ../TestWeatherGenerator
 
 CONFIG += ordered
