@@ -7,7 +7,7 @@
 
 QT       -= core gui
 
-TEMPLATE = agrolib
+TEMPLATE = lib
 CONFIG += staticlib
 
 CONFIG += debug_and_release
@@ -36,9 +36,4 @@ HEADERS += meteo.h \
     meteoPoint.h \
     meteoGrid.h \
     quality.h
-
-unix {
-    target.path = /usr/agrolib
-    INSTALLS += target
-}
 
