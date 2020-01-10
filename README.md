@@ -1,10 +1,10 @@
 
-# CRITERIA3D
+# CRITERIA-3D
 CRITERIA3D is a geographical application that implements three-dimensional water balance for small catchments.
 
 It includes a numerical solution for three-dimensional water and heat flow in the soil, coupled surface and subsurface flow, meteorological data interpolation, radiation budget, crop development and crop water uptake, snow accumulation and melt. It needs hourly meteo data as input. 
 
-# How to compile CRITERIA3D
+## How to compile CRITERIA-3D
 Dependencies:
 - Qt libraries: Qt 5.x or following is needed.
 - MapGraphics library (https://github.com/raptorswing/MapGraphics): you have to compile the project mapGraphics/MapGraphics.pro
