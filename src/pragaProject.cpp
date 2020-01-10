@@ -1292,29 +1292,41 @@ bool PragaProject::downloadDailyDataArkimet(QStringList variables, bool prec0024
         {
             if (variables[i] == "Air Temperature")
             {
-                arkIdVar.append(myDownload->getDbArkimet()->getId("DAILY_TMIN"));
-                arkIdVar.append(myDownload->getDbArkimet()->getId("DAILY_TMAX"));
-                arkIdVar.append(myDownload->getDbArkimet()->getId("DAILY_TAVG"));
+                QString dailyTmin = QString::fromStdString(getKeyStringMeteoMap(MapDailyMeteoVar, dailyAirTemperatureMin));
+                QString dailyTmax = QString::fromStdString(getKeyStringMeteoMap(MapDailyMeteoVar, dailyAirTemperatureMax));
+                QString dailyTavg = QString::fromStdString(getKeyStringMeteoMap(MapDailyMeteoVar, dailyAirTemperatureAvg));
+
+                arkIdVar.append(myDownload->getDbArkimet()->getId(dailyTmin));
+                arkIdVar.append(myDownload->getDbArkimet()->getId(dailyTmax));
+                arkIdVar.append(myDownload->getDbArkimet()->getId(dailyTavg));
             }
             if (variables[i] == "Precipitation")
             {
-                arkIdVar.append(myDownload->getDbArkimet()->getId("DAILY_PREC"));
+                QString dailyPrec = QString::fromStdString(getKeyStringMeteoMap(MapDailyMeteoVar, dailyPrecipitation));
+                arkIdVar.append(myDownload->getDbArkimet()->getId(dailyPrec));
             }
             if (variables[i] == "Air Humidity")
             {
-                arkIdVar.append(myDownload->getDbArkimet()->getId("DAILY_RHMIN"));
-                arkIdVar.append(myDownload->getDbArkimet()->getId("DAILY_RHMAX"));
-                arkIdVar.append(myDownload->getDbArkimet()->getId("DAILY_RHAVG"));
+                QString dailyRHmin = QString::fromStdString(getKeyStringMeteoMap(MapDailyMeteoVar, dailyAirRelHumidityMin));
+                QString dailyRHmax = QString::fromStdString(getKeyStringMeteoMap(MapDailyMeteoVar, dailyAirRelHumidityMax));
+                QString dailyRHavg = QString::fromStdString(getKeyStringMeteoMap(MapDailyMeteoVar, dailyAirRelHumidityAvg));
+                arkIdVar.append(myDownload->getDbArkimet()->getId(dailyRHmin));
+                arkIdVar.append(myDownload->getDbArkimet()->getId(dailyRHmax));
+                arkIdVar.append(myDownload->getDbArkimet()->getId(dailyRHavg));
             }
             if (variables[i] == "Radiation")
             {
-                arkIdVar.append(myDownload->getDbArkimet()->getId("DAILY_RAD"));
+                QString dailyRad = QString::fromStdString(getKeyStringMeteoMap(MapDailyMeteoVar, dailyGlobalRadiation));
+                arkIdVar.append(myDownload->getDbArkimet()->getId(dailyRad));
             }
             if (variables[i] == "Wind")
             {
-                arkIdVar.append(myDownload->getDbArkimet()->getId("DAILY_W_INT_AVG"));
-                arkIdVar.append(myDownload->getDbArkimet()->getId("DAILY_W_DIR"));
-                arkIdVar.append(myDownload->getDbArkimet()->getId("DAILY_W_INT_MAX"));
+                QString dailyWindScalIntAvg = QString::fromStdString(getKeyStringMeteoMap(MapDailyMeteoVar, dailyWindScalarIntensityAvg));
+                QString dailyWindScalIntMax = QString::fromStdString(getKeyStringMeteoMap(MapDailyMeteoVar, dailyWindScalarIntensityMax));
+                QString dailyWindVecDirPrev = QString::fromStdString(getKeyStringMeteoMap(MapDailyMeteoVar, dailyWindVectorDirectionPrevailing));
+                arkIdVar.append(myDownload->getDbArkimet()->getId(dailyWindScalIntAvg));
+                arkIdVar.append(myDownload->getDbArkimet()->getId(dailyWindVecDirPrev));
+                arkIdVar.append(myDownload->getDbArkimet()->getId(dailyWindScalIntMax));
             }
         }
     }
@@ -1399,24 +1411,30 @@ bool PragaProject::downloadHourlyDataArkimet(QStringList variables, QDate startD
         {
             if (variables[i] == "Air Temperature")
             {
-                arkIdVar.append(myDownload->getDbArkimet()->getId("TAVG"));
+                QString airTemp = QString::fromStdString(getKeyStringMeteoMap(MapDailyMeteoVar, airTemperature));
+                arkIdVar.append(myDownload->getDbArkimet()->getId(airTemp));
             }
             if (variables[i] == "Precipitation")
             {
-                arkIdVar.append(myDownload->getDbArkimet()->getId("PREC"));
+                QString prec = QString::fromStdString(getKeyStringMeteoMap(MapDailyMeteoVar, precipitation));
+                arkIdVar.append(myDownload->getDbArkimet()->getId(prec));
             }
             if (variables[i] == "Air Humidity")
             {
-                arkIdVar.append(myDownload->getDbArkimet()->getId("RHAVG"));
+                QString airRelH = QString::fromStdString(getKeyStringMeteoMap(MapDailyMeteoVar, airRelHumidity));
+                arkIdVar.append(myDownload->getDbArkimet()->getId(airRelH));
             }
             if (variables[i] == "Radiation")
             {
-                arkIdVar.append(myDownload->getDbArkimet()->getId("RAD"));
+                QString globalIrr = QString::fromStdString(getKeyStringMeteoMap(MapDailyMeteoVar, globalIrradiance));
+                arkIdVar.append(myDownload->getDbArkimet()->getId(globalIrr));
             }
             if (variables[i] == "Wind")
             {
-                arkIdVar.append(myDownload->getDbArkimet()->getId("W_INT_AVG"));
-                arkIdVar.append(myDownload->getDbArkimet()->getId("W_DIR"));
+                QString windScaInt = QString::fromStdString(getKeyStringMeteoMap(MapDailyMeteoVar, windScalarIntensity));
+                QString windVecDir = QString::fromStdString(getKeyStringMeteoMap(MapDailyMeteoVar, windVectorDirection));
+                arkIdVar.append(myDownload->getDbArkimet()->getId(windScaInt));
+                arkIdVar.append(myDownload->getDbArkimet()->getId(windVecDir));
             }
         }
     }
