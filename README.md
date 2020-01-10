@@ -32,13 +32,13 @@ Soil widget is a tool to show/edit soil data, including water retention and hydr
 Test program for the 1D water balance using criteriaModel, crop and soil libraries.  
 To compile it, use the project `test/Makeall_CRITERIA1D`. An example project is available in `DATA/PROJECT/kiwifruit` directory.
 
-# License
-CRITERIA3D has been developed under contract issued by 
+## License
+CRITERIA-3D has been developed under contract issued by 
 ARPAE Hydro-Meteo-Climate Service, Emilia-Romagna, Italy: http://www.arpae.it/sim/
 
 Executables (CRITERIA3D, VINE3D, HEAT1D, etc.) are released under the GNU GPL license, libreries are released under the GNU LGPL license.
 
-# Authors
+## Authors
 Fausto Tomei <ftomei@arpae.it>
 
 Gabriele Antolini	 <gantolini@arpae.it>
