@@ -69,5 +69,3 @@ HEADERS += \
     LineObject.h \
     CircleObject.h
 
-
-
