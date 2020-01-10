@@ -10,7 +10,7 @@
 #include "readPragaFormatData.h"
 
 
-#define NR_SIMULATION_YEARS 5
+#define NR_SIMULATION_YEARS 95
 // [ 1 - 10 ]
 #define NR_STATIONS 2
 
