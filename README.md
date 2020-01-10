@@ -1,14 +1,15 @@
 
 # CRITERIA3D
-CRITERIA3D is a geographical application that three-dimensional water balance for small catchments. 
-It includes a coupled surface and subsurface flow and it needs hourly meteo data as input.
-It includes meteorological data interpolation, radiation budget, numerical solution for three-dimensional water and heat flow in the soil, snow accumulation and melt, crop development and crop water uptake. 
+CRITERIA3D is a geographical application that implements three-dimensional water balance for small catchments.
+
+It includes a numerical solution for three-dimensional water and heat flow in the soil, coupled surface and subsurface flow, meteorological data interpolation, radiation budget, snow accumulation and melt, crop development and crop water uptake. It needs hourly meteo data as input. 
 
 # How to compile CRITERIA3D
 Dependencies:
 - Qt libraries: Qt 5.x or following is needed.
-- MapGraphics library (https://github.com/raptorswing/MapGraphics): you have only to compile the project mapGraphics/MapGraphics.pro
-- qwt library: you have to dowload and install qwt, then check the correct path in CRITERIA3D.pro 
+- MapGraphics library (https://github.com/raptorswing/MapGraphics): you have to compile the project mapGraphics/MapGraphics.pro
+- qwt library (http://qwt.sourceforge.net/): you have to dowload and compile qwt, then check the correct path in bin/CRITERIA3D/CRITERIA3D.pro
+
 When the dependencies are installed you can compile the project bin/Makeall_CRITERIA3D
 
 ## soilFluxes3D library
@@ -19,10 +20,10 @@ Water fluxes equations may be coupled with the heat flux equations, which includ
 
 ## HEAT1D
 HEAT1D is a graphical interface for testing the soilFluxex3D library in a 1D domain. Users can set fixed or variable atmospheric boundary conditions and soil parameters. Output graph results include soil temperature, soil water content, heat fluxes (diffusive and latent), liquid (isothermal and thermal) and vapor (isothermal and thermal) water fluxes.  
-Graphs are produced using the Qwt plot library (http://qwt.sourceforge.net/) which should be compiled before usage.
+Graphs are produced using the qwt plot library (http://qwt.sourceforge.net/) which should be compiled before usage.
 
 ## Soil Widget
-Soil widget is a tool to show/edit soil data, including water retention and hydrologic conductivity curves, using modified Van Genuchten - Mualem model.
+Soil widget is a tool to show/edit soil data, including water retention and hydrologic conductivity curves, using modified Van Genuchten - Mualem model. Soil widget requires the qwt plot library (http://qwt.sourceforge.net/) which should be compiled before usage.
 
 [-->Download soilWidget](https://github.com/ARPA-SIMC/CRITERIA3D/releases/tag/v0.1)
 ![](https://github.com/ARPA-SIMC/CRITERIA3D/blob/master/DOC/img/soilWidget.png)
