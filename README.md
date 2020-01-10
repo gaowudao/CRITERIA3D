@@ -4,6 +4,8 @@ CRITERIA3D is a geographical application that implements three-dimensional water
 
 It includes a numerical solution for three-dimensional water and heat flow in the soil, coupled surface and subsurface flow, meteorological data interpolation, radiation budget, crop development and crop water uptake, snow accumulation and melt. It needs hourly meteo data as input. 
 
+![](https://github.com/ARPA-SIMC/CRITERIA3D/blob/master/DOC/img/CRITERIA3D.png)
+
 ## How to compile CRITERIA-3D
 Dependencies:
 - Qt libraries: Qt 5.x or following is needed.
