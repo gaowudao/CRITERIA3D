@@ -2,7 +2,7 @@
 # CRITERIA3D
 CRITERIA3D is a geographical application that implements three-dimensional water balance for small catchments.
 
-It includes a numerical solution for three-dimensional water and heat flow in the soil, coupled surface and subsurface flow, meteorological data interpolation, radiation budget, snow accumulation and melt, crop development and crop water uptake. It needs hourly meteo data as input. 
+It includes a numerical solution for three-dimensional water and heat flow in the soil, coupled surface and subsurface flow, meteorological data interpolation, radiation budget, crop development and crop water uptake, snow accumulation and melt. It needs hourly meteo data as input. 
 
 # How to compile CRITERIA3D
 Dependencies:
@@ -23,7 +23,7 @@ HEAT1D is a graphical interface for testing the soilFluxex3D library in a 1D dom
 Graphs are produced using the qwt plot library (http://qwt.sourceforge.net/) which should be compiled before usage.
 
 ## Soil Widget
-Soil widget is a tool to show/edit soil data, including water retention and hydrologic conductivity curves, using modified Van Genuchten - Mualem model. Soil widget requires the qwt plot library (http://qwt.sourceforge.net/) which should be compiled before usage.
+Soil widget is a tool to show/edit soil data, including water retention and hydrologic conductivity curves, using modified Van Genuchten - Mualem model.
 
 [-->Download soilWidget](https://github.com/ARPA-SIMC/CRITERIA3D/releases/tag/v0.1)
 ![](https://github.com/ARPA-SIMC/CRITERIA3D/blob/master/DOC/img/soilWidget.png)
