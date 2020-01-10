@@ -66,7 +66,8 @@ MainWindow::MainWindow(QWidget *parent) :
     this->setTileMapSource(OSMTileSource::OSMTiles);
 
     // Set start size and position
-    this->startCenter = new Position (myProject.gisSettings.startLocation.longitude, myProject.gisSettings.startLocation.latitude, 0.0);
+    this->startCenter = new Position (myProject.gisSettings.startLocation.longitude,
+                                     myProject.gisSettings.startLocation.latitude, 0.0);
     this->mapView->setZoomLevel(8);
     this->mapView->centerOn(startCenter->lonLat());
     connect(this->mapView, SIGNAL(zoomLevelChanged(quint8)), this, SLOT(updateMaps()));
@@ -241,10 +242,15 @@ void MainWindow::drawProject()
 {
     setProjectTileMap();
 
-    mapView->centerOn(startCenter->lonLat());
-
     if (myProject.DEM.isLoaded)
         this->renderDEM();
+    else
+    {
+        startCenter = new Position (myProject.gisSettings.startLocation.longitude,
+                                myProject.gisSettings.startLocation.latitude, 0.0);
+        mapView->centerOn(startCenter->lonLat());
+        mapView->setZoomLevel(8);
+    }
 
     drawMeteoPoints();
     // drawMeteoGrid();
