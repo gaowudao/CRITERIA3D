@@ -5,61 +5,6 @@
 #include "dataHandler.h"
 
 
-/* vintage name
-QString getVarNameFromMeteoVariable(meteoVariable myVar)
-{
-    if (myVar == airTemperature)
-        return "tair";
-    else if (myVar == dailyAirTemperatureMin)
-        return "tmin";
-    else if (myVar == dailyAirTemperatureMax)
-        return "tmax";
-    else if (myVar == dailyAirTemperatureAvg)
-        return "tavg";
-    else if (myVar == precipitation)
-        return "prec";
-    else if (myVar == dailyPrecipitation)
-        return "prec";
-    else if (myVar == airRelHumidity)
-        return "rhair";
-    else if (myVar == dailyAirRelHumidityMin)
-        return "rhmin";
-    else if (myVar == dailyAirRelHumidityMax)
-        return "rhmax";
-    else if (myVar == dailyAirRelHumidityAvg)
-        return "rhavg";
-    else if (myVar == globalIrradiance)
-        return "globrad";
-    else if (myVar == directIrradiance)
-        return "dirrad";
-    else if (myVar == diffuseIrradiance)
-        return "diffrad";
-    else if (myVar == reflectedIrradiance)
-        return "reflrad";
-    else if (myVar == dailyGlobalRadiation)
-        return "globrad";
-    else if (myVar == dailyDirectRadiation)
-        return "dirrad";
-    else if (myVar == dailyDiffuseRadiation)
-        return "diffrad";
-    else if (myVar == dailyReflectedRadiation)
-        return "reflrad";
-    else if (myVar == windIntensity)
-        return "wind";
-    else if (myVar == dailyWindIntensityAvg)
-        return "windavg";
-    else if (myVar == leafWetness || myVar == dailyLeafWetness)
-        return "leafWetness";
-    else if (myVar == referenceEvapotranspiration || myVar == dailyReferenceEvapotranspirationHS)
-        return "potentialET";
-    else if (myVar == actualEvaporation)
-        return "evaporation";
-    else
-        return "";
-}
-*/
-
-
 QString getVarNameFromPlantVariable(plantVariable myVar)
 {
     if (myVar == tartaricAcidVar)

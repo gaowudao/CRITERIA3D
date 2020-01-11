@@ -349,7 +349,7 @@ bool Crit3DProject::initializeCriteria3DModel()
         return false;
     }
 
-    clearWaterBalance();
+    clearWaterBalance3D();
 
     if (!setSoilIndexMap()) return false;
 
@@ -371,7 +371,7 @@ bool Crit3DProject::initializeCriteria3DModel()
 
     if (! initializeWaterBalance3D())
     {
-        clearWaterBalance();
+        clearWaterBalance3D();
         logError("Criteria3D model not initialized.");
         return false;
     }

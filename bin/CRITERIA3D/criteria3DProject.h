@@ -28,17 +28,13 @@
         Crit3DProject();
 
         bool loadCriteria3DProject(QString myFileName);
-
         bool loadCriteria3DSettings();
-
         bool loadModelParameters(QString dbName);
-
         bool loadSoilMap(QString fileName);
 
         bool initializeCriteria3DModel();
 
         bool setSoilIndexMap();
-
         double getSoilVar(int soilIndex, int layerIndex, soil::soilVariable myVar);
         double* getSoilVarProfile(int row, int col, soil::soilVariable myVar);
         bool setSoilProfileCrop(int row, int col);
