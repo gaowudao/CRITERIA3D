@@ -73,7 +73,7 @@
         void initializeProject3D();
 
         void clearProject3D();
-        void clearWaterBalance();
+        void clearWaterBalance3D();
 
         bool initializeWaterBalance3D();
 

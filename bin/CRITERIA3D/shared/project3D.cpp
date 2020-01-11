@@ -59,7 +59,7 @@ void Project3D::initializeProject3D()
 }
 
 
-void Project3D::clearWaterBalance()
+void Project3D::clearWaterBalance3D()
 {
     soilFluxes3D::cleanMemory();
     waterSinkSource.clear();
@@ -82,7 +82,7 @@ void Project3D::clearWaterBalance()
 
 void Project3D::clearProject3D()
 {
-    clearWaterBalance();
+    clearWaterBalance3D();
 
     for (unsigned int i = 0; i < soilList.size(); i++)
     {
