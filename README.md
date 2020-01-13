@@ -10,7 +10,7 @@ See [PRAGA wiki](https://github.com/ftomei/PRAGA/wiki/PRAGA-wiki) for more infor
 PRAGA has been developed under contract issued by 
 ARPAE Climate Observatory, Emilia-Romagna, Italy: http://www.arpae.it/sim/
 
-All files are released under the GNU GPL license.
+The executable is released under the GNU GPL license, libreries are released under the GNU LGPL license.
 
 # Authors
 Fausto Tomei <ftomei@arpae.it>
