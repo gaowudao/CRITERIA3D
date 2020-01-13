@@ -10,9 +10,9 @@
 #include "readPragaFormatData.h"
 
 
-#define NR_SIMULATION_YEARS 95
+#define NR_SIMULATION_YEARS 5
 // [ 1 - 10 ]
-#define NR_STATIONS 2
+#define NR_STATIONS 5
 
 weatherGenerator2D WG2D;
 
@@ -783,8 +783,8 @@ int main()
     bool computePrecipitation = true;
     bool computeTemperature = true;
     printf("weather generator\n");
-    if (computePrecipitation) printf("compute precipitation\n");
-    if (computeTemperature) printf("compute temperature\n");
+    //if (computePrecipitation) printf("compute precipitation\n");
+    //if (computeTemperature) printf("compute temperature\n");
 
 
     WG2D.initializeParameters(precipitationThreshold, yearsOfSimulations, distributionType,
