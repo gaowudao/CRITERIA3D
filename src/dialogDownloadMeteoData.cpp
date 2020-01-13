@@ -18,6 +18,7 @@ DialogDownloadMeteoData::DialogDownloadMeteoData()
     QVBoxLayout mainLayout;
     QHBoxLayout titleLayout;
     QHBoxLayout timeVarLayout;
+    QHBoxLayout allVarLayout;
     QHBoxLayout dateLayout;
     QHBoxLayout buttonLayout;
 
@@ -43,9 +44,6 @@ DialogDownloadMeteoData::DialogDownloadMeteoData()
     daily_item9.setText("DAILY_W_SCAL_INT_AVG");
     daily_item10.setText("DAILY_W_VEC_DIR_PREV");
     daily_item11.setText("DAILY_W_SCAL_INT_MAX");
-    daily_item12.setText("All variables");
-    QFont font("Helvetica", 10, QFont::Bold);
-    daily_item12.setFont(font);
 
     dailyVar.addItem(&daily_item1);
     dailyVar.addItem(&daily_item2);
@@ -58,10 +56,8 @@ DialogDownloadMeteoData::DialogDownloadMeteoData()
     dailyVar.addItem(&daily_item9);
     dailyVar.addItem(&daily_item10);
     dailyVar.addItem(&daily_item11);
-    dailyVar.addItem(&daily_item12);
 
     timeVarLayout.addWidget(&dailyVar);
-    connect(&dailyVar, &QListWidget::itemClicked, [=](QListWidgetItem* item){ this->dailyVarClicked(item); });
 
     hourlyVar.setSelectionMode(QAbstractItemView::MultiSelection);
 
@@ -71,8 +67,6 @@ DialogDownloadMeteoData::DialogDownloadMeteoData()
     hourly_item4.setText("RAD");
     hourly_item5.setText("W_SCAL_INT");
     hourly_item6.setText("W_VEC_DIR");
-    hourly_item7.setText("All variables");
-    hourly_item7.setFont(font);
 
     hourlyVar.addItem(&hourly_item1);
     hourlyVar.addItem(&hourly_item2);
@@ -80,11 +74,17 @@ DialogDownloadMeteoData::DialogDownloadMeteoData()
     hourlyVar.addItem(&hourly_item4);
     hourlyVar.addItem(&hourly_item5);
     hourlyVar.addItem(&hourly_item6);
-    hourlyVar.addItem(&hourly_item7);
-
-    connect(&hourlyVar, &QListWidget::itemClicked, [=](QListWidgetItem* item){ this->hourlyVarClicked(item); });
 
     timeVarLayout.addWidget(&hourlyVar);
+
+    allDaily.setText("All daily variables");
+    allHourly.setText("All hourly variables");
+
+    allVarLayout.addWidget(&allDaily);
+    allVarLayout.addWidget(&allHourly);
+
+    connect(&allDaily, &QCheckBox::stateChanged, [=](int state){ this->allDailyVarClicked(state); });
+    connect(&allHourly, &QCheckBox::stateChanged, [=](int state){ this->allHourlyVarClicked(state); });
     firstYearEdit.setDate(QDate::currentDate());
     QLabel *FirstDateLabel = new QLabel("   Start Date:");
     FirstDateLabel->setBuddy(&firstYearEdit);
@@ -117,6 +117,7 @@ DialogDownloadMeteoData::DialogDownloadMeteoData()
     buttonLayout.addWidget(&buttonBox);
     mainLayout.addLayout(&titleLayout);
     mainLayout.addLayout(&timeVarLayout);
+    mainLayout.addLayout(&allVarLayout);
     mainLayout.addLayout(&dateLayout);
     mainLayout.addLayout(&buttonLayout);
     setLayout(&mainLayout);
@@ -126,25 +127,19 @@ DialogDownloadMeteoData::DialogDownloadMeteoData()
 
 }
 
-void DialogDownloadMeteoData::dailyVarClicked(QListWidgetItem* item)
+void DialogDownloadMeteoData::allDailyVarClicked(int state)
 {
-    if (item->text() == "All variables")
+    for (int i=0; i < dailyVar.count(); i++)
     {
-        for (int i=0; i < dailyVar.count()-1; i++)
-        {
-            dailyVar.item(i)->setSelected(item->isSelected());
-        }
+        dailyVar.item(i)->setSelected(state);
     }
 }
 
-void DialogDownloadMeteoData::hourlyVarClicked(QListWidgetItem* item)
+void DialogDownloadMeteoData::allHourlyVarClicked(int state)
 {
-    if (item->text() == "All variables")
+    for (int i=0; i < hourlyVar.count(); i++)
     {
-        for (int i=0; i < hourlyVar.count()-1; i++)
-        {
-            hourlyVar.item(i)->setSelected(item->isSelected());
-        }
+        hourlyVar.item(i)->setSelected(state);
     }
 }
 
@@ -167,14 +162,14 @@ void DialogDownloadMeteoData::done(bool res)
              for (int i = 0; i < dailyVar.count()-1; ++i)
              {
                     item = dailyVar.item(i);
-                    if (daily_item12.isSelected() || item->isSelected())
+                    if (item->isSelected())
                         varD.append(item->text());
 
              }
              for (int i = 0; i < hourlyVar.count()-1; ++i)
              {
                     item = hourlyVar.item(i);
-                    if (hourly_item7.isSelected() || item->isSelected())
+                    if (item->isSelected())
                         varH.append(item->text());
 
              }
@@ -185,7 +180,7 @@ void DialogDownloadMeteoData::done(bool res)
              }
 
              prec0024 = true;
-             if ( daily_item4.isSelected() || daily_item12.isSelected() )
+             if ( daily_item4.isSelected() )
              {
                  QDialog precDialog;
                  precDialog.setFixedWidth(350);
@@ -207,6 +202,8 @@ void DialogDownloadMeteoData::done(bool res)
                  if (second.isChecked())
                      prec0024 = false;
              }
+             QDialog::done(QDialog::Accepted);
+             return;
          }
     }
     else    // cancel, close or exc was pressed

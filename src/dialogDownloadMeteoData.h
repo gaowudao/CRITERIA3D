@@ -26,7 +26,6 @@
         QListWidgetItem daily_item9;
         QListWidgetItem daily_item10;
         QListWidgetItem daily_item11;
-        QListWidgetItem daily_item12;
 
         QListWidgetItem hourly_item1;
         QListWidgetItem hourly_item2;
@@ -34,7 +33,9 @@
         QListWidgetItem hourly_item4;
         QListWidgetItem hourly_item5;
         QListWidgetItem hourly_item6;
-        QListWidgetItem hourly_item7;
+
+        QCheckBox allDaily;
+        QCheckBox allHourly;
 
         QStringList varD;
         QStringList varH;
@@ -43,8 +44,8 @@
     public:
         DialogDownloadMeteoData();
         void done(bool res);
-        void dailyVarClicked(QListWidgetItem* item);
-        void hourlyVarClicked(QListWidgetItem* item);
+        void allDailyVarClicked(int state);
+        void allHourlyVarClicked(int state);
         QStringList getVarD() const;
         QStringList getVarH() const;
         QDate getFirstDate();
