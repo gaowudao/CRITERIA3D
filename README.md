@@ -1,8 +1,8 @@
-
+<<<<<<< HEAD
 # CRITERIA-3D
-CRITERIA3D is a geographical application that implements three-dimensional water balance for small catchments.
+CRITERIA3D is a three-dimensional water balance for small catchments.
 
-It includes a numerical solution for three-dimensional water and heat flow in the soil, coupled surface and subsurface flow, meteorological data interpolation, radiation budget, crop development and crop water uptake, snow accumulation and melt. It needs hourly meteo data as input. 
+It includes a numerical solution for three-dimensional water and heat flow in the soil, coupled surface and subsurface flow, meteorological data interpolation, radiation budget, crop development and crop water uptake. It needs hourly meteo data as input. 
 
 ![](https://github.com/ARPA-SIMC/CRITERIA3D/blob/master/DOC/img/CRITERIA3D.png)
 
@@ -13,11 +13,14 @@ Dependencies:
 - qwt library (http://qwt.sourceforge.net/): you have to dowload and compile qwt, then check the correct path in bin/CRITERIA3D/CRITERIA3D.pro
 
 When the dependencies are installed you can compile the project bin/Makeall_CRITERIA3D
+=======
+# PRAGA
+Program for Agrometeorological Analysis
+>>>>>>> 606d64c736232b2384413741361222d0ebc82034
 
-## soilFluxes3D library
-SoilFluxes3D is a numerical solution for flow equations of water and heat in the soil, in a three-dimensional domain.
-Surface water flow is described by the two-dimensional parabolic approximation of the St. Venant equation, using Manning’s equation of motion; subsurface water flow is described by the three-dimensional Richards’ equation for the unsaturated zone and by three-dimensional Darcy’s law for the saturated zone, using an integrated finite difference formulation.
+![](https://github.com/ftomei/PRAGA/blob/master/DOC/img/PRAGA_screenshot.png)
 
+<<<<<<< HEAD
 Water fluxes equations may be coupled with the heat flux equations, which include diffusive, latent and advective terms. Atmospheric data (net irradiance, air temperature and relative humidity, wind speed) could be used as top boundary conditions. See [CRITERIA3D](http://www.sciencedirect.com/science/article/pii/S0309170809001754) for more information.
 
 ## HEAT1D
@@ -38,7 +41,17 @@ To compile it, use the project `test/Makeall_CRITERIA1D`. An example project is 
 CRITERIA-3D has been developed under contract issued by 
 ARPAE Hydro-Meteo-Climate Service, Emilia-Romagna, Italy: http://www.arpae.it/sim/
 
-Executables (CRITERIA3D, VINE3D, HEAT1D, etc.) are released under the GNU GPL license, libreries are released under the GNU LGPL license.
+The executables (CRITERIA3D, VINE3D, HEAT1D, etc.) are released under the GNU GPL license, libreries are released under the GNU LGPL license.
+=======
+PRAGA is a geographical application for agrometeorological and climate analysis.  
+See [PRAGA wiki](https://github.com/ftomei/PRAGA/wiki/PRAGA-wiki) for more informations.
+
+# License
+PRAGA has been developed under contract issued by 
+ARPAE Climate Observatory, Emilia-Romagna, Italy: http://www.arpae.it/sim/
+
+The executable is released under the GNU GPL license, libreries are released under the GNU LGPL license.
+>>>>>>> 606d64c736232b2384413741361222d0ebc82034
 
 ## Authors
 Fausto Tomei <ftomei@arpae.it>
@@ -50,11 +63,11 @@ Laura Costantini  <laura.costantini0@gmail.com>
 Antonio Volta		<antonio.volta@agromet.it>
 
 ## Contributions
-
 Marco Bittelli   <marco.bittelli@unibo.it>
 
 Vittorio Marletto <vmarletto@arpae.it>
 
+<<<<<<< HEAD
 Alberto Pistocchi	 <alberto.pistocchi@jrc.ec.europa.eu>
 
 Tomaso Tonelli <ttonelli@arpae.it>
@@ -62,3 +75,6 @@ Tomaso Tonelli <ttonelli@arpae.it>
 Margot Van Soetendaal <margot@farnet.eu>
 
 Franco Zinoni <fzinoni@arpae.it>
+=======
+Andrea Pasquali <apasquali@arpae.it>
+>>>>>>> 606d64c736232b2384413741361222d0ebc82034
