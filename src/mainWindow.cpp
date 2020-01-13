@@ -545,8 +545,36 @@ void MainWindow::disableAllButton(bool toggled)
 
 void MainWindow::on_actionDownload_meteo_data_triggered()
 {
-    if (downloadMeteoData(&myProject))
-        this->loadMeteoPoints(myProject.meteoPointsDbHandler->getDbName());
+    if(myProject.nrMeteoPoints == 0)
+    {
+         QMessageBox::information(nullptr, "DB not existing", "Create or Open a meteo points database before download");
+    }
+    DialogDownloadMeteoData downloadDialog;
+    if (downloadDialog.result() != QDialog::Accepted)
+    {
+        return;
+    }
+    else
+    {
+        QDate firstDate = downloadDialog.getFirstDate();
+        QDate lastDate = downloadDialog.getLastDate();
+        if (!downloadDialog.getVarD().isEmpty())
+        {
+            if (! myProject.downloadDailyDataArkimet(downloadDialog.getVarD(), downloadDialog.getPrec0024(), firstDate, lastDate, true))
+             {
+                 QMessageBox::information(nullptr, "Error!", "Error in daily download");
+             }
+        }
+        if (!downloadDialog.getVarH().isEmpty())
+        {
+            if (! myProject.downloadHourlyDataArkimet(downloadDialog.getVarH(), firstDate, lastDate, true))
+             {
+                 QMessageBox::information(nullptr, "Error!", "Error in daily download");
+             }
+        }
+    }
+
+    this->loadMeteoPoints(myProject.meteoPointsDbHandler->getDbName());
 }
 
 
