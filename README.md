@@ -1,7 +1,7 @@
 # PRAGA
 Program for Agrometeorological Analysis
 
-![](https://github.com/ARPA-SIMC/CRITERIA3D/blob/master/DOC/img/PRAGA_screenshot.png)
+![](https://github.com/ftomei/PRAGA/blob/master/DOC/img/PRAGA_screenshot.png)
 
 PRAGA is a geographical application for agrometeorological and climate analysis.  
 See [PRAGA wiki](https://github.com/ftomei/PRAGA/wiki/PRAGA-wiki) for more informations.
