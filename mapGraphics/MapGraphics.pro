@@ -69,3 +69,8 @@ HEADERS += \
     LineObject.h \
     CircleObject.h
 
+<<<<<<< HEAD:mapGraphics/MapGraphics.pro
+=======
+
+
+>>>>>>> 606d64c736232b2384413741361222d0ebc82034:mapGraphics/MapGraphics.pro
