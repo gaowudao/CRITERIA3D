@@ -10,9 +10,9 @@ See [CRITERIA3D](https://github.com/ARPA-SIMC/CRITERIA3D/blob/master/DOC/CRITERI
 Dependencies:
 - Qt libraries: Qt 5.x or following is needed.
 - [MapGraphics library](https://github.com/raptorswing/MapGraphics) (modified version) you have to build (with Qt) the project *mapGraphics/MapGraphics.pro*
-- [Qwt library](http://qwt.sourceforge.net/): you have to download and compile the qwt library, then check the correct path in: bin/CRITERIA3D/CRITERIA3D.pro and agrolib/soilWidget/soilWidget.pro
+- [Qwt library](http://qwt.sourceforge.net/): you have to download and compile the qwt library, then check the correct path in *bin/CRITERIA3D/CRITERIA3D.pro* and *agrolib/soilWidget/soilWidget.pro*
 
-When all the dependencies are installed you can build the project: bin/Makeall_CRITERIA3D
+When all the dependencies are installed you can build the project *bin/Makeall_CRITERIA3D*
 
 ## soilFluxes3D library 
 #### agrolib/soilFluxed3D
@@ -42,7 +42,7 @@ Click [here](https://github.com/ARPA-SIMC/CRITERIA3D/releases/tag/SoilWidget) to
 CRITERIA-3D has been developed under contract issued by 
 ARPAE Hydro-Meteo-Climate Service, Emilia-Romagna, Italy: http://www.arpae.it/sim/
 
-The executables (CRITERIA3D, VINE3D, HEAT1D, etc.) are released under the GNU GPL license, libreries (agrolib/) are released under the GNU LGPL license.
+The executables (*CRITERIA3D, VINE3D, HEAT1D, SoilWidget*) are released under the GNU GPL license, libreries (*agrolib*) are released under the GNU LGPL license.
 
 ## Authors
 Fausto Tomei <ftomei@arpae.it>
