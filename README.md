@@ -27,8 +27,9 @@ Graphs are produced using the Qwt plot library (http://qwt.sourceforge.net) whic
 
 Soil widget is a tool to show/edit soil data, including water retention and hydrologic conductivity curves, using modified Van Genuchten - Mualem model.
 
-[-->Download soilWidget](https://github.com/ARPA-SIMC/CRITERIA3D/releases/tag/SoilWidget)
 ![](https://github.com/ARPA-SIMC/CRITERIA3D/blob/master/DOC/img/soilWidget.png)
+
+[Download soilWidget](https://github.com/ARPA-SIMC/CRITERIA3D/releases/tag/SoilWidget)
 
 
 ## License
