@@ -8,7 +8,7 @@ It includes a numerical solution for three-dimensional water and heat flow in th
 ## How to compile CRITERIA-3D
 Dependencies:
 - Qt libraries: Qt 5.x or following is needed.
-- [MapGraphics library](https://github.com/raptorswing/MapGraphics)(modified version): you have to compile the project /mapGraphics/MapGraphics.pro
+- [MapGraphics library](https://github.com/raptorswing/MapGraphics) (modified version): you have to compile the project /mapGraphics/MapGraphics.pro
 - [Qwt library](http://qwt.sourceforge.net/): you have to dowload and compile the library, then check the correct path in: /bin/CRITERIA3D/CRITERIA3D.pro and /agrolib/soilWidget/soilWidget.pro
 
 When the dependencies are installed you can compile the project /bin/Makeall_CRITERIA3D
@@ -21,7 +21,7 @@ Water fluxes equations may be coupled with the heat flux equations, which includ
 
 ## HEAT1D
 HEAT1D is a graphical interface for testing the soilFluxex3D library in a 1D domain. Users can set fixed or variable atmospheric boundary conditions and soil parameters. Output graph results include soil temperature, soil water content, heat fluxes (diffusive and latent), liquid (isothermal and thermal) and vapor (isothermal and thermal) water fluxes.  
-Graphs are produced using the Qwt plot library (http://qwt.sourceforge.net/) which should be compiled before usage.
+Graphs are produced using the Qwt plot library (http://qwt.sourceforge.net) which should be compiled before usage.
 
 ## Soil Widget
 
