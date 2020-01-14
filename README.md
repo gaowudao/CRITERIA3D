@@ -8,8 +8,8 @@ It includes a numerical solution for three-dimensional water and heat flow in th
 ## How to compile CRITERIA-3D
 Dependencies:
 - Qt libraries: Qt 5.x or following is needed.
-- [MapGraphics library](https://github.com/raptorswing/MapGraphics) (modified version): you have to compile the project /mapGraphics/MapGraphics.pro
-- [Qwt library](http://qwt.sourceforge.net/): you have to dowload and compile the library, then check the correct path in: /bin/CRITERIA3D/CRITERIA3D.pro and /agrolib/soilWidget/soilWidget.pro
+- [MapGraphics library](https://github.com/raptorswing/MapGraphics) (modified version) you have to build with Qt the project: mapGraphics/MapGraphics.pro
+- [Qwt library](http://qwt.sourceforge.net/): you have to dowload and compile the library, then check the correct path in: bin/CRITERIA3D/CRITERIA3D.pro and agrolib/soilWidget/soilWidget.pro
 
 When the dependencies are installed you can compile the project /bin/Makeall_CRITERIA3D
 
