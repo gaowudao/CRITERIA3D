@@ -9,7 +9,7 @@ See [CRITERIA3D](https://github.com/ARPA-SIMC/CRITERIA3D/blob/master/DOC/CRITERI
 ## How to compile CRITERIA-3D
 Dependencies:
 - Qt libraries: Qt 5.x or following is needed.
-- [MapGraphics library](https://github.com/raptorswing/MapGraphics) (modified version) you have to build with Qt the project: mapGraphics/MapGraphics.pro
+- [MapGraphics library](https://github.com/raptorswing/MapGraphics) (modified version) you have to build (with Qt) the project *mapGraphics/MapGraphics.pro*
 - [Qwt library](http://qwt.sourceforge.net/): you have to download and compile the qwt library, then check the correct path in: bin/CRITERIA3D/CRITERIA3D.pro and agrolib/soilWidget/soilWidget.pro
 
 When all the dependencies are installed you can build the project: bin/Makeall_CRITERIA3D
