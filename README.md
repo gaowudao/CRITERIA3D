@@ -1,5 +1,5 @@
 # CRITERIA-3D
-CRITERIA3D is a three-dimensional water balance for small catchments.
+CRITERIA-3D is a three-dimensional water balance for small catchments.
 
 It includes a numerical solution for three-dimensional water and heat flow in the soil, coupled surface and subsurface flow, meteorological data interpolation, radiation budget, crop development and crop water uptake. It needs hourly meteo data as input. 
 
@@ -8,16 +8,16 @@ It includes a numerical solution for three-dimensional water and heat flow in th
 ## How to compile CRITERIA-3D
 Dependencies:
 - Qt libraries: Qt 5.x or following is needed.
-- MapGraphics library (https://github.com/raptorswing/MapGraphics): you have to compile the project mapGraphics/MapGraphics.pro
-- qwt library (http://qwt.sourceforge.net/): you have to dowload and compile qwt, then check the correct path in bin/CRITERIA3D/CRITERIA3D.pro
+- MapGraphics library (https://github.com/raptorswing/MapGraphics): you have to compile the project /mapGraphics/MapGraphics.pro
+- qwt library (http://qwt.sourceforge.net/): you have to dowload and compile qwt library, then check the correct path in: /bin/CRITERIA3D/CRITERIA3D.pro and /agrolib/soilWidget/soilWidget.pro
 
-When the dependencies are installed you can compile the project bin/Makeall_CRITERIA3D
+When the dependencies are installed you can compile the project /bin/Makeall_CRITERIA3D
 
 ## soilFluxes3D library
 SoilFluxes3D is a numerical solution for flow equations of water and heat in the soil, in a three-dimensional domain.
 Surface water flow is described by the two-dimensional parabolic approximation of the St. Venant equation, using Manning’s equation of motion; subsurface water flow is described by the three-dimensional Richards’ equation for the unsaturated zone and by three-dimensional Darcy’s law for the saturated zone, using an integrated finite difference formulation.
 
-Water fluxes equations may be coupled with the heat flux equations, which include diffusive, latent and advective terms. Atmospheric data (net irradiance, air temperature and relative humidity, wind speed) could be used as top boundary conditions. See [CRITERIA3D](http://www.sciencedirect.com/science/article/pii/S0309170809001754) for more information.
+Water fluxes equations may be coupled with the heat flux equations, which include diffusive, latent and advective terms. Atmospheric data (net irradiance, air temperature and relative humidity, wind speed) could be used as top boundary conditions. See [CRITERIA3D](https://github.com/ARPA-SIMC/CRITERIA3D/blob/master/DOC/CRITERIA3D.pdf) for more information.
 
 ## HEAT1D
 HEAT1D is a graphical interface for testing the soilFluxex3D library in a 1D domain. Users can set fixed or variable atmospheric boundary conditions and soil parameters. Output graph results include soil temperature, soil water content, heat fluxes (diffusive and latent), liquid (isothermal and thermal) and vapor (isothermal and thermal) water fluxes.  
