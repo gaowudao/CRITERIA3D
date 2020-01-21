@@ -461,7 +461,7 @@
    </font>
   </property>
   <property name="windowTitle">
-   <string>WANDERER</string>
+   <string>GIS</string>
   </property>
   <property name="autoFillBackground">
    <bool>false</bool>

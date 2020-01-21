@@ -21,14 +21,12 @@ CONFIG += debug_and_release
 
 
 CONFIG(debug, debug|release) {
-    LIBS += -L../../agrolib/graphics/debug -lgraphics
     LIBS += -L../../mapGraphics/debug -lMapGraphics
     LIBS += -L../../agrolib/shapeHandler/debug -lshapeHandler
     LIBS += -L../../agrolib/gis/debug -lgis
     LIBS += -L../../agrolib/crit3dDate/debug -lcrit3dDate
     LIBS += -L../../agrolib/mathFunctions/debug -lmathFunctions
 } else {
-    LIBS += -L../../agrolib/graphics/release -lgraphics
     LIBS += -L../../mapGraphics/release -lMapGraphics
     LIBS += -L../../agrolib/shapeHandler/release -lshapeHandler
     LIBS += -L../../agrolib/gis/release -lgis
@@ -37,7 +35,26 @@ CONFIG(debug, debug|release) {
 }
 
 
-SOURCES += main.cpp\
+HEADERS += \
+    ../../agrolib/graphics/mapGraphicsRasterObject.h \
+    ../../agrolib/graphics/mapGraphicsShapeObject.h \
+    ../../agrolib/graphics/colorLegend.h \
+    gisProject.h \
+    showProperties.h\
+    dbfTableDialog.h \
+    dbfNewColDialog.h \
+    unitCropMap.h \
+    shapeToRaster.h \
+    zonalStatistic.h \
+    dbfNumericFieldsDialog.h \
+    ucmDialog.h \
+    gisObject.h \
+    mainWindow.h
+
+SOURCES += \
+    ../../agrolib/graphics/mapGraphicsRasterObject.cpp \
+    ../../agrolib/graphics/mapGraphicsShapeObject.cpp \
+    ../../agrolib/graphics/colorLegend.cpp \
     mainWindow.cpp \
     gisProject.cpp \
     showProperties.cpp\
@@ -48,20 +65,8 @@ SOURCES += main.cpp\
     zonalStatistic.cpp \
     dbfNumericFieldsDialog.cpp \
     ucmDialog.cpp \
-    gisObject.cpp
-
-HEADERS += \
-    mainWindow.h \
-    gisProject.h \
-    showProperties.h\
-    dbfTableDialog.h \
-    dbfNewColDialog.h \
-    unitCropMap.h \
-    shapeToRaster.h \
-    zonalStatistic.h \
-    dbfNumericFieldsDialog.h \
-    ucmDialog.h \
-    gisObject.h
+    gisObject.cpp \
+    main.cpp
 
 
 FORMS += mainWindow.ui
