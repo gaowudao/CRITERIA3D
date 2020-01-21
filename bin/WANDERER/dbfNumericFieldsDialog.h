@@ -15,9 +15,10 @@
             QLineEdit* cellSize;
 
         public:
-            DbfNumericFieldsDialog(Crit3DShapeHandler *shapeHandler, QString fileName);
+            DbfNumericFieldsDialog(Crit3DShapeHandler *shapeHandler, QString fileName, bool isRasterize);
             ~DbfNumericFieldsDialog();
-            void fieldToRaster();
+            void acceptRasterize();
+            void acceptSelection();
             QString getOutputName();
             QString getFieldSelected();
             double getCellSize() const;

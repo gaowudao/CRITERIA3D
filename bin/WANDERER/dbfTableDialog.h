@@ -1,7 +1,6 @@
 #ifndef tableDBFDialog_H
 #define tableDBFDialog_H
 
-#include <QtWidgets>
 #include "shapeHandler.h"
 #include "dbfNewColDialog.h"
 

@@ -235,15 +235,8 @@ void MainWindow::addRasterObject(GisObject* myObject)
 }
 
 
-bool MainWindow::addShapeObject(GisObject* myObject)
+bool MainWindow::addShapeObject(GisObject* myObject, QString referenceField)
 {
-    QListWidgetItem* item = new QListWidgetItem("[SHAPE] " + myObject->fileName);
-    item->setFlags(item->flags() | Qt::ItemIsUserCheckable);
-    item->setCheckState(Qt::Checked);
-    ui->checkList->addItem(item);
-
-    MapGraphicsShapeObject* newShapeObj = new MapGraphicsShapeObject(this->mapView);
-
     // check zoneNumber
     int zoneNumber = myObject->getShapeHandler()->getUtmZone();
     if (zoneNumber < 1 || zoneNumber > 60)
@@ -252,12 +245,22 @@ bool MainWindow::addShapeObject(GisObject* myObject)
         return false;
     }
 
+    // add item
+    QListWidgetItem* item = new QListWidgetItem("[SHAPE] " + myObject->fileName);
+    item->setFlags(item->flags() | Qt::ItemIsUserCheckable);
+    item->setCheckState(Qt::Checked);
+    ui->checkList->addItem(item);
+
+    // add shapeObject
+    MapGraphicsShapeObject* newShapeObj = new MapGraphicsShapeObject(this->mapView);
     newShapeObj->initializeUTM(myObject->getShapeHandler());
     newShapeObj->setOpacity(0.5);
-    this->shapeObjList.push_back(newShapeObj);
+    newShapeObj->setReferenceField(referenceField);
 
+    this->shapeObjList.push_back(newShapeObj);
     this->mapView->scene()->addObject(newShapeObj);
     this->updateMaps();
+
     return true;
 }
 
@@ -289,7 +292,16 @@ void MainWindow::on_actionLoadShapefile_triggered()
     if (! myProject.loadShapefile(fileNameWithPath))
         return;
 
-    this->addShapeObject(myProject.objectList.back());
+    GisObject* myObject = myProject.objectList.back();
+    QString referenceField;
+
+    DbfNumericFieldsDialog numericFields(myObject->getShapeHandler(), myObject->fileName, false);
+    if (numericFields.result() == QDialog::Accepted)
+    {
+        referenceField = numericFields.getFieldSelected();
+    }
+
+    this->addShapeObject(myObject, referenceField);
 }
 
 
@@ -449,7 +461,7 @@ void MainWindow::on_actionRasterize_shape_triggered()
     {
         int pos = ui->checkList->row(itemSelected);
         GisObject* myObject = myProject.objectList.at(unsigned(pos));
-        DbfNumericFieldsDialog numericFields(myObject->getShapeHandler(), myObject->fileName);
+        DbfNumericFieldsDialog numericFields(myObject->getShapeHandler(), myObject->fileName, true);
         if (numericFields.result() == QDialog::Accepted)
         {
             myProject.getRasterFromShape(myObject->getShapeHandler(), numericFields.getFieldSelected(), numericFields.getOutputName(), numericFields.getCellSize(), true);
@@ -474,7 +486,7 @@ void MainWindow::on_actionCompute_Unit_Crop_Map_triggered()
 
     if (myProject.addUnitCropMap(ucmDialog.getCrop(), ucmDialog.getSoil(), ucmDialog.getMeteo(), ucmDialog.getIdSoil().toStdString(), ucmDialog.getIdMeteo().toStdString(), ucmDialog.getOutputName(), ucmDialog.getCellSize()))
     {
-        addShapeObject(myProject.objectList.back());
+        addShapeObject(myProject.objectList.back(), "ID_UNIT");
     }
 }
 

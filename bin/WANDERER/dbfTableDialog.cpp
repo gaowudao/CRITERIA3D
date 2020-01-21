@@ -3,17 +3,17 @@
 DbfTableDialog::DbfTableDialog(Crit3DShapeHandler* shapeHandler, QString fileName)
     :shapeHandler(shapeHandler)
 {
-
-    // make a copy
+    // make a copy of shapefile
     QFileInfo filepathInfo(QString::fromStdString(shapeHandler->getFilepath()));
-    QString file_temp = filepathInfo.absolutePath()+"/"+filepathInfo.baseName()+"_temp.dbf";
-    QFile::copy(filepathInfo.absolutePath()+"/"+filepathInfo.baseName()+".dbf", file_temp);
+    QString file_temp = filepathInfo.absolutePath() + "/" + filepathInfo.baseName() + "_temp.dbf";
+    QString file_origin = filepathInfo.absolutePath() + "/" + filepathInfo.baseName() + ".dbf";
+    QFile::copy(file_origin, file_temp);
 
     this->setWindowTitle(fileName);
-    this->setMaximumWidth(800);
-    this->setMaximumHeight(600);
     QVBoxLayout* mainLayout = new QVBoxLayout;
+    this->resize(800, 600);
 
+    // set menu bar
     menuBar = new QMenuBar;
     editMenu = new QMenu(tr("&Edit"), this);
     addRow = editMenu->addAction(tr("Insert row"));
@@ -26,8 +26,6 @@ DbfTableDialog::DbfTableDialog(Crit3DShapeHandler* shapeHandler, QString fileNam
     menuBar->addMenu(editMenu);
 
     mainLayout->setMenuBar(menuBar);
-
-    resize(QDesktopWidget().availableGeometry().size());
 
     m_DBFTableWidget = new QTableWidget();
     mainLayout->addWidget(m_DBFTableWidget);
@@ -44,15 +42,14 @@ DbfTableDialog::DbfTableDialog(Crit3DShapeHandler* shapeHandler, QString fileNam
     labels.clear();
     m_DBFTableHeader.clear();
 
-    for (int i = 0; i < colNumber; i++)
+    for (int i=0; i < colNumber; i++)
     {
-        nameField =  shapeHandler->getFieldName(i);
+        nameField = shapeHandler->getFieldName(i);
         typeField = shapeHandler->getFieldType(i);
         m_DBFTableHeader << QString::fromStdString(nameField);
 
         for (int j = 0; j < rowNumber; j++)
-        {
-
+        {  
             if (typeField == FTString)
             {
                 m_DBFTableWidget->setItem(j, i, new QTableWidgetItem( QString::fromStdString(shapeHandler->readStringAttribute(j,i) )));
@@ -69,7 +66,6 @@ DbfTableDialog::DbfTableDialog(Crit3DShapeHandler* shapeHandler, QString fileNam
             {
                 m_DBFTableWidget->item(j,i)->setBackground(Qt::yellow);    // mark as DELETED records
             }
-
         }
     }
 
@@ -77,6 +73,7 @@ DbfTableDialog::DbfTableDialog(Crit3DShapeHandler* shapeHandler, QString fileNam
     {
         labels << QString::number(j);
     }
+
     m_DBFTableWidget->setVerticalHeaderLabels(labels);
     m_DBFTableWidget->setHorizontalHeaderLabels(m_DBFTableHeader);
     m_DBFTableWidget->setSelectionBehavior(QAbstractItemView::SelectRows);
@@ -85,8 +82,6 @@ DbfTableDialog::DbfTableDialog(Crit3DShapeHandler* shapeHandler, QString fileNam
     m_DBFTableWidget->setStyleSheet("QTableView {selection-background-color: red;}");
 
     int offset = 100;
-    m_DBFTableWidget->setMinimumWidth(this->width());
-    m_DBFTableWidget->setMaximumWidth(this->width());
     m_DBFTableWidget->setMinimumHeight(this->height() - offset);
     m_DBFTableWidget->setMaximumHeight(this->height() - offset);
 
@@ -105,11 +100,10 @@ DbfTableDialog::DbfTableDialog(Crit3DShapeHandler* shapeHandler, QString fileNam
     connect(m_DBFTableWidget->horizontalHeader(), &QHeaderView::sectionClicked, [=](int index){ this->horizontalHeaderClick(index); });
     connect(m_DBFTableWidget->verticalHeader(), &QHeaderView::sectionClicked, [=](int index){ this->verticalHeaderClick(index); });
 
-
     setLayout(mainLayout);
     exec();
-
 }
+
 
 DbfTableDialog::~DbfTableDialog()
 {
