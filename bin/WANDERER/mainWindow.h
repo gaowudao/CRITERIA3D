@@ -80,7 +80,9 @@
         void saveRaster(GisObject* myObject);
         void removeRaster(GisObject* myObject);
         void removeShape(GisObject* myObject);
+        void setShapeStyle(GisObject* myObject);
 
+        MapGraphicsShapeObject* getShapeObject(GisObject* myObject);
         QPoint getMapPos(const QPoint& pos);
         bool isInsideMap(const QPoint& pos);
     };
