@@ -399,6 +399,7 @@ void MainWindow::setShapeStyle(GisObject* myObject)
     {
         MapGraphicsShapeObject* shapeObject = getShapeObject(myObject);
         shapeObject->setValues(numericFields.getFieldSelected());
+        setTemperatureScale(shapeObject->colorScale);
         shapeObject->setFill(true);
     }
 }
