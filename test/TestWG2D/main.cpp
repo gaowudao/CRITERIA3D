@@ -10,9 +10,9 @@
 #include "readPragaFormatData.h"
 
 
-#define NR_SIMULATION_YEARS 50
+#define NR_SIMULATION_YEARS 200
 // [ 1 - 10 ]
-#define NR_STATIONS 5
+#define NR_STATIONS 3
 
 weatherGenerator2D WG2D;
 
