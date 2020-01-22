@@ -14,7 +14,7 @@ DialogSelectField::DialogSelectField(Crit3DShapeHandler* shapeHandler, QString f
     {
         cellSize = new QLineEdit();
         cellSize->setPlaceholderText("cell size [m]");
-        cellSize->setValidator(new QDoubleValidator(0, 9999.0, 2)); //LC accetta double con 2 cifre decimali da 0 a 9999
+        cellSize->setValidator(new QDoubleValidator(0, 9999, 2)); //LC accetta double con 2 cifre decimali da 0 a 9999
         outputName = new QLineEdit();
         outputName->setPlaceholderText("Output Name");
         mainLayout->addWidget(cellSize);
@@ -24,7 +24,7 @@ DialogSelectField::DialogSelectField(Crit3DShapeHandler* shapeHandler, QString f
     DBFFieldType typeField;
     QStringList fields;
 
-    fields << "Shape ID";
+    if (isRasterize) fields << "Shape ID";
     for (int i = 0; i < shapeHandler->getFieldNumbers(); i++)
     {
         typeField = shapeHandler->getFieldType(i);

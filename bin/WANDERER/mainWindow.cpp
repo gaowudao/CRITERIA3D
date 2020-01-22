@@ -235,7 +235,7 @@ void MainWindow::addRasterObject(GisObject* myObject)
 }
 
 
-bool MainWindow::addShapeObject(GisObject* myObject, QString referenceField)
+bool MainWindow::addShapeObject(GisObject* myObject)
 {
     // check zoneNumber
     int zoneNumber = myObject->getShapeHandler()->getUtmZone();
@@ -255,7 +255,6 @@ bool MainWindow::addShapeObject(GisObject* myObject, QString referenceField)
     MapGraphicsShapeObject* newShapeObj = new MapGraphicsShapeObject(this->mapView);
     newShapeObj->initializeUTM(myObject->getShapeHandler());
     newShapeObj->setOpacity(0.5);
-    newShapeObj->setReferenceField(referenceField);
 
     this->shapeObjList.push_back(newShapeObj);
     this->mapView->scene()->addObject(newShapeObj);
@@ -294,7 +293,7 @@ void MainWindow::on_actionLoadShapefile_triggered()
 
     GisObject* myObject = myProject.objectList.back();
 
-    this->addShapeObject(myObject, "");
+    this->addShapeObject(myObject);
 }
 
 
@@ -398,10 +397,9 @@ void MainWindow::setShapeStyle(GisObject* myObject)
     DialogSelectField numericFields(myObject->getShapeHandler(), myObject->fileName, true, false);
     if (numericFields.result() == QDialog::Accepted)
     {
-        QString referenceField = numericFields.getFieldSelected();
-        MapGraphicsShapeObject* myShape = getShapeObject(myObject);
-        myShape->setReferenceField(referenceField);
-        myShape->setFill(true);
+        MapGraphicsShapeObject* shapeObject = getShapeObject(myObject);
+        shapeObject->setValues(numericFields.getFieldSelected());
+        shapeObject->setFill(true);
     }
 }
 
@@ -511,7 +509,7 @@ void MainWindow::on_actionCompute_Unit_Crop_Map_triggered()
 
     if (myProject.addUnitCropMap(ucmDialog.getCrop(), ucmDialog.getSoil(), ucmDialog.getMeteo(), ucmDialog.getIdSoil().toStdString(), ucmDialog.getIdMeteo().toStdString(), ucmDialog.getOutputName(), ucmDialog.getCellSize()))
     {
-        addShapeObject(myProject.objectList.back(), "ID_UNIT");
+        addShapeObject(myProject.objectList.back());
     }
 }
 
