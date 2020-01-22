@@ -74,7 +74,7 @@
 
         void setMapSource(OSMTileSource::OSMTileType mySource);
         void addRasterObject(GisObject* myObject);
-        bool addShapeObject(GisObject* myObject);
+        bool addShapeObject(GisObject* myObject, QString referenceField);
         void itemClicked(QListWidgetItem* item);
         void itemMenuRequested(const QPoint point);
         void saveRaster(GisObject* myObject);

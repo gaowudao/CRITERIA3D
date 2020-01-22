@@ -1,6 +1,6 @@
 #include "dbfNumericFieldsDialog.h"
 
-DbfNumericFieldsDialog::DbfNumericFieldsDialog(Crit3DShapeHandler* shapeHandler, QString fileName)
+DbfNumericFieldsDialog::DbfNumericFieldsDialog(Crit3DShapeHandler* shapeHandler, QString fileName, bool isRasterize)
     :shapeHandler(shapeHandler)
 {
 
@@ -9,34 +9,40 @@ DbfNumericFieldsDialog::DbfNumericFieldsDialog(Crit3DShapeHandler* shapeHandler,
     QVBoxLayout* mainLayout = new QVBoxLayout;
     listFields = new QListWidget();
     mainLayout->addWidget(listFields);
-    cellSize = new QLineEdit();
-    cellSize->setPlaceholderText("cell size [m]");
-    cellSize->setValidator(new QDoubleValidator(0, 9999.0, 2)); //LC accetta double con 2 cifre decimali da 0 a 9999
-    outputName = new QLineEdit();
-    outputName->setPlaceholderText("Output Name");
-    mainLayout->addWidget(cellSize);
-    mainLayout->addWidget(outputName);
 
-    std::string nameField;
-    QStringList fieldsLabel;
+    if (isRasterize)
+    {
+        cellSize = new QLineEdit();
+        cellSize->setPlaceholderText("cell size [m]");
+        cellSize->setValidator(new QDoubleValidator(0, 9999.0, 2)); //LC accetta double con 2 cifre decimali da 0 a 9999
+        outputName = new QLineEdit();
+        outputName->setPlaceholderText("Output Name");
+        mainLayout->addWidget(cellSize);
+        mainLayout->addWidget(outputName);
+    }
+
     DBFFieldType typeField;
+    QStringList fields;
 
-    fieldsLabel << "Shape ID";
+    fields << "Shape ID";
     for (int i = 0; i < shapeHandler->getFieldNumbers(); i++)
     {
         typeField = shapeHandler->getFieldType(i);
         if (typeField != FTString)
         {
-            nameField =  shapeHandler->getFieldName(i);
-            fieldsLabel << QString::fromStdString(nameField);
+            fields << QString::fromStdString(shapeHandler->getFieldName(i));
         }
     }
-    listFields->addItems(fieldsLabel);
+    listFields->addItems(fields);
 
     QDialogButtonBox* buttonBox = new QDialogButtonBox(QDialogButtonBox::Ok
                                              | QDialogButtonBox::Cancel);
 
-    connect(buttonBox, &QDialogButtonBox::accepted, [=](){ this->fieldToRaster(); });
+    if (isRasterize)
+        connect(buttonBox, &QDialogButtonBox::accepted, [=](){ this->acceptRasterize(); });
+    else
+        connect(buttonBox, &QDialogButtonBox::accepted, [=](){ this->acceptSelection(); });
+
     connect(buttonBox, &QDialogButtonBox::rejected, [=](){ QDialog::done(QDialog::Rejected); });
 
     mainLayout->addWidget(buttonBox);
@@ -50,7 +56,7 @@ DbfNumericFieldsDialog::~DbfNumericFieldsDialog()
 
 }
 
-void DbfNumericFieldsDialog::fieldToRaster()
+void DbfNumericFieldsDialog::acceptRasterize()
 {
     QListWidgetItem * itemSelected = listFields->currentItem();
     if (itemSelected == nullptr)
@@ -65,6 +71,20 @@ void DbfNumericFieldsDialog::fieldToRaster()
     }
     QDialog::done(QDialog::Accepted);
 }
+
+
+void DbfNumericFieldsDialog::acceptSelection()
+{
+    QListWidgetItem * itemSelected = listFields->currentItem();
+    if (itemSelected == nullptr)
+    {
+        QMessageBox::information(nullptr, "No items selected", "Select a field");
+        return;
+    }
+
+    QDialog::done(QDialog::Accepted);
+}
+
 
 QString DbfNumericFieldsDialog::getOutputName()
 {
