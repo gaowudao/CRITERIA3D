@@ -293,15 +293,8 @@ void MainWindow::on_actionLoadShapefile_triggered()
         return;
 
     GisObject* myObject = myProject.objectList.back();
-    QString referenceField;
 
-    DbfNumericFieldsDialog numericFields(myObject->getShapeHandler(), myObject->fileName, false);
-    if (numericFields.result() == QDialog::Accepted)
-    {
-        referenceField = numericFields.getFieldSelected();
-    }
-
-    this->addShapeObject(myObject, referenceField);
+    this->addShapeObject(myObject, "");
 }
 
 
@@ -373,6 +366,18 @@ void MainWindow::removeRaster(GisObject* myObject)
 }
 
 
+MapGraphicsShapeObject* MainWindow::getShapeObject(GisObject* myObject)
+{
+    for (unsigned int i = 0; i < shapeObjList.size(); i++)
+    {
+        if (shapeObjList.at(i)->getShapePointer() == myObject->getShapeHandler())
+            return shapeObjList.at(i);
+    }
+
+    return nullptr;
+}
+
+
 void MainWindow::removeShape(GisObject* myObject)
 {
     unsigned int i;
@@ -388,6 +393,19 @@ void MainWindow::removeShape(GisObject* myObject)
 }
 
 
+void MainWindow::setShapeStyle(GisObject* myObject)
+{
+    DbfNumericFieldsDialog numericFields(myObject->getShapeHandler(), myObject->fileName, false);
+    if (numericFields.result() == QDialog::Accepted)
+    {
+        QString referenceField = numericFields.getFieldSelected();
+        MapGraphicsShapeObject* myShape = getShapeObject(myObject);
+        myShape->setReferenceField(referenceField);
+        myShape->setFill(true);
+    }
+}
+
+
 void MainWindow::itemMenuRequested(const QPoint point)
 {
     QPoint itemPoint = ui->checkList->mapToGlobal(point);
@@ -400,7 +418,8 @@ void MainWindow::itemMenuRequested(const QPoint point)
     if (myObject->type == gisObjectShape)
     {
         submenu.addAction("Show data");
-        submenu.addAction("Open attribute table");
+        submenu.addAction("Attribute table");
+        submenu.addAction("Set style");
     }
     else if (myObject->type == gisObjectRaster)
     {
@@ -429,9 +448,13 @@ void MainWindow::itemMenuRequested(const QPoint point)
         {
             ShowProperties showData(myObject->getShapeHandler(), myObject->fileName);
         }
-        else if (rightClickItem->text().contains("Open attribute table"))
+        else if (rightClickItem->text().contains("Attribute table"))
         {
             DbfTableDialog Table(myObject->getShapeHandler(), myObject->fileName);
+        }
+        else if (rightClickItem->text().contains("Set style"))
+        {
+            setShapeStyle(myObject);
         }
         else if (rightClickItem->text().contains("Save as"))
         {
