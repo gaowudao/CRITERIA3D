@@ -1,6 +1,6 @@
-#include "dbfNumericFieldsDialog.h"
+#include "dialogSelectField.h"
 
-DbfNumericFieldsDialog::DbfNumericFieldsDialog(Crit3DShapeHandler* shapeHandler, QString fileName, bool isRasterize)
+DialogSelectField::DialogSelectField(Crit3DShapeHandler* shapeHandler, QString fileName, bool onlyNumeric, bool isRasterize)
     :shapeHandler(shapeHandler)
 {
 
@@ -28,15 +28,19 @@ DbfNumericFieldsDialog::DbfNumericFieldsDialog(Crit3DShapeHandler* shapeHandler,
     for (int i = 0; i < shapeHandler->getFieldNumbers(); i++)
     {
         typeField = shapeHandler->getFieldType(i);
-        if (typeField != FTString)
+        if (onlyNumeric)
         {
-            fields << QString::fromStdString(shapeHandler->getFieldName(i));
+            if (typeField == FTInteger || typeField == FTDouble)
+            {
+                fields << QString::fromStdString(shapeHandler->getFieldName(i));
+            }
         }
+        else fields << QString::fromStdString(shapeHandler->getFieldName(i));
+
     }
     listFields->addItems(fields);
 
-    QDialogButtonBox* buttonBox = new QDialogButtonBox(QDialogButtonBox::Ok
-                                             | QDialogButtonBox::Cancel);
+    QDialogButtonBox* buttonBox = new QDialogButtonBox(QDialogButtonBox::Ok | QDialogButtonBox::Cancel);
 
     if (isRasterize)
         connect(buttonBox, &QDialogButtonBox::accepted, [=](){ this->acceptRasterize(); });
@@ -51,12 +55,7 @@ DbfNumericFieldsDialog::DbfNumericFieldsDialog(Crit3DShapeHandler* shapeHandler,
 }
 
 
-DbfNumericFieldsDialog::~DbfNumericFieldsDialog()
-{
-
-}
-
-void DbfNumericFieldsDialog::acceptRasterize()
+void DialogSelectField::acceptRasterize()
 {
     QListWidgetItem * itemSelected = listFields->currentItem();
     if (itemSelected == nullptr)
@@ -73,7 +72,7 @@ void DbfNumericFieldsDialog::acceptRasterize()
 }
 
 
-void DbfNumericFieldsDialog::acceptSelection()
+void DialogSelectField::acceptSelection()
 {
     QListWidgetItem * itemSelected = listFields->currentItem();
     if (itemSelected == nullptr)
@@ -86,19 +85,19 @@ void DbfNumericFieldsDialog::acceptSelection()
 }
 
 
-QString DbfNumericFieldsDialog::getOutputName()
+QString DialogSelectField::getOutputName()
 {
     return outputName->text();
 }
 
-double DbfNumericFieldsDialog::getCellSize() const
+double DialogSelectField::getCellSize() const
 {
     QString cellString = cellSize->text();
     cellString.replace(",", ".");
     return cellString.toDouble();
 }
 
-QString DbfNumericFieldsDialog::getFieldSelected()
+QString DialogSelectField::getFieldSelected()
 {
     return listFields->currentItem()->text();
 }

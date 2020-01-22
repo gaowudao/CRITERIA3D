@@ -39,6 +39,7 @@ HEADERS += \
     ../../agrolib/graphics/mapGraphicsRasterObject.h \
     ../../agrolib/graphics/mapGraphicsShapeObject.h \
     ../../agrolib/graphics/colorLegend.h \
+    dialogSelectField.h \
     gisProject.h \
     showProperties.h\
     dbfTableDialog.h \
@@ -46,7 +47,6 @@ HEADERS += \
     unitCropMap.h \
     shapeToRaster.h \
     zonalStatistic.h \
-    dbfNumericFieldsDialog.h \
     ucmDialog.h \
     gisObject.h \
     mainWindow.h
@@ -55,6 +55,7 @@ SOURCES += \
     ../../agrolib/graphics/mapGraphicsRasterObject.cpp \
     ../../agrolib/graphics/mapGraphicsShapeObject.cpp \
     ../../agrolib/graphics/colorLegend.cpp \
+    dialogSelectField.cpp \
     mainWindow.cpp \
     gisProject.cpp \
     showProperties.cpp\
@@ -63,7 +64,6 @@ SOURCES += \
     unitCropMap.cpp \
     shapeToRaster.cpp \
     zonalStatistic.cpp \
-    dbfNumericFieldsDialog.cpp \
     ucmDialog.cpp \
     gisObject.cpp \
     main.cpp

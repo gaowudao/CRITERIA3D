@@ -27,7 +27,7 @@
 #include <cmath>
 
 #include "tileSources/CompositeTileSource.h"
-#include "dbfNumericFieldsDialog.h"
+#include "dialogSelectField.h"
 #include "ucmDialog.h"
 
 #include "mainWindow.h"
@@ -395,7 +395,7 @@ void MainWindow::removeShape(GisObject* myObject)
 
 void MainWindow::setShapeStyle(GisObject* myObject)
 {
-    DbfNumericFieldsDialog numericFields(myObject->getShapeHandler(), myObject->fileName, false);
+    DialogSelectField numericFields(myObject->getShapeHandler(), myObject->fileName, true, false);
     if (numericFields.result() == QDialog::Accepted)
     {
         QString referenceField = numericFields.getFieldSelected();
@@ -467,6 +467,7 @@ void MainWindow::itemMenuRequested(const QPoint point)
     return;
 }
 
+
 void MainWindow::on_actionRasterize_shape_triggered()
 {
     QListWidgetItem * itemSelected = ui->checkList->currentItem();
@@ -484,10 +485,11 @@ void MainWindow::on_actionRasterize_shape_triggered()
     {
         int pos = ui->checkList->row(itemSelected);
         GisObject* myObject = myProject.objectList.at(unsigned(pos));
-        DbfNumericFieldsDialog numericFields(myObject->getShapeHandler(), myObject->fileName, true);
-        if (numericFields.result() == QDialog::Accepted)
+        DialogSelectField numericField(myObject->getShapeHandler(), myObject->fileName, true, true);
+        if (numericField.result() == QDialog::Accepted)
         {
-            myProject.getRasterFromShape(myObject->getShapeHandler(), numericFields.getFieldSelected(), numericFields.getOutputName(), numericFields.getCellSize(), true);
+            myProject.getRasterFromShape(myObject->getShapeHandler(), numericField.getFieldSelected(),
+                                         numericField.getOutputName(), numericField.getCellSize(), true);
             addRasterObject(myProject.objectList.back());
             this->updateMaps();
         }

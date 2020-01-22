@@ -1,10 +1,10 @@
-#ifndef DBFNUMERICFIELDSDIALOG_H
-#define DBFNUMERICFIELDSDIALOG_H
+#ifndef DIALOGSELECTFIELD_H
+#define DIALOGSELECTFIELD_H
 
     #include <QtWidgets>
     #include "shapeHandler.h"
 
-    class DbfNumericFieldsDialog : public QDialog
+    class DialogSelectField : public QDialog
     {
         Q_OBJECT
 
@@ -15,8 +15,8 @@
             QLineEdit* cellSize;
 
         public:
-            DbfNumericFieldsDialog(Crit3DShapeHandler *shapeHandler, QString fileName, bool isRasterize);
-            ~DbfNumericFieldsDialog();
+            DialogSelectField(Crit3DShapeHandler *shapeHandler, QString fileName, bool onlyNumeric, bool isRasterize);
+
             void acceptRasterize();
             void acceptSelection();
             QString getOutputName();
@@ -24,4 +24,4 @@
             double getCellSize() const;
     };
 
-#endif // DBFNUMERICFIELDSDIALOG_H
+#endif // DIALOGSELECTFIELDG_H
