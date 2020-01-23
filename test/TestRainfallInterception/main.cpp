@@ -8,7 +8,7 @@ int main(int argc, char *argv[])
 {
     QCoreApplication a(argc, argv);
     double storedWater = 0.0;
-    double rainfall = 0.5;
+    double rainfall = 1;
     double waterFreeEvaporation = 0.3;
     double lai = 4;
     double lightExtinctionCoefficient = 0.6;
@@ -22,6 +22,9 @@ int main(int argc, char *argv[])
     double drainage = 0;
     canopy::waterManagementCanopy(&storedWater,rainfall,waterFreeEvaporation,lai,0.5,lightExtinctionCoefficient,leafStorage, stemStorage,maxStemFlowRate,&freeRainfall,&drainage,&stemFlow,&throughfall,&soilWater);
     //canopy::waterManagementCanopy(&storedWater,rainfall,waterFreeEvaporation,lai,0.5,lightExtinctionCoefficient,leafStorage, stemStorage,maxStemFlowRate,&soilWater);
-    printf("stored %f  soilWater %f\n",storedWater,soilWater);
+    printf("soilWater %f\n",soilWater);
+    canopy::canopyNoInterceptedRainfallHydrall(lai,1,rainfall);
+    canopy::canopyInterceptionHydrall(lai,1,rainfall);
+    printf("%f\n",canopy::canopyNoInterceptedRainfallHydrall(lai,0.,rainfall));
     return 0;
 }
