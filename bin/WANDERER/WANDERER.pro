@@ -15,7 +15,7 @@ TARGET = WANDERER
 INCLUDEPATH +=  ../../mapGraphics \
                 ../../agrolib/crit3dDate ../../agrolib/mathFunctions ../../agrolib/gis  \
                 ../../agrolib/graphics ../../agrolib/shapeHandler \
-                ../../agrolib/shapeHandler/shapelib
+                ../../agrolib/shapeHandler/shapelib ../../agrolib/project
 
 CONFIG += debug_and_release
 
@@ -39,6 +39,7 @@ HEADERS += \
     ../../agrolib/graphics/mapGraphicsRasterObject.h \
     ../../agrolib/graphics/mapGraphicsShapeObject.h \
     ../../agrolib/graphics/colorLegend.h \
+    ../../agrolib/project/formInfo.h \
     dialogSelectField.h \
     gisProject.h \
     showProperties.h\
@@ -55,6 +56,7 @@ SOURCES += \
     ../../agrolib/graphics/mapGraphicsRasterObject.cpp \
     ../../agrolib/graphics/mapGraphicsShapeObject.cpp \
     ../../agrolib/graphics/colorLegend.cpp \
+    ../../agrolib/project/formInfo.cpp \
     dialogSelectField.cpp \
     mainWindow.cpp \
     gisProject.cpp \
@@ -69,5 +71,8 @@ SOURCES += \
     main.cpp
 
 
-FORMS += mainWindow.ui
+FORMS += \
+    ../../agrolib/project/formInfo.ui \
+    mainWindow.ui
+
 
