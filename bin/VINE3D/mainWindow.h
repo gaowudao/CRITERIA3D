@@ -7,8 +7,8 @@
 
     #include "tileSources/OSMTileSource.h"
     #include "Position.h"
-    #include "rubberBand.h"
     #include "MapGraphicsView.h"
+    #include "rubberBand.h"
     #include "MapGraphicsScene.h"
     #include "stationMarker.h"
     #include "mapGraphicsRasterObject.h"
