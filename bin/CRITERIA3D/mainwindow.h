@@ -43,8 +43,8 @@
         void on_actionMeteoPointsOpen_triggered();
         void on_actionMeteoPointsImport_data_triggered();
 
-        void on_timeEdit_valueChanged(const QTime &time);
         void on_dateEdit_dateChanged(const QDate &date);
+        void on_timeEdit_valueChanged(int myHour);
 
         void on_variableButton_clicked();
         void on_opacitySliderRasterInput_sliderMoved(int position);
