@@ -1,17 +1,16 @@
-#ifndef SHOWPROPERTIES_H
-#define SHOWPROPERTIES_H
+#ifndef DIALOGSHAPEPROPERTIES_H
+#define DIALOGSHAPEPROPERTIES_H
 
     #include <QtWidgets>
     #include "shapeHandler.h"
-    #include "dbfTableDialog.h"
 
-    class ShowProperties : public QDialog
+    class DialogShapeProperties : public QDialog
     {
         Q_OBJECT
 
     public:
-        explicit ShowProperties(Crit3DShapeHandler* shapeHandler, QString filename);
-        ~ShowProperties();
+        explicit DialogShapeProperties(Crit3DShapeHandler* shapeHandler, QString filename);
+        ~DialogShapeProperties();
 
     private:
         Crit3DShapeHandler* shapeHandler;
@@ -25,4 +24,4 @@
         void onSelectShape(QTreeWidgetItem *item, int column);
     };
 
-#endif // SHOWPROPERTIES_H
+#endif // DIALOGSHAPEPROPERTIES_H
