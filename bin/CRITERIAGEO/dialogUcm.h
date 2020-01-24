@@ -3,14 +3,13 @@
 
     #include <QtWidgets>
     #include "shapeHandler.h"
-    #include "mapGraphicsShapeObject.h"
 
     class DialogUCM : public QDialog
     {
         Q_OBJECT
 
         private:
-            std::vector<MapGraphicsShapeObject *> shapeObjList;
+            std::vector<Crit3DShapeHandler*> shapeObjList;
             QListWidget* cropShape;
             QListWidget* soilShape;
             QListWidget* meteoShape;
@@ -26,7 +25,7 @@
             QString idSoil;
             QString idMeteo;
         public:
-            DialogUCM(std::vector<MapGraphicsShapeObject *> shapeObjList);
+            DialogUCM(std::vector<Crit3DShapeHandler*> shapeObjList);
             ~DialogUCM();
 
             void shapeCropClicked(QListWidgetItem* item);

@@ -28,7 +28,8 @@
 
 #include "tileSources/CompositeTileSource.h"
 #include "dialogSelectField.h"
-#include "ucmDialog.h"
+#include "dialogUcm.h"
+#include "dbfTableDialog.h"
 
 #include "mainWindow.h"
 #include "ui_mainWindow.h"
@@ -446,7 +447,7 @@ void MainWindow::itemMenuRequested(const QPoint point)
         }
         else if (rightClickItem->text().contains("Show data"))
         {
-            ShowProperties showData(myObject->getShapeHandler(), myObject->fileName);
+            DialogShapeProperties showData(myObject->getShapeHandler(), myObject->fileName);
         }
         else if (rightClickItem->text().contains("Attribute table"))
         {
@@ -505,7 +506,7 @@ void MainWindow::on_actionCompute_Unit_Crop_Map_triggered()
         return;
     }
 
-    UcmDialog ucmDialog(shapeObjList);
+    DialogUCM ucmDialog(shapeObjList);
     if (ucmDialog.result() == QDialog::Rejected)
         return;
 
