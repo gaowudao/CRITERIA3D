@@ -10,7 +10,6 @@
 
     public:
         explicit DialogShapeProperties(Crit3DShapeHandler* shapeHandler, QString filename);
-        ~DialogShapeProperties();
 
     private:
         Crit3DShapeHandler* shapeHandler;

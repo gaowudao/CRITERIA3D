@@ -506,7 +506,13 @@ void MainWindow::on_actionCompute_Unit_Crop_Map_triggered()
         return;
     }
 
-    DialogUCM ucmDialog(shapeObjList);
+    std::vector<Crit3DShapeHandler*> shapeList;
+    for (unsigned int i = 0; i < shapeObjList.size(); i++)
+    {
+        shapeObjList.at(i)
+    }
+
+    DialogUCM ucmDialog(shapeList);
     if (ucmDialog.result() == QDialog::Rejected)
         return;
 
