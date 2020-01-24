@@ -98,7 +98,7 @@ bool zonalStatisticsShape(Crit3DShapeHandler* shapeRef, Crit3DShapeHandler* shap
                 {
                     int valueField = shapeVal->readIntAttribute(shape,fieldIndex);
                     int vectorFieldPos = int(std::distance(varFieldVectorInt.begin(), std::find (varFieldVectorInt.begin(), varFieldVectorInt.end(), valueField)));
-//                    //replace value
+                    //replace value
                     rasterVal->value[row][col] = float(vectorFieldPos);
                 }
             }
@@ -137,7 +137,6 @@ bool zonalStatisticsShape(Crit3DShapeHandler* shapeRef, Crit3DShapeHandler* shap
     // analysis matrix
     std::vector <std::vector<int> > matrix(nrRefShapes, std::vector<int>(varFieldVectorSize, 0));
 
-
     for (int row = 0; row < rasterRef->header->nrRows; row++)
     {
         for (int col = 0; col < rasterRef->header->nrCols; col++)
@@ -147,7 +146,7 @@ bool zonalStatisticsShape(Crit3DShapeHandler* shapeRef, Crit3DShapeHandler* shap
 
             if ( refValue != NODATA && valValue != NODATA)
             {
-                matrix[refValue][valValue] = matrix[refValue][valValue] + 1;
+                matrix[refValue][valValue]++;
             }
         }
     }
@@ -162,9 +161,9 @@ bool zonalStatisticsShape(Crit3DShapeHandler* shapeRef, Crit3DShapeHandler* shap
             indexVector.push_back(0);
             for (int col = 0; col < varFieldVectorSize; col++)
             {
-                if (matrix[row][col] > indexVector.at(row))
+                if (matrix[row][col] > matrix[row][indexVector[row]])
                 {
-                    indexVector.at(row) = col;
+                    indexVector[row] = col;
                 }
             }
         }
@@ -197,7 +196,11 @@ bool zonalStatisticsShape(Crit3DShapeHandler* shapeRef, Crit3DShapeHandler* shap
     {
         if (fieldType == FTString)
         {
-            std::string varFieldFound = varFieldVectorString[indexVector[shapeIndex]];
+            std::string varFieldFound;
+            if (indexVector[shapeIndex] == 0)
+                varFieldFound = "";
+            else
+                varFieldFound = varFieldVectorString[indexVector[shapeIndex]];
             shapeRef->writeStringAttribute(shapeIndex, shapeRef->getDBFFieldIndex(valField.c_str()), varFieldFound.c_str());
         }
         else if (fieldType == FTInteger)
