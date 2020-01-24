@@ -445,7 +445,7 @@ void MainWindow::updateVariable()
 void MainWindow::updateDateTime()
 {
     this->ui->dateEdit->setDate(myProject.getCurrentDate());
-    this->ui->timeEdit->setTime(QTime(myProject.getCurrentHour(),0,0));
+    this->ui->timeEdit->setValue(myProject.getCurrentHour());
 }
 
 
@@ -463,11 +463,11 @@ void MainWindow::on_dateEdit_dateChanged(const QDate &date)
 }
 
 
-void MainWindow::on_timeEdit_timeChanged(const QTime &time)
+void MainWindow::on_timeEdit_valueChanged(int myHour)
 {
-    if (time.hour() != myProject.getCurrentHour())
+    if (myHour != myProject.getCurrentHour())
     {
-        myProject.setCurrentHour(time.hour());
+        myProject.setCurrentHour(myHour);
         myProject.setAllHourlyMeteoMapsComputed(false);
     }
 
