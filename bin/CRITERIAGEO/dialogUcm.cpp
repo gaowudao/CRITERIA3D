@@ -101,18 +101,6 @@ DialogUCM::DialogUCM(std::vector<Crit3DShapeHandler*> shapeObjList)
     fieldLayout->addWidget(meteoFieldLabel);
     fieldLayout->addWidget(meteoField);
 
-
-    crop = shapeObjList.at(0);
-    QStringList fieldLabel;
-    for (int i = 0; i < crop->getFieldNumbers(); i++)
-    {
-        std::string nameField =  crop->getFieldName(i);
-        fieldLabel << QString::fromStdString(nameField);
-    }
-    cropField->addItems(fieldLabel);
-    soilField->addItems(fieldLabel);
-    meteoField->addItems(fieldLabel);
-
     boxLayout->addLayout(shapeLayout);
     boxLayout->addLayout(fieldLayout);
 
