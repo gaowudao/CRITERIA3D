@@ -411,8 +411,8 @@ void MainWindow::setShapeStyle(GisObject* myObject)
             shapeObject->setNumericValues(fieldName);
         }
 
-        setTemperatureScale(shapeObject->colorScale);
-        reverseColorScale(shapeObject->colorScale);
+        setZeroCenteredScale(shapeObject->colorScale);
+        //reverseColorScale(shapeObject->colorScale);
         shapeObject->setFill(true);
     }
 }

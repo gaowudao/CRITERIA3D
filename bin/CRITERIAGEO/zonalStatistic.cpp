@@ -5,9 +5,9 @@
 #include <algorithm>
 #include <math.h>
 
+
 bool zonalStatisticsShape(Crit3DShapeHandler* shapeRef, Crit3DShapeHandler* shapeVal, gis::Crit3DRasterGrid *rasterRef, gis::Crit3DRasterGrid *rasterVal, std::string valField, opType type, std::string* error)
 {
-
     // check shape type
     if ( shapeRef->getTypeString() != shapeVal->getTypeString() || shapeRef->getTypeString() != "2D Polygon" )
     {
@@ -42,10 +42,9 @@ bool zonalStatisticsShape(Crit3DShapeHandler* shapeRef, Crit3DShapeHandler* shap
 
     // LC da fare restyle codice affinchè gestisca i 3 casi
     std::vector<std::string> varFieldVectorString;
-    std::vector<int> varFieldVectorInt;
     std::vector<double> varFieldVectorDouble;
+    std::vector<int> varFieldVectorInt;
     size_t varFieldVectorSize = 0;
-
 
     if (fieldType == FTString)
     {
@@ -219,6 +218,3 @@ bool zonalStatisticsShape(Crit3DShapeHandler* shapeRef, Crit3DShapeHandler* shap
     return true;
 }
 
-
-// TO DO
-// zonalStatisticRaster (da Praga Vb)

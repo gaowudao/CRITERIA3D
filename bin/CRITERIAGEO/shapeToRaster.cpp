@@ -55,6 +55,8 @@ void fillRasterWithShapeNumber(gis::Crit3DRasterGrid* raster, Crit3DShapeHandler
         formInfo.start("Rasterize shape...", nShape);
     }
 
+    raster->emptyGrid();
+
     for (int shapeIndex = 0; shapeIndex < nShape; shapeIndex++)
     {
         if (showInfo) formInfo.setValue(shapeIndex);
