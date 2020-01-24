@@ -16,8 +16,8 @@ TARGET = CRITERIA_GEO
 
 INCLUDEPATH +=  ../../mapGraphics \
                 ../../agrolib/crit3dDate ../../agrolib/mathFunctions ../../agrolib/gis  \
-                ../../agrolib/graphics ../../agrolib/shapeHandler \
-                ../../agrolib/shapeHandler/shapelib ../../agrolib/project
+                ../../agrolib/shapeHandler ../../agrolib/shapeHandler/shapelib \
+                ../../agrolib/graphics ../../agrolib/project
 
 CONFIG += debug_and_release
 

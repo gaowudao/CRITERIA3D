@@ -9,8 +9,8 @@
 
     #include "mapGraphicsRasterObject.h"
     #include "mapGraphicsShapeObject.h"
-    #include "gisProject.h"
     #include "colorLegend.h"
+    #include "gisProject.h"
     #include "dialogShapeProperties.h"
 
     namespace Ui
