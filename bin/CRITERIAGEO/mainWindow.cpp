@@ -400,6 +400,8 @@ void MainWindow::setShapeStyle(GisObject* myObject)
     {
         MapGraphicsShapeObject* shapeObject = getShapeObject(myObject);
         shapeObject->setValues(shapeField.getFieldSelected());
+
+        // todo
         setTemperatureScale(shapeObject->colorScale);
         shapeObject->setFill(true);
     }
