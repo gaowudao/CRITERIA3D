@@ -26,7 +26,6 @@
             QString idMeteo;
         public:
             DialogUCM(std::vector<Crit3DShapeHandler*> shapeObjList);
-            ~DialogUCM();
 
             void shapeCropClicked(QListWidgetItem* item);
             void shapeSoilClicked(QListWidgetItem* item);

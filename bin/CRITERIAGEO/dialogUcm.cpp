@@ -117,7 +117,10 @@ DialogUCM::DialogUCM(std::vector<Crit3DShapeHandler*> shapeObjList)
     mainLayout->addLayout(boxLayout);
     cellSize = new QLineEdit();
     cellSize->setPlaceholderText("cell size [m]");
-    cellSize->setValidator(new QDoubleValidator(0, 9999.0, 2)); //LC accetta double con 2 cifre decimali da 0 a 9999
+
+    // double with 1 digit from 0 to 9999
+    cellSize->setValidator(new QDoubleValidator(0, 9999, 1));
+
     outputName = new QLineEdit();
     outputName->setPlaceholderText("Output Name");
     mainLayout->addWidget(cellSize);
@@ -128,11 +131,6 @@ DialogUCM::DialogUCM(std::vector<Crit3DShapeHandler*> shapeObjList)
     exec();
 }
 
-
-DialogUCM::~DialogUCM()
-{
-
-}
 
 void DialogUCM::shapeCropClicked(QListWidgetItem* item)
 {
