@@ -11,7 +11,7 @@
     #include "mapGraphicsShapeObject.h"
     #include "gisProject.h"
     #include "colorLegend.h"
-    #include "showProperties.h"
+    #include "dialogShapeProperties.h"
 
     namespace Ui
     {

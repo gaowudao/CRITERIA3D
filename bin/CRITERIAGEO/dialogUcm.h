@@ -1,11 +1,11 @@
-#ifndef UCMDIALOG_H
-#define UCMDIALOG_H
+#ifndef DIALOGUCM_H
+#define DIALOGUCM_H
 
     #include <QtWidgets>
     #include "shapeHandler.h"
     #include "mapGraphicsShapeObject.h"
 
-    class UcmDialog : public QDialog
+    class DialogUCM : public QDialog
     {
         Q_OBJECT
 
@@ -26,8 +26,9 @@
             QString idSoil;
             QString idMeteo;
         public:
-            UcmDialog(std::vector<MapGraphicsShapeObject *> shapeObjList);
-            ~UcmDialog();
+            DialogUCM(std::vector<MapGraphicsShapeObject *> shapeObjList);
+            ~DialogUCM();
+
             void shapeCropClicked(QListWidgetItem* item);
             void shapeSoilClicked(QListWidgetItem* item);
             void shapeMeteoClicked(QListWidgetItem* item);
@@ -42,4 +43,5 @@
             double getCellSize() const;
     };
 
-#endif // UCMDIALOG_H
+
+#endif // DIALOGUCM_H

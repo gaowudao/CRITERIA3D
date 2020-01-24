@@ -43,6 +43,7 @@ HEADERS += \
     ../../agrolib/project/formInfo.h \
     dialogSelectField.h \
     dialogShapeProperties.h \
+    dialogUcm.h \
     gisProject.h \
     dbfTableDialog.h \
     dbfNewColDialog.h \
@@ -59,6 +60,7 @@ SOURCES += \
     ../../agrolib/project/formInfo.cpp \
     dialogSelectField.cpp \
     dialogShapeProperties.cpp \
+    dialogUcm.cpp \
     mainWindow.cpp \
     gisProject.cpp \
     dbfTableDialog.cpp \

@@ -1,48 +1,48 @@
-#include "ucmDialog.h"
+#include "dialogUcm.h"
 
-QString UcmDialog::getIdCrop() const
+QString DialogUCM::getIdCrop() const
 {
     return idCrop;
 }
 
-QString UcmDialog::getIdSoil() const
+QString DialogUCM::getIdSoil() const
 {
     return idSoil;
 }
 
-QString UcmDialog::getIdMeteo() const
+QString DialogUCM::getIdMeteo() const
 {
     return idMeteo;
 }
 
-Crit3DShapeHandler *UcmDialog::getCrop() const
+Crit3DShapeHandler *DialogUCM::getCrop() const
 {
     return crop;
 }
 
-Crit3DShapeHandler *UcmDialog::getSoil() const
+Crit3DShapeHandler *DialogUCM::getSoil() const
 {
     return soil;
 }
 
-Crit3DShapeHandler *UcmDialog::getMeteo() const
+Crit3DShapeHandler *DialogUCM::getMeteo() const
 {
     return meteo;
 }
 
-QString UcmDialog::getOutputName() const
+QString DialogUCM::getOutputName() const
 {
     return outputName->text();
 }
 
-double UcmDialog::getCellSize() const
+double DialogUCM::getCellSize() const
 {
     QString cellString = cellSize->text();
     cellString.replace(",", ".");
     return cellString.toDouble();
 }
 
-UcmDialog::UcmDialog(std::vector<MapGraphicsShapeObject *> shapeObjList)
+DialogUCM::DialogUCM(std::vector<MapGraphicsShapeObject *> shapeObjList)
     :shapeObjList(shapeObjList)
 {
 
@@ -141,12 +141,12 @@ UcmDialog::UcmDialog(std::vector<MapGraphicsShapeObject *> shapeObjList)
 }
 
 
-UcmDialog::~UcmDialog()
+DialogUCM::~DialogUCM()
 {
 
 }
 
-void UcmDialog::shapeCropClicked(QListWidgetItem* item)
+void DialogUCM::shapeCropClicked(QListWidgetItem* item)
 {
     cropField->clear();
     int pos = cropShape->row(item);
@@ -161,7 +161,7 @@ void UcmDialog::shapeCropClicked(QListWidgetItem* item)
     cropField->addItems(fieldLabel);
 }
 
-void UcmDialog::shapeSoilClicked(QListWidgetItem* item)
+void DialogUCM::shapeSoilClicked(QListWidgetItem* item)
 {
     soilField->clear();
     int pos = soilShape->row(item);
@@ -176,7 +176,7 @@ void UcmDialog::shapeSoilClicked(QListWidgetItem* item)
     soilField->addItems(fieldLabel);
 }
 
-void UcmDialog::shapeMeteoClicked(QListWidgetItem* item)
+void DialogUCM::shapeMeteoClicked(QListWidgetItem* item)
 {
     meteoField->clear();
     int pos = meteoShape->row(item);
@@ -192,7 +192,7 @@ void UcmDialog::shapeMeteoClicked(QListWidgetItem* item)
 }
 
 
-void UcmDialog::ucm()
+void DialogUCM::ucm()
 {
     int pos;
     QListWidgetItem* itemSelected;
