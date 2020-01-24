@@ -509,7 +509,7 @@ void MainWindow::on_actionCompute_Unit_Crop_Map_triggered()
     std::vector<Crit3DShapeHandler*> shapeList;
     for (unsigned int i = 0; i < shapeObjList.size(); i++)
     {
-        shapeObjList.at(i)
+        shapeList.push_back(shapeObjList.at(i)->getShapePointer());
     }
 
     DialogUCM ucmDialog(shapeList);
