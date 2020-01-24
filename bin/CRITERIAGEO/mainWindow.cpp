@@ -412,6 +412,7 @@ void MainWindow::setShapeStyle(GisObject* myObject)
         }
 
         setTemperatureScale(shapeObject->colorScale);
+        reverseColorScale(shapeObject->colorScale);
         shapeObject->setFill(true);
     }
 }
@@ -431,6 +432,7 @@ void MainWindow::itemMenuRequested(const QPoint point)
     {
         submenu.addAction("Show data");
         submenu.addAction("Attribute table");
+        submenu.addSeparator();
         submenu.addAction("Set style");
     }
     else if (myObject->type == gisObjectRaster)
