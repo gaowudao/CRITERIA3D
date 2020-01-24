@@ -506,6 +506,7 @@ void MainWindow::on_actionCompute_Unit_Crop_Map_triggered()
         return;
     }
 
+    // create shapehandler list
     std::vector<Crit3DShapeHandler*> shapeList;
     for (unsigned int i = 0; i < shapeObjList.size(); i++)
     {
