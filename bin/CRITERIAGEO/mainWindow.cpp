@@ -395,11 +395,11 @@ void MainWindow::removeShape(GisObject* myObject)
 
 void MainWindow::setShapeStyle(GisObject* myObject)
 {
-    DialogSelectField numericFields(myObject->getShapeHandler(), myObject->fileName, true, false);
-    if (numericFields.result() == QDialog::Accepted)
+    DialogSelectField shapeField(myObject->getShapeHandler(), myObject->fileName, false, false);
+    if (shapeField.result() == QDialog::Accepted)
     {
         MapGraphicsShapeObject* shapeObject = getShapeObject(myObject);
-        shapeObject->setValues(numericFields.getFieldSelected());
+        shapeObject->setValues(shapeField.getFieldSelected());
         setTemperatureScale(shapeObject->colorScale);
         shapeObject->setFill(true);
     }
