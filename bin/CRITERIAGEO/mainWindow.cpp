@@ -395,13 +395,22 @@ void MainWindow::removeShape(GisObject* myObject)
 
 void MainWindow::setShapeStyle(GisObject* myObject)
 {
-    DialogSelectField shapeField(myObject->getShapeHandler(), myObject->fileName, false, false);
-    if (shapeField.result() == QDialog::Accepted)
+    DialogSelectField shapeFieldDialog(myObject->getShapeHandler(), myObject->fileName, false, false);
+    if (shapeFieldDialog.result() == QDialog::Accepted)
     {
         MapGraphicsShapeObject* shapeObject = getShapeObject(myObject);
-        shapeObject->setValues(shapeField.getFieldSelected());
+        std::string fieldName = shapeFieldDialog.getFieldSelected().toStdString();
+        DBFFieldType fieldType = myObject->getShapeHandler()->getFieldType(fieldName);
 
-        // todo
+        if (fieldType == FTString)
+        {
+            shapeObject->setCategories(fieldName);
+        }
+        else
+        {
+            shapeObject->setNumericValues(fieldName);
+        }
+
         setTemperatureScale(shapeObject->colorScale);
         shapeObject->setFill(true);
     }
