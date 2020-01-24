@@ -36,19 +36,27 @@ win32:{
 
 CONFIG(release, debug|release) {
     LIBS += -L../../agrolib/crop/release -lcrop
+    LIBS += -L../../agrolib/mathFunctions/release -lmathFunctions
+
 } else {
     LIBS += -L../../agrolib/crop/debug -lcrop
+    LIBS += -L../../agrolib/mathFunctions/release -lmathFunctions
 }
 
 
 INCLUDEPATH += ../../agrolib/crop
+INCLUDEPATH += ../../agrolib/mathFunctions
 
 
 
 SOURCES += \
-        main.cpp
+        main.cpp \
+        readWeatherMonticolo.cpp
 
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin
 else: unix:!android: target.path = /opt/$${TARGET}/bin
 !isEmpty(target.path): INSTALLS += target
+
+HEADERS += \
+    readWeatherMonticolo.h
