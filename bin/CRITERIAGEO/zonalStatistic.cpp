@@ -153,7 +153,7 @@ bool zonalStatisticsShape(Crit3DShapeHandler* shapeRef, Crit3DShapeHandler* shap
 
     // save right matrix element for each shape
     std::vector<int> indexVector;
-
+    // TODO: fix
     if (type == MAJORITY)
     {
         for (int row = 0; row < nrRefShapes; row++)
@@ -192,6 +192,7 @@ bool zonalStatisticsShape(Crit3DShapeHandler* shapeRef, Crit3DShapeHandler* shap
 
     // save value of the new field
     // each row of matrix is a shape of shapeRef
+    // TODO: fix
     for (int shapeIndex = 0; shapeIndex < nrRefShapes; shapeIndex++)
     {
         if (fieldType == FTString)
