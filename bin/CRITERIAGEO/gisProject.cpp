@@ -29,6 +29,7 @@
 #include "gisProject.h"
 #include "shapeToRaster.h"
 #include "unitCropMap.h"
+#include <QMessageBox>
 
 
 GisProject::GisProject()
@@ -105,17 +106,34 @@ void GisProject::getRasterFromShape(Crit3DShapeHandler *shape, QString field, QS
 
 bool GisProject::addUnitCropMap(Crit3DShapeHandler *crop, Crit3DShapeHandler *soil, Crit3DShapeHandler *meteo, std::string idSoil, std::string idMeteo, QString fileName, double cellSize)
 {
-    std::string* error = new std::string();
+    std::string errorStr;
 
     Crit3DShapeHandler *ucm = new(Crit3DShapeHandler);
 
-    if (unitCropMap(ucm, crop, soil, meteo, idSoil, idMeteo, cellSize, fileName, error))
+    if (unitCropMap(ucm, crop, soil, meteo, idSoil, idMeteo, cellSize, fileName, &errorStr))
     {
         addShapeFile(ucm, QString::fromStdString(ucm->getFilepath()));
         return true;
     }
     else
     {
+        logError(errorStr);
         return false;
     }
 }
+
+
+//--------------------------------------------------------------
+// LOG
+//--------------------------------------------------------------
+
+void GisProject::logError(std::string errorString)
+{
+    QMessageBox::critical(nullptr, "ERROR!", QString::fromStdString(errorString));
+}
+
+void GisProject::logError(QString errorString)
+{
+    QMessageBox::critical(nullptr, "ERROR!", errorString);
+}
+

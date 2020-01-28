@@ -14,18 +14,21 @@ bool zonalStatisticsShape(Crit3DShapeHandler* shapeRef, Crit3DShapeHandler* shap
         *error = "shape type error: not 2D Polygon type" ;
         return false;
     }
+
     // check proj
     if (shapeRef->getIsWGS84() == false || shapeVal->getIsWGS84() == false)
     {
-        *error = "proj error: not WGS84" ;
+        *error = "projection error: not WGS84" ;
         return false;
     }
+
     // check utm zone
     if (shapeRef->getUtmZone() != shapeVal->getUtmZone())
     {
-        *error = "utm zone error: different utm zones" ;
+        *error = "utm zone: different utm zones" ;
         return false;
     }
+
     //check if valField exists
     int fieldIndex = shapeVal->getDBFFieldIndex(valField.c_str());
     if (fieldIndex == -1)
@@ -34,7 +37,7 @@ bool zonalStatisticsShape(Crit3DShapeHandler* shapeRef, Crit3DShapeHandler* shap
         return false;
     }
 
-    int nrRefShapes = shapeRef->getShapeCount();
+    unsigned int nrRefShapes = unsigned(shapeRef->getShapeCount());
 
     // add new field to shapeRef
     DBFFieldType fieldType = shapeVal->getFieldType(fieldIndex);
@@ -127,7 +130,7 @@ bool zonalStatisticsShape(Crit3DShapeHandler* shapeRef, Crit3DShapeHandler* shap
                 {
                     double valueField = shapeVal->readDoubleAttribute(shape,fieldIndex);
                     int vectorFieldPos = std::distance(varFieldVectorDouble.begin(), std::find (varFieldVectorDouble.begin(), varFieldVectorDouble.end(), valueField));
-//                    //replace value
+                    //replace value
                     rasterVal->value[row][col] = vectorFieldPos;
                 }
             }
@@ -141,50 +144,53 @@ bool zonalStatisticsShape(Crit3DShapeHandler* shapeRef, Crit3DShapeHandler* shap
     {
         for (int col = 0; col < rasterRef->header->nrCols; col++)
         {
-            int refValue = int(rasterRef->value[row][col]);
-            int valValue = int(rasterVal->value[row][col]);
+            int refIndex = int(rasterRef->value[row][col]);
+            int valIndex = int(rasterVal->value[row][col]);
 
-            if ( refValue != NODATA && valValue != NODATA)
+            if ( refIndex != NODATA && valIndex != NODATA)
             {
-                matrix[refValue][valValue]++;
+                matrix[unsigned(refIndex)][unsigned(valIndex)]++;
             }
         }
     }
 
     // save right matrix element for each shape
     std::vector<int> indexVector;
-    // TODO: fix
+    int maxValue;
+
     if (type == MAJORITY)
     {
-        for (int row = 0; row < nrRefShapes; row++)
+        for (unsigned int row = 0; row < nrRefShapes; row++)
         {
-            indexVector.push_back(0);
-            for (int col = 0; col < varFieldVectorSize; col++)
+            indexVector.push_back(NODATA);
+            maxValue = 0;
+            for (unsigned int col = 0; col < varFieldVectorSize; col++)
             {
-                if (matrix[row][col] > matrix[row][indexVector[row]])
+                if (matrix[row][col] > maxValue)
                 {
-                    indexVector[row] = col;
+                    indexVector[row] = signed(col);
+                    maxValue = matrix[row][col];
                 }
             }
         }
     }
     else if (type == MIN)
     {
-        for (int row = 0; row < nrRefShapes; row++)
+        for (unsigned int row = 0; row < nrRefShapes; row++)
         {
             // TO DO
         }
     }
     else if (type == MAX)
     {
-        for (int row = 0; row < nrRefShapes; row++)
+        for (unsigned int row = 0; row < nrRefShapes; row++)
         {
             // TO DO
         }
     }
     else if (type == AVG)
     {
-        for (int row = 0; row < nrRefShapes; row++)
+        for (unsigned int row = 0; row < nrRefShapes; row++)
         {
             // TO DO
         }
@@ -192,26 +198,36 @@ bool zonalStatisticsShape(Crit3DShapeHandler* shapeRef, Crit3DShapeHandler* shap
 
     // save value of the new field
     // each row of matrix is a shape of shapeRef
-    // TODO: fix
-    for (int shapeIndex = 0; shapeIndex < nrRefShapes; shapeIndex++)
+    for (unsigned int shapeIndex = 0; shapeIndex < nrRefShapes; shapeIndex++)
     {
         if (fieldType == FTString)
         {
             std::string varFieldFound;
-            if (indexVector[shapeIndex] == 0)
+            if (indexVector[shapeIndex] == NODATA)
                 varFieldFound = "";
             else
-                varFieldFound = varFieldVectorString[indexVector[shapeIndex]];
+                varFieldFound = varFieldVectorString[unsigned(indexVector[shapeIndex])];
+
             shapeRef->writeStringAttribute(shapeIndex, shapeRef->getDBFFieldIndex(valField.c_str()), varFieldFound.c_str());
         }
         else if (fieldType == FTInteger)
         {
-            int varFieldFound = varFieldVectorInt[indexVector[shapeIndex]];
+            int varFieldFound;
+            if (indexVector[shapeIndex] == NODATA)
+                varFieldFound = NODATA;
+            else
+                varFieldFound = varFieldVectorInt[unsigned(indexVector[shapeIndex])];
+
             shapeRef->writeIntAttribute(shapeIndex, shapeRef->getDBFFieldIndex(valField.c_str()), varFieldFound);
         }
         else if (fieldType == FTDouble)
         {
-            double varFieldFound = varFieldVectorDouble[indexVector[shapeIndex]];
+            double varFieldFound;
+            if (indexVector[shapeIndex] == NODATA)
+                varFieldFound = NODATA;
+            else
+                varFieldFound = varFieldVectorDouble[unsigned(indexVector[shapeIndex])];
+
             shapeRef->writeDoubleAttribute(shapeIndex, shapeRef->getDBFFieldIndex(valField.c_str()), varFieldFound);
         }
     }
