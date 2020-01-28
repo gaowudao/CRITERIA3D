@@ -20,90 +20,101 @@ int readWeatherLineFileNumber(FILE *fp)
     return counter ;
 }
 
-bool readWeatherMonticoloHalfhourlyData(FILE *fp,int* minute, int* hour, int *doy,int *day,int *month, int* year,double* temp,double* prec)
+bool readWeatherMonticoloHalfhourlyData(FILE *fp,int* minute, int* hour, int *doy,int *day,int *month, int* year,double* temp,double* prec, int nrLines)
 {
     char dummy ;
     int counter;
     char minutechar[5], hourchar[5], daychar[5],monthchar[5],yearchar[5],tempchar[20],precchar[20];
-
+    // take out the first line (header)
     do {
         dummy = getc(fp);
     } while (dummy != '\n');
 
-    // initialize char
-    for (int i=0; i<5 ; i++)
+    // read data
+    for (int iLines = 0 ; iLines < nrLines ; iLines++)
     {
-        minutechar[i] = '\0';
-        hourchar[i] = '\0';
-        daychar[i] = '\0';
-        monthchar[i] = '\0';
-        yearchar[i] = '\0';
-        tempchar[i] = '\0';
-        precchar[i] = '\0';
-        tempchar[i+5] = '\0';
-        precchar[i+5] = '\0';
-        tempchar[i+10] = '\0';
-        precchar[i+10] = '\0';
-        tempchar[i+15] = '\0';
-        precchar[i+15] = '\0';
+        // initialize char
+        for (int i=0; i<5 ; i++)
+        {
+            minutechar[i] = '\0';
+            hourchar[i] = '\0';
+            daychar[i] = '\0';
+            monthchar[i] = '\0';
+            yearchar[i] = '\0';
+            tempchar[i] = '\0';
+            precchar[i] = '\0';
+            tempchar[i+5] = '\0';
+            precchar[i+5] = '\0';
+            tempchar[i+10] = '\0';
+            precchar[i+10] = '\0';
+            tempchar[i+15] = '\0';
+            precchar[i+15] = '\0';
+        }
+        do {
+            dummy = getc(fp);
+        } while (dummy != ',');
+        counter = 0;
+        do {
+            dummy = getc(fp);
+            if (dummy != ',')
+                tempchar[counter] = dummy;
+            counter++;
+        } while (dummy != ',');
+        do {
+            dummy = getc(fp);
+        } while (dummy != ',');
+        counter = 0;
+        do {
+            dummy = getc(fp);
+            if (dummy != '/')
+                daychar[counter] = dummy;
+            counter++;
+        } while (dummy != '/');
+        counter = 0;
+        do {
+            dummy = getc(fp);
+            if (dummy != '/')
+                monthchar[counter] = dummy;
+            counter++;
+        } while (dummy != '/');
+        counter = 0;
+        yearchar[counter++] = getc(fp);
+        yearchar[counter++] = getc(fp);
+        yearchar[counter++] = getc(fp);
+        yearchar[counter++] = getc(fp);
+        counter = 0;
+        getc(fp);
+        do {
+            dummy = getc(fp);
+            if (dummy != ':')
+                hourchar[counter] = dummy;
+            counter++;
+        } while (dummy != ':');
+        counter = 0;
+        do {
+            dummy = getc(fp);
+            if (dummy != ',')
+                minutechar[counter] = dummy;
+            counter++;
+        } while (dummy != ',');
+        counter = 0;
+        do {
+            dummy = getc(fp);
+            if (dummy != '\n')
+                precchar[counter] = dummy;
+            counter++;
+        } while (dummy != '\n');
+
+        minute[iLines] = atoi(minutechar);
+        hour[iLines] = atoi(hourchar);
+        day[iLines] = atoi(daychar);
+        month[iLines] = atoi(monthchar);
+        year[iLines] = atoi(yearchar);
+        temp[iLines] = atof(tempchar);
+        prec[iLines] = atof(precchar);
+        printf("%.2d:%.2d, %.2d/%.2d/%.4d, %.2f , %.2f\n",hour[iLines],minute[iLines],day[iLines],month[iLines],year[iLines],temp[iLines],prec[iLines]);
+        //getchar();
     }
-    do {
-        dummy = getc(fp);
-    } while (dummy != ',');
-    counter = 0;
-    do {
-        dummy = getc(fp);
-        if (dummy != ',')
-            tempchar[counter] = dummy;
-        counter++;
-    } while (dummy != ',');
-    do {
-        dummy = getc(fp);
-    } while (dummy != ',');
-    counter = 0;
-    do {
-        dummy = getc(fp);
-        if (dummy != '/')
-            daychar[counter] = dummy;
-        counter++;
-    } while (dummy != '/');
-    counter = 0;
-    do {
-        dummy = getc(fp);
-        if (dummy != '/')
-            monthchar[counter] = dummy;
-        counter++;
-    } while (dummy != '/');
-    counter = 0;
-    yearchar[counter++] = getc(fp);
-    yearchar[counter++] = getc(fp);
-    yearchar[counter++] = getc(fp);
-    yearchar[counter++] = getc(fp);
-    counter = 0;
-    getc(fp);
-    do {
-        dummy = getc(fp);
-        if (dummy != ':')
-            hourchar[counter] = dummy;
-        counter++;
-    } while (dummy != ':');
-    counter = 0;
-    do {
-        dummy = getc(fp);
-        if (dummy != ',')
-            minutechar[counter] = dummy;
-        counter++;
-    } while (dummy != ',');
-    counter = 0;
-    do {
-        dummy = getc(fp);
-        if (dummy != '\n')
-            precchar[counter] = dummy;
-        counter++;
-    } while (dummy != '\n');
-
-
-    *day = atoi(daychar);
 
 }
 

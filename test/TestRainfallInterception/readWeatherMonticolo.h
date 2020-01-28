@@ -4,7 +4,7 @@
 
 
 int readWeatherLineFileNumber(FILE *fp);
-bool readWeatherMonticoloHalfhourlyData(FILE *fp,int* minute, int* hour, int *doy,int *day,int *month, int* year,double* temp,double* prec);
+bool readWeatherMonticoloHalfhourlyData(FILE *fp, int* minute, int* hour, int *doy, int *day, int *month, int* year, double* temp, double* prec, int nrLines);
 int getDoyFromDate(int day, int month, int year);
 bool getDateFromDoy(int doy,int year,int* month, int* day);
 
