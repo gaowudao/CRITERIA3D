@@ -50,9 +50,11 @@ void fillRasterWithShapeNumber(gis::Crit3DRasterGrid* raster, Crit3DShapeHandler
     int r0, r1, c0, c1;
     int nShape = shapeHandler->getShapeCount();
 
+    QString fileName = QString::fromStdString(shapeHandler->getFilepath());
+
     if (showInfo)
     {
-        formInfo.start("Rasterize shape...", nShape);
+        formInfo.start("Rasterize shape " + fileName, nShape);
     }
 
     raster->emptyGrid();

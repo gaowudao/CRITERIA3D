@@ -530,7 +530,9 @@ void MainWindow::on_actionCompute_Unit_Crop_Map_triggered()
     if (ucmDialog.result() == QDialog::Rejected)
         return;
 
-    if (myProject.addUnitCropMap(ucmDialog.getCrop(), ucmDialog.getSoil(), ucmDialog.getMeteo(), ucmDialog.getIdSoil().toStdString(), ucmDialog.getIdMeteo().toStdString(), ucmDialog.getOutputName(), ucmDialog.getCellSize()))
+    if (myProject.addUnitCropMap(ucmDialog.getCrop(), ucmDialog.getSoil(), ucmDialog.getMeteo(),
+                                 ucmDialog.getIdSoil().toStdString(), ucmDialog.getIdMeteo().toStdString(),
+                                 ucmDialog.getOutputName(), ucmDialog.getCellSize(), true))
     {
         addShapeObject(myProject.objectList.back());
     }

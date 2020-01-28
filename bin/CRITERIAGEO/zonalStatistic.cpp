@@ -4,9 +4,12 @@
 #include <float.h>
 #include <algorithm>
 #include <math.h>
+#include "formInfo.h"
 
 
-bool zonalStatisticsShape(Crit3DShapeHandler* shapeRef, Crit3DShapeHandler* shapeVal, gis::Crit3DRasterGrid *rasterRef, gis::Crit3DRasterGrid *rasterVal, std::string valField, opType type, std::string* error)
+bool zonalStatisticsShape(Crit3DShapeHandler* shapeRef, Crit3DShapeHandler* shapeVal,
+                          gis::Crit3DRasterGrid *rasterRef, gis::Crit3DRasterGrid *rasterVal,
+                          std::string valField, opType type, std::string* error, bool showInfo)
 {
     // check shape type
     if ( shapeRef->getTypeString() != shapeVal->getTypeString() || shapeRef->getTypeString() != "2D Polygon" )
@@ -35,6 +38,12 @@ bool zonalStatisticsShape(Crit3DShapeHandler* shapeRef, Crit3DShapeHandler* shap
     {
         *error = shapeVal->getFilepath() + "has not field called " + valField.c_str();
         return false;
+    }
+
+    FormInfo formInfo;
+    if (showInfo)
+    {
+        formInfo.start("Zonal statistics...", 0);
     }
 
     unsigned int nrRefShapes = unsigned(shapeRef->getShapeCount());
@@ -137,7 +146,7 @@ bool zonalStatisticsShape(Crit3DShapeHandler* shapeRef, Crit3DShapeHandler* shap
         }
     }
 
-    // analysis matrix
+     // analysis matrix
     std::vector <std::vector<int> > matrix(nrRefShapes, std::vector<int>(varFieldVectorSize, 0));
 
     for (int row = 0; row < rasterRef->header->nrRows; row++)
@@ -235,6 +244,9 @@ bool zonalStatisticsShape(Crit3DShapeHandler* shapeRef, Crit3DShapeHandler* shap
     // close and re-open to write also the last shape
     shapeRef->close();
     shapeRef->open(shapeRef->getFilepath());
+
+    if (showInfo) formInfo.close();
+
     return true;
 }
 

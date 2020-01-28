@@ -11,7 +11,7 @@
 
 bool unitCropMap(Crit3DShapeHandler *ucm, Crit3DShapeHandler *crop, Crit3DShapeHandler *soil,
                  Crit3DShapeHandler *meteo, std::string idSoil, std::string idMeteo, double cellSize,
-                 QString fileName, std::string *error)
+                 QString fileName, std::string *error, bool showInfo)
 {
     // make a copy of crop shapefile
     QFileInfo filepathInfo(QString::fromStdString(crop->getFilepath()));
@@ -48,16 +48,16 @@ bool unitCropMap(Crit3DShapeHandler *ucm, Crit3DShapeHandler *crop, Crit3DShapeH
     initializeRasterFromShape(ucm, rasterVal, cellSize);
 
     // ECM --> reference
-    fillRasterWithShapeNumber(rasterRef, ucm, true);
+    fillRasterWithShapeNumber(rasterRef, ucm, showInfo);
 
     // meteo grid
-    fillRasterWithShapeNumber(rasterVal, meteo, true);
-    bool isOk = zonalStatisticsShape(ucm, meteo, rasterRef, rasterVal, idMeteo, MAJORITY, error);
+    fillRasterWithShapeNumber(rasterVal, meteo, showInfo);
+    bool isOk = zonalStatisticsShape(ucm, meteo, rasterRef, rasterVal, idMeteo, MAJORITY, error, showInfo);
     if (isOk)
     {
         // soil map
-        fillRasterWithShapeNumber(rasterVal, soil, true);
-        isOk = zonalStatisticsShape(ucm, soil, rasterRef, rasterVal, idSoil, MAJORITY, error);
+        fillRasterWithShapeNumber(rasterVal, soil, showInfo);
+        isOk = zonalStatisticsShape(ucm, soil, rasterRef, rasterVal, idSoil, MAJORITY, error, showInfo);
     }
 
     if (! isOk)
