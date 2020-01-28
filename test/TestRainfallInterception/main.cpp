@@ -50,7 +50,7 @@ int main(int argc, char *argv[])
         printf("%.2d:%.2d, %.2d/%.2d/%.4d, %.2f , %.2f\n",hour[iLine],minute[iLine],day[iLine],month[iLine],year[iLine],temp[iLine],prec[iLine]);
         printf("soilWater %f storedWater%f",soilWater, storedWater);
         //printf("%f\n",canopy::canopyNoInterceptedRainfallHydrall(lai,0.,rainfall));
-        getchar();
+        //getchar();
     }
     return 0;
 }
