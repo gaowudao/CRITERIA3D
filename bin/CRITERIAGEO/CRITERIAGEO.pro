@@ -1,8 +1,8 @@
 #------------------------------------------------------
 #
-#   CRITERIA_GEO
+#   CRITERIA 1D-GEO
 #   shapefile functions to run geographical version
-#   of 1D soil water balance
+#   of soil water balance 1D
 #
 #   This project is part of CRITERIA-3D distribution
 #
