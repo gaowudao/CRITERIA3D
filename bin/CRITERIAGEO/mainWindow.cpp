@@ -30,6 +30,7 @@
 #include "dialogSelectField.h"
 #include "dialogUcm.h"
 #include "dbfTableDialog.h"
+#include "unitDb.h"
 
 #include "mainWindow.h"
 #include "ui_mainWindow.h"
@@ -538,3 +539,60 @@ void MainWindow::on_actionCompute_Unit_Crop_Map_triggered()
     }
 }
 
+
+void MainWindow::on_actionExtract_Unit_Crop_Map_list_triggered()
+{
+    QListWidgetItem * itemSelected = ui->checkList->currentItem();
+    if (shapeObjList.empty())
+    {
+        QMessageBox::information(nullptr, "No shape loaded", "Load a shape");
+        return;
+    }
+    else if (itemSelected == nullptr || !itemSelected->text().contains("SHAPE"))
+    {
+        QMessageBox::information(nullptr, "No shape selected", "Select a shape");
+        return;
+    }
+    else
+    {
+        int pos = ui->checkList->row(itemSelected);
+        Crit3DShapeHandler* shapeHandler = (myProject.objectList.at(unsigned(pos)))->getShapeHandler();
+        int fieldRequired = 0;
+        for (int i = 0; i < shapeHandler->getFieldNumbers(); i++)
+        {
+            // decommentare, solo x test in mancanza di UCM nuova
+            //if (shapeHandler->getFieldName(i) == "ID_CASE" || shapeHandler->getFieldName(i) == "ID_SOIL" || shapeHandler->getFieldName(i) == "ID_CROP" || shapeHandler->getFieldName(i) == "ID_METEO")
+            if (shapeHandler->getFieldName(i) == "ECM_CODE" || shapeHandler->getFieldName(i) == "ID_SOIL" || shapeHandler->getFieldName(i) == "ID_ECM" || shapeHandler->getFieldName(i) == "ID_METEO")
+            {
+                fieldRequired = fieldRequired + 1;
+            }
+        }
+        if (fieldRequired < 4)
+        {
+            QMessageBox::information(nullptr, "Ivalid Unit Crop Map", "Missing required fields");
+            return;
+        }
+        else
+        {
+            QString dbName = QFileDialog::getSaveFileName(this, tr("Save as"), "", tr("DB files (*.db)"));
+            if (dbName == "")
+            {
+                qDebug() << "missing new db file name";
+                return;
+            }
+
+            QFile dbFile(dbName);
+            if (dbFile.exists())
+            {
+                if (!dbFile.remove())
+                {
+                    myProject.logError("Remove file failed: " + dbName + "\n" + dbFile.errorString());
+                    return;
+                }
+            }
+            UnitDb unitList(dbName);
+        }
+
+
+    }
+}

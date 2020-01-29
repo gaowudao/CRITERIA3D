@@ -44,6 +44,8 @@
 
         void updateMaps();
 
+        void on_actionExtract_Unit_Crop_Map_list_triggered();
+
     protected:
         /*!
          * \brief mouseReleaseEvent call moveCenter
