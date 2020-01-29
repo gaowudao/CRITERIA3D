@@ -15,7 +15,8 @@ class UnitDb : public QObject
 public:
     UnitDb(QString dbname);
     ~UnitDb();
-    void createUnitTable();
+    void createUnitsTable();
+    bool writeUnitsTable(QString idCase, QString idCrop, QString idMeteo, int idSoil);
 
 private:
     QString error;

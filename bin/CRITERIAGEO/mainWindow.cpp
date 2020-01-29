@@ -31,6 +31,7 @@
 #include "dialogUcm.h"
 #include "dbfTableDialog.h"
 #include "unitDb.h"
+#include "commonConstants.h"
 
 #include "mainWindow.h"
 #include "ui_mainWindow.h"
@@ -590,7 +591,29 @@ void MainWindow::on_actionExtract_Unit_Crop_Map_list_triggered()
                     return;
                 }
             }
-            UnitDb unitList(dbName);
+            UnitDb* unitList = new UnitDb(dbName);
+
+            std::string idCase;
+            int idCrop = NODATA;
+            int idMeteo= NODATA;
+            int idSoil= NODATA;
+            for (int i = 0; i < shapeHandler->getShapeCount(); i++)
+            {
+                idCase = shapeHandler->getStringValue(signed(i), "ECM_CODE");
+                idCrop = shapeHandler->getNumericValue(signed(i), "ID_ECM");  // da sostituire con ID_CROP
+                idMeteo = shapeHandler->getNumericValue(signed(i), "ID_METEO");
+                idSoil = shapeHandler->getNumericValue(signed(i), "ID_SOIL");
+
+                if (!idCase.empty() && idCrop!=NODATA && idMeteo!=NODATA && idSoil!=NODATA)
+                {
+                    unitList->writeUnitsTable(QString::fromStdString(idCase), QString::number(idCrop), QString::number(idMeteo), idSoil);
+                }
+            }
+            /* test
+            unitList->writeUnitsTable("a", "b", "c", 2);
+            unitList->writeUnitsTable("a", "h", "r", 3);
+            unitList->writeUnitsTable("b", "h", "r", 3);
+            */
         }
 
 
