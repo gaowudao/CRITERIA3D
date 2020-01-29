@@ -27,8 +27,9 @@
 #include <cmath>
 
 #include "tileSources/CompositeTileSource.h"
-#include "dbfNumericFieldsDialog.h"
-#include "ucmDialog.h"
+#include "dialogSelectField.h"
+#include "dialogUcm.h"
+#include "dbfTableDialog.h"
 
 #include "mainWindow.h"
 #include "ui_mainWindow.h"
@@ -235,7 +236,7 @@ void MainWindow::addRasterObject(GisObject* myObject)
 }
 
 
-bool MainWindow::addShapeObject(GisObject* myObject, QString referenceField)
+bool MainWindow::addShapeObject(GisObject* myObject)
 {
     // check zoneNumber
     int zoneNumber = myObject->getShapeHandler()->getUtmZone();
@@ -255,7 +256,6 @@ bool MainWindow::addShapeObject(GisObject* myObject, QString referenceField)
     MapGraphicsShapeObject* newShapeObj = new MapGraphicsShapeObject(this->mapView);
     newShapeObj->initializeUTM(myObject->getShapeHandler());
     newShapeObj->setOpacity(0.5);
-    newShapeObj->setReferenceField(referenceField);
 
     this->shapeObjList.push_back(newShapeObj);
     this->mapView->scene()->addObject(newShapeObj);
@@ -293,15 +293,8 @@ void MainWindow::on_actionLoadShapefile_triggered()
         return;
 
     GisObject* myObject = myProject.objectList.back();
-    QString referenceField;
 
-    DbfNumericFieldsDialog numericFields(myObject->getShapeHandler(), myObject->fileName, false);
-    if (numericFields.result() == QDialog::Accepted)
-    {
-        referenceField = numericFields.getFieldSelected();
-    }
-
-    this->addShapeObject(myObject, referenceField);
+    this->addShapeObject(myObject);
 }
 
 
@@ -373,6 +366,18 @@ void MainWindow::removeRaster(GisObject* myObject)
 }
 
 
+MapGraphicsShapeObject* MainWindow::getShapeObject(GisObject* myObject)
+{
+    for (unsigned int i = 0; i < shapeObjList.size(); i++)
+    {
+        if (shapeObjList.at(i)->getShapePointer() == myObject->getShapeHandler())
+            return shapeObjList.at(i);
+    }
+
+    return nullptr;
+}
+
+
 void MainWindow::removeShape(GisObject* myObject)
 {
     unsigned int i;
@@ -388,6 +393,31 @@ void MainWindow::removeShape(GisObject* myObject)
 }
 
 
+void MainWindow::setShapeStyle(GisObject* myObject)
+{
+    DialogSelectField shapeFieldDialog(myObject->getShapeHandler(), myObject->fileName, false, false);
+    if (shapeFieldDialog.result() == QDialog::Accepted)
+    {
+        MapGraphicsShapeObject* shapeObject = getShapeObject(myObject);
+        std::string fieldName = shapeFieldDialog.getFieldSelected().toStdString();
+        DBFFieldType fieldType = myObject->getShapeHandler()->getFieldType(fieldName);
+
+        if (fieldType == FTString)
+        {
+            shapeObject->setCategories(fieldName);
+        }
+        else
+        {
+            shapeObject->setNumericValues(fieldName);
+        }
+
+        setZeroCenteredScale(shapeObject->colorScale);
+        //reverseColorScale(shapeObject->colorScale);
+        shapeObject->setFill(true);
+    }
+}
+
+
 void MainWindow::itemMenuRequested(const QPoint point)
 {
     QPoint itemPoint = ui->checkList->mapToGlobal(point);
@@ -397,10 +427,13 @@ void MainWindow::itemMenuRequested(const QPoint point)
 
     QMenu submenu;
     submenu.addAction("Close");
+    submenu.addSeparator();
     if (myObject->type == gisObjectShape)
     {
         submenu.addAction("Show data");
-        submenu.addAction("Open attribute table");
+        submenu.addAction("Attribute table");
+        submenu.addSeparator();
+        submenu.addAction("Set style");
     }
     else if (myObject->type == gisObjectRaster)
     {
@@ -427,11 +460,15 @@ void MainWindow::itemMenuRequested(const QPoint point)
         }
         else if (rightClickItem->text().contains("Show data"))
         {
-            ShowProperties showData(myObject->getShapeHandler(), myObject->fileName);
+            DialogShapeProperties showData(myObject->getShapeHandler(), myObject->fileName);
         }
-        else if (rightClickItem->text().contains("Open attribute table"))
+        else if (rightClickItem->text().contains("Attribute table"))
         {
             DbfTableDialog Table(myObject->getShapeHandler(), myObject->fileName);
+        }
+        else if (rightClickItem->text().contains("Set style"))
+        {
+            setShapeStyle(myObject);
         }
         else if (rightClickItem->text().contains("Save as"))
         {
@@ -443,6 +480,7 @@ void MainWindow::itemMenuRequested(const QPoint point)
     }
     return;
 }
+
 
 void MainWindow::on_actionRasterize_shape_triggered()
 {
@@ -461,10 +499,11 @@ void MainWindow::on_actionRasterize_shape_triggered()
     {
         int pos = ui->checkList->row(itemSelected);
         GisObject* myObject = myProject.objectList.at(unsigned(pos));
-        DbfNumericFieldsDialog numericFields(myObject->getShapeHandler(), myObject->fileName, true);
-        if (numericFields.result() == QDialog::Accepted)
+        DialogSelectField numericField(myObject->getShapeHandler(), myObject->fileName, true, true);
+        if (numericField.result() == QDialog::Accepted)
         {
-            myProject.getRasterFromShape(myObject->getShapeHandler(), numericFields.getFieldSelected(), numericFields.getOutputName(), numericFields.getCellSize(), true);
+            myProject.getRasterFromShape(myObject->getShapeHandler(), numericField.getFieldSelected(),
+                                         numericField.getOutputName(), numericField.getCellSize(), true);
             addRasterObject(myProject.objectList.back());
             this->updateMaps();
         }
@@ -480,13 +519,22 @@ void MainWindow::on_actionCompute_Unit_Crop_Map_triggered()
         return;
     }
 
-    UcmDialog ucmDialog(shapeObjList);
+    // create shapehandler list
+    std::vector<Crit3DShapeHandler*> shapeList;
+    for (unsigned int i = 0; i < shapeObjList.size(); i++)
+    {
+        shapeList.push_back(shapeObjList.at(i)->getShapePointer());
+    }
+
+    DialogUCM ucmDialog(shapeList);
     if (ucmDialog.result() == QDialog::Rejected)
         return;
 
-    if (myProject.addUnitCropMap(ucmDialog.getCrop(), ucmDialog.getSoil(), ucmDialog.getMeteo(), ucmDialog.getIdSoil().toStdString(), ucmDialog.getIdMeteo().toStdString(), ucmDialog.getOutputName(), ucmDialog.getCellSize()))
+    if (myProject.addUnitCropMap(ucmDialog.getCrop(), ucmDialog.getSoil(), ucmDialog.getMeteo(),
+                                 ucmDialog.getIdSoil().toStdString(), ucmDialog.getIdMeteo().toStdString(),
+                                 ucmDialog.getOutputName(), ucmDialog.getCellSize(), true))
     {
-        addShapeObject(myProject.objectList.back(), "ID_UNIT");
+        addShapeObject(myProject.objectList.back());
     }
 }
 

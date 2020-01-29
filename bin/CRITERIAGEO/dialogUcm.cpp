@@ -1,48 +1,48 @@
-#include "ucmDialog.h"
+#include "dialogUcm.h"
 
-QString UcmDialog::getIdCrop() const
+QString DialogUCM::getIdCrop() const
 {
     return idCrop;
 }
 
-QString UcmDialog::getIdSoil() const
+QString DialogUCM::getIdSoil() const
 {
     return idSoil;
 }
 
-QString UcmDialog::getIdMeteo() const
+QString DialogUCM::getIdMeteo() const
 {
     return idMeteo;
 }
 
-Crit3DShapeHandler *UcmDialog::getCrop() const
+Crit3DShapeHandler *DialogUCM::getCrop() const
 {
     return crop;
 }
 
-Crit3DShapeHandler *UcmDialog::getSoil() const
+Crit3DShapeHandler *DialogUCM::getSoil() const
 {
     return soil;
 }
 
-Crit3DShapeHandler *UcmDialog::getMeteo() const
+Crit3DShapeHandler *DialogUCM::getMeteo() const
 {
     return meteo;
 }
 
-QString UcmDialog::getOutputName() const
+QString DialogUCM::getOutputName() const
 {
     return outputName->text();
 }
 
-double UcmDialog::getCellSize() const
+double DialogUCM::getCellSize() const
 {
     QString cellString = cellSize->text();
     cellString.replace(",", ".");
     return cellString.toDouble();
 }
 
-UcmDialog::UcmDialog(std::vector<MapGraphicsShapeObject *> shapeObjList)
+DialogUCM::DialogUCM(std::vector<Crit3DShapeHandler*> shapeObjList)
     :shapeObjList(shapeObjList)
 {
 
@@ -73,9 +73,9 @@ UcmDialog::UcmDialog(std::vector<MapGraphicsShapeObject *> shapeObjList)
 
     QStringList shapeLabel;
 
-    for (int i = 0; i < shapeObjList.size(); i++)
+    for (unsigned int i = 0; i < shapeObjList.size(); i++)
     {
-        QString filepath = QString::fromStdString(shapeObjList.at(i)->getShapePointer()->getFilepath());
+        QString filepath = QString::fromStdString(shapeObjList.at(i)->getFilepath());
         QFileInfo file(filepath);
         shapeLabel << file.baseName();
     }
@@ -101,18 +101,6 @@ UcmDialog::UcmDialog(std::vector<MapGraphicsShapeObject *> shapeObjList)
     fieldLayout->addWidget(meteoFieldLabel);
     fieldLayout->addWidget(meteoField);
 
-
-    crop = shapeObjList.at(0)->getShapePointer();
-    QStringList fieldLabel;
-    for (int i = 0; i < crop->getFieldNumbers(); i++)
-    {
-        std::string nameField =  crop->getFieldName(i);
-        fieldLabel << QString::fromStdString(nameField);
-    }
-    cropField->addItems(fieldLabel);
-    soilField->addItems(fieldLabel);
-    meteoField->addItems(fieldLabel);
-
     boxLayout->addLayout(shapeLayout);
     boxLayout->addLayout(fieldLayout);
 
@@ -129,7 +117,10 @@ UcmDialog::UcmDialog(std::vector<MapGraphicsShapeObject *> shapeObjList)
     mainLayout->addLayout(boxLayout);
     cellSize = new QLineEdit();
     cellSize->setPlaceholderText("cell size [m]");
-    cellSize->setValidator(new QDoubleValidator(0, 9999.0, 2)); //LC accetta double con 2 cifre decimali da 0 a 9999
+
+    // double with 1 digit from 0 to 9999
+    cellSize->setValidator(new QDoubleValidator(0, 9999, 1));
+
     outputName = new QLineEdit();
     outputName->setPlaceholderText("Output Name");
     mainLayout->addWidget(cellSize);
@@ -141,16 +132,11 @@ UcmDialog::UcmDialog(std::vector<MapGraphicsShapeObject *> shapeObjList)
 }
 
 
-UcmDialog::~UcmDialog()
-{
-
-}
-
-void UcmDialog::shapeCropClicked(QListWidgetItem* item)
+void DialogUCM::shapeCropClicked(QListWidgetItem* item)
 {
     cropField->clear();
-    int pos = cropShape->row(item);
-    crop = shapeObjList.at(unsigned(pos))->getShapePointer();
+    unsigned int pos = cropShape->row(item);
+    crop = shapeObjList.at(pos);
 
     QStringList fieldLabel;
     for (int i = 0; i < crop->getFieldNumbers(); i++)
@@ -161,11 +147,11 @@ void UcmDialog::shapeCropClicked(QListWidgetItem* item)
     cropField->addItems(fieldLabel);
 }
 
-void UcmDialog::shapeSoilClicked(QListWidgetItem* item)
+void DialogUCM::shapeSoilClicked(QListWidgetItem* item)
 {
     soilField->clear();
-    int pos = soilShape->row(item);
-    soil = shapeObjList.at(unsigned(pos))->getShapePointer();
+    unsigned int pos = soilShape->row(item);
+    soil = shapeObjList.at(pos);
 
     QStringList fieldLabel;
     for (int i = 0; i < soil->getFieldNumbers(); i++)
@@ -176,11 +162,11 @@ void UcmDialog::shapeSoilClicked(QListWidgetItem* item)
     soilField->addItems(fieldLabel);
 }
 
-void UcmDialog::shapeMeteoClicked(QListWidgetItem* item)
+void DialogUCM::shapeMeteoClicked(QListWidgetItem* item)
 {
     meteoField->clear();
-    int pos = meteoShape->row(item);
-    meteo = shapeObjList.at(unsigned(pos))->getShapePointer();
+    unsigned int pos = meteoShape->row(item);
+    meteo = shapeObjList.at(pos);
 
     QStringList fieldLabel;
     for (int i = 0; i < meteo->getFieldNumbers(); i++)
@@ -192,9 +178,8 @@ void UcmDialog::shapeMeteoClicked(QListWidgetItem* item)
 }
 
 
-void UcmDialog::ucm()
+void DialogUCM::ucm()
 {
-    int pos;
     QListWidgetItem* itemSelected;
 
     // check shape selection
@@ -204,8 +189,8 @@ void UcmDialog::ucm()
         QMessageBox::information(nullptr, "No crop shape selected", "Select a shape");
         return;
     }
-    pos = cropShape->row(itemSelected);
-    crop = shapeObjList.at(unsigned(pos))->getShapePointer();
+    unsigned int pos = cropShape->row(itemSelected);
+    crop = shapeObjList.at(pos);
 
     itemSelected = soilShape->currentItem();
     if (itemSelected == nullptr)
@@ -214,7 +199,7 @@ void UcmDialog::ucm()
         return;
     }
     pos = soilShape->row(itemSelected);
-    soil = shapeObjList.at(unsigned(pos))->getShapePointer();
+    soil = shapeObjList.at(pos);
 
     itemSelected = meteoShape->currentItem();
     if (itemSelected == nullptr)
@@ -223,7 +208,7 @@ void UcmDialog::ucm()
         return;
     }
     pos = meteoShape->row(itemSelected);
-    meteo = shapeObjList.at(unsigned(pos))->getShapePointer();
+    meteo = shapeObjList.at(pos);
 
     // check field selection
 

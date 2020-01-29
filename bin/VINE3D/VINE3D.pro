@@ -19,7 +19,7 @@ INCLUDEPATH +=  ../../agrolib/crit3dDate ../../agrolib/mathFunctions ../../agrol
                 ../../agrolib/interpolation ../../agrolib/solarRadiation ../../agrolib/soil  \
                 ../../agrolib/soilFluxes3D/header ../../agrolib/crop ../../agrolib/grapevine \
                 ../../agrolib/utilities ../../agrolib/dbMeteoPoints ../../agrolib/dbMeteoGrid \
-                ../../agrolib/soilWidget  ../../agrolib/project ../../agrolib/graphics  \
+                ../../agrolib/project ../../agrolib/graphics  \
                 ../../mapGraphics ../CRITERIA3D/shared
 
 CONFIG += debug_and_release
@@ -32,7 +32,6 @@ CONFIG(debug, debug|release) {
 
     LIBS += -L../../agrolib/graphics/debug -lgraphics
     LIBS += -L../../agrolib/project/debug -lproject
-    LIBS += -L../../agrolib/soilWidget/debug -lsoilWidget
     LIBS += -L../../agrolib/soil/debug -lsoil
     LIBS += -L../../agrolib/soilFluxes3D/debug -lsoilFluxes3D
     LIBS += -L../../agrolib/grapevine/debug -lgrapevine
@@ -49,7 +48,6 @@ CONFIG(debug, debug|release) {
 
     LIBS += -L../../agrolib/graphics/release -lgraphics
     LIBS += -L../../agrolib/project/release -lproject
-    LIBS += -L../../agrolib/soilWidget/release -lsoilWidget
     LIBS += -L../../agrolib/soil/release -lsoil
     LIBS += -L../../agrolib/soilFluxes3D/release -lsoilFluxes3D
     LIBS += -L../../agrolib/grapevine/release -lgrapevine

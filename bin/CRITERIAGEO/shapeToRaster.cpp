@@ -3,7 +3,7 @@
 #include "commonConstants.h"
 #include <float.h>
 #include <math.h>
-//#include "formInfo.h"
+#include "formInfo.h"
 #include "gis.h"
 
 
@@ -44,20 +44,24 @@ gis::Crit3DRasterGrid* initializeRasterFromShape(Crit3DShapeHandler* shape, gis:
 void fillRasterWithShapeNumber(gis::Crit3DRasterGrid* raster, Crit3DShapeHandler *shapeHandler, bool showInfo)
 {
     ShapeObject object;
-    //FormInfo formInfo;
+    FormInfo formInfo;
     double x, y;
     Box<double> bounds;
     int r0, r1, c0, c1;
     int nShape = shapeHandler->getShapeCount();
 
+    QString fileName = QString::fromStdString(shapeHandler->getFilepath());
+
     if (showInfo)
     {
-        //formInfo.start("Rasterize shape...", nShape);
+        formInfo.start("Rasterize shape " + fileName, nShape);
     }
+
+    raster->emptyGrid();
 
     for (int shapeIndex = 0; shapeIndex < nShape; shapeIndex++)
     {
-        //if (showInfo) formInfo.setValue(shapeIndex);
+        if (showInfo) formInfo.setValue(shapeIndex);
 
         shapeHandler->getShape(shapeIndex, object);
 
@@ -66,10 +70,10 @@ void fillRasterWithShapeNumber(gis::Crit3DRasterGrid* raster, Crit3DShapeHandler
         gis::getRowColFromXY(*(raster->header), bounds.xmin, bounds.ymax, &r0, &c0);
         gis::getRowColFromXY(*(raster->header), bounds.xmax, bounds.ymin, &r1, &c1);
         // check bounds
-        r0 = MAXVALUE(r0, 0);
-        r1 = MINVALUE(r1, raster->header->nrRows -1);
-        c0 = MAXVALUE(c0, 0);
-        c1 = MINVALUE(c1, raster->header->nrCols -1);
+        r0 = MAXVALUE(r0-1, 0);
+        r1 = MINVALUE(r1+1, raster->header->nrRows -1);
+        c0 = MAXVALUE(c0-1, 0);
+        c1 = MINVALUE(c1+1, raster->header->nrCols -1);
 
         for (int row = r0; row <= r1; row++)
         {
@@ -87,14 +91,14 @@ void fillRasterWithShapeNumber(gis::Crit3DRasterGrid* raster, Crit3DShapeHandler
         }
     }
 
-    //if (showInfo) formInfo.close();
+    if (showInfo) formInfo.close();
 }
 
 
 void fillRasterWithField(gis::Crit3DRasterGrid* raster, Crit3DShapeHandler* shapeHandler, std::string valField, bool showInfo)
 {
     ShapeObject object;
-    //FormInfo formInfo;
+    FormInfo formInfo;
     double x, y, fieldValue;
     int fieldIndex = shapeHandler->getDBFFieldIndex(valField.c_str());
     int nShape = shapeHandler->getShapeCount();
@@ -104,12 +108,12 @@ void fillRasterWithField(gis::Crit3DRasterGrid* raster, Crit3DShapeHandler* shap
 
     if (showInfo)
     {
-        //formInfo.start("Rasterize shape...", nShape);
+        formInfo.start("Rasterize shape...", nShape);
     }
 
     for (int shapeIndex = 0; shapeIndex < nShape; shapeIndex++)
     {
-        //if (showInfo) formInfo.setValue(shapeIndex);
+        if (showInfo) formInfo.setValue(shapeIndex);
 
         shapeHandler->getShape(shapeIndex, object);
 
@@ -130,10 +134,10 @@ void fillRasterWithField(gis::Crit3DRasterGrid* raster, Crit3DShapeHandler* shap
             gis::getRowColFromXY(*(raster->header), bounds.xmin, bounds.ymax, &r0, &c0);
             gis::getRowColFromXY(*(raster->header), bounds.xmax, bounds.ymin, &r1, &c1);
             // check bounds
-            r0 = MAXVALUE(r0, 0);
-            r1 = MINVALUE(r1, raster->header->nrRows -1);
-            c0 = MAXVALUE(c0, 0);
-            c1 = MINVALUE(c1, raster->header->nrCols -1);
+            r0 = MAXVALUE(r0-1, 0);
+            r1 = MINVALUE(r1+1, raster->header->nrRows -1);
+            c0 = MAXVALUE(c0-1, 0);
+            c1 = MINVALUE(c1+1, raster->header->nrCols -1);
 
             for (int row = r0; row <= r1; row++)
             {
@@ -152,7 +156,7 @@ void fillRasterWithField(gis::Crit3DRasterGrid* raster, Crit3DShapeHandler* shap
         }
     }
 
-    //if (showInfo) formInfo.close();
+    if (showInfo) formInfo.close();
 }
 
 

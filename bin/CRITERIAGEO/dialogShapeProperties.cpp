@@ -1,7 +1,7 @@
-#include "showProperties.h"
+#include "dialogShapeProperties.h"
 
 
-ShowProperties::ShowProperties(Crit3DShapeHandler* shapeHandler, QString filename)
+DialogShapeProperties::DialogShapeProperties(Crit3DShapeHandler* shapeHandler, QString filename)
     :shapeHandler(shapeHandler)
 {
     setFixedSize(600,600);
@@ -72,12 +72,8 @@ ShowProperties::ShowProperties(Crit3DShapeHandler* shapeHandler, QString filenam
     exec();
 }
 
-ShowProperties::~ShowProperties()
-{
-    close();
-}
 
-void ShowProperties::onSelectShape(QTreeWidgetItem *item, int)
+void DialogShapeProperties::onSelectShape(QTreeWidgetItem *item, int)
 {
     if (item != nullptr)
     {

@@ -9,9 +9,9 @@
 
     #include "mapGraphicsRasterObject.h"
     #include "mapGraphicsShapeObject.h"
-    #include "gisProject.h"
     #include "colorLegend.h"
-    #include "showProperties.h"
+    #include "gisProject.h"
+    #include "dialogShapeProperties.h"
 
     namespace Ui
     {
@@ -74,13 +74,15 @@
 
         void setMapSource(OSMTileSource::OSMTileType mySource);
         void addRasterObject(GisObject* myObject);
-        bool addShapeObject(GisObject* myObject, QString referenceField);
+        bool addShapeObject(GisObject* myObject);
         void itemClicked(QListWidgetItem* item);
         void itemMenuRequested(const QPoint point);
         void saveRaster(GisObject* myObject);
         void removeRaster(GisObject* myObject);
         void removeShape(GisObject* myObject);
+        void setShapeStyle(GisObject* myObject);
 
+        MapGraphicsShapeObject* getShapeObject(GisObject* myObject);
         QPoint getMapPos(const QPoint& pos);
         bool isInsideMap(const QPoint& pos);
     };

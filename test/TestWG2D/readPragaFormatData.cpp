@@ -11,7 +11,7 @@ int readPragaLineFileNumber(FILE *fp)
     char dummy;
 
     do {
-        dummy = getc(fp); //printf("%s",dummy);
+        dummy = getc(fp);
         if (dummy == '\n') counter++ ;
     } while (dummy != EOF);
     return counter ;
