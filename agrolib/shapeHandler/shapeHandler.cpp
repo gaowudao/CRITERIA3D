@@ -25,6 +25,7 @@
 */
 
 #include "shapeHandler.h"
+#include "commonConstants.h"
 #include <fstream>
 
 
@@ -251,6 +252,62 @@ int Crit3DShapeHandler::getFieldNumbers()
 {
     return m_fields;
 }
+
+
+int	Crit3DShapeHandler::getFieldPos(std::string fieldName)
+{
+    for (int i = 0; i < m_fields; i++)
+        if (m_fieldsList.at(unsigned(i)) == fieldName)
+            return i;
+
+    return -1;
+}
+
+
+DBFFieldType Crit3DShapeHandler::getFieldType(std::string fieldName)
+{
+    int pos = getFieldPos(fieldName);
+
+    if (pos == -1)
+        return FTInvalid;
+    else
+        return getFieldType(pos);
+}
+
+
+double Crit3DShapeHandler::getNumericValue(int shapeNumber, std::string fieldName)
+{
+    int fieldPos = getFieldPos(fieldName);
+
+    if (fieldPos == -1) return NODATA;
+
+    DBFFieldType fieldType = getFieldType(fieldPos);
+
+    if (fieldType == FTInteger)
+    {
+        return readIntAttribute(shapeNumber, fieldPos);
+    }
+    else if (fieldType == FTDouble)
+    {
+        return readDoubleAttribute(shapeNumber, fieldPos);
+    }
+    else return NODATA;
+}
+
+
+std::string Crit3DShapeHandler::getStringValue(int shapeNumber, std::string fieldName)
+{
+    int fieldPos = getFieldPos(fieldName);
+    if (fieldPos == -1) return "";
+
+    DBFFieldType fieldType = getFieldType(fieldPos);
+    if (fieldType == FTString)
+    {
+        return readStringAttribute(shapeNumber, fieldPos);
+    }
+    else return "";
+}
+
 
 std::string	Crit3DShapeHandler::getFieldName(int fieldPos)
 {

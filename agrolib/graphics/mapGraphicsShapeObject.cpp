@@ -1,5 +1,6 @@
 #include "mapGraphicsShapeObject.h"
 #include "commonConstants.h"
+#include "basicMath.h"
 
 
 #define MAPBORDER 10
@@ -8,17 +9,19 @@
 MapGraphicsShapeObject::MapGraphicsShapeObject(MapGraphicsView* _view, MapGraphicsObject *parent) :
     MapGraphicsObject(true, parent)
 {
-    this->setFlag(MapGraphicsObject::ObjectIsSelectable, false);
-    this->setFlag(MapGraphicsObject::ObjectIsMovable, false);
-    this->setFlag(MapGraphicsObject::ObjectIsFocusable);
-    this->view = _view;
+    setFlag(MapGraphicsObject::ObjectIsSelectable, false);
+    setFlag(MapGraphicsObject::ObjectIsMovable, false);
+    setFlag(MapGraphicsObject::ObjectIsFocusable);
+    view = _view;
 
-    this->geoMap = new gis::Crit3DGeoMap();
-    this->referenceField = "";
-    this->isDrawing = false;
-    this->shapePointer = nullptr;
-    this->nrShapes = 0;
-    this->updateCenter();
+    colorScale = new Crit3DColorScale();
+
+    geoMap = new gis::Crit3DGeoMap();
+    isDrawing = false;
+    isFill = false;
+    shapePointer = nullptr;
+    nrShapes = 0;
+    updateCenter();
 }
 
 
@@ -99,11 +102,24 @@ void MapGraphicsShapeObject::drawShape(QPainter* myPainter)
     QPainterPath* path;
     QPainterPath* inner;
 
-    myPainter->setPen(Qt::black);
-    myPainter->setBrush(Qt::red);
+    myPainter->setPen(Qt::gray);
+    myPainter->setBrush(Qt::NoBrush);
 
     for (unsigned long i = 0; i < nrShapes; i++)
     {
+        if (isFill)
+        {
+            if (values[i] != NODATA)
+            {
+                Crit3DColor* myColor = colorScale->getColor(values[i]);
+                myPainter->setBrush(QColor(myColor->red, myColor->green, myColor->blue));
+            }
+            else
+            {
+                myPainter->setBrush(Qt::NoBrush);
+            }
+        }
+
         for (unsigned int j = 0; j < shapeParts[i].size(); j++)
         {
             if (shapeParts[i][j].hole)
@@ -164,6 +180,8 @@ bool MapGraphicsShapeObject::initializeUTM(Crit3DShapeHandler* shapePtr)
     holes.resize(nrShapes);
     geoBounds.resize(nrShapes);
     geoPoints.resize(nrShapes);
+    values.resize(nrShapes);
+
     double refLatitude = geoMap->referencePoint.latitude;
 
     int zoneNumber = shapePtr->getUtmZone();
@@ -174,6 +192,9 @@ bool MapGraphicsShapeObject::initializeUTM(Crit3DShapeHandler* shapePtr)
     {
         shapePointer->getShape(int(i), myShape);
         shapeParts[i] = myShape.getParts();
+
+        // intialize values
+        values[i] = NODATA;
 
         unsigned int nrParts = myShape.getPartCount();
         holes[i].resize(nrParts);
@@ -229,9 +250,89 @@ Crit3DShapeHandler* MapGraphicsShapeObject::getShapePointer()
 }
 
 
-void MapGraphicsShapeObject::setReferenceField(QString myField)
+// warning: call after initializeUTM
+void MapGraphicsShapeObject::setNumericValues(std::string fieldName)
 {
-    referenceField = myField;
+    // set values
+    float firstValue = NODATA;
+    for (unsigned int i = 0; i < nrShapes; i++)
+    {
+        values[i] = float(shapePointer->getNumericValue(signed(i), fieldName));
+
+        // zero equal to null value
+        if (isEqual(values[i], 0)) values[i] = NODATA;
+
+        if (isEqual(firstValue, NODATA) && (! isEqual(values[i], NODATA)))
+            firstValue = values[i];
+    }
+
+    // set min/max
+    colorScale->minimum = firstValue;
+    colorScale->maximum = firstValue;
+    if (! isEqual(firstValue, NODATA))
+    {
+        for (unsigned int i = 0; i < nrShapes; i++)
+            if (! isEqual(values[i], NODATA))
+            {
+                colorScale->minimum = MINVALUE(colorScale->minimum, values[i]);
+                colorScale->maximum = MAXVALUE(colorScale->maximum, values[i]);
+            }
+    }
+}
+
+
+int MapGraphicsShapeObject::getCategoryIndex(std::string strValue)
+{
+    for (unsigned int i = 0; i < categories.size(); i++)
+    {
+        if (categories[i] == strValue) return signed(i);
+    }
+    return NODATA;
+}
+
+
+// warning: call after initializeUTM
+void MapGraphicsShapeObject::setCategories(std::string fieldName)
+{
+    // fill categories and set values(index of categories)
+    categories.clear();
+    for (unsigned int i = 0; i < nrShapes; i++)
+    {
+        std::string strValue = shapePointer->getStringValue(signed(i), fieldName);
+
+        if (strValue != "")
+        {
+            int index = getCategoryIndex(strValue);
+            if (index != NODATA)
+            {
+                values[i] = index+1;
+            }
+            else
+            {
+                categories.push_back(strValue);
+                values[i] = categories.size();
+            }
+        }
+        else values[i] = NODATA;
+    }
+
+    // define min/max
+    if (! categories.empty())
+    {
+        colorScale->minimum = 1;
+        colorScale->maximum = categories.size();
+    }
+    else
+    {
+        colorScale->minimum = NODATA;
+        colorScale->maximum = NODATA;
+    }
+}
+
+
+void MapGraphicsShapeObject::setFill(bool value)
+{
+    isFill = value;
 }
 
 

@@ -40,12 +40,16 @@
         std::vector< std::vector<GeoBounds>> geoBounds;
         std::vector< std::vector<LatLonPoint>> geoPoints;
 
-        QString referenceField;
+        std::vector<float> values;
+        std::vector<std::string> categories;
+
         bool isDrawing;
+        bool isFill;
 
         void setMapExtents();
         void drawShape(QPainter* myPainter);
         void setPolygon(unsigned int i, unsigned int j, QPolygonF* polygon);
+        int getCategoryIndex(std::string strValue);
 
     protected:
         /*!
@@ -72,17 +76,21 @@
          */
         explicit MapGraphicsShapeObject(MapGraphicsView* view, MapGraphicsObject *parent = nullptr);
 
+        Crit3DColorScale* colorScale;
+
         void setDrawing(bool value);
         void updateCenter();
         void clear();
 
         bool initializeUTM(Crit3DShapeHandler* shapePtr);
-        void setReferenceField(QString myField);
+        void setNumericValues(std::string fieldName);
+        void setCategories(std::string fieldName);
+
+        void setFill(bool value);
         Crit3DShapeHandler* getShapePointer();
 
         QPointF getPixel(const LatLonPoint &geoPoint);
     };
-
 
 
 #endif // MAPGRAPHICSSHAPEOBJECT_H

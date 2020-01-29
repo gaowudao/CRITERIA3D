@@ -102,16 +102,22 @@ Crit3DColor* Crit3DColorScale::getColor(float myValue)
     int myIndex = 0;
 
     if (myValue <= minimum)
+    {
         myIndex = 0;
+    }
     else if (myValue >= maximum)
+    {
         myIndex = nrColors-1;
+    }
     else
+    {
         if (classification == classificationMethod::EqualInterval)
         {
             myIndex = int(round((nrColors-1) * ((myValue - minimum) / (maximum - minimum))));
         }
+    }
 
-    return(&color[myIndex]);
+    return &color[myIndex];
 }
 
 
@@ -278,6 +284,27 @@ bool setRadiationScale(Crit3DColorScale* myScale)
     myScale->keyColor[2] = Crit3DColor(255, 0, 0);
     myScale->keyColor[3] = Crit3DColor(128, 0, 128);       /*!< violet */
 
+    return(myScale->classify());
+}
+
+
+bool reverseColorScale(Crit3DColorScale* myScale)
+{
+    // copy key colors
+    Crit3DColor* oldKeyColor = new Crit3DColor[unsigned(myScale->nrKeyColors)];
+    for (int i = 0; i < myScale->nrKeyColors; i++)
+    {
+        oldKeyColor[i] = myScale->keyColor[i];
+    }
+
+    // reverse key colors
+    int lastIndex = myScale->nrKeyColors - 1;
+    for (int i = 0; i < myScale->nrKeyColors; i++)
+    {
+        myScale->keyColor[i] = oldKeyColor[lastIndex - i];
+    }
+
+    // reclassify
     return(myScale->classify());
 }
 

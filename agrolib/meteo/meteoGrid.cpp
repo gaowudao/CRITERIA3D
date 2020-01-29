@@ -200,12 +200,12 @@ std::vector<std::vector<Crit3DMeteoPoint *> > Crit3DMeteoGrid::meteoPoints() con
     return _meteoPoints;
 }
 
-Crit3DMeteoPoint Crit3DMeteoGrid::meteoPoint(int row, int col)
+Crit3DMeteoPoint Crit3DMeteoGrid::meteoPoint(unsigned row, unsigned col)
 {
     return *(_meteoPoints[row][col]);
 }
 
-Crit3DMeteoPoint* Crit3DMeteoGrid::meteoPointPointer(int row, int col)
+Crit3DMeteoPoint* Crit3DMeteoGrid::meteoPointPointer(unsigned row, unsigned col)
 {
     return _meteoPoints[row][col];
 }
@@ -686,7 +686,7 @@ void Crit3DMeteoGrid::aggregateMeteoGrid(meteoVariable myVar, frequencyType freq
                             }
                             else
                             {
-                                _meteoPoints[row][col]->obsDataH[0].date = date;
+                                //_meteoPoints[row][col]->obsDataH[0].date = date;
                                 initialize = false;
                             }
                             fillMeteoPointHourlyValue(row, col, numberOfDays, initialize, date, hour, minute, myVar, float(myValue));
@@ -846,4 +846,8 @@ void Crit3DMeteoGrid::saveRowColfromZone(gis::Crit3DRasterGrid* zoneGrid, std::v
         }
     }
 }
+
+
+
+
 

@@ -44,10 +44,9 @@
     frequencyType getAggregationFrequency(meteoVariable myVar);
 
     bool elaborateDailyAggregatedVar(meteoVariable myVar, Crit3DMeteoPoint meteoPoint, std::vector<float> &outputValues, float* percValue, Crit3DMeteoSettings *meteoSettings);
-
     bool elaborateDailyAggregatedVarFromDaily(meteoVariable myVar, Crit3DMeteoPoint meteoPoint, std::vector<float> &outputValues, float* percValue);
-
     bool elaborateDailyAggregatedVarFromHourly(meteoVariable myVar, Crit3DMeteoPoint meteoPoint, std::vector<float> &outputValues, Crit3DMeteoSettings *meteoSettings);
+    bool aggregatedHourlyToDaily(meteoVariable myVar, Crit3DMeteoPoint *meteoPoint, Crit3DDate dateIni, Crit3DDate dateFin, Crit3DMeteoSettings *meteoSettings);
 
     bool anomalyOnPoint(Crit3DMeteoPoint* meteoPoint, float refValue);
 
@@ -65,13 +64,13 @@
 
     float thomH(float tempAvg, float relHumAvgAir);
 
-    int thomDailyNHoursAbove(float *tempAvg, float *relHumAvgAir, float thomthreshold, float minimumPercentage);
+    int thomDailyNHoursAbove(TObsDataH *hourlyValues, float thomthreshold, float minimumPercentage);
 
-    float thomDailyMax(float *tempAvg, float* relHumAvgAir, float minimumPercentage);
+    float thomDailyMax(TObsDataH *hourlyValues, float minimumPercentage);
 
-    float thomDailyMean(float *tempAvg, float* relHumAvgAir, float minimumPercentage);
+    float thomDailyMean(TObsDataH *hourlyValues, float minimumPercentage);
 
-    float dailyLeafWetnessComputation(int *leafW, float minimumPercentage);
+    float dailyLeafWetnessComputation(TObsDataH *hourlyValues, float minimumPercentage);
 
     float computeDailyBIC(float prec, float etp);
 
