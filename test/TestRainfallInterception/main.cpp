@@ -5,6 +5,7 @@
 #include "rainfallInterception.h"
 #include "readWeatherMonticolo.h"
 
+double laiEstimation(int doy);
 
 int main(int argc, char *argv[])
 {
@@ -35,7 +36,7 @@ int main(int argc, char *argv[])
         //QCoreApplication a(argc, argv);
 
         double waterFreeEvaporation = 0.01;
-        double lai = 4;
+        double lai = -9999;
         double lightExtinctionCoefficient = 0.6;
         double leafStorage = 0.3;
         double stemStorage = 0.105;
@@ -48,9 +49,39 @@ int main(int argc, char *argv[])
         canopy::waterManagementCanopy(&storedWater,prec[iLine],waterFreeEvaporation,lai,0.5,lightExtinctionCoefficient,leafStorage, stemStorage,maxStemFlowRate,&freeRainfall,&drainage,&stemFlow,&throughfall,&soilWater);
         //canopy::waterManagementCanopy(&storedWater,prec[iLine],waterFreeEvaporation,lai,0.5,lightExtinctionCoefficient,leafStorage, stemStorage,maxStemFlowRate,&soilWater);
         printf("%.2d:%.2d, %.2d/%.2d/%.4d, %.2f , %.2f\n",hour[iLine],minute[iLine],day[iLine],month[iLine],year[iLine],temp[iLine],prec[iLine]);
-        printf("soilWater %f storedWater%f",soilWater, storedWater);
+        //printf("soilWater %f storedWater%f",soilWater, storedWater);
         //printf("%f\n",canopy::canopyNoInterceptedRainfallHydrall(lai,0.,rainfall));
         //getchar();
     }
     return 0;
+}
+
+double laiEstimation(int doy)
+{
+    double lai;
+    if (doy <= 100)
+    {
+        lai = 0.1;
+    }
+    else if (doy >= 330)
+    {
+        lai = 0.1;
+    }
+    else if (doy >= 150 && doy <= 250)
+    {
+        lai = 3.6;
+    }
+    else
+    {
+        if (doy < 150)
+        {
+            lai = 0.1 + 0.07*(doy-100);
+        }
+        else
+        {
+            lai = 3.6 - 0.043*(doy-250);
+        }
+    }
+    return lai;
+
 }
