@@ -1,8 +1,10 @@
 #ifndef ZONALSTATISTIC_H
 #define ZONALSTATISTIC_H
 
+#ifndef SHAPEHANDLER_H
     #include "shapeHandler.h"
-    #include "gis.h"
+#endif
+#include "gis.h"
 
     enum opType{MAJORITY, MIN, MAX, AVG};
 

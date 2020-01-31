@@ -30,7 +30,7 @@
 #include "dialogSelectField.h"
 #include "dialogUcm.h"
 #include "dbfTableDialog.h"
-#include "unitDb.h"
+#include "extractUCMList.h"
 #include "commonConstants.h"
 
 #include "mainWindow.h"
@@ -544,6 +544,7 @@ void MainWindow::on_actionCompute_Unit_Crop_Map_triggered()
 
 void MainWindow::on_actionExtract_Unit_Crop_Map_list_triggered()
 {
+
     QListWidgetItem * itemSelected = ui->checkList->currentItem();
     if (shapeObjList.empty())
     {
@@ -557,14 +558,16 @@ void MainWindow::on_actionExtract_Unit_Crop_Map_list_triggered()
     }
     else
     {
+
         int pos = ui->checkList->row(itemSelected);
         Crit3DShapeHandler* shapeHandler = (myProject.objectList.at(unsigned(pos)))->getShapeHandler();
+        std::string errorStr;
+
         int fieldRequired = 0;
         for (int i = 0; i < shapeHandler->getFieldNumbers(); i++)
         {
-            // decommentare, solo x test in mancanza di UCM nuova
-            //if (shapeHandler->getFieldName(i) == "ID_CASE" || shapeHandler->getFieldName(i) == "ID_SOIL" || shapeHandler->getFieldName(i) == "ID_CROP" || shapeHandler->getFieldName(i) == "ID_METEO")
-            if (shapeHandler->getFieldName(i) == "ECM_CODE" || shapeHandler->getFieldName(i) == "ID_SOIL" || shapeHandler->getFieldName(i) == "ID_ECM" || shapeHandler->getFieldName(i) == "ID_METEO")
+
+            if (shapeHandler->getFieldName(i) == "ID_CASE" || shapeHandler->getFieldName(i) == "ID_SOIL" || shapeHandler->getFieldName(i) == "ID_CROP" || shapeHandler->getFieldName(i) == "ID_METEO")
             {
                 fieldRequired = fieldRequired + 1;
             }
@@ -592,31 +595,12 @@ void MainWindow::on_actionExtract_Unit_Crop_Map_list_triggered()
                     return;
                 }
             }
-            UnitDb* unitList = new UnitDb(dbName);
-
-            std::string idCase;
-            int idCrop = NODATA;
-            int idMeteo= NODATA;
-            int idSoil= NODATA;
-            for (int i = 0; i < shapeHandler->getShapeCount(); i++)
+            if (!extractUCMListToDb(shapeHandler, dbName, &errorStr, true))
             {
-                idCase = shapeHandler->getStringValue(signed(i), "ECM_CODE");
-                idCrop = shapeHandler->getNumericValue(signed(i), "ID_ECM");  // da sostituire con ID_CROP
-                idMeteo = shapeHandler->getNumericValue(signed(i), "ID_METEO");
-                idSoil = shapeHandler->getNumericValue(signed(i), "ID_SOIL");
-
-                if (!idCase.empty() && idCrop!=NODATA && idMeteo!=NODATA && idSoil!=NODATA)
-                {
-                    unitList->writeUnitsTable(QString::fromStdString(idCase), QString::number(idCrop), QString::number(idMeteo), idSoil);
-                }
+                myProject.logError("Extrac failed: " + dbName + "\n" + QString::fromStdString(errorStr));
+                return;
             }
-            /* test
-            unitList->writeUnitsTable("a", "b", "c", 2);
-            unitList->writeUnitsTable("a", "h", "r", 3);
-            unitList->writeUnitsTable("b", "h", "r", 3);
-            */
         }
-
 
     }
 }

@@ -1,8 +1,10 @@
 #ifndef DIALOGSELECTFIELD_H
 #define DIALOGSELECTFIELD_H
 
-    #include <QtWidgets>
+#include <QtWidgets>
+#ifndef SHAPEHANDLER_H
     #include "shapeHandler.h"
+#endif
 
     class DialogSelectField : public QDialog
     {

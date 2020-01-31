@@ -1,8 +1,10 @@
 #ifndef DIALOGUCM_H
 #define DIALOGUCM_H
 
-    #include <QtWidgets>
+#include <QtWidgets>
+#ifndef SHAPEHANDLER_H
     #include "shapeHandler.h"
+#endif
 
     class DialogUCM : public QDialog
     {

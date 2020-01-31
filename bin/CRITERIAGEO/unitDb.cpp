@@ -48,7 +48,7 @@ void UnitDb::createUnitsTable()
     }
 }
 
-bool UnitDb::writeUnitsTable(QString idCase, QString idCrop, QString idMeteo, int idSoil)
+bool UnitDb::writeUnitsTable(QString idCase, QString idCrop, QString idMeteo, float idSoil)
 {
 
     QSqlQuery qry(db);
@@ -69,4 +69,34 @@ bool UnitDb::writeUnitsTable(QString idCase, QString idCrop, QString idMeteo, in
     else
         return true;
 
+}
+
+bool UnitDb::writeListToUnitsTable(QStringList idCase, QStringList idCrop, QStringList idMeteo, QList<float> idSoil)
+{
+
+    QSqlQuery qry(db);
+
+    qry.prepare( "INSERT INTO units (ID_CASE, ID_CROP, ID_METEO, ID_SOIL)"
+                                      " VALUES (?, ?, ?, ?)" );
+
+    for (int i = 0; i < idCase.size(); i++)
+    {
+        qry.addBindValue(idCase[i]);
+        qry.addBindValue(idCrop[i]);
+        qry.addBindValue(idMeteo[i]);
+        qry.addBindValue(idSoil[i]);
+
+        if( !qry.exec() )
+        {
+            error = qry.lastError().text();
+            return false;
+        }
+    }
+    return true;
+
+}
+
+QString UnitDb::getError() const
+{
+    return error;
 }
