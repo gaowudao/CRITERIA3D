@@ -7,7 +7,7 @@
 
 
 //Crit3DMeteoGridDbHandler meteoGridDbHandler;
-Project* projectEraclitoWG2D ;
+static Project* projectEraclitoWG2D ;
 
 int main ()
 {
