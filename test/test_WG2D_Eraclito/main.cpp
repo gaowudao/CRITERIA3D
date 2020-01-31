@@ -1,21 +1,52 @@
-#include <stdio.h>
-#include "dbMeteoGrid.h"
-#include "project.h"
 #include "commonConstants.h"
+#include "dbMeteoGrid.h"
+#include <iostream>
+#include <QFileDialog>
+#include <QApplication>
 
-#include <QtSql>
+
+static Crit3DMeteoGridDbHandler* meteoGridDbHandler;
 
 
-//Crit3DMeteoGridDbHandler meteoGridDbHandler;
-static Project* projectEraclitoWG2D ;
-
-int main ()
+void logInfo(QString myStr)
 {
+     std::cout << myStr.toStdString() << std::endl;
+}
 
-    QString pathXML;
-    QString myError;
-    pathXML = "../../PRAGA/DATA/METEOGRID/DBGridXML_Eraclito4.xml";
-    myError = "errorDefault";
-    projectEraclitoWG2D->loadMeteoGridDB(pathXML);
+
+bool loadMeteoGridDB()
+{
+    QString xmlName = QFileDialog::getOpenFileName(nullptr, "Open XML grid", "", "XML files (*.xml)");
+    if (xmlName == "") return false;
+
+    QString errorString;
+    meteoGridDbHandler = new Crit3DMeteoGridDbHandler();
+
+    // todo
+    //meteoGridDbHandler->meteoGrid()->setGisSettings(this->gisSettings);
+
+    if (! meteoGridDbHandler->parseXMLGrid(xmlName, &errorString)) return false;
+
+    if (! meteoGridDbHandler->openDatabase(&errorString)) return false;
+
+    if (! meteoGridDbHandler->loadCellProperties(&errorString)) return false;
+
+    meteoGridDbHandler->updateGridDate(&errorString);
+
+    logInfo("Meteo Grid = " + xmlName);
+
+    return true;
+}
+
+
+
+int main(int argc, char *argv[])
+{
+    QApplication myApp(argc, argv);
+
+    loadMeteoGridDB();
     return 0;
 }
+
+
+
