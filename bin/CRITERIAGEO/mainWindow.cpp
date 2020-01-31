@@ -562,9 +562,8 @@ void MainWindow::on_actionExtract_Unit_Crop_Map_list_triggered()
         int fieldRequired = 0;
         for (int i = 0; i < shapeHandler->getFieldNumbers(); i++)
         {
-            // decommentare, solo x test in mancanza di UCM nuova
-            //if (shapeHandler->getFieldName(i) == "ID_CASE" || shapeHandler->getFieldName(i) == "ID_SOIL" || shapeHandler->getFieldName(i) == "ID_CROP" || shapeHandler->getFieldName(i) == "ID_METEO")
-            if (shapeHandler->getFieldName(i) == "ECM_CODE" || shapeHandler->getFieldName(i) == "ID_SOIL" || shapeHandler->getFieldName(i) == "ID_ECM" || shapeHandler->getFieldName(i) == "ID_METEO")
+
+            if (shapeHandler->getFieldName(i) == "ID_CASE" || shapeHandler->getFieldName(i) == "ID_SOIL" || shapeHandler->getFieldName(i) == "ID_CROP" || shapeHandler->getFieldName(i) == "ID_METEO")
             {
                 fieldRequired = fieldRequired + 1;
             }
@@ -595,26 +594,21 @@ void MainWindow::on_actionExtract_Unit_Crop_Map_list_triggered()
             UnitDb* unitList = new UnitDb(dbName);
 
             std::string idCase;
-            int idCrop = NODATA;
-            int idMeteo= NODATA;
-            int idSoil= NODATA;
+            std::string idCrop;
+            std::string idMeteo;
+            float idSoil= NODATA;
             for (int i = 0; i < shapeHandler->getShapeCount(); i++)
             {
-                idCase = shapeHandler->getStringValue(signed(i), "ECM_CODE");
-                idCrop = shapeHandler->getNumericValue(signed(i), "ID_ECM");  // da sostituire con ID_CROP
-                idMeteo = shapeHandler->getNumericValue(signed(i), "ID_METEO");
+                idCase = shapeHandler->getStringValue(signed(i), "ID_CASE");
+                idCrop = shapeHandler->getStringValue(signed(i), "ID_CROP");  // da sostituire con ID_CROP
+                idMeteo = shapeHandler->getStringValue(signed(i), "ID_METEO");
                 idSoil = shapeHandler->getNumericValue(signed(i), "ID_SOIL");
 
-                if (!idCase.empty() && idCrop!=NODATA && idMeteo!=NODATA && idSoil!=NODATA)
+                if (!idCase.empty() && !idCrop.empty() && !idMeteo.empty() && idSoil!=NODATA)
                 {
-                    unitList->writeUnitsTable(QString::fromStdString(idCase), QString::number(idCrop), QString::number(idMeteo), idSoil);
+                    unitList->writeUnitsTable(QString::fromStdString(idCase), QString::fromStdString(idCrop), QString::fromStdString(idMeteo), idSoil);
                 }
             }
-            /* test
-            unitList->writeUnitsTable("a", "b", "c", 2);
-            unitList->writeUnitsTable("a", "h", "r", 3);
-            unitList->writeUnitsTable("b", "h", "r", 3);
-            */
         }
 
 

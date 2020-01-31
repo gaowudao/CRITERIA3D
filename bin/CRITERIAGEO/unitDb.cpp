@@ -48,7 +48,7 @@ void UnitDb::createUnitsTable()
     }
 }
 
-bool UnitDb::writeUnitsTable(QString idCase, QString idCrop, QString idMeteo, int idSoil)
+bool UnitDb::writeUnitsTable(QString idCase, QString idCrop, QString idMeteo, float idSoil)
 {
 
     QSqlQuery qry(db);

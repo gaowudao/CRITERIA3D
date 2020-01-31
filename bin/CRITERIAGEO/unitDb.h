@@ -16,7 +16,7 @@ public:
     UnitDb(QString dbname);
     ~UnitDb();
     void createUnitsTable();
-    bool writeUnitsTable(QString idCase, QString idCrop, QString idMeteo, int idSoil);
+    bool writeUnitsTable(QString idCase, QString idCrop, QString idMeteo, float idSoil);
 
 private:
     QString error;
