@@ -6,7 +6,7 @@
 #   This project is part of CRITERIA3D distribution
 #
 #-------------------------------------------------------------------
-QT += widgets sql xml
+QT  += widgets sql xml
 
 TEMPLATE = app
 CONFIG += console
