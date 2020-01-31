@@ -533,7 +533,8 @@ void MainWindow::on_actionCompute_Unit_Crop_Map_triggered()
         return;
 
     if (myProject.addUnitCropMap(ucmDialog.getCrop(), ucmDialog.getSoil(), ucmDialog.getMeteo(),
-                                 ucmDialog.getIdSoil().toStdString(), ucmDialog.getIdMeteo().toStdString(),
+                                 ucmDialog.getIdCrop().toStdString(), ucmDialog.getIdSoil().toStdString(),
+                                 ucmDialog.getIdMeteo().toStdString(),
                                  ucmDialog.getOutputName(), ucmDialog.getCellSize(), true))
     {
         addShapeObject(myProject.objectList.back());

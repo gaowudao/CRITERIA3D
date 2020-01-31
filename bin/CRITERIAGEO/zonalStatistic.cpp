@@ -9,7 +9,8 @@
 
 bool zonalStatisticsShape(Crit3DShapeHandler* shapeRef, Crit3DShapeHandler* shapeVal,
                           gis::Crit3DRasterGrid *rasterRef, gis::Crit3DRasterGrid *rasterVal,
-                          std::string valField, opType type, std::string* error, bool showInfo)
+                          std::string valField, std::string valFieldOutput, opType type,
+                          std::string* error, bool showInfo)
 {
     // check shape type
     if ( shapeRef->getTypeString() != shapeVal->getTypeString() || shapeRef->getTypeString() != "2D Polygon" )
@@ -50,7 +51,7 @@ bool zonalStatisticsShape(Crit3DShapeHandler* shapeRef, Crit3DShapeHandler* shap
 
     // add new field to shapeRef
     DBFFieldType fieldType = shapeVal->getFieldType(fieldIndex);
-    shapeRef->addField(valField.c_str(), fieldType, shapeVal->nWidthField(fieldIndex), shapeVal->nDecimalsField(fieldIndex));
+    shapeRef->addField(valFieldOutput.c_str(), fieldType, shapeVal->nWidthField(fieldIndex), shapeVal->nDecimalsField(fieldIndex));
 
     // LC da fare restyle codice affinchè gestisca i 3 casi
     std::vector<std::string> varFieldVectorString;
@@ -217,7 +218,7 @@ bool zonalStatisticsShape(Crit3DShapeHandler* shapeRef, Crit3DShapeHandler* shap
             else
                 varFieldFound = varFieldVectorString[unsigned(indexVector[shapeIndex])];
 
-            shapeRef->writeStringAttribute(shapeIndex, shapeRef->getDBFFieldIndex(valField.c_str()), varFieldFound.c_str());
+            shapeRef->writeStringAttribute(shapeIndex, shapeRef->getDBFFieldIndex(valFieldOutput.c_str()), varFieldFound.c_str());
         }
         else if (fieldType == FTInteger)
         {
@@ -227,7 +228,7 @@ bool zonalStatisticsShape(Crit3DShapeHandler* shapeRef, Crit3DShapeHandler* shap
             else
                 varFieldFound = varFieldVectorInt[unsigned(indexVector[shapeIndex])];
 
-            shapeRef->writeIntAttribute(shapeIndex, shapeRef->getDBFFieldIndex(valField.c_str()), varFieldFound);
+            shapeRef->writeIntAttribute(shapeIndex, shapeRef->getDBFFieldIndex(valFieldOutput.c_str()), varFieldFound);
         }
         else if (fieldType == FTDouble)
         {
@@ -237,7 +238,7 @@ bool zonalStatisticsShape(Crit3DShapeHandler* shapeRef, Crit3DShapeHandler* shap
             else
                 varFieldFound = varFieldVectorDouble[unsigned(indexVector[shapeIndex])];
 
-            shapeRef->writeDoubleAttribute(shapeIndex, shapeRef->getDBFFieldIndex(valField.c_str()), varFieldFound);
+            shapeRef->writeDoubleAttribute(shapeIndex, shapeRef->getDBFFieldIndex(valFieldOutput.c_str()), varFieldFound);
         }
     }
 

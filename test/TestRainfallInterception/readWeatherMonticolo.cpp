@@ -112,7 +112,8 @@ bool readWeatherMonticoloHalfhourlyData(FILE *fp,int* minute, int* hour, int *do
         year[iLines] = atoi(yearchar);
         temp[iLines] = atof(tempchar);
         prec[iLines] = atof(precchar);
-        printf("%.2d:%.2d, %.2d/%.2d/%.4d, %.2f , %.2f\n",hour[iLines],minute[iLines],day[iLines],month[iLines],year[iLines],temp[iLines],prec[iLines]);
+        doy[iLines] = getDoyFromDate(day[iLines],month[iLines],year[iLines]);
+        //printf("%.2d:%.2d, %.2d/%.2d/%.4d, %.2f , %.2f\n",hour[iLines],minute[iLines],day[iLines],month[iLines],year[iLines],temp[iLines],prec[iLines]);
         //getchar();
     }
 
