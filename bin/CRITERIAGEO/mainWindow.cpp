@@ -30,7 +30,7 @@
 #include "dialogSelectField.h"
 #include "dialogUcm.h"
 #include "dbfTableDialog.h"
-#include "unitDb.h"
+#include "extractUCMList.h"
 #include "commonConstants.h"
 
 #include "mainWindow.h"
@@ -544,6 +544,7 @@ void MainWindow::on_actionCompute_Unit_Crop_Map_triggered()
 
 void MainWindow::on_actionExtract_Unit_Crop_Map_list_triggered()
 {
+
     QListWidgetItem * itemSelected = ui->checkList->currentItem();
     if (shapeObjList.empty())
     {
@@ -557,8 +558,11 @@ void MainWindow::on_actionExtract_Unit_Crop_Map_list_triggered()
     }
     else
     {
+
         int pos = ui->checkList->row(itemSelected);
         Crit3DShapeHandler* shapeHandler = (myProject.objectList.at(unsigned(pos)))->getShapeHandler();
+        std::string errorStr;
+
         int fieldRequired = 0;
         for (int i = 0; i < shapeHandler->getFieldNumbers(); i++)
         {
@@ -591,26 +595,12 @@ void MainWindow::on_actionExtract_Unit_Crop_Map_list_triggered()
                     return;
                 }
             }
-            UnitDb* unitList = new UnitDb(dbName);
-
-            std::string idCase;
-            std::string idCrop;
-            std::string idMeteo;
-            float idSoil= NODATA;
-            for (int i = 0; i < shapeHandler->getShapeCount(); i++)
+            if (!extractUCMListToDb(shapeHandler, dbName, &errorStr, true))
             {
-                idCase = shapeHandler->getStringValue(signed(i), "ID_CASE");
-                idCrop = shapeHandler->getStringValue(signed(i), "ID_CROP");  // da sostituire con ID_CROP
-                idMeteo = shapeHandler->getStringValue(signed(i), "ID_METEO");
-                idSoil = shapeHandler->getNumericValue(signed(i), "ID_SOIL");
-
-                if (!idCase.empty() && !idCrop.empty() && !idMeteo.empty() && idSoil!=NODATA)
-                {
-                    unitList->writeUnitsTable(QString::fromStdString(idCase), QString::fromStdString(idCrop), QString::fromStdString(idMeteo), idSoil);
-                }
+                myProject.logError("Extrac failed: " + dbName + "\n" + QString::fromStdString(errorStr));
+                return;
             }
         }
-
 
     }
 }

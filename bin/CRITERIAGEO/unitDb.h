@@ -17,6 +17,8 @@ public:
     ~UnitDb();
     void createUnitsTable();
     bool writeUnitsTable(QString idCase, QString idCrop, QString idMeteo, float idSoil);
+    bool writeListToUnitsTable(QStringList idCase, QStringList idCrop, QStringList idMeteo, QList<float> idSoil);
+    QString getError() const;
 
 private:
     QString error;

@@ -1,8 +1,10 @@
 #ifndef DIALOGSHAPEPROPERTIES_H
 #define DIALOGSHAPEPROPERTIES_H
 
-    #include <QtWidgets>
+#include <QtWidgets>
+#ifndef SHAPEHANDLER_H
     #include "shapeHandler.h"
+#endif
 
     class DialogShapeProperties : public QDialog
     {

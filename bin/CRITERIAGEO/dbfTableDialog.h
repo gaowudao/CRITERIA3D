@@ -1,7 +1,9 @@
 #ifndef tableDBFDialog_H
 #define tableDBFDialog_H
 
-#include "shapeHandler.h"
+#ifndef SHAPEHANDLER_H
+    #include "shapeHandler.h"
+#endif
 #include "dbfNewColDialog.h"
 
 #define DEFAULT_INTEGER_MAX_DIGITS 9

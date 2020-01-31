@@ -45,6 +45,7 @@ HEADERS += \
     dialogSelectField.h \
     dialogShapeProperties.h \
     dialogUcm.h \
+    extractUCMList.h \
     gisProject.h \
     dbfTableDialog.h \
     dbfNewColDialog.h \
@@ -63,6 +64,7 @@ SOURCES += \
     dialogSelectField.cpp \
     dialogShapeProperties.cpp \
     dialogUcm.cpp \
+    extractUCMList.cpp \
     mainWindow.cpp \
     gisProject.cpp \
     dbfTableDialog.cpp \
