@@ -1,11 +1,9 @@
 #include "shapeUtilities.h"
 #include "unitDb.h"
-#include "formInfo.h"
 
-bool extractUCMListToDb(Crit3DShapeHandler* shapeHandler, QString dbName, std::string *error, bool showInfo)
+
+bool extractUCMListToDb(Crit3DShapeHandler* shapeHandler, QString dbName, std::string *error)
 {
-    FormInfo formInfo;
-
     UnitDb* unitList = new UnitDb(dbName);
 
     QStringList idCase;
@@ -15,12 +13,8 @@ bool extractUCMListToDb(Crit3DShapeHandler* shapeHandler, QString dbName, std::s
 
     int nShape = shapeHandler->getShapeCount();
 
-    formInfo.start("Extract list...", nShape);
-
     for (int i = 0; i < nShape; i++)
     {
-        formInfo.setValue(i);
-
         QString key = QString::fromStdString(shapeHandler->getStringValue(signed(i), "ID_CASE"));
         if (!key.isEmpty() && !idCase.contains(key))
         {
@@ -33,12 +27,11 @@ bool extractUCMListToDb(Crit3DShapeHandler* shapeHandler, QString dbName, std::s
     bool res = unitList->writeListToUnitsTable(idCase, idCrop, idMeteo, idSoil);
     *error = unitList->getError().toStdString();
 
-    formInfo.close();
     delete unitList;
 
     return res;
-
 }
+
 
 bool createShapeFromCSV(Crit3DShapeHandler* shapeHandler, Crit3DShapeHandler* shapeFromCSV, QString fileCSV, std::string *error)
 {

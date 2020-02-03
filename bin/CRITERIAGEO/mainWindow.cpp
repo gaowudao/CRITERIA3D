@@ -35,6 +35,7 @@
 
 #include "mainWindow.h"
 #include "ui_mainWindow.h"
+#include "FormInfo.h"
 
 
 #define MAPBORDER 11
@@ -558,7 +559,6 @@ void MainWindow::on_actionExtract_Unit_Crop_Map_list_triggered()
     }
     else
     {
-
         int pos = ui->checkList->row(itemSelected);
         Crit3DShapeHandler* shapeHandler = (myProject.objectList.at(unsigned(pos)))->getShapeHandler();
         std::string errorStr;
@@ -595,11 +595,15 @@ void MainWindow::on_actionExtract_Unit_Crop_Map_list_triggered()
                     return;
                 }
             }
-            if (!extractUCMListToDb(shapeHandler, dbName, &errorStr, true))
+
+            FormInfo formInfo;
+            formInfo.start("Extract list...", 0);
+
+            if (!extractUCMListToDb(shapeHandler, dbName, &errorStr))
             {
-                myProject.logError("Extrac failed: " + dbName + "\n" + QString::fromStdString(errorStr));
-                return;
+                myProject.logError("Units extraction failed: " + dbName + "\n" + QString::fromStdString(errorStr));
             }
+            formInfo.close();
         }
 
     }
