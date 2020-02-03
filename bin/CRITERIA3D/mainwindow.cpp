@@ -318,8 +318,6 @@ void MainWindow::on_actionLoad_DEM_triggered()
 
     if (! myProject.loadDEM(fileName)) return;
 
-    myProject.hourlyMeteoMaps = new Crit3DHourlyMeteoMaps(myProject.DEM);
-
     this->renderDEM();
 }
 

@@ -9,7 +9,7 @@
 #------------------------------------------------------
 
 
-QT    += core gui network widgets
+QT    += core gui network widgets sql
 
 TEMPLATE = app
 TARGET = CRITERIA_GEO
@@ -48,8 +48,10 @@ HEADERS += \
     gisProject.h \
     dbfTableDialog.h \
     dbfNewColDialog.h \
+    shapeUtilities.h \
     unitCropMap.h \
     shapeToRaster.h \
+    unitDb.h \
     zonalStatistic.h \
     gisObject.h \
     mainWindow.h
@@ -66,8 +68,10 @@ SOURCES += \
     gisProject.cpp \
     dbfTableDialog.cpp \
     dbfNewColDialog.cpp \
+    shapeUtilities.cpp \
     unitCropMap.cpp \
     shapeToRaster.cpp \
+    unitDb.cpp \
     zonalStatistic.cpp \
     gisObject.cpp \
     main.cpp

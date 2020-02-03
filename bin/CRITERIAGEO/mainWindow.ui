@@ -517,7 +517,7 @@
      <x>0</x>
      <y>0</y>
      <width>1280</width>
-     <height>22</height>
+     <height>30</height>
     </rect>
    </property>
    <property name="palette">
@@ -994,6 +994,8 @@
     </property>
     <addaction name="actionRasterize_shape"/>
     <addaction name="actionCompute_Unit_Crop_Map"/>
+    <addaction name="actionExtract_Unit_Crop_Map_list"/>
+    <addaction name="actionCreate_Shape_file_from_CSV"/>
    </widget>
    <addaction name="menuFile"/>
    <addaction name="menuTools"/>
@@ -1045,6 +1047,16 @@
   <action name="actionCompute_Unit_Crop_Map">
    <property name="text">
     <string>Compute Unit Crop Map</string>
+   </property>
+  </action>
+  <action name="actionExtract_Unit_Crop_Map_list">
+   <property name="text">
+    <string>Extract Unit Crop Map list</string>
+   </property>
+  </action>
+  <action name="actionCreate_Shape_file_from_CSV">
+   <property name="text">
+    <string>Create Shape file from CSV</string>
    </property>
   </action>
  </widget>

@@ -30,7 +30,8 @@
         void addShapeFile(Crit3DShapeHandler *myShape, QString fileName);
         void getRasterFromShape(Crit3DShapeHandler *shape, QString field, QString outputName, double cellSize, bool showInfo);
         bool addUnitCropMap(Crit3DShapeHandler *crop, Crit3DShapeHandler *soil, Crit3DShapeHandler *meteo,
-                            std::string idSoil, std::string idMeteo, QString fileName, double cellSize, bool showInfo);
+                            std::string idCrop, std::string idSoil, std::string idMeteo,
+                            QString fileName, double cellSize, bool showInfo);
 
         void logError(std::string errorString);
         void logError(QString errorString);

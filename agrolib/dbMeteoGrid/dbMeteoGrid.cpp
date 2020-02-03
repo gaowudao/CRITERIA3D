@@ -916,163 +916,161 @@ bool Crit3DMeteoGridDbHandler::updateGridDate(QString *myError)
     QString tableD = _tableDaily.prefix + QString::fromStdString(id) + _tableDaily.postFix;
     QString tableH = _tableHourly.prefix + QString::fromStdString(id) + _tableHourly.postFix;
 
-    QString statement = QString("SELECT MIN(`%1`) as minDate, MAX(`%1`) as maxDate FROM `%2`").arg(_tableDaily.fieldTime).arg(tableD);
-    if( !qry.exec(statement) )
+    QString statement;
+
+    if (_tableDaily.exists)
     {
-        while( qry.lastError().number() == tableNotFoundError)
+        statement = QString("SELECT MIN(`%1`) as minDate, MAX(`%1`) as maxDate FROM `%2`").arg(_tableDaily.fieldTime).arg(tableD);
+        if( !qry.exec(statement) )
         {
+            while( qry.lastError().number() == tableNotFoundError)
+            {
 
-            if ( col < _gridStructure.header().nrCols-1)
-            {
-                col = col + 1;
-            }
-            else if( row < _gridStructure.header().nrRows-1)
-            {
-                row = row + 1;
-                col = 0;
+                if ( col < _gridStructure.header().nrCols-1)
+                {
+                    col = col + 1;
+                }
+                else if( row < _gridStructure.header().nrRows-1)
+                {
+                    row = row + 1;
+                    col = 0;
+                }
+
+                if (!_meteoGrid->findFirstActiveMeteoPoint(&id, &row, &col))
+                {
+                    *myError = "active cell not found";
+                    return false;
+                }
+                tableD = _tableDaily.prefix + QString::fromStdString(id) + _tableDaily.postFix;
+                tableH = _tableHourly.prefix + QString::fromStdString(id) + _tableHourly.postFix;
+
+                statement = QString("SELECT MIN(%1) as minDate, MAX(%1) as maxDate FROM `%2`").arg(_tableDaily.fieldTime).arg(tableD);
+                qry.exec(statement);
             }
 
-            if (!_meteoGrid->findFirstActiveMeteoPoint(&id, &row, &col))
+            if ( !qry.lastError().type() == QSqlError::NoError && qry.lastError().number() != tableNotFoundError)
             {
-                *myError = "active cell not found";
+                *myError = qry.lastError().text();
                 return false;
             }
-            tableD = _tableDaily.prefix + QString::fromStdString(id) + _tableDaily.postFix;
-            tableH = _tableHourly.prefix + QString::fromStdString(id) + _tableHourly.postFix;
-
-            statement = QString("SELECT MIN(%1) as minDate, MAX(%1) as maxDate FROM `%2`").arg(_tableDaily.fieldTime).arg(tableD);
-            qry.exec(statement);
-        }
-
-        if ( !qry.lastError().type() == QSqlError::NoError && qry.lastError().number() != tableNotFoundError)
-        {
-            *myError = qry.lastError().text();
-            return false;
-        }
-    }
-    else
-    {
-        if (qry.next())
-        {
-            if (getValue(qry.value("minDate"), &temp))
-            {
-                if (temp < minDateD)
-                    minDateD = temp;
-            }
-            else
-            {
-                *myError = "Missing daily fieldTime";
-                return false;
-            }
-
-            if (getValue(qry.value("maxDate"), &temp))
-            {
-                if (temp > maxDateD)
-                    maxDateD = temp;
-            }
-            else
-            {
-                *myError = "Missing daily fieldTime";
-                return false;
-            }
-
         }
         else
         {
-            *myError = "Error: fieldTime not found" ;
-            return false;
-        }
-    }
-
-
-    statement = QString("SELECT MIN(%1) as minDate, MAX(%1) as maxDate FROM `%2`").arg(_tableHourly.fieldTime).arg(tableH);
-    if( !qry.exec(statement) )
-    {
-        while( qry.lastError().number() == tableNotFoundError)
-        {
-
-            if ( col < _gridStructure.header().nrCols-1)
+            if (qry.next())
             {
-                col = col + 1;
-            }
-            else if( row < _gridStructure.header().nrRows-1)
-            {
-                row = row + 1;
-                col = 0;
-            }
+                if (getValue(qry.value("minDate"), &temp))
+                {
+                    if (temp < minDateD)
+                        minDateD = temp;
+                }
+                else
+                {
+                    *myError = "Missing daily fieldTime";
+                    return false;
+                }
 
-            if (!_meteoGrid->findFirstActiveMeteoPoint(&id, &row, &col))
-            {
-                *myError = "active cell not found";
-                return false;
-            }
+                if (getValue(qry.value("maxDate"), &temp))
+                {
+                    if (temp > maxDateD)
+                        maxDateD = temp;
+                }
+                else
+                {
+                    *myError = "Missing daily fieldTime";
+                    return false;
+                }
 
-            tableH = _tableHourly.prefix + QString::fromStdString(id) + _tableHourly.postFix;
-
-            statement = QString("SELECT MIN(%1) as minDate, MAX(%1) as maxDate FROM `%2`").arg(_tableHourly.fieldTime).arg(tableH);
-            qry.exec(statement);
-        }
-        if ( !qry.lastError().type() == QSqlError::NoError && qry.lastError().number() != tableNotFoundError)
-        {
-            *myError = qry.lastError().text();
-            return false;
-        }
-    }
-    else
-    {
-        if (qry.next())
-        {
-            if (getValue(qry.value("minDate"), &temp))
-            {
-                if (temp < minDateH)
-                    minDateH = temp;
             }
             else
             {
-                *myError = "Missing hourly fieldTime";
+                *myError = "Error: fieldTime not found" ;
                 return false;
             }
+        }
+    }
 
-            if (getValue(qry.value("maxDate"), &temp))
+    if (_tableHourly.exists)
+    {
+        statement = QString("SELECT MIN(%1) as minDate, MAX(%1) as maxDate FROM `%2`").arg(_tableHourly.fieldTime).arg(tableH);
+        if( !qry.exec(statement) )
+        {
+            while( qry.lastError().number() == tableNotFoundError)
             {
-                if (temp > maxDateH)
-                    maxDateH = temp;
+
+                if ( col < _gridStructure.header().nrCols-1)
+                {
+                    col = col + 1;
+                }
+                else if( row < _gridStructure.header().nrRows-1)
+                {
+                    row = row + 1;
+                    col = 0;
+                }
+
+                if (!_meteoGrid->findFirstActiveMeteoPoint(&id, &row, &col))
+                {
+                    *myError = "active cell not found";
+                    return false;
+                }
+
+                tableH = _tableHourly.prefix + QString::fromStdString(id) + _tableHourly.postFix;
+
+                statement = QString("SELECT MIN(%1) as minDate, MAX(%1) as maxDate FROM `%2`").arg(_tableHourly.fieldTime).arg(tableH);
+                qry.exec(statement);
             }
-            else
+            if ( !qry.lastError().type() == QSqlError::NoError && qry.lastError().number() != tableNotFoundError)
             {
-                *myError = "Missing hourly fieldTime";
+                *myError = qry.lastError().text();
                 return false;
             }
-
         }
         else
         {
-            *myError = "Error: fieldTime not found" ;
-            return false;
+            if (qry.next())
+            {
+                if (getValue(qry.value("minDate"), &temp))
+                {
+                    if (temp < minDateH)
+                        minDateH = temp;
+                }
+                else
+                {
+                    *myError = "Missing hourly fieldTime";
+                    return false;
+                }
+
+                if (getValue(qry.value("maxDate"), &temp))
+                {
+                    if (temp > maxDateH)
+                        maxDateH = temp;
+                }
+                else
+                {
+                    *myError = "Missing hourly fieldTime";
+                    return false;
+                }
+
+            }
+            else
+            {
+                *myError = "Error: fieldTime not found" ;
+                return false;
+            }
         }
     }
-
 
     // the last hourly day is always incomplete, there is just 00.00 value
     maxDateH = maxDateH.addDays(-1);
 
     if (minDateD < minDateH)
-    {
         _firstDate = minDateD;
-    }
     else
-    {
         _firstDate = minDateH;
-    }
 
     if (maxDateD > maxDateH)
-    {
         _lastDate = maxDateD;
-    }
     else
-    {
         _lastDate = maxDateH;
-    }
 
     return true;
 
@@ -1091,13 +1089,14 @@ bool Crit3DMeteoGridDbHandler::loadGridDailyData(QString *myError, QString meteo
     unsigned col;
     bool initialize = true;
 
-    int numberOfDays = first.daysTo(last) + 1;
-
     if (!_meteoGrid->findMeteoPointFromId(&row, &col, meteoPoint.toStdString()) )
     {
         *myError = "Missing MeteoPoint id";
         return false;
     }
+
+    int numberOfDays = first.daysTo(last) + 1;
+    _meteoGrid->meteoPointPointer(row,col)->initializeObsDataD(numberOfDays, getCrit3DDate(first));
 
     QString statement = QString("SELECT * FROM `%1` WHERE `%2`>= '%3' AND `%2`<= '%4' ORDER BY `%2`").arg(tableD).arg(_tableDaily.fieldTime).arg(first.toString("yyyy-MM-dd")).arg(last.toString("yyyy-MM-dd"));
     if( !qry.exec(statement) )
@@ -1128,10 +1127,8 @@ bool Crit3DMeteoGridDbHandler::loadGridDailyData(QString *myError, QString meteo
 
             meteoVariable variable = getDailyVarEnum(varCode);
 
-            if (_meteoGrid->fillMeteoPointDailyValue(row, col, numberOfDays, initialize, Crit3DDate(date.day(), date.month(), date.year()), variable, value))
-            {
-                initialize = false;
-            }
+            if (! _meteoGrid->meteoPointPointer(row,col)->setMeteoPointValueD(getCrit3DDate(date), variable, value))
+                return false;
 
         }
 
@@ -1151,15 +1148,15 @@ bool Crit3DMeteoGridDbHandler::loadGridDailyDataFixedFields(QString *myError, QS
 
     unsigned row;
     unsigned col;
-    bool initialize = true;
-
-    int numberOfDays = int(first.daysTo(last) + 1);
 
     if (!_meteoGrid->findMeteoPointFromId(&row, &col, meteoPoint.toStdString()) )
     {
         *myError = "Missing MeteoPoint id";
         return false;
     }
+
+    int numberOfDays = first.daysTo(last) + 1;
+    _meteoGrid->meteoPointPointer(row,col)->initializeObsDataD(numberOfDays, getCrit3DDate(first));
 
     QString statement = QString("SELECT * FROM `%1` WHERE `%2` >= '%3' AND `%2` <= '%4' ORDER BY `%2`").arg(tableD).arg(_tableDaily.fieldTime).arg(first.toString("yyyy-MM-dd")).arg(last.toString("yyyy-MM-dd"));
     if( !qry.exec(statement) )
@@ -1187,8 +1184,8 @@ bool Crit3DMeteoGridDbHandler::loadGridDailyDataFixedFields(QString *myError, QS
 
                 meteoVariable variable = getDailyVarEnum(varCode);
 
-                _meteoGrid->fillMeteoPointDailyValue(row, col, numberOfDays, initialize, Crit3DDate(date.day(), date.month(), date.year()), variable, value);
-                initialize = false;
+                if (! _meteoGrid->meteoPointPointer(row,col)->setMeteoPointValueD(getCrit3DDate(date), variable, value))
+                    return false;
 
             }
 
@@ -1211,15 +1208,15 @@ bool Crit3DMeteoGridDbHandler::loadGridHourlyData(QString *myError, QString mete
 
     unsigned row;
     unsigned col;
-    bool initialize = true;
-
-    int numberOfDays = first.date().daysTo(last.date());
 
     if (!_meteoGrid->findMeteoPointFromId(&row, &col, meteoPoint.toStdString()) )
     {
         *myError = "Missing MeteoPoint id";
         return false;
     }
+
+    int numberOfDays = first.date().daysTo(last.date());
+    _meteoGrid->meteoPointPointer(row, col)->initializeObsDataH(1, numberOfDays, getCrit3DDate(first.date()));
 
     QString statement = QString("SELECT * FROM `%1` WHERE `%2` >= '%3' AND `%2` <= '%4' ORDER BY `%2`")
                                 .arg(tableH).arg(_tableHourly.fieldTime).arg(first.toString("yyyy-MM-dd hh:mm")).arg(last.toString("yyyy-MM-dd hh:mm"));
@@ -1251,13 +1248,10 @@ bool Crit3DMeteoGridDbHandler::loadGridHourlyData(QString *myError, QString mete
 
             meteoVariable variable = getHourlyVarEnum(varCode);
 
-            _meteoGrid->fillMeteoPointHourlyValue(row, col, numberOfDays, initialize, Crit3DDate(date.date().day(), date.date().month(), date.date().year()), date.time().hour(), date.time().minute(), variable, value);
-            initialize = false;
-
+            if (! _meteoGrid->meteoPointPointer(row,col)->setMeteoPointValueH(getCrit3DDate(date.date()), date.time().hour(), date.time().minute(), variable, value))
+                return false;
         }
-
     }
-
 
     return true;
 }
@@ -1274,15 +1268,15 @@ bool Crit3DMeteoGridDbHandler::loadGridHourlyDataFixedFields(QString *myError, Q
 
     unsigned row;
     unsigned col;
-    bool initialize = true;
-
-    int numberOfDays = first.date().daysTo(last.date());
 
     if (!_meteoGrid->findMeteoPointFromId(&row, &col, meteoPoint.toStdString()) )
     {
         *myError = "Missing MeteoPoint id";
         return false;
     }
+
+    int numberOfDays = first.date().daysTo(last.date());
+    _meteoGrid->meteoPointPointer(row, col)->initializeObsDataH(1, numberOfDays, getCrit3DDate(first.date()));
 
     QString statement = QString("SELECT * FROM `%1` WHERE `%2` >= '%3' AND `%2`<= '%4' ORDER BY `%2`").arg(tableH).arg(_tableHourly.fieldTime).arg(first.toString("yyyy-MM-dd hh:mm")).arg(last.toString("yyyy-MM-dd hh:mm"));
     if( !qry.exec(statement) )
@@ -1309,11 +1303,8 @@ bool Crit3DMeteoGridDbHandler::loadGridHourlyDataFixedFields(QString *myError, Q
                 }
                 meteoVariable variable = getHourlyVarEnum(varCode);
 
-                if ( _meteoGrid->fillMeteoPointHourlyValue(row, col, numberOfDays, initialize, Crit3DDate(date.date().day(), date.date().month(), date.date().year()), date.time().hour(), date.time().minute(), variable, value) )
-                {
-                    initialize = false;
-                }
-
+                if (! _meteoGrid->meteoPointPointer(row,col)->setMeteoPointValueH(getCrit3DDate(date.date()), date.time().hour(), date.time().minute(), variable, value))
+                    return false;
             }
 
         }
@@ -1665,13 +1656,14 @@ std::vector<float> Crit3DMeteoGridDbHandler::loadGridHourlyVarFixedFields(QStrin
     return hourlyVarList;
 }
 
-bool Crit3DMeteoGridDbHandler::saveCellGridDailyData(QString *myError, QString meteoPointID, int row, int col, QDate firstDate, QDate lastDate, QList<meteoVariable> meteoVariableList)
+bool Crit3DMeteoGridDbHandler::saveCellGridDailyData(QString *myError, QString meteoPointID, int row, int col, QDate firstDate, QDate lastDate,
+                                                     QList<meteoVariable> meteoVariableList)
 {
     QSqlQuery qry(_db);
     QString tableD = _tableDaily.prefix + meteoPointID + _tableDaily.postFix;
 
 
-    QString statement = QString("CREATE TABLE IF NOT EXISTS `1`"
+    QString statement = QString("CREATE TABLE IF NOT EXISTS `%1`"
                                 "(%2 date, VariableCode tinyint(3) UNSIGNED, Value float(6,1), PRIMARY KEY(%2,VariableCode))").arg(tableD).arg(_tableDaily.fieldTime);
 
     if( !qry.exec(statement) )
@@ -1818,7 +1810,7 @@ bool Crit3DMeteoGridDbHandler::saveCellCurrentGridDailyFF(QString *myError, QStr
     }
 
 
-    QString statement = QString("CREATE TABLE IF NOT EXISTS `1`").arg(tableD) + QString("(%1 date ").arg(_tableDaily.fieldTime) + tableFields + QString(", PRIMARY KEY(%1))").arg(_tableDaily.fieldTime);
+    QString statement = QString("CREATE TABLE IF NOT EXISTS `%1`").arg(tableD) + QString("(%1 date ").arg(_tableDaily.fieldTime) + tableFields + QString(", PRIMARY KEY(%1))").arg(_tableDaily.fieldTime);
 
     if( !qry.exec(statement) )
     {
@@ -1950,9 +1942,6 @@ bool Crit3DMeteoGridDbHandler::saveCellGridHourlyData(QString *myError, QString 
                 QString valueS = QString("'%1'").arg(value);
                 if (value == NODATA)
                     valueS = "NULL";
-                else {
-                    int a =0;
-                }
 
                 int varCode = getHourlyVarCode(meteoVar);
                 statement += QString(" ('%1','%2',%3),").arg(dateTime.toString("yyyy-MM-dd hh:mm")).arg(varCode).arg(valueS);
