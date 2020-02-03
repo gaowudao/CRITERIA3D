@@ -61,6 +61,7 @@ CONFIG(debug, debug|release) {
 }
 
 SOURCES += \
+    ../../agrolib/graphics/rubberBand.cpp \
     ../../agrolib/graphics/colorLegend.cpp \
     ../../agrolib/graphics/mapGraphicsRasterObject.cpp \
     ../../agrolib/graphics/stationMarker.cpp \
@@ -78,6 +79,7 @@ SOURCES += \
 
 
 HEADERS += \
+    ../../agrolib/graphics/rubberBand.h \
     ../../agrolib/graphics/colorLegend.h \
     ../../agrolib/graphics/mapGraphicsRasterObject.h \
     ../../agrolib/graphics/stationMarker.h \
