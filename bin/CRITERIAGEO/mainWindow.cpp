@@ -626,28 +626,37 @@ void MainWindow::on_actionCreate_Shape_file_from_CSV_triggered()
         Crit3DShapeHandler* shapeHandler = (myProject.objectList.at(unsigned(pos)))->getShapeHandler();
         std::string errorStr;
 
-        int fieldRequired = 0;
+        bool found = false;
         for (int i = 0; i < shapeHandler->getFieldNumbers(); i++)
         {
 
-            if (shapeHandler->getFieldName(i) == "ID_CASE" || shapeHandler->getFieldName(i) == "ID_SOIL" || shapeHandler->getFieldName(i) == "ID_CROP" || shapeHandler->getFieldName(i) == "ID_METEO")
+            if (shapeHandler->getFieldName(i) == "ID_CASE")
             {
-                fieldRequired = fieldRequired + 1;
+                found = true;
             }
         }
-        if (fieldRequired < 4)
+        if (!found)
         {
-            QMessageBox::information(nullptr, "Ivalid Unit Crop Map", "Missing required fields");
+            QMessageBox::information(nullptr, "Ivalid Shape", "Missing ID_CASE");
             return;
         }
         else
         {
-            QString fileName = QFileDialog::getOpenFileName(this, tr("Open CSV file"), "", tr("CSV files (*.csv)"));
+            QString fileCSV = QFileDialog::getOpenFileName(this, tr("Open CSV file"), "", tr("CSV files (*.csv)"));
 
-            if (fileName == "")
+            if (fileCSV == "")
             {
                 return;
             }
+
+            Crit3DShapeHandler *shapeFromCSV = new Crit3DShapeHandler;
+
+            if (!createShapeFromCSV(shapeHandler, shapeFromCSV, fileCSV, &errorStr))
+            {
+                myProject.logError("Shape creation failed, CSV: " + fileCSV + "\n" + QString::fromStdString(errorStr));
+                return;
+            }
+
         }
 
     }
