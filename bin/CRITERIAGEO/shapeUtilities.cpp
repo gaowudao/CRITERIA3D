@@ -1,4 +1,4 @@
-#include "extractUCMList.h"
+#include "shapeUtilities.h"
 #include "unitDb.h"
 #include "formInfo.h"
 
@@ -37,5 +37,10 @@ bool extractUCMListToDb(Crit3DShapeHandler* shapeHandler, QString dbName, std::s
     delete unitList;
 
     return res;
+
+}
+
+bool createShapeFromCSV()
+{
 
 }

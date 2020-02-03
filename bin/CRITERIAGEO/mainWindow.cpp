@@ -30,7 +30,7 @@
 #include "dialogSelectField.h"
 #include "dialogUcm.h"
 #include "dbfTableDialog.h"
-#include "extractUCMList.h"
+#include "shapeUtilities.h"
 #include "commonConstants.h"
 
 #include "mainWindow.h"
@@ -598,6 +598,54 @@ void MainWindow::on_actionExtract_Unit_Crop_Map_list_triggered()
             if (!extractUCMListToDb(shapeHandler, dbName, &errorStr, true))
             {
                 myProject.logError("Extrac failed: " + dbName + "\n" + QString::fromStdString(errorStr));
+                return;
+            }
+        }
+
+    }
+}
+
+void MainWindow::on_actionCreate_Shape_file_from_CSV_triggered()
+{
+
+    QListWidgetItem * itemSelected = ui->checkList->currentItem();
+    if (shapeObjList.empty())
+    {
+        QMessageBox::information(nullptr, "No shape loaded", "Load a shape");
+        return;
+    }
+    else if (itemSelected == nullptr || !itemSelected->text().contains("SHAPE"))
+    {
+        QMessageBox::information(nullptr, "No shape selected", "Select a shape");
+        return;
+    }
+    else
+    {
+
+        int pos = ui->checkList->row(itemSelected);
+        Crit3DShapeHandler* shapeHandler = (myProject.objectList.at(unsigned(pos)))->getShapeHandler();
+        std::string errorStr;
+
+        int fieldRequired = 0;
+        for (int i = 0; i < shapeHandler->getFieldNumbers(); i++)
+        {
+
+            if (shapeHandler->getFieldName(i) == "ID_CASE" || shapeHandler->getFieldName(i) == "ID_SOIL" || shapeHandler->getFieldName(i) == "ID_CROP" || shapeHandler->getFieldName(i) == "ID_METEO")
+            {
+                fieldRequired = fieldRequired + 1;
+            }
+        }
+        if (fieldRequired < 4)
+        {
+            QMessageBox::information(nullptr, "Ivalid Unit Crop Map", "Missing required fields");
+            return;
+        }
+        else
+        {
+            QString fileName = QFileDialog::getOpenFileName(this, tr("Open CSV file"), "", tr("CSV files (*.csv)"));
+
+            if (fileName == "")
+            {
                 return;
             }
         }

@@ -46,6 +46,8 @@
 
         void on_actionExtract_Unit_Crop_Map_list_triggered();
 
+        void on_actionCreate_Shape_file_from_CSV_triggered();
+
     protected:
         /*!
          * \brief mouseReleaseEvent call moveCenter

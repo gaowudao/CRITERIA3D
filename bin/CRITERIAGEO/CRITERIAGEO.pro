@@ -45,10 +45,10 @@ HEADERS += \
     dialogSelectField.h \
     dialogShapeProperties.h \
     dialogUcm.h \
-    extractUCMList.h \
     gisProject.h \
     dbfTableDialog.h \
     dbfNewColDialog.h \
+    shapeUtilities.h \
     unitCropMap.h \
     shapeToRaster.h \
     unitDb.h \
@@ -64,11 +64,11 @@ SOURCES += \
     dialogSelectField.cpp \
     dialogShapeProperties.cpp \
     dialogUcm.cpp \
-    extractUCMList.cpp \
     mainWindow.cpp \
     gisProject.cpp \
     dbfTableDialog.cpp \
     dbfNewColDialog.cpp \
+    shapeUtilities.cpp \
     unitCropMap.cpp \
     shapeToRaster.cpp \
     unitDb.cpp \
