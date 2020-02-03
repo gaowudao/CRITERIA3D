@@ -30,7 +30,7 @@
 #include "dialogSelectField.h"
 #include "dialogUcm.h"
 #include "dbfTableDialog.h"
-#include "extractUCMList.h"
+#include "shapeUtilities.h"
 #include "commonConstants.h"
 
 #include "mainWindow.h"
@@ -600,6 +600,63 @@ void MainWindow::on_actionExtract_Unit_Crop_Map_list_triggered()
                 myProject.logError("Extrac failed: " + dbName + "\n" + QString::fromStdString(errorStr));
                 return;
             }
+        }
+
+    }
+}
+
+void MainWindow::on_actionCreate_Shape_file_from_CSV_triggered()
+{
+
+    QListWidgetItem * itemSelected = ui->checkList->currentItem();
+    if (shapeObjList.empty())
+    {
+        QMessageBox::information(nullptr, "No shape loaded", "Load a shape");
+        return;
+    }
+    else if (itemSelected == nullptr || !itemSelected->text().contains("SHAPE"))
+    {
+        QMessageBox::information(nullptr, "No shape selected", "Select a shape");
+        return;
+    }
+    else
+    {
+
+        int pos = ui->checkList->row(itemSelected);
+        Crit3DShapeHandler* shapeHandler = (myProject.objectList.at(unsigned(pos)))->getShapeHandler();
+        std::string errorStr;
+
+        bool found = false;
+        for (int i = 0; i < shapeHandler->getFieldNumbers(); i++)
+        {
+
+            if (shapeHandler->getFieldName(i) == "ID_CASE")
+            {
+                found = true;
+            }
+        }
+        if (!found)
+        {
+            QMessageBox::information(nullptr, "Ivalid Shape", "Missing ID_CASE");
+            return;
+        }
+        else
+        {
+            QString fileCSV = QFileDialog::getOpenFileName(this, tr("Open CSV file"), "", tr("CSV files (*.csv)"));
+
+            if (fileCSV == "")
+            {
+                return;
+            }
+
+            Crit3DShapeHandler *shapeFromCSV = new Crit3DShapeHandler;
+
+            if (!createShapeFromCSV(shapeHandler, shapeFromCSV, fileCSV, &errorStr))
+            {
+                myProject.logError("Shape creation failed, CSV: " + fileCSV + "\n" + QString::fromStdString(errorStr));
+                return;
+            }
+
         }
 
     }
