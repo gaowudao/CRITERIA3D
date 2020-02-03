@@ -30,7 +30,6 @@ LIBS += -L../../mapGraphics/release -lMapGraphics
 
 CONFIG(debug, debug|release) {
 
-    LIBS += -L../../agrolib/graphics/debug -lgraphics
     LIBS += -L../../agrolib/project/debug -lproject
     LIBS += -L../../agrolib/soil/debug -lsoil
     LIBS += -L../../agrolib/soilFluxes3D/debug -lsoilFluxes3D
@@ -46,7 +45,6 @@ CONFIG(debug, debug|release) {
     LIBS += -L../../agrolib/mathFunctions/debug -lmathFunctions
 } else {
 
-    LIBS += -L../../agrolib/graphics/release -lgraphics
     LIBS += -L../../agrolib/project/release -lproject
     LIBS += -L../../agrolib/soil/release -lsoil
     LIBS += -L../../agrolib/soilFluxes3D/release -lsoilFluxes3D
@@ -63,6 +61,9 @@ CONFIG(debug, debug|release) {
 }
 
 SOURCES += \
+    ../../agrolib/graphics/colorLegend.cpp \
+    ../../agrolib/graphics/mapGraphicsRasterObject.cpp \
+    ../../agrolib/graphics/stationMarker.cpp \
     atmosphere.cpp \
     dataHandler.cpp \
     disease.cpp \
@@ -75,7 +76,11 @@ SOURCES += \
     mainWindow.cpp \
     ../CRITERIA3D/shared/project3D.cpp
 
+
 HEADERS += \
+    ../../agrolib/graphics/colorLegend.h \
+    ../../agrolib/graphics/mapGraphicsRasterObject.h \
+    ../../agrolib/graphics/stationMarker.h \
     atmosphere.h \
     dataHandler.h \
     disease.h \
