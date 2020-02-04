@@ -42,16 +42,17 @@ HEADERS += \
     ../../agrolib/graphics/mapGraphicsShapeObject.h \
     ../../agrolib/graphics/colorLegend.h \
     ../../agrolib/project/formInfo.h \
+    criteriaGeoProject.h \
     dialogSelectField.h \
     dialogShapeProperties.h \
     dialogUcm.h \
-    gisProject.h \
     dbfTableDialog.h \
     dbfNewColDialog.h \
     shapeUtilities.h \
+    ucmDb.h \
+    ucmUtilities.h \
     unitCropMap.h \
     shapeToRaster.h \
-    unitDb.h \
     zonalStatistic.h \
     gisObject.h \
     mainWindow.h
@@ -61,17 +62,18 @@ SOURCES += \
     ../../agrolib/graphics/mapGraphicsShapeObject.cpp \
     ../../agrolib/graphics/colorLegend.cpp \
     ../../agrolib/project/formInfo.cpp \
+    criteriaGeoProject.cpp \
     dialogSelectField.cpp \
     dialogShapeProperties.cpp \
     dialogUcm.cpp \
     mainWindow.cpp \
-    gisProject.cpp \
     dbfTableDialog.cpp \
     dbfNewColDialog.cpp \
     shapeUtilities.cpp \
+    ucmDb.cpp \
+    ucmUtilities.cpp \
     unitCropMap.cpp \
     shapeToRaster.cpp \
-    unitDb.cpp \
     zonalStatistic.cpp \
     gisObject.cpp \
     main.cpp

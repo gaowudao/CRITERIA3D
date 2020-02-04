@@ -1,8 +1,8 @@
-#include "unitDb.h"
+#include "ucmDb.h"
 
 
 
-UnitDb::UnitDb(QString dbname)
+UcmDb::UcmDb(QString dbname)
 {
     error = "";
 
@@ -26,7 +26,7 @@ UnitDb::UnitDb(QString dbname)
 
 }
 
-UnitDb::~UnitDb()
+UcmDb::~UcmDb()
 {
     if ((db.isValid()) && (db.isOpen()))
     {
@@ -37,7 +37,7 @@ UnitDb::~UnitDb()
     }
 }
 
-void UnitDb::createUnitsTable()
+void UcmDb::createUnitsTable()
 {
 
     QSqlQuery qry(db);
@@ -48,7 +48,7 @@ void UnitDb::createUnitsTable()
     }
 }
 
-bool UnitDb::writeUnitsTable(QString idCase, QString idCrop, QString idMeteo, float idSoil)
+bool UcmDb::writeUnitsTable(QString idCase, QString idCrop, QString idMeteo, float idSoil)
 {
 
     QSqlQuery qry(db);
@@ -71,7 +71,7 @@ bool UnitDb::writeUnitsTable(QString idCase, QString idCrop, QString idMeteo, fl
 
 }
 
-bool UnitDb::writeListToUnitsTable(QStringList idCase, QStringList idCrop, QStringList idMeteo, QList<float> idSoil)
+bool UcmDb::writeListToUnitsTable(QStringList idCase, QStringList idCrop, QStringList idMeteo, QList<float> idSoil)
 {
 
     QSqlQuery qry(db);
@@ -96,7 +96,7 @@ bool UnitDb::writeListToUnitsTable(QStringList idCase, QStringList idCrop, QStri
 
 }
 
-QString UnitDb::getError() const
+QString UcmDb::getError() const
 {
     return error;
 }

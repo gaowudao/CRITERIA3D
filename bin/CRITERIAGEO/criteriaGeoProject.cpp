@@ -26,17 +26,17 @@
 */
 
 #include "commonConstants.h"
-#include "gisProject.h"
+#include "criteriaGeoProject.h"
 #include "shapeToRaster.h"
 #include "unitCropMap.h"
 #include <QMessageBox>
 
 
-GisProject::GisProject()
+CriteriaGeoProject::CriteriaGeoProject()
 {}
 
 
-void GisProject::addRaster(gis::Crit3DRasterGrid *myRaster, QString fileName)
+void CriteriaGeoProject::addRaster(gis::Crit3DRasterGrid *myRaster, QString fileName)
 {
     GisObject* newObject = new(GisObject);
     newObject->setRaster(fileName, myRaster);
@@ -44,7 +44,7 @@ void GisProject::addRaster(gis::Crit3DRasterGrid *myRaster, QString fileName)
 }
 
 
-void GisProject::addShapeFile(Crit3DShapeHandler *myShape, QString fileName)
+void CriteriaGeoProject::addShapeFile(Crit3DShapeHandler *myShape, QString fileName)
 {
     GisObject* newObject = new(GisObject);
     newObject->setShapeFile(fileName, myShape);
@@ -52,7 +52,7 @@ void GisProject::addShapeFile(Crit3DShapeHandler *myShape, QString fileName)
 }
 
 
-bool GisProject::loadRaster(QString fileNameWithPath)
+bool CriteriaGeoProject::loadRaster(QString fileNameWithPath)
 {
     std::string* myError = new std::string();
     std::string fnWithoutExt = fileNameWithPath.left(fileNameWithPath.length()-4).toStdString();
@@ -70,7 +70,7 @@ bool GisProject::loadRaster(QString fileNameWithPath)
 }
 
 
-bool GisProject::loadShapefile(QString fileNameWithPath)
+bool CriteriaGeoProject::loadShapefile(QString fileNameWithPath)
 {
     Crit3DShapeHandler *myShape = new(Crit3DShapeHandler);
     if (!myShape->open(fileNameWithPath.toStdString()))
@@ -84,7 +84,7 @@ bool GisProject::loadShapefile(QString fileNameWithPath)
 }
 
 
-void GisProject::getRasterFromShape(Crit3DShapeHandler *shape, QString field, QString outputName, double cellSize, bool showInfo)
+void CriteriaGeoProject::getRasterFromShape(Crit3DShapeHandler *shape, QString field, QString outputName, double cellSize, bool showInfo)
 {
     gis::Crit3DRasterGrid *newRaster = new(gis::Crit3DRasterGrid);
     initializeRasterFromShape(shape, newRaster, cellSize);
@@ -104,7 +104,7 @@ void GisProject::getRasterFromShape(Crit3DShapeHandler *shape, QString field, QS
 }
 
 
-bool GisProject::addUnitCropMap(Crit3DShapeHandler *crop, Crit3DShapeHandler *soil, Crit3DShapeHandler *meteo,
+bool CriteriaGeoProject::addUnitCropMap(Crit3DShapeHandler *crop, Crit3DShapeHandler *soil, Crit3DShapeHandler *meteo,
                                 std::string idCrop, std::string idSoil, std::string idMeteo,
                                 QString fileName, double cellSize, bool showInfo)
 {
@@ -129,12 +129,12 @@ bool GisProject::addUnitCropMap(Crit3DShapeHandler *crop, Crit3DShapeHandler *so
 // LOG
 //--------------------------------------------------------------
 
-void GisProject::logError(std::string errorString)
+void CriteriaGeoProject::logError(std::string errorString)
 {
     QMessageBox::critical(nullptr, "ERROR!", QString::fromStdString(errorString));
 }
 
-void GisProject::logError(QString errorString)
+void CriteriaGeoProject::logError(QString errorString)
 {
     QMessageBox::critical(nullptr, "ERROR!", errorString);
 }

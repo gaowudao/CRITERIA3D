@@ -13,11 +13,11 @@
 #include <QtNetwork/QNetworkProxy>
 #include <QMessageBox>
 
-#include "gisProject.h"
+#include "criteriaGeoProject.h"
 #include "mainWindow.h"
 
 
-GisProject myProject;
+CriteriaGeoProject myProject;
 
 
 bool setProxy(QString hostName, unsigned short port)

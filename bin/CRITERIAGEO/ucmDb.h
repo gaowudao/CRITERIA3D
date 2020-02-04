@@ -8,13 +8,13 @@
 #include <QString>
 #include <QtSql>
 
-class UnitDb : public QObject
+class UcmDb : public QObject
 {
     Q_OBJECT
 
 public:
-    UnitDb(QString dbname);
-    ~UnitDb();
+    UcmDb(QString dbname);
+    ~UcmDb();
     void createUnitsTable();
     bool writeUnitsTable(QString idCase, QString idCrop, QString idMeteo, float idSoil);
     bool writeListToUnitsTable(QStringList idCase, QStringList idCrop, QStringList idMeteo, QList<float> idSoil);

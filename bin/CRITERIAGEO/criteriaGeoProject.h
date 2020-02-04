@@ -14,7 +14,7 @@
     #include <QString>
     #include <vector>
 
-    class GisProject
+    class CriteriaGeoProject
     {
     private:
 
@@ -22,7 +22,7 @@
         gis::Crit3DGisSettings gisSettings;
         std::vector<GisObject*> objectList;
 
-        GisProject();
+        CriteriaGeoProject();
 
         bool loadRaster(QString fileName);
         bool loadShapefile(QString fileName);

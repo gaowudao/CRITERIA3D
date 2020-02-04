@@ -30,7 +30,7 @@
 #include "dialogSelectField.h"
 #include "dialogUcm.h"
 #include "dbfTableDialog.h"
-#include "shapeUtilities.h"
+#include "ucmUtilities.h"
 #include "commonConstants.h"
 
 #include "mainWindow.h"
@@ -43,7 +43,7 @@
 #define TOOLSWIDTH 260
 
 
-extern GisProject myProject;
+extern CriteriaGeoProject myProject;
 
 
 MainWindow::MainWindow(QWidget *parent) :
