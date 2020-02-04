@@ -121,7 +121,6 @@ bool createShapeFromCSV(Crit3DShapeHandler* shapeHandler, Crit3DShapeHandler* sh
             return false;
         }
 
-        bool idFound = false;
         //Reads the data up to the end of file
         while (!in.atEnd())
         {
@@ -133,7 +132,6 @@ bool createShapeFromCSV(Crit3DShapeHandler* shapeHandler, Crit3DShapeHandler* sh
                 // check right ID_CASE
                 if (shapeFromCSV->readStringAttribute(shapeIndex, idCaseIndex) == items[idCaseCSV].toStdString())
                 {
-                    idFound = true;
                     QMapIterator<int, int> i(myPosMap);
                     while (i.hasNext()) {
                         i.next();
@@ -149,11 +147,6 @@ bool createShapeFromCSV(Crit3DShapeHandler* shapeHandler, Crit3DShapeHandler* sh
 
                     }
 
-                }
-                if (idFound == true)
-                {
-                    idFound = false;
-                    break;
                 }
             }
         }
