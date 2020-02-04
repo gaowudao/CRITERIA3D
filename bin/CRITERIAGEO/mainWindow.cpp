@@ -35,7 +35,7 @@
 
 #include "mainWindow.h"
 #include "ui_mainWindow.h"
-#include "FormInfo.h"
+#include "formInfo.h"
 
 
 #define MAPBORDER 11
