@@ -1,6 +1,7 @@
 #include "unitCropMap.h"
 #include "zonalStatistic.h"
 #include "shapeToRaster.h"
+#include "shapeUtilities.h"
 #include <QFile>
 #include <QFileInfo>
 
@@ -13,30 +14,9 @@ bool unitCropMap(Crit3DShapeHandler *ucm, Crit3DShapeHandler *crop, Crit3DShapeH
                  std::string idCrop, std::string idSoil, std::string idMeteo, double cellSize,
                  QString fileName, std::string *error, bool showInfo)
 {
-    //TODO: sostituire con
-    //cloneShapeFile(crop->getFilepath(), fileName);
 
-    // make a copy of crop shapefile
-    QFileInfo filepathInfo(QString::fromStdString(crop->getFilepath()));
-    QString path = filepathInfo.absolutePath();
-
-    QString tmpFile = filepathInfo.absolutePath()+"/"+fileName+".dbf";
-    QFile::remove(tmpFile);
-    QFile::copy(path+"/"+filepathInfo.baseName()+".dbf", tmpFile);
-
-    tmpFile = path+"/"+fileName+".shp";
-    QFile::remove(tmpFile);
-    QFile::copy(path+"/"+filepathInfo.baseName()+".shp", tmpFile);
-
-    tmpFile = path+"/"+fileName+".shx";
-    QFile::remove(tmpFile);
-    QFile::copy(path+"/"+filepathInfo.baseName()+".shx", tmpFile);
-
-    tmpFile = path+"/"+fileName+".prj";
-    QFile::remove(tmpFile);
-    QFile::copy(path+"/"+filepathInfo.baseName()+".prj", tmpFile);
-
-    QString ucmShapeFile = path + "/" + fileName + ".shp";
+    // make a copy of shapefile and return cloned shapefile complete path
+    QString ucmShapeFile = cloneShapeFile(crop->getFilepath(), fileName);
     if (!ucm->open(ucmShapeFile.toStdString()))
     {
         *error = "Load shapefile failed: " + ucmShapeFile.toStdString();

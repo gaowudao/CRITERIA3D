@@ -41,29 +41,8 @@ bool createShapeFromCSV(Crit3DShapeHandler* shapeHandler, Crit3DShapeHandler* sh
     QFileInfo fileCSVpathInfo(fileCSV);
     QString fileName = fileCSVpathInfo.baseName();
 
-    //cloneShapeFile(shapeHandler->getFilepath(), fileName);
-
-    // make a copy of shapefile
-    QFileInfo filepathInfo(QString::fromStdString(shapeHandler->getFilepath()));
-    QString path = filepathInfo.absolutePath();
-
-    QString tmpFile = filepathInfo.absolutePath()+"/"+fileName+".dbf";
-    QFile::remove(tmpFile);
-    QFile::copy(path+"/"+filepathInfo.baseName()+".dbf", tmpFile);
-
-    tmpFile = path+"/"+fileName+".shp";
-    QFile::remove(tmpFile);
-    QFile::copy(path+"/"+filepathInfo.baseName()+".shp", tmpFile);
-
-    tmpFile = path+"/"+fileName+".shx";
-    QFile::remove(tmpFile);
-    QFile::copy(path+"/"+filepathInfo.baseName()+".shx", tmpFile);
-
-    tmpFile = path+"/"+fileName+".prj";
-    QFile::remove(tmpFile);
-    QFile::copy(path+"/"+filepathInfo.baseName()+".prj", tmpFile);
-
-    QString ucmShapeFile = path + "/" + fileName + ".shp";
+// make a copy of shapefile and return cloned shapefile complete path
+    QString ucmShapeFile = cloneShapeFile(shapeHandler->getFilepath(), fileName);
 
     if (!shapeFromCSV->open(ucmShapeFile.toStdString()))
     {
