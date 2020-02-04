@@ -171,7 +171,8 @@ bool modelDailyCycle(bool isInitialState, Crit3DDate myDate, int nrHours,
                                 double(myProject->radiationMaps->diffuseRadiationMap->value[row][col]),
                                 double(myProject->radiationMaps->beamRadiationMap->value[row][col]),
                                 double(myProject->radiationMaps->transmissivityMap->value[row][col] / CLEAR_SKY_TRANSMISSIVITY_DEFAULT),
-                                double(myProject->radiationMaps->sunElevationMap->value[row][col]))) {
+                                double(myProject->radiationMaps->sunElevationMap->value[row][col])))
+                    {
                         myProject->errorString = grapevineError(myCurrentTime, row, col, "Radiation data missing");
                         return (false);
                     }
