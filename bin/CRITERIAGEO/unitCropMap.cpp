@@ -13,6 +13,9 @@ bool unitCropMap(Crit3DShapeHandler *ucm, Crit3DShapeHandler *crop, Crit3DShapeH
                  std::string idCrop, std::string idSoil, std::string idMeteo, double cellSize,
                  QString fileName, std::string *error, bool showInfo)
 {
+    //TODO: sostituire con
+    //cloneShapeFile(crop->getFilepath(), fileName);
+
     // make a copy of crop shapefile
     QFileInfo filepathInfo(QString::fromStdString(crop->getFilepath()));
     QString path = filepathInfo.absolutePath();
