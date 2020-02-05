@@ -9,8 +9,8 @@ QString cloneShapeFile(QString refFileName, QString newFileName)
     QFileInfo refFileInfo(refFileName);
     QFileInfo newFileInfo(newFileName);
 
-    QString refFile = refFileInfo.absolutePath() + refFileInfo.baseName();
-    QString newFile = newFileInfo.absolutePath() + newFileInfo.baseName();
+    QString refFile = refFileInfo.absolutePath() + "/" + refFileInfo.baseName();
+    QString newFile = newFileInfo.absolutePath() + "/" + newFileInfo.baseName();
 
     QFile::remove(newFile + ".dbf");
     QFile::copy(refFile +".dbf", newFile +".dbf");

@@ -312,7 +312,7 @@ void DbfTableDialog::saveChangesClicked()
 {
     QString filepath = QString::fromStdString(shapeHandler->getFilepath());
     QFileInfo filepathInfo(filepath);
-    QString file_temp = filepathInfo.absolutePath()+"/"+filepathInfo.baseName()+"_temp.dbf";
+    QString file_temp = filepathInfo.absolutePath() + "/" + filepathInfo.baseName() + "_temp.dbf";
 
     QFile::remove(file_temp);   // remove old file_temp
 
