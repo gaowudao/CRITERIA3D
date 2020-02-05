@@ -163,12 +163,13 @@ bool shapeFromCSV(Crit3DShapeHandler* shapeHandler, Crit3DShapeHandler* outputSh
     int defaultDoubleLenght = 10;
     int defaultDoubleDecimals = 2;
 
-    QFileInfo fileCSVpathInfo(fileCSV);
-    QString fileName = fileCSVpathInfo.baseName();
+    QString refFileName = QString::fromStdString(shapeHandler->getFilepath());
+    QFileInfo csvFileInfo(fileCSV);
+    QFileInfo refFileInfo(refFileName);
+    QString newFileName = refFileInfo.absolutePath() + csvFileInfo.baseName();
 
     // make a copy of shapefile and return cloned shapefile complete path
-    QString refShapeFilePath = QString::fromStdString(shapeHandler->getFilepath());
-    QString ucmShapeFile = cloneShapeFile(refShapeFilePath, fileName);
+    QString ucmShapeFile = cloneShapeFile(refFileName, newFileName);
 
     if (!outputShape->open(ucmShapeFile.toStdString()))
     {

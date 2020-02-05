@@ -532,10 +532,11 @@ void MainWindow::on_actionCompute_Unit_Crop_Map_triggered()
     if (ucmDialog.result() == QDialog::Rejected)
         return;
 
+    QString ucmFileName = QFileDialog::getSaveFileName(this, tr("Save Shapefile"), "", tr("shp files (*.shp)"));
+
     if (myProject.addUnitCropMap(ucmDialog.getCrop(), ucmDialog.getSoil(), ucmDialog.getMeteo(),
                                  ucmDialog.getIdCrop().toStdString(), ucmDialog.getIdSoil().toStdString(),
-                                 ucmDialog.getIdMeteo().toStdString(),
-                                 ucmDialog.getOutputName(), ucmDialog.getCellSize(), true))
+                                 ucmDialog.getIdMeteo().toStdString(), ucmDialog.getCellSize(), ucmFileName, true))
     {
         addShapeObject(myProject.objectList.back());
     }

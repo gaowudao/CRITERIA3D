@@ -3,41 +3,54 @@
 #include <QFileInfo>
 
 
-// make a copy of shapefile and return cloned shape file complete path
-QString cloneShapeFile(QString refShapeCompletePath, QString cloneFileName)
+// make a copy of shapefile and return cloned shapefile path
+QString cloneShapeFile(QString refFileName, QString newFileName)
 {
-    QFileInfo filepathInfo(refShapeCompletePath);
-    QString path = filepathInfo.absolutePath();
+    QFileInfo refFileInfo(refFileName);
+    QFileInfo newFileInfo(newFileName);
 
-    QString tmpFile = filepathInfo.absolutePath()+"/"+cloneFileName+".dbf";
-    QFile::remove(tmpFile);
-    QFile::copy(path+"/"+filepathInfo.baseName()+".dbf", tmpFile);
+    QString refFile = refFileInfo.absolutePath() + refFileInfo.baseName();
+    QString newFile = newFileInfo.absolutePath() + newFileInfo.baseName();
 
-    tmpFile = path+"/"+cloneFileName+".shp";
-    QFile::remove(tmpFile);
-    QFile::copy(path+"/"+filepathInfo.baseName()+".shp", tmpFile);
+    QFile::remove(newFile + ".dbf");
+    QFile::copy(refFile +".dbf", newFile +".dbf");
 
-    tmpFile = path+"/"+cloneFileName+".shx";
-    QFile::remove(tmpFile);
-    QFile::copy(path+"/"+filepathInfo.baseName()+".shx", tmpFile);
+    QFile::remove(newFile +".shp");
+    QFile::copy(refFile +".shp", newFile +".shp");
 
-    tmpFile = path+"/"+cloneFileName+".prj";
-    QFile::remove(tmpFile);
-    QFile::copy(path+"/"+filepathInfo.baseName()+".prj", tmpFile);
+    QFile::remove(newFile +".shx");
+    QFile::copy(refFile +".shx", newFile +".shx");
 
-    QString clonedShapePath = path + "/" + cloneFileName + ".shp";
-    return clonedShapePath;
+    QFile::remove(newFile +".prj");
+    QFile::copy(refFile +".prj", newFile +".prj");
+
+    return(newFile + ".shp");
 }
 
 
-bool deleteRecords(Crit3DShapeHandler *shapeHandler, QString newFile)
+bool cleanShapeFile(Crit3DShapeHandler *shapeHandler)
 {
-    if (shapeHandler->existRecordDeleted())
-    {
-        shapeHandler->packSHP(newFile.toStdString());
-        shapeHandler->packDBF(newFile.toStdString());
-        shapeHandler->close();
-        return true;
-    }
-    return false;
+    if (! shapeHandler->existRecordDeleted()) return true;
+
+    QFileInfo fileInfo(QString::fromStdString(shapeHandler->getFilepath()));
+    QString refFile = fileInfo.absolutePath() + "/" + fileInfo.baseName();
+    QString tmpFile = refFile + "_temp";
+
+    shapeHandler->packSHP(tmpFile.toStdString());
+    shapeHandler->packDBF(tmpFile.toStdString());
+    shapeHandler->close();
+
+    QFile::remove(refFile + ".dbf");
+    QFile::copy(tmpFile + ".dbf", refFile + ".dbf");
+    QFile::remove(tmpFile + ".dbf");
+
+    QFile::remove(refFile + ".shp");
+    QFile::copy(tmpFile + ".shp", refFile + ".shp");
+    QFile::remove(tmpFile + ".shp");
+
+    QFile::remove(refFile + ".shx");
+    QFile::copy(tmpFile + ".shx", refFile + ".shx");
+    QFile::remove(tmpFile + ".shx");
+
+    return shapeHandler->open(shapeHandler->getFilepath());
 }

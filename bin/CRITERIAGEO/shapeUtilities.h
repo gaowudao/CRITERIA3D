@@ -6,7 +6,7 @@
     #endif
     #include <QString>
 
-    QString cloneShapeFile(QString refShapeCompletePath, QString cloneFileName);
-    bool deleteRecords(Crit3DShapeHandler *shapeHandler, QString newFile);
+    QString cloneShapeFile(QString refFileName, QString newFileName);
+    bool cleanShapeFile(Crit3DShapeHandler *shapeHandler);
 
 #endif // SHAPEUTILITIES_H

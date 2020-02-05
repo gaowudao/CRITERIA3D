@@ -109,13 +109,13 @@ void CriteriaGeoProject::getRasterFromShape(Crit3DShapeHandler *shape, QString f
 
 bool CriteriaGeoProject::addUnitCropMap(Crit3DShapeHandler *crop, Crit3DShapeHandler *soil, Crit3DShapeHandler *meteo,
                                 std::string idCrop, std::string idSoil, std::string idMeteo,
-                                QString fileName, double cellSize, bool showInfo)
+                                double cellSize, QString ucmFileName, bool showInfo)
 {
     std::string errorStr;
 
     Crit3DShapeHandler *ucm = new(Crit3DShapeHandler);
 
-    if (unitCropMap(ucm, crop, soil, meteo, idCrop, idSoil, idMeteo, cellSize, fileName, &errorStr, showInfo))
+    if (computeUnitCropMap(ucm, crop, soil, meteo, idCrop, idSoil, idMeteo, cellSize, ucmFileName, &errorStr, showInfo))
     {
         addShapeFile(ucm, QString::fromStdString(ucm->getFilepath()));
         return true;

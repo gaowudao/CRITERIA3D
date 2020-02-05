@@ -307,33 +307,30 @@ void DbfTableDialog::closeEvent(QCloseEvent *event)
     QDialog::closeEvent(event);
 }
 
+
 void DbfTableDialog::saveChangesClicked()
 {
-
     QString filepath = QString::fromStdString(shapeHandler->getFilepath());
     QFileInfo filepathInfo(filepath);
     QString file_temp = filepathInfo.absolutePath()+"/"+filepathInfo.baseName()+"_temp.dbf";
 
-    QFile::remove(file_temp);   //remove old file_temp
-    if (!deleteRecords(shapeHandler, file_temp))
+    QFile::remove(file_temp);   // remove old file_temp
+
+    if (shapeHandler->existRecordDeleted())
     {
-        // nothing has been deleted
+        shapeHandler->packSHP(file_temp.toStdString());
+        shapeHandler->packDBF(file_temp.toStdString());
         shapeHandler->close();
-        QFile::copy(filepathInfo.absolutePath()+"/"+filepathInfo.baseName()+".dbf", file_temp);    // copy modified file to file_temp
     }
-//    if (shapeHandler->existRecordDeleted())
-//    {
-//        shapeHandler->packSHP(file_temp.toStdString());
-//        shapeHandler->packDBF(file_temp.toStdString());
-//        shapeHandler->close();
-//    }
-//    else
-//    {
-//        shapeHandler->close();
-//        QFile::copy(filepathInfo.absolutePath()+"/"+filepathInfo.baseName()+".dbf", file_temp);    // copy modified file to file_temp
-//    }
+    else
+    {
+        shapeHandler->close();
+        // copy modified file to file_temp
+        QFile::copy(filepathInfo.absolutePath()+"/"+filepathInfo.baseName()+".dbf", file_temp);
+    }
     shapeHandler->open(shapeHandler->getFilepath());
 }
+
 
 void DbfTableDialog::horizontalHeaderClick(int index)
 {
