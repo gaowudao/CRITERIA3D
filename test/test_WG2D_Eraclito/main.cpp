@@ -1,5 +1,6 @@
 #include "commonConstants.h"
 #include "dbMeteoGrid.h"
+#include "meteo.h"
 #include <iostream>
 #include <QFileDialog>
 #include <QApplication>
@@ -43,8 +44,22 @@ bool loadMeteoGridDB()
 int main(int argc, char *argv[])
 {
     QApplication myApp(argc, argv);
+    QString myError, myMeteoPoint;
+    meteoVariable variable;
+    QDate firstDay(1961,1,1);
+    QDate lastDay(1990,12,31);
+    QDate firstDateDB(1,1,1);
+    std::vector<float> minDailyTemperature;
+    std::vector<float> maxDailyTemperature;
+    std::vector<float> cumDailyPrecipitation;
+    loadMeteoGridDB(); // reading from graphical interface the .xml
+    variable = dailyAirTemperatureMin;
+    //minDailyTemperature = meteoGridDbHandler->loadGridDailyVar(&myError,myMeteoPoint,variable,firstDay,lastDay,&firstDateDB);
+    variable = dailyAirTemperatureMax;
+    //maxDailyTemperature = meteoGridDbHandler->loadGridDailyVar(&myError,myMeteoPoint,variable,firstDay,lastDay,&firstDateDB);
+    variable = dailyPrecipitation;
+    //maxDailyTemperature = meteoGridDbHandler->loadGridDailyVar(&myError,myMeteoPoint,variable,firstDay,lastDay,&firstDateDB);
 
-    loadMeteoGridDB();
     return 0;
 }
 
