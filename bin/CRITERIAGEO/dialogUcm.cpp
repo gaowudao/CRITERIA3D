@@ -43,7 +43,7 @@ DialogUCM::DialogUCM(std::vector<Crit3DShapeHandler*> shapeObjList)
 {
 
     this->setWindowTitle("Unit Crop Map");
-    this->setFixedSize(800,600);
+    this->setFixedSize(600,500);
     QVBoxLayout* mainLayout = new QVBoxLayout;
     QHBoxLayout* boxLayout = new QHBoxLayout;
     QVBoxLayout* shapeLayout = new QVBoxLayout;
