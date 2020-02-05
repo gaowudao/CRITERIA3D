@@ -195,6 +195,11 @@ bool shapeFromCSV(Crit3DShapeHandler* shapeHandler, Crit3DShapeHandler* outputSh
             }
             QString key = items[0];
             items.removeFirst();
+            if (key.isEmpty() || items[0].isEmpty())
+            {
+                *error = "invalid reference CSV, missing field name";
+                return false;
+            }
             MapCSVShapeFields.insert(key,items);
         }
     }
