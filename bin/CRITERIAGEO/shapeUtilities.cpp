@@ -4,31 +4,31 @@
 
 
 // make a copy of shapefile and return cloned shape file complete path
-QString cloneShapeFile(std::string completeShapePath, QString fileName)
+QString cloneShapeFile(QString refShapeCompletePath, QString cloneFileName)
 {
-    QFileInfo filepathInfo(QString::fromStdString(completeShapePath));
+    QFileInfo filepathInfo(refShapeCompletePath);
     QString path = filepathInfo.absolutePath();
 
-    QString tmpFile = filepathInfo.absolutePath()+"/"+fileName+".dbf";
+    QString tmpFile = filepathInfo.absolutePath()+"/"+cloneFileName+".dbf";
     QFile::remove(tmpFile);
     QFile::copy(path+"/"+filepathInfo.baseName()+".dbf", tmpFile);
 
-    tmpFile = path+"/"+fileName+".shp";
+    tmpFile = path+"/"+cloneFileName+".shp";
     QFile::remove(tmpFile);
     QFile::copy(path+"/"+filepathInfo.baseName()+".shp", tmpFile);
 
-    tmpFile = path+"/"+fileName+".shx";
+    tmpFile = path+"/"+cloneFileName+".shx";
     QFile::remove(tmpFile);
     QFile::copy(path+"/"+filepathInfo.baseName()+".shx", tmpFile);
 
-    tmpFile = path+"/"+fileName+".prj";
+    tmpFile = path+"/"+cloneFileName+".prj";
     QFile::remove(tmpFile);
     QFile::copy(path+"/"+filepathInfo.baseName()+".prj", tmpFile);
 
-    QString completeClonedShapePath = path + "/" + fileName + ".shp";
-
-    return completeClonedShapePath;
+    QString clonedShapePath = path + "/" + cloneFileName + ".shp";
+    return clonedShapePath;
 }
+
 
 bool deleteRecords(Crit3DShapeHandler *shapeHandler, QString newFile)
 {

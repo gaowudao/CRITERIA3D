@@ -12,11 +12,12 @@
 
 bool unitCropMap(Crit3DShapeHandler *ucm, Crit3DShapeHandler *crop, Crit3DShapeHandler *soil, Crit3DShapeHandler *meteo,
                  std::string idCrop, std::string idSoil, std::string idMeteo, double cellSize,
-                 QString fileName, std::string *error, bool showInfo)
+                 QString ucmFileName, std::string *error, bool showInfo)
 {
 
     // make a copy of shapefile and return cloned shapefile complete path
-    QString ucmShapeFile = cloneShapeFile(crop->getFilepath(), fileName);
+    QString refShapeFilePath = QString::fromStdString(crop->getFilepath());
+    QString ucmShapeFile = cloneShapeFile(refShapeFilePath, ucmFileName);
     if (!ucm->open(ucmShapeFile.toStdString()))
     {
         *error = "Load shapefile failed: " + ucmShapeFile.toStdString();
