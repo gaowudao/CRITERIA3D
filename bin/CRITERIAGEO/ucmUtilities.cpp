@@ -2,9 +2,10 @@
 #include "shapeUtilities.h"
 #include "ucmDb.h"
 #include "commonConstants.h"
+#include "formInfo.h"
 
 
-bool extractUCMListToDb(Crit3DShapeHandler* shapeHandler, QString dbName, std::string *error)
+bool UCMListToDb(Crit3DShapeHandler* shapeHandler, QString dbName, std::string *error, bool showInfo)
 {
     UcmDb* unitList = new UcmDb(dbName);
 
@@ -15,8 +16,18 @@ bool extractUCMListToDb(Crit3DShapeHandler* shapeHandler, QString dbName, std::s
 
     int nShape = shapeHandler->getShapeCount();
 
+    FormInfo formInfo;
+    if (showInfo)
+    {
+        formInfo.start("Extract list " + QString::fromStdString(shapeHandler->getFilepath()), nShape);
+    }
+
     for (int i = 0; i < nShape; i++)
     {
+        if (showInfo)
+        {
+            formInfo.setValue(i);
+        }
         QString key = QString::fromStdString(shapeHandler->getStringValue(signed(i), "ID_CASE"));
         if (!key.isEmpty() && !idCase.contains(key))
         {
@@ -30,6 +41,11 @@ bool extractUCMListToDb(Crit3DShapeHandler* shapeHandler, QString dbName, std::s
     *error = unitList->getError().toStdString();
 
     delete unitList;
+
+    if (showInfo)
+    {
+        formInfo.close();
+    }
 
     return res;
 }

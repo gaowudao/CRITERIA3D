@@ -29,7 +29,10 @@
 #include "criteriaGeoProject.h"
 #include "shapeToRaster.h"
 #include "unitCropMap.h"
+#include "ucmUtilities.h"
+
 #include <QMessageBox>
+#include <QFile>
 
 
 CriteriaGeoProject::CriteriaGeoProject()
@@ -115,6 +118,49 @@ bool CriteriaGeoProject::addUnitCropMap(Crit3DShapeHandler *crop, Crit3DShapeHan
     if (unitCropMap(ucm, crop, soil, meteo, idCrop, idSoil, idMeteo, cellSize, fileName, &errorStr, showInfo))
     {
         addShapeFile(ucm, QString::fromStdString(ucm->getFilepath()));
+        return true;
+    }
+    else
+    {
+        logError(errorStr);
+        return false;
+    }
+}
+
+bool CriteriaGeoProject::extractUCMListToDb(int pos, QString dbName, bool showInfo)
+{
+    Crit3DShapeHandler* shapeHandler = (objectList.at(unsigned(pos)))->getShapeHandler();
+    std::string errorStr;
+
+    int fieldRequired = 0;
+    for (int i = 0; i < shapeHandler->getFieldNumbers(); i++)
+    {
+
+        if (shapeHandler->getFieldName(i) == "ID_CASE" || shapeHandler->getFieldName(i) == "ID_SOIL" || shapeHandler->getFieldName(i) == "ID_CROP" || shapeHandler->getFieldName(i) == "ID_METEO")
+        {
+            fieldRequired = fieldRequired + 1;
+        }
+    }
+    if (fieldRequired < 4)
+    {
+        errorStr = "Ivalid Unit Crop Map Missing required fields";
+        logError(errorStr);
+        return false;
+    }
+
+    QFile dbFile(dbName);
+    if (dbFile.exists())
+    {
+        if (!dbFile.remove())
+        {
+            QString error = "Remove file failed: " + dbName + "\n" + dbFile.errorString();
+            logError(error.toStdString());
+            return false;
+        }
+    }
+
+    if (UCMListToDb(shapeHandler, dbName, &errorStr, showInfo))
+    {
         return true;
     }
     else

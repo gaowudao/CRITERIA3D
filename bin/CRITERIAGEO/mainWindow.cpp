@@ -35,7 +35,6 @@
 
 #include "mainWindow.h"
 #include "ui_mainWindow.h"
-#include "formInfo.h"
 
 
 #define MAPBORDER 11
@@ -542,7 +541,7 @@ void MainWindow::on_actionCompute_Unit_Crop_Map_triggered()
     }
 }
 
-
+/*
 void MainWindow::on_actionExtract_Unit_Crop_Map_list_triggered()
 {
 
@@ -607,6 +606,36 @@ void MainWindow::on_actionExtract_Unit_Crop_Map_list_triggered()
         }
 
     }
+}
+*/
+void MainWindow::on_actionExtract_Unit_Crop_Map_list_triggered()
+{
+
+    QListWidgetItem * itemSelected = ui->checkList->currentItem();
+    if (shapeObjList.empty())
+    {
+        QMessageBox::information(nullptr, "No shape loaded", "Load a shape");
+        return;
+    }
+    else if (itemSelected == nullptr || !itemSelected->text().contains("SHAPE"))
+    {
+        QMessageBox::information(nullptr, "No shape selected", "Select a shape");
+        return;
+    }
+    else
+    {
+        int pos = ui->checkList->row(itemSelected);
+        QString dbName = QFileDialog::getSaveFileName(this, tr("Save as"), "", tr("DB files (*.db)"));
+
+        if (dbName == "")
+        {
+            QMessageBox::information(nullptr, "Insert DB name", "missing new db file name");
+            return;
+        }
+
+        myProject.extractUCMListToDb(pos, dbName, true);
+     }
+
 }
 
 void MainWindow::on_actionCreate_Shape_file_from_CSV_triggered()

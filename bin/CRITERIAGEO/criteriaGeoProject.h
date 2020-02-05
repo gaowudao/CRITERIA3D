@@ -32,7 +32,7 @@
         bool addUnitCropMap(Crit3DShapeHandler *crop, Crit3DShapeHandler *soil, Crit3DShapeHandler *meteo,
                             std::string idCrop, std::string idSoil, std::string idMeteo,
                             QString fileName, double cellSize, bool showInfo);
-
+        bool extractUCMListToDb(int pos, QString dbName, bool showInfo);
         void logError(std::string errorString);
         void logError(QString errorString);
     };
