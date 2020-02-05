@@ -158,6 +158,11 @@ bool shapeFromCSV(Crit3DShapeHandler* shapeHandler, Crit3DShapeHandler* outputSh
 bool shapeFromCSV(Crit3DShapeHandler* shapeHandler, Crit3DShapeHandler* outputShape, QString fileCSV, QString fileCSVRef, std::string *error)
 {
 
+    int CSVRefRequiredInfo = 5;
+    int defaultStringLenght = 20;
+    int defaultDoubleLenght = 10;
+    int defaultDoubleDecimals = 2;
+
     QFileInfo fileCSVpathInfo(fileCSV);
     QString fileName = fileCSVpathInfo.baseName();
 
@@ -183,6 +188,11 @@ bool shapeFromCSV(Crit3DShapeHandler* shapeHandler, Crit3DShapeHandler* outputSh
         {
             QString line = in.readLine();
             QStringList items = line.split(",");
+            if (items.size() < CSVRefRequiredInfo)
+            {
+                *error = "invalid reference CSV, missing reference data";
+                return false;
+            }
             QString key = items[0];
             items.removeFirst();
             MapCSVShapeFields.insert(key,items);
@@ -226,14 +236,35 @@ bool shapeFromCSV(Crit3DShapeHandler* shapeHandler, Crit3DShapeHandler* outputSh
                 if (valuesList[1] == "STRING")
                 {
                     type = FTString;
-                    nWidth = valuesList[2].toInt();
-                    nDecimals = valuesList[3].toInt();
+                    if (valuesList[2].isEmpty())
+                    {
+                        nWidth = defaultStringLenght;
+                    }
+                    else
+                    {
+                        nWidth = valuesList[2].toInt();
+                    }
+                    nDecimals = 0;
                 }
                 else
                 {
                     type = FTDouble;
-                    nWidth = valuesList[2].toInt();
-                    nDecimals = valuesList[3].toInt();
+                    if (valuesList[2].isEmpty())
+                    {
+                        nWidth = defaultDoubleLenght;
+                    }
+                    else
+                    {
+                        nWidth = valuesList[2].toInt();
+                    }
+                    if (valuesList[3].isEmpty())
+                    {
+                        nDecimals = defaultDoubleDecimals;
+                    }
+                    else
+                    {
+                        nDecimals = valuesList[3].toInt();
+                    }
                 }
                 outputShape->addField(field.toStdString().c_str(), type, nWidth, nDecimals);
                 myPosMap.insert(i,outputShape->getFieldPos(field.toStdString()));
