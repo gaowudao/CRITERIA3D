@@ -167,7 +167,8 @@ bool shapeFromCSV(Crit3DShapeHandler* shapeHandler, Crit3DShapeHandler* outputSh
     QString fileName = fileCSVpathInfo.baseName();
 
     // make a copy of shapefile and return cloned shapefile complete path
-    QString ucmShapeFile = cloneShapeFile(shapeHandler->getFilepath(), fileName);
+    QString refShapeFilePath = QString::fromStdString(shapeHandler->getFilepath());
+    QString ucmShapeFile = cloneShapeFile(refShapeFilePath, fileName);
 
     if (!outputShape->open(ucmShapeFile.toStdString()))
     {

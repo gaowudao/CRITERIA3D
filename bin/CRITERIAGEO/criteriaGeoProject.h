@@ -1,5 +1,5 @@
-#ifndef GIS_PROJECT_H
-#define GIS_PROJECT_H
+#ifndef CRITERIA_GEO_PROJECT_H
+#define CRITERIA_GEO_PROJECT_H
 
     #ifndef GIS_H
         #include "gis.h"
@@ -39,4 +39,4 @@
     };
 
 
-#endif // GIS_PROJECT_H
+#endif // CRITERIA_GEO_PROJECT_H
