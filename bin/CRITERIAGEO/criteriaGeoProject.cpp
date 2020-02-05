@@ -143,7 +143,7 @@ bool CriteriaGeoProject::extractUCMListToDb(int pos, QString dbName, bool showIn
     }
     if (fieldRequired < 4)
     {
-        errorStr = "Ivalid Unit Crop Map Missing required fields";
+        errorStr = "Ivalid Unit Crop Map - Missing required fields";
         logError(errorStr);
         return false;
     }
@@ -160,6 +160,38 @@ bool CriteriaGeoProject::extractUCMListToDb(int pos, QString dbName, bool showIn
     }
 
     if (UCMListToDb(shapeHandler, dbName, &errorStr, showInfo))
+    {
+        return true;
+    }
+    else
+    {
+        logError(errorStr);
+        return false;
+    }
+}
+
+bool CriteriaGeoProject::createShapeFromCSV(int pos, QString fileCSV, QString fileCSVRef)
+{
+    Crit3DShapeHandler* shapeHandler = (objectList.at(unsigned(pos)))->getShapeHandler();
+    std::string errorStr;
+
+    bool found = false;
+    for (int i = 0; i < shapeHandler->getFieldNumbers(); i++)
+    {
+        if (shapeHandler->getFieldName(i) == "ID_CASE")
+        {
+            found = true;
+        }
+    }
+    if (!found)
+    {
+        errorStr = "Ivalid Unit Crop Map - Missing ID_CASE";
+        logError(errorStr);
+        return false;
+    }
+
+    Crit3DShapeHandler *outputShape = new Crit3DShapeHandler;
+    if (shapeFromCSV(shapeHandler, outputShape, fileCSV, fileCSVRef, &errorStr))
     {
         return true;
     }

@@ -33,6 +33,7 @@
                             std::string idCrop, std::string idSoil, std::string idMeteo,
                             QString fileName, double cellSize, bool showInfo);
         bool extractUCMListToDb(int pos, QString dbName, bool showInfo);
+        bool createShapeFromCSV(int pos, QString fileCSV, QString fileCSVRef);
         void logError(std::string errorString);
         void logError(QString errorString);
     };

@@ -50,8 +50,8 @@ bool UCMListToDb(Crit3DShapeHandler* shapeHandler, QString dbName, std::string *
     return res;
 }
 
-
-bool createShapeFromCSV(Crit3DShapeHandler* shapeHandler, Crit3DShapeHandler* shapeFromCSV, QString fileCSV, std::string *error)
+/*
+bool shapeFromCSV(Crit3DShapeHandler* shapeHandler, Crit3DShapeHandler* outputShape, QString fileCSV, QString fileCSVRef, std::string *error)
 {
 
     QFileInfo fileCSVpathInfo(fileCSV);
@@ -60,12 +60,12 @@ bool createShapeFromCSV(Crit3DShapeHandler* shapeHandler, Crit3DShapeHandler* sh
 // make a copy of shapefile and return cloned shapefile complete path
     QString ucmShapeFile = cloneShapeFile(shapeHandler->getFilepath(), fileName);
 
-    if (!shapeFromCSV->open(ucmShapeFile.toStdString()))
+    if (!outputShape->open(ucmShapeFile.toStdString()))
     {
         *error = "Load shapefile failed: " + ucmShapeFile.toStdString();
         return false;
     }
-    int nShape = shapeFromCSV->getShapeCount();
+    int nShape = outputShape->getShapeCount();
 
     QFile file(fileCSV);
     if ( !file.open(QFile::ReadOnly | QFile::Text) ) {
@@ -85,7 +85,7 @@ bool createShapeFromCSV(Crit3DShapeHandler* shapeHandler, Crit3DShapeHandler* sh
 
         QMap<int, int> myPosMap;
 
-        int idCaseIndex = shapeFromCSV->getFieldPos("ID_CASE");
+        int idCaseIndex = outputShape->getFieldPos("ID_CASE");
         int idCaseCSV = NODATA;
 
         for (int i = 0; i < newFields.size(); i++)
@@ -108,8 +108,8 @@ bool createShapeFromCSV(Crit3DShapeHandler* shapeHandler, Crit3DShapeHandler* sh
                     nWidth = 10;
                     nDecimals = 2;
                 }
-                shapeFromCSV->addField(MapCSVShapeFields.value(newFields[i]).toStdString().c_str(), type, nWidth, nDecimals);
-                myPosMap.insert(i,shapeFromCSV->getFieldPos(MapCSVShapeFields.value(newFields[i]).toStdString()));
+                outputShape->addField(MapCSVShapeFields.value(newFields[i]).toStdString().c_str(), type, nWidth, nDecimals);
+                myPosMap.insert(i,outputShape->getFieldPos(MapCSVShapeFields.value(newFields[i]).toStdString()));
             }
 
         }
@@ -129,19 +129,146 @@ bool createShapeFromCSV(Crit3DShapeHandler* shapeHandler, Crit3DShapeHandler* sh
             for (int shapeIndex = 0; shapeIndex < nShape; shapeIndex++)
             {
                 // check right ID_CASE
-                if (shapeFromCSV->readStringAttribute(shapeIndex, idCaseIndex) == items[idCaseCSV].toStdString())
+                if (outputShape->readStringAttribute(shapeIndex, idCaseIndex) == items[idCaseCSV].toStdString())
                 {
                     QMapIterator<int, int> i(myPosMap);
                     while (i.hasNext()) {
                         i.next();
                         QString valueToWrite = items[i.key()];
-                        if (shapeFromCSV->getFieldType(i.value()) == FTString)
+                        if (outputShape->getFieldType(i.value()) == FTString)
                         {
-                            shapeFromCSV->writeStringAttribute(shapeIndex, i.value(), valueToWrite.toStdString().c_str());
+                            outputShape->writeStringAttribute(shapeIndex, i.value(), valueToWrite.toStdString().c_str());
                         }
                         else
                         {
-                            shapeFromCSV->writeDoubleAttribute(shapeIndex, i.value(), valueToWrite.toDouble());
+                            outputShape->writeDoubleAttribute(shapeIndex, i.value(), valueToWrite.toDouble());
+                        }
+
+                    }
+
+                }
+            }
+        }
+        file.close();
+    }
+
+    return true;
+}
+*/
+bool shapeFromCSV(Crit3DShapeHandler* shapeHandler, Crit3DShapeHandler* outputShape, QString fileCSV, QString fileCSVRef, std::string *error)
+{
+
+    QFileInfo fileCSVpathInfo(fileCSV);
+    QString fileName = fileCSVpathInfo.baseName();
+
+    // make a copy of shapefile and return cloned shapefile complete path
+    QString ucmShapeFile = cloneShapeFile(shapeHandler->getFilepath(), fileName);
+
+    if (!outputShape->open(ucmShapeFile.toStdString()))
+    {
+        *error = "Load shapefile failed: " + ucmShapeFile.toStdString();
+        return false;
+    }
+
+    // read fileCSVRef and fill MapCSVShapeFields
+    QMap<QString, QStringList> MapCSVShapeFields;
+    QFile fileRef(fileCSVRef);
+    if ( !fileRef.open(QFile::ReadOnly | QFile::Text) ) {
+        qDebug() << "File not exists";
+    }
+    else
+    {
+        QTextStream in(&fileRef);
+        while (!in.atEnd())
+        {
+            QString line = in.readLine();
+            QStringList items = line.split(",");
+            QString key = items[0];
+            items.removeFirst();
+            MapCSVShapeFields.insert(key,items);
+        }
+    }
+
+
+    int nShape = outputShape->getShapeCount();
+
+    QFile file(fileCSV);
+    if ( !file.open(QFile::ReadOnly | QFile::Text) ) {
+        qDebug() << "File not exists";
+    }
+    else
+    {
+        // Create a thread to retrieve data from a file
+        QTextStream in(&file);
+        // Reads first row
+        QString firstRow = in.readLine();
+        QStringList newFields = firstRow.split(",");
+
+        int type;
+        int nWidth;
+        int nDecimals;
+
+        QMap<int, int> myPosMap;
+
+        int idCaseIndex = outputShape->getFieldPos("ID_CASE");
+        int idCaseCSV = NODATA;
+
+        for (int i = 0; i < newFields.size(); i++)
+        {
+            if (newFields[i] == "ID_CASE")
+            {
+                idCaseCSV = i;
+            }
+            if (MapCSVShapeFields.contains(newFields[i]))
+            {
+                QStringList valuesList = MapCSVShapeFields.value(newFields[i]);
+                QString field = valuesList[0];
+                if (valuesList[1] == "STRING")
+                {
+                    type = FTString;
+                    nWidth = valuesList[2].toInt();
+                    nDecimals = valuesList[3].toInt();
+                }
+                else
+                {
+                    type = FTDouble;
+                    nWidth = valuesList[2].toInt();
+                    nDecimals = valuesList[3].toInt();
+                }
+                outputShape->addField(field.toStdString().c_str(), type, nWidth, nDecimals);
+                myPosMap.insert(i,outputShape->getFieldPos(field.toStdString()));
+            }
+
+        }
+
+        if (idCaseCSV == NODATA)
+        {
+            *error = "invalid CSV, missing ID_CASE";
+            return false;
+        }
+
+        //Reads the data up to the end of file
+        while (!in.atEnd())
+        {
+            QString line = in.readLine();
+            QStringList items = line.split(",");
+            //qDebug() << "items " << items;
+            for (int shapeIndex = 0; shapeIndex < nShape; shapeIndex++)
+            {
+                // check right ID_CASE
+                if (outputShape->readStringAttribute(shapeIndex, idCaseIndex) == items[idCaseCSV].toStdString())
+                {
+                    QMapIterator<int, int> i(myPosMap);
+                    while (i.hasNext()) {
+                        i.next();
+                        QString valueToWrite = items[i.key()];
+                        if (outputShape->getFieldType(i.value()) == FTString)
+                        {
+                            outputShape->writeStringAttribute(shapeIndex, i.value(), valueToWrite.toStdString().c_str());
+                        }
+                        else
+                        {
+                            outputShape->writeDoubleAttribute(shapeIndex, i.value(), valueToWrite.toDouble());
                         }
 
                     }
