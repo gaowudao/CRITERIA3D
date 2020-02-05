@@ -202,7 +202,7 @@ void MainWindow::drawMeteoPoints()
     if (! myProject.meteoPointsLoaded || myProject.nrMeteoPoints == 0) return;
     addMeteoPoints();
 
-    myProject.loadMeteoPointsData (myProject.getCurrentDate(), myProject.getCurrentDate(), true);
+    myProject.loadMeteoPointsData (myProject.getCurrentDate(), myProject.getCurrentDate(), true, true, true);
 
     showPointsGroup->setEnabled(true);
 
@@ -452,7 +452,7 @@ void MainWindow::on_dateEdit_dateChanged(const QDate &date)
     if (date != myProject.getCurrentDate())
     {
         myProject.setCurrentDate(date);
-        myProject.loadMeteoPointsData(date, date, true);
+        myProject.loadMeteoPointsData(date, date, true, true, true);
         myProject.loadMeteoGridData(date, date, true);
         myProject.setAllHourlyMeteoMapsComputed(false);
     }
@@ -1183,7 +1183,7 @@ bool MainWindow::runModels(QDateTime firstTime, QDateTime lastTime, bool saveOut
     int hour2 = lastTime.time().hour();
 
     myProject.logInfo("Load meteo data...");
-    if (! myProject.loadMeteoPointsData(firstDate.addDays(-1), lastDate.addDays(+1), false))
+    if (! myProject.loadMeteoPointsData(firstDate.addDays(-1), lastDate.addDays(+1), true, false, false))
     {
         myProject.logError();
         return false;
