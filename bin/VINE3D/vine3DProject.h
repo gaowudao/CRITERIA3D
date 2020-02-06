@@ -67,6 +67,7 @@
         QString dailyOutputPath;
         QString fieldMapName;
 
+        gis::Crit3DRasterGrid dataRaster;
         gis::Crit3DRasterGrid modelCaseIndexMap;
 
         TVineCultivar* cultivar;

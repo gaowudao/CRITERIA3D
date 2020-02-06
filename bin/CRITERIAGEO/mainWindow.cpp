@@ -30,7 +30,7 @@
 #include "dialogSelectField.h"
 #include "dialogUcm.h"
 #include "dbfTableDialog.h"
-#include "shapeUtilities.h"
+#include "ucmUtilities.h"
 #include "commonConstants.h"
 
 #include "mainWindow.h"
@@ -42,7 +42,7 @@
 #define TOOLSWIDTH 260
 
 
-extern GisProject myProject;
+extern CriteriaGeoProject myProject;
 
 
 MainWindow::MainWindow(QWidget *parent) :
@@ -529,13 +529,14 @@ void MainWindow::on_actionCompute_Unit_Crop_Map_triggered()
     }
 
     DialogUCM ucmDialog(shapeList);
-    if (ucmDialog.result() == QDialog::Rejected)
-        return;
+    if (ucmDialog.result() == QDialog::Rejected) return;
+
+    QString ucmFileName = QFileDialog::getSaveFileName(this, tr("Save Shapefile"), "", tr("shp files (*.shp)"));
+    if (ucmFileName == "") return;
 
     if (myProject.addUnitCropMap(ucmDialog.getCrop(), ucmDialog.getSoil(), ucmDialog.getMeteo(),
                                  ucmDialog.getIdCrop().toStdString(), ucmDialog.getIdSoil().toStdString(),
-                                 ucmDialog.getIdMeteo().toStdString(),
-                                 ucmDialog.getOutputName(), ucmDialog.getCellSize(), true))
+                                 ucmDialog.getIdMeteo().toStdString(), ucmDialog.getCellSize(), ucmFileName, true))
     {
         addShapeObject(myProject.objectList.back());
     }
@@ -558,52 +559,20 @@ void MainWindow::on_actionExtract_Unit_Crop_Map_list_triggered()
     }
     else
     {
-
         int pos = ui->checkList->row(itemSelected);
-        Crit3DShapeHandler* shapeHandler = (myProject.objectList.at(unsigned(pos)))->getShapeHandler();
-        std::string errorStr;
+        QString dbName = QFileDialog::getSaveFileName(this, tr("Save as"), "", tr("DB files (*.db)"));
 
-        int fieldRequired = 0;
-        for (int i = 0; i < shapeHandler->getFieldNumbers(); i++)
+        if (dbName == "")
         {
-
-            if (shapeHandler->getFieldName(i) == "ID_CASE" || shapeHandler->getFieldName(i) == "ID_SOIL" || shapeHandler->getFieldName(i) == "ID_CROP" || shapeHandler->getFieldName(i) == "ID_METEO")
-            {
-                fieldRequired = fieldRequired + 1;
-            }
-        }
-        if (fieldRequired < 4)
-        {
-            QMessageBox::information(nullptr, "Ivalid Unit Crop Map", "Missing required fields");
+            QMessageBox::information(nullptr, "Insert DB name", "missing new db file name");
             return;
         }
-        else
-        {
-            QString dbName = QFileDialog::getSaveFileName(this, tr("Save as"), "", tr("DB files (*.db)"));
-            if (dbName == "")
-            {
-                qDebug() << "missing new db file name";
-                return;
-            }
 
-            QFile dbFile(dbName);
-            if (dbFile.exists())
-            {
-                if (!dbFile.remove())
-                {
-                    myProject.logError("Remove file failed: " + dbName + "\n" + dbFile.errorString());
-                    return;
-                }
-            }
-            if (!extractUCMListToDb(shapeHandler, dbName, &errorStr, true))
-            {
-                myProject.logError("Extrac failed: " + dbName + "\n" + QString::fromStdString(errorStr));
-                return;
-            }
-        }
+        myProject.extractUCMListToDb(pos, dbName, true);
+     }
 
-    }
 }
+
 
 void MainWindow::on_actionCreate_Shape_file_from_CSV_triggered()
 {
@@ -623,41 +592,30 @@ void MainWindow::on_actionCreate_Shape_file_from_CSV_triggered()
     {
 
         int pos = ui->checkList->row(itemSelected);
-        Crit3DShapeHandler* shapeHandler = (myProject.objectList.at(unsigned(pos)))->getShapeHandler();
-        std::string errorStr;
+        QString fileCSV = QFileDialog::getOpenFileName(this, tr("Open CSV Data file"), "", tr("CSV files (*.csv)"));
 
-        bool found = false;
-        for (int i = 0; i < shapeHandler->getFieldNumbers(); i++)
+        if (fileCSV == "")
         {
-
-            if (shapeHandler->getFieldName(i) == "ID_CASE")
-            {
-                found = true;
-            }
-        }
-        if (!found)
-        {
-            QMessageBox::information(nullptr, "Ivalid Shape", "Missing ID_CASE");
+            QMessageBox::information(nullptr, "Select CSV Data to read", "missing CSV Data");
             return;
         }
-        else
+
+        QString fileCSVRef = QFileDialog::getOpenFileName(this, tr("Open CSV reference file"), "", tr("CSV files (*.csv)"));
+
+        if (fileCSVRef == "")
         {
-            QString fileCSV = QFileDialog::getOpenFileName(this, tr("Open CSV file"), "", tr("CSV files (*.csv)"));
-
-            if (fileCSV == "")
-            {
-                return;
-            }
-
-            Crit3DShapeHandler *shapeFromCSV = new Crit3DShapeHandler;
-
-            if (!createShapeFromCSV(shapeHandler, shapeFromCSV, fileCSV, &errorStr))
-            {
-                myProject.logError("Shape creation failed, CSV: " + fileCSV + "\n" + QString::fromStdString(errorStr));
-                return;
-            }
-
+            QMessageBox::information(nullptr, "Select CSV fields reference", "missing CSV reference");
+            return;
         }
 
+        QString outputName = QFileDialog::getSaveFileName(this, tr("Save Shapefile"), "", tr("shp files (*.shp)"));
+        if (outputName == "")
+        {
+            QMessageBox::information(nullptr, "Insert output name", "missing shape name");
+            return;
+        }
+
+        myProject.createShapeFromCSV(pos, fileCSV, fileCSVRef, outputName);
     }
 }
+

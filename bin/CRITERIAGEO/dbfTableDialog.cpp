@@ -1,4 +1,5 @@
 #include "dbfTableDialog.h"
+#include "shapeUtilities.h"
 
 DbfTableDialog::DbfTableDialog(Crit3DShapeHandler* shapeHandler, QString fileName)
     :shapeHandler(shapeHandler)
@@ -306,14 +307,15 @@ void DbfTableDialog::closeEvent(QCloseEvent *event)
     QDialog::closeEvent(event);
 }
 
+
 void DbfTableDialog::saveChangesClicked()
 {
-
     QString filepath = QString::fromStdString(shapeHandler->getFilepath());
     QFileInfo filepathInfo(filepath);
-    QString file_temp = filepathInfo.absolutePath()+"/"+filepathInfo.baseName()+"_temp.dbf";
+    QString file_temp = filepathInfo.absolutePath() + "/" + filepathInfo.baseName() + "_temp.dbf";
 
-    QFile::remove(file_temp);   //remove old file_temp
+    QFile::remove(file_temp);   // remove old file_temp
+
     if (shapeHandler->existRecordDeleted())
     {
         shapeHandler->packSHP(file_temp.toStdString());
@@ -323,10 +325,12 @@ void DbfTableDialog::saveChangesClicked()
     else
     {
         shapeHandler->close();
-        QFile::copy(filepathInfo.absolutePath()+"/"+filepathInfo.baseName()+".dbf", file_temp);    // copy modified file to file_temp
+        // copy modified file to file_temp
+        QFile::copy(filepathInfo.absolutePath()+"/"+filepathInfo.baseName()+".dbf", file_temp);
     }
     shapeHandler->open(shapeHandler->getFilepath());
 }
+
 
 void DbfTableDialog::horizontalHeaderClick(int index)
 {
