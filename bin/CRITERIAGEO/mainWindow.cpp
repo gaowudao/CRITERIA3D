@@ -608,7 +608,14 @@ void MainWindow::on_actionCreate_Shape_file_from_CSV_triggered()
             return;
         }
 
-        myProject.createShapeFromCSV(pos, fileCSV, fileCSVRef);
+        QString outputName = QFileDialog::getSaveFileName(this, tr("Save Shapefile"), "", tr("shp files (*.shp)"));
+        if (outputName == "")
+        {
+            QMessageBox::information(nullptr, "Insert output name", "missing shape name");
+            return;
+        }
+
+        myProject.createShapeFromCSV(pos, fileCSV, fileCSVRef, outputName);
     }
 }
 

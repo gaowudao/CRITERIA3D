@@ -30,7 +30,7 @@
         void addShapeFile(Crit3DShapeHandler *myShape, QString fileName);
         void getRasterFromShape(Crit3DShapeHandler *shape, QString field, QString outputName, double cellSize, bool showInfo);
         bool extractUCMListToDb(int pos, QString dbName, bool showInfo);
-        bool createShapeFromCSV(int pos, QString fileCSV, QString fileCSVRef);
+        bool createShapeFromCSV(int pos, QString fileCSV, QString fileCSVRef, QString outputName);
 
         bool addUnitCropMap(Crit3DShapeHandler *crop, Crit3DShapeHandler *soil, Crit3DShapeHandler *meteo,
                             std::string idCrop, std::string idSoil, std::string idMeteo, double cellSize,

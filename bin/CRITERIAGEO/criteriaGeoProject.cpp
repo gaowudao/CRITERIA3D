@@ -170,7 +170,7 @@ bool CriteriaGeoProject::extractUCMListToDb(int pos, QString dbName, bool showIn
     }
 }
 
-bool CriteriaGeoProject::createShapeFromCSV(int pos, QString fileCSV, QString fileCSVRef)
+bool CriteriaGeoProject::createShapeFromCSV(int pos, QString fileCSV, QString fileCSVRef, QString outputName)
 {
     Crit3DShapeHandler* shapeHandler = (objectList.at(unsigned(pos)))->getShapeHandler();
     std::string errorStr;
@@ -190,8 +190,8 @@ bool CriteriaGeoProject::createShapeFromCSV(int pos, QString fileCSV, QString fi
         return false;
     }
 
-    Crit3DShapeHandler *outputShape = new Crit3DShapeHandler;
-    if (shapeFromCSV(shapeHandler, outputShape, fileCSV, fileCSVRef, &errorStr))
+    Crit3DShapeHandler outputShape;
+    if (shapeFromCSV(shapeHandler, &outputShape, fileCSV, fileCSVRef, outputName, &errorStr))
     {
         return true;
     }
