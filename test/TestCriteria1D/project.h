@@ -40,7 +40,7 @@
             QString name;
             QString configFileName;
 
-            QString dbParametersName;
+            QString dbCropName;
             QString dbSoilName;
             QString dbMeteoName;
             QString dbForecastName;
