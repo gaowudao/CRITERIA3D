@@ -5,21 +5,19 @@
 #include <QFile>
 #include <QFileInfo>
 
-// 1) copiare crop > UCM (memoria se si può fare)
-// 2) zonalstatistic UCM MeteoGrid (id_meteo)
-// 3) zonalstatistic UCM Soil (id_soil)
-// 4) add UCM agli shape in interfaccia
 
-bool unitCropMap(Crit3DShapeHandler *ucm, Crit3DShapeHandler *crop, Crit3DShapeHandler *soil, Crit3DShapeHandler *meteo,
+bool computeUnitCropMap(Crit3DShapeHandler *ucm, Crit3DShapeHandler *crop, Crit3DShapeHandler *soil, Crit3DShapeHandler *meteo,
                  std::string idCrop, std::string idSoil, std::string idMeteo, double cellSize,
-                 QString fileName, std::string *error, bool showInfo)
+                 QString ucmFileName, std::string *error, bool showInfo)
 {
 
     // make a copy of shapefile and return cloned shapefile complete path
-    QString ucmShapeFile = cloneShapeFile(crop->getFilepath(), fileName);
-    if (!ucm->open(ucmShapeFile.toStdString()))
+    QString refFileName = QString::fromStdString(crop->getFilepath());
+    QString ucmShapeFileName = cloneShapeFile(refFileName, ucmFileName);
+
+    if (!ucm->open(ucmShapeFileName.toStdString()))
     {
-        *error = "Load shapefile failed: " + ucmShapeFile.toStdString();
+        *error = "Load shapefile failed: " + ucmShapeFileName.toStdString();
         return false;
     }
 
@@ -32,12 +30,13 @@ bool unitCropMap(Crit3DShapeHandler *ucm, Crit3DShapeHandler *crop, Crit3DShapeH
     // ECM --> reference
     fillRasterWithShapeNumber(rasterRef, ucm, showInfo);
 
-    // meteo grid
+    // zonal statistic on meteo grid
     fillRasterWithShapeNumber(rasterVal, meteo, showInfo);
     bool isOk = zonalStatisticsShape(ucm, meteo, rasterRef, rasterVal, idMeteo, "ID_METEO", MAJORITY, error, showInfo);
+
+    // zonal statistic on soil map
     if (isOk)
     {
-        // soil map
         fillRasterWithShapeNumber(rasterVal, soil, showInfo);
         isOk = zonalStatisticsShape(ucm, soil, rasterRef, rasterVal, idSoil, "ID_SOIL", MAJORITY, error, showInfo);
     }
@@ -46,15 +45,18 @@ bool unitCropMap(Crit3DShapeHandler *ucm, Crit3DShapeHandler *crop, Crit3DShapeH
     {
         *error = "ZonalStatisticsShape: " + *error;
     }
+
     delete rasterRef;
     delete rasterVal;
+    if (! isOk) return false;
 
-    // add ID CASE e ID CROP
+    // read indexes
     int nShape = ucm->getShapeCount();
     int cropIndex = ucm->getFieldPos(idCrop);
     int soilIndex = ucm->getFieldPos(idSoil);
     int meteoIndex = ucm->getFieldPos(idMeteo);
 
+    // add fields
     ucm->addField("ID_CROP", FTString, 5, 0);
     ucm->addField("ID_CASE", FTString, 20, 0);
     int idCaseIndex = ucm->getFieldPos("ID_CASE");
@@ -78,7 +80,12 @@ bool unitCropMap(Crit3DShapeHandler *ucm, Crit3DShapeHandler *crop, Crit3DShapeH
 
         ucm->writeStringAttribute(shapeIndex, idCropIndex, cropStr.c_str());
         ucm->writeStringAttribute(shapeIndex, idCaseIndex, caseStr.c_str());
+
+        if (caseStr == "")
+            ucm->deleteRecord(shapeIndex);
     }
+
+    cleanShapeFile(ucm);
 
     return isOk;
 }

@@ -30,10 +30,6 @@ Crit3DShapeHandler *DialogUCM::getMeteo() const
     return meteo;
 }
 
-QString DialogUCM::getOutputName() const
-{
-    return outputName->text();
-}
 
 double DialogUCM::getCellSize() const
 {
@@ -47,7 +43,7 @@ DialogUCM::DialogUCM(std::vector<Crit3DShapeHandler*> shapeObjList)
 {
 
     this->setWindowTitle("Unit Crop Map");
-    this->setFixedSize(800,600);
+    this->setFixedSize(600,500);
     QVBoxLayout* mainLayout = new QVBoxLayout;
     QHBoxLayout* boxLayout = new QHBoxLayout;
     QVBoxLayout* shapeLayout = new QVBoxLayout;
@@ -120,11 +116,7 @@ DialogUCM::DialogUCM(std::vector<Crit3DShapeHandler*> shapeObjList)
 
     // double with 1 digit from 0 to 9999
     cellSize->setValidator(new QDoubleValidator(0, 9999, 1));
-
-    outputName = new QLineEdit();
-    outputName->setPlaceholderText("Output Name");
     mainLayout->addWidget(cellSize);
-    mainLayout->addWidget(outputName);
 
     mainLayout->addWidget(buttonBox);
     setLayout(mainLayout);
@@ -243,11 +235,5 @@ void DialogUCM::ucm()
         return;
     }
 
-    // check output name
-    if (outputName->text().isEmpty())
-    {
-        QMessageBox::information(nullptr, "Empty name", "Insert output name");
-        return;
-    }
     QDialog::done(QDialog::Accepted);
 }
