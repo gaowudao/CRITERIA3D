@@ -44,6 +44,7 @@ bool loadMeteoGridDB()
 int main(int argc, char *argv[])
 {
     QApplication myApp(argc, argv);
+    bool test;
     QString myError, myMeteoPoint;
     meteoVariable variable;
     QDate firstDay(1961,1,1);
@@ -52,7 +53,7 @@ int main(int argc, char *argv[])
     std::vector<float> minDailyTemperature;
     std::vector<float> maxDailyTemperature;
     std::vector<float> cumDailyPrecipitation;
-    loadMeteoGridDB(); // reading from graphical interface the .xml
+    test = loadMeteoGridDB(); // reading from graphical interface the .xml
     variable = dailyAirTemperatureMin;
     //minDailyTemperature = meteoGridDbHandler->loadGridDailyVar(&myError,myMeteoPoint,variable,firstDay,lastDay,&firstDateDB);
     variable = dailyAirTemperatureMax;
