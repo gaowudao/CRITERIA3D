@@ -29,7 +29,7 @@ void Criteria1DProject::initialize()
     irrigationPath = "";
     dbOutputPath = "";
 
-    dbParametersName = "";
+    dbCropName = "";
     dbSoilName = "";
     dbMeteoName = "";
     dbForecastName = "";
@@ -118,9 +118,9 @@ bool Criteria1DProject::readSettings()
     path += projectSettings->value("path","").toString();
     name += projectSettings->value("name","").toString();
 
-    dbParametersName = projectSettings->value("db_parameters","").toString();
-    if (dbParametersName.left(1) == ".")
-        dbParametersName = path + dbParametersName;
+    dbCropName = projectSettings->value("db_crop","").toString();
+    if (dbCropName.left(1) == ".")
+        dbCropName = path + dbCropName;
 
     dbSoilName = projectSettings->value("db_soil","").toString();
     if (dbSoilName == "") dbSoilName = projectSettings->value("soil_db","").toString();
@@ -182,7 +182,7 @@ bool Criteria1DProject::readSettings()
 
 void Criteria1DProject::closeAllDatabase()
 {
-    criteria.dbParameters.close();
+    criteria.dbCrop.close();
     criteria.dbSoil.close();
     criteria.dbMeteo.close();
     criteria.dbForecast.close();
@@ -193,19 +193,19 @@ int Criteria1DProject::openAllDatabase()
 {
     closeAllDatabase();
 
-    logInfo ("Model parameters: " + dbParametersName);
-    if (! QFile(dbParametersName).exists())
+    logInfo ("Model parameters: " + dbCropName);
+    if (! QFile(dbCropName).exists())
     {
         projectError = "DBparameters file doesn't exist";
         closeAllDatabase();
         return ERROR_DBPARAMETERS;
     }
 
-    criteria.dbParameters = QSqlDatabase::addDatabase("QSQLITE", "parameters");
-    criteria.dbParameters.setDatabaseName(dbParametersName);
-    if (! criteria.dbParameters.open())
+    criteria.dbCrop = QSqlDatabase::addDatabase("QSQLITE", "parameters");
+    criteria.dbCrop.setDatabaseName(dbCropName);
+    if (! criteria.dbCrop.open())
     {
-        projectError = "Open parameters DB failed: " + criteria.dbParameters.lastError().text();
+        projectError = "Open parameters DB failed: " + criteria.dbCrop.lastError().text();
         closeAllDatabase();
         return ERROR_DBPARAMETERS;
     }
