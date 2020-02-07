@@ -55,7 +55,7 @@ int main(int argc, char *argv[])
     QString errorString;
     if (! loadMeteoGridDB(&errorString))
     {
-        std::cout << errorString.toStdString();
+        std::cout << errorString.toStdString() << std::endl;
         return -1;
     }
 
