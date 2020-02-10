@@ -1,4 +1,8 @@
 
+#include <QString>
+#include <QFile>
+#include <QTextStream>
+
 #include <stdlib.h>
 #include <math.h>
 #include <time.h>
@@ -10,12 +14,13 @@
 #include "readPragaFormatData.h"
 
 
-#define NR_SIMULATION_YEARS 200
+#define NR_SIMULATION_YEARS 3
 // [ 1 - 10 ]
-#define NR_STATIONS 3
+#define NR_STATIONS 5
 
 weatherGenerator2D WG2D;
 
+void printSimulationResults(ToutputWeatherData* output,int nrStations,int lengthArray);
 
 void obsDataMeteoPointFormat(int nrStations, int nrData, float*** weatherArray, int** dateArray,TObsDataD** observedDataDaily)
 {
@@ -331,6 +336,24 @@ int main()
                               computePrecipitation, computeTemperature);
     WG2D.computeWeatherGenerator2D();
 
+    int startingYear = 2001;
+    int lengthArraySimulation;
+    lengthArraySimulation = 365 * yearsOfSimulations;
+    WG2D.outputWeatherData = (ToutputWeatherData *)calloc(nrStations, sizeof(ToutputWeatherData));
+    for (int iStation=0;iStation<nrStations;iStation++)
+    {
+        WG2D.outputWeatherData[iStation].daySimulated = (int *)calloc(lengthArraySimulation, sizeof(int));
+        WG2D.outputWeatherData[iStation].monthSimulated = (int *)calloc(lengthArraySimulation, sizeof(int));
+        WG2D.outputWeatherData[iStation].yearSimulated = (int *)calloc(lengthArraySimulation, sizeof(int));
+        WG2D.outputWeatherData[iStation].doySimulated = (int *)calloc(lengthArraySimulation, sizeof(int));
+        WG2D.outputWeatherData[iStation].minT = (double *)calloc(lengthArraySimulation, sizeof(double));
+        WG2D.outputWeatherData[iStation].maxT = (double *)calloc(lengthArraySimulation, sizeof(double));
+        WG2D.outputWeatherData[iStation].precipitation = (double *)calloc(lengthArraySimulation, sizeof(double));
+    }
+    WG2D.getWeatherGeneratorOutput(WG2D.outputWeatherData,startingYear);
+    printSimulationResults(WG2D.outputWeatherData,nrStations,lengthArraySimulation);
+
+    //free memory
     for (int i=0;i<nrStations;i++)
     {
         free(observedDataDaily[i]);
@@ -350,4 +373,21 @@ int main()
     return 0;
 }
 
+void printSimulationResults(ToutputWeatherData* output,int nrStations,int lengthArray)
+{
+    FILE* fp;
+    QString outputName;
+    for (int iStation=0; iStation<nrStations;iStation++)
+    {
+        outputName = "wgStation_" + QString::number(iStation) + ".csv";
+        QFile file(outputName);
+        file.open(QIODevice::WriteOnly | QIODevice::Truncate | QIODevice::Text);
+        QTextStream stream( &file );
+        for (int m=0; m<lengthArray; m++)
+        {
+            stream <<  output[iStation].daySimulated[m] << "/" << output[iStation].monthSimulated[m] << "/" << output[iStation].yearSimulated[m] << "," << output[iStation].doySimulated[m] << "," << output[iStation].minT[m]<< "," << output[iStation].maxT[m]<< "," << output[iStation].precipitation[m]<<endl;
+        }
+        file.close();
+    }
 
+}
