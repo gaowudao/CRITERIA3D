@@ -15,24 +15,23 @@ void logInfo(QString myStr)
 }
 
 
-bool loadMeteoGridDB()
+bool loadMeteoGridDB(QString* errorString)
 {
     QString xmlName = QFileDialog::getOpenFileName(nullptr, "Open XML grid", "", "XML files (*.xml)");
     if (xmlName == "") return false;
 
-    QString errorString;
     meteoGridDbHandler = new Crit3DMeteoGridDbHandler();
 
     // todo
     //meteoGridDbHandler->meteoGrid()->setGisSettings(this->gisSettings);
 
-    if (! meteoGridDbHandler->parseXMLGrid(xmlName, &errorString)) return false;
+    if (! meteoGridDbHandler->parseXMLGrid(xmlName, errorString)) return false;
 
-    if (! meteoGridDbHandler->openDatabase(&errorString)) return false;
+    if (! meteoGridDbHandler->openDatabase(errorString))return false;
 
-    if (! meteoGridDbHandler->loadCellProperties(&errorString)) return false;
+    if (! meteoGridDbHandler->loadCellProperties(errorString)) return false;
 
-    meteoGridDbHandler->updateGridDate(&errorString);
+    if (! meteoGridDbHandler->updateGridDate(errorString)) return false;
 
     logInfo("Meteo Grid = " + xmlName);
 
@@ -52,7 +51,14 @@ int main(int argc, char *argv[])
     std::vector<float> minDailyTemperature;
     std::vector<float> maxDailyTemperature;
     std::vector<float> cumDailyPrecipitation;
-    loadMeteoGridDB(); // reading from graphical interface the .xml
+
+    QString errorString;
+    if (! loadMeteoGridDB(&errorString))
+    {
+        std::cout << errorString.toStdString() << std::endl;
+        return -1;
+    }
+
     variable = dailyAirTemperatureMin;
     //minDailyTemperature = meteoGridDbHandler->loadGridDailyVar(&myError,myMeteoPoint,variable,firstDay,lastDay,&firstDateDB);
     variable = dailyAirTemperatureMax;
