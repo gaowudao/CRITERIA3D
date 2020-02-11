@@ -332,26 +332,26 @@ int main()
     bool computePrecipitation = true;
     bool computeTemperature = true;
     printf("weather generator\n");
-    WG2D.initializeParameters(precipitationThreshold, yearsOfSimulations, distributionType,
-                              computePrecipitation, computeTemperature);
-    WG2D.computeWeatherGenerator2D();
-
     int startingYear = 2001;
     int lengthArraySimulation;
     lengthArraySimulation = 365 * yearsOfSimulations;
-    WG2D.outputWeatherData = (ToutputWeatherData *)calloc(nrStations, sizeof(ToutputWeatherData));
+    ToutputWeatherData* results;
+    results = (ToutputWeatherData *)calloc(nrStations, sizeof(ToutputWeatherData));
     for (int iStation=0;iStation<nrStations;iStation++)
     {
-        WG2D.outputWeatherData[iStation].daySimulated = (int *)calloc(lengthArraySimulation, sizeof(int));
-        WG2D.outputWeatherData[iStation].monthSimulated = (int *)calloc(lengthArraySimulation, sizeof(int));
-        WG2D.outputWeatherData[iStation].yearSimulated = (int *)calloc(lengthArraySimulation, sizeof(int));
-        WG2D.outputWeatherData[iStation].doySimulated = (int *)calloc(lengthArraySimulation, sizeof(int));
-        WG2D.outputWeatherData[iStation].minT = (double *)calloc(lengthArraySimulation, sizeof(double));
-        WG2D.outputWeatherData[iStation].maxT = (double *)calloc(lengthArraySimulation, sizeof(double));
-        WG2D.outputWeatherData[iStation].precipitation = (double *)calloc(lengthArraySimulation, sizeof(double));
+        results[iStation].daySimulated = (int *)calloc(lengthArraySimulation, sizeof(int));
+        results[iStation].monthSimulated = (int *)calloc(lengthArraySimulation, sizeof(int));
+        results[iStation].yearSimulated = (int *)calloc(lengthArraySimulation, sizeof(int));
+        results[iStation].doySimulated = (int *)calloc(lengthArraySimulation, sizeof(int));
+        results[iStation].minT = (double *)calloc(lengthArraySimulation, sizeof(double));
+        results[iStation].maxT = (double *)calloc(lengthArraySimulation, sizeof(double));
+        results[iStation].precipitation = (double *)calloc(lengthArraySimulation, sizeof(double));
     }
-    WG2D.getWeatherGeneratorOutput(WG2D.outputWeatherData,startingYear);
-    printSimulationResults(WG2D.outputWeatherData,nrStations,lengthArraySimulation);
+    WG2D.initializeParameters(precipitationThreshold, yearsOfSimulations, distributionType,
+                              computePrecipitation, computeTemperature);
+    WG2D.computeWeatherGenerator2D();
+    results = WG2D.getWeatherGeneratorOutput(startingYear);
+    printSimulationResults(results,nrStations,lengthArraySimulation);
 
     //free memory
     for (int i=0;i<nrStations;i++)
