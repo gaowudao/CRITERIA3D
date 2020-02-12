@@ -10,7 +10,6 @@ QT  += widgets sql xml
 
 TEMPLATE = app
 CONFIG += console
-CONFIG -= app_bundle
 
 DEFINES += _CRT_SECURE_NO_WARNINGS
 

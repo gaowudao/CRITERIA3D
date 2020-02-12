@@ -12,7 +12,6 @@ QT -= gui
 QT += core sql
 
 CONFIG += console
-
 TEMPLATE = app
 
 unix:{
