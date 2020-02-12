@@ -47,14 +47,13 @@ int main(int argc, char *argv[])
 {
     QApplication myApp(argc, argv);
     QString myError;
-    Crit3DMeteoPoint* meteoPointTemp = new Crit3DMeteoPoint;
+    //Crit3DMeteoPoint* meteoPointTemp = new Crit3DMeteoPoint;
     meteoVariable variable;
     QDate firstDay(1961,1,1);
     QDate lastDay(1990,12,31);
     QDate firstDateDB(1,1,1);
     TObsDataD** obsDataD = nullptr;
 
-    std::vector<float> dailyVariable;
     QString errorString;
     if (! loadMeteoGridDB(&errorString))
     {
@@ -64,7 +63,10 @@ int main(int argc, char *argv[])
 
     std::string id;
     int nrActivePoints = 0;
-    int lengthSeries;
+    int lengthSeries = 0;
+    std::vector<float> dailyVariable;
+    variable = dailyAirTemperatureMin;
+
     for (int row = 0; row < meteoGridDbHandler->gridStructure().header().nrRows; row++)
     {
         //if (showInfo && (row % infoStep) == 0)
@@ -84,8 +86,6 @@ int main(int argc, char *argv[])
             }*/
            if (meteoGridDbHandler->meteoGrid()->getMeteoPointActiveId(row, col, &id))
            {
-               Crit3DMeteoPoint* meteoPoint = meteoGridDbHandler->meteoGrid()->meteoPointPointer(row,col);
-
                // copy data to MPTemp
                /*meteoPointTemp->id = meteoPoint->id;
                meteoPointTemp->point.z = meteoPoint->point.z;
@@ -96,11 +96,11 @@ int main(int argc, char *argv[])
                meteoPointTemp->nrObsDataDaysH = 0;
                meteoPointTemp->nrObsDataDaysD = 0;*/
 
-               variable = dailyAirTemperatureMin;
-               dailyVariable = meteoGridDbHandler->loadGridDailyVar(&myError, QString::fromStdString(meteoPoint->id),
+               dailyVariable = meteoGridDbHandler->loadGridDailyVar(&myError, QString::fromStdString(id),
                                                                     variable, firstDay, lastDay, &firstDateDB);
-               lengthSeries = dailyVariable.size();
-               printf("%d %d\n", ++nrActivePoints, lengthSeries);
+
+               lengthSeries = int(dailyVariable.size());
+               std::cout << ++nrActivePoints << " " << lengthSeries << "\n";
            }
         }
     }
