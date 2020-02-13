@@ -348,7 +348,7 @@ int main()
         results[iStation].precipitation = (double *)calloc(lengthArraySimulation, sizeof(double));
     }
     WG2D.initializeParameters(precipitationThreshold, yearsOfSimulations, distributionType,
-                              computePrecipitation, computeTemperature);
+                              computePrecipitation, computeTemperature,false);
     WG2D.computeWeatherGenerator2D();
     results = WG2D.getWeatherGeneratorOutput(startingYear);
     printSimulationResults(results,nrStations,lengthArraySimulation);
