@@ -2,15 +2,23 @@
 #include "dbMeteoGrid.h"
 #include "meteo.h"
 #include "meteoPoint.h"
+#include "wg2D.h"
+
 
 #include <iostream>
 #include <QFileDialog>
 #include <QApplication>
 #include <malloc.h>
+#include <time.h>
 
+#define NR_SIMULATION_YEARS 1
+// [ 1 - 10 ]
+//#define NR_STATIONS 10
+#define STARTING_YEAR 2001
+#define PREC_THRESHOLD 0.25
 
 static Crit3DMeteoGridDbHandler* meteoGridDbHandler;
-
+static weatherGenerator2D WG2D;
 
 void logInfo(QString myStr)
 {
@@ -20,7 +28,8 @@ void logInfo(QString myStr)
 
 bool loadMeteoGridDB(QString* errorString)
 {
-    QString xmlName = QFileDialog::getOpenFileName(nullptr, "Open XML grid", "", "XML files (*.xml)");
+    //QString xmlName = QFileDialog::getOpenFileName(nullptr, "Open XML grid", "", "XML files (*.xml)");
+    QString xmlName = "../../../PRAGA/DATA/METEOGRID/DBGridXML_Eraclito4.xml";
     if (xmlName == "") return false;
 
     meteoGridDbHandler = new Crit3DMeteoGridDbHandler();
@@ -45,12 +54,20 @@ bool loadMeteoGridDB(QString* errorString)
 
 int main(int argc, char *argv[])
 {
+    time_t rawtime;
+    struct tm * timeinfo;
+
+    time ( &rawtime );
+    timeinfo = localtime ( &rawtime );
+    printf ( "Current local time and date: %s", asctime (timeinfo) );
+
     QApplication myApp(argc, argv);
     QString myError;
     //Crit3DMeteoPoint* meteoPointTemp = new Crit3DMeteoPoint;
     meteoVariable variable;
     QDate firstDay(1961,1,1);
     QDate lastDay(1990,12,31);
+    QDate currentDay;
     QDate firstDateDB(1,1,1);
     TObsDataD** obsDataD = nullptr;
 
@@ -65,60 +82,98 @@ int main(int argc, char *argv[])
     int nrActivePoints = 0;
     int lengthSeries = 0;
     std::vector<float> dailyVariable;
-    variable = dailyAirTemperatureMin;
+
 
     for (int row = 0; row < meteoGridDbHandler->gridStructure().header().nrRows; row++)
     {
-        //if (showInfo && (row % infoStep) == 0)
-            //myInfo.setValue(row);
 
         for (int col = 0; col < meteoGridDbHandler->gridStructure().header().nrCols; col++)
         {
-            /*if (meteoGridDbHandler->meteoGrid()->getMeteoPointActiveId(row, col, &id))
-            {
-                nrActivePoints++;
-                if (col == 0 && row == 0)
-                {
-                    dailyVariable = meteoGridDbHandler->loadGridDailyVar(&myError,QString::fromStdString(meteoPointTemp->id),variable,firstDay,lastDay,&firstDateDB);
-                    lengthSeries = dailyVariable.size();
-                }
-                //printf("%d %d\n", nrActivePoints, lengthSeries);
-            }*/
+
            if (meteoGridDbHandler->meteoGrid()->getMeteoPointActiveId(row, col, &id))
            {
-               // copy data to MPTemp
-               /*meteoPointTemp->id = meteoPoint->id;
-               meteoPointTemp->point.z = meteoPoint->point.z;
-               meteoPointTemp->latitude = meteoPoint->latitude;
-               meteoPointTemp->elaboration = meteoPoint->elaboration;
-
-               // meteoPointTemp should be init
-               meteoPointTemp->nrObsDataDaysH = 0;
-               meteoPointTemp->nrObsDataDaysD = 0;*/
-
-               dailyVariable = meteoGridDbHandler->loadGridDailyVar(&myError, QString::fromStdString(id),
-                                                                    variable, firstDay, lastDay, &firstDateDB);
-
-               lengthSeries = int(dailyVariable.size());
-               std::cout << ++nrActivePoints << " " << lengthSeries << "\n";
+               ++nrActivePoints;
+               if (nrActivePoints == 1)
+               {
+                   variable = dailyAirTemperatureMin;
+                   dailyVariable = meteoGridDbHandler->loadGridDailyVar(&myError, QString::fromStdString(id),
+                                                                        variable, firstDay, lastDay, &firstDateDB);
+                   lengthSeries = int(dailyVariable.size());
+               }
            }
         }
     }
-
-
+    //nrActivePoints = 5;
+    printf("%d  %d\n", lengthSeries,nrActivePoints);
     obsDataD = (TObsDataD **)calloc(nrActivePoints, sizeof(TObsDataD*));
     for (int i=0;i<nrActivePoints;i++)
     {
         obsDataD[i] = (TObsDataD *)calloc(lengthSeries, sizeof(TObsDataD));
     }
-    // ciclo su tutte le celle, meteopoint ha la struttra vedere se e attiva
-    variable = dailyAirTemperatureMin;
-    //minDailyTemperature = meteoGridDbHandler->loadGridDailyVar(&myError,QString::fromStdString(meteoPointTemp->id),variable,firstDay,lastDay,&firstDateDB);
-    variable = dailyAirTemperatureMax;
-    //maxDailyTemperature = meteoGridDbHandler->loadGridDailyVar(&myError,myMeteoPoint,variable,firstDay,lastDay,&firstDateDB);
-    variable = dailyPrecipitation;
-    //maxDailyTemperature = meteoGridDbHandler->loadGridDailyVar(&myError,myMeteoPoint,variable,firstDay,lastDay,&firstDateDB);
 
+    for (int i=0;i<nrActivePoints;i++)
+    {
+        currentDay = firstDay;
+        for (int j=0;j<lengthSeries;j++)
+        {
+            obsDataD[i][j].date.day = currentDay.day();
+            obsDataD[i][j].date.month = currentDay.month();
+            obsDataD[i][j].date.year = currentDay.year();
+            currentDay = currentDay.addDays(1);
+        }
+    }
+    printf("initialize date\n");
+
+
+
+    int counter = 0;
+    for (int row = 0; row < meteoGridDbHandler->gridStructure().header().nrRows; row++)
+    {
+
+        for (int col = 0; col < meteoGridDbHandler->gridStructure().header().nrCols; col++)
+        {
+
+           if (meteoGridDbHandler->meteoGrid()->getMeteoPointActiveId(row, col, &id) && counter<nrActivePoints)
+           {
+
+               variable = dailyAirTemperatureMin;
+               dailyVariable = meteoGridDbHandler->loadGridDailyVar(&myError, QString::fromStdString(id),
+                                                                    variable, firstDay, lastDay, &firstDateDB);
+               for (int iLength=0; iLength<lengthSeries; iLength++) obsDataD[counter][iLength].tMin = dailyVariable[iLength];
+               variable = dailyAirTemperatureMax;
+               dailyVariable = meteoGridDbHandler->loadGridDailyVar(&myError, QString::fromStdString(id),
+                                                                    variable, firstDay, lastDay, &firstDateDB);
+               for (int iLength=0; iLength<lengthSeries; iLength++) obsDataD[counter][iLength].tMax = dailyVariable[iLength];
+               variable = dailyPrecipitation;
+               dailyVariable = meteoGridDbHandler->loadGridDailyVar(&myError, QString::fromStdString(id),
+                                                                    variable, firstDay, lastDay, &firstDateDB);
+               for (int iLength=0; iLength<lengthSeries; iLength++) obsDataD[counter][iLength].prec = dailyVariable[iLength];
+               counter++;
+           }
+        }
+        //std::cout << row << "\n";
+    }
+    dailyVariable.clear();
+    meteoGridDbHandler->closeDatabase();
+    WG2D.initializeData(lengthSeries,nrActivePoints);
+    WG2D.setObservedData(obsDataD);
+
+    ToutputWeatherData* results;
+    bool computePrecipitation = true;
+    bool computeTemperature = true;
+    printf("weather generator\n");
+    int startingYear = STARTING_YEAR;
+    int lengthArraySimulation;
+    static int distributionType = 1;
+    lengthArraySimulation = 365 * NR_SIMULATION_YEARS;
+    WG2D.initializeParameters(PREC_THRESHOLD, NR_SIMULATION_YEARS, distributionType,
+                              computePrecipitation, computeTemperature,false);
+    WG2D.computeWeatherGenerator2D();
+    results = WG2D.getWeatherGeneratorOutput(startingYear);
+
+    time ( &rawtime );
+    timeinfo = localtime ( &rawtime );
+    printf ( "Current local time and date: %s", asctime (timeinfo) );
     return 0;
 }
 
