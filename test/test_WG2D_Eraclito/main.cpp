@@ -103,7 +103,7 @@ int main(int argc, char *argv[])
            }
         }
     }
-    //nrActivePoints = 5;
+    //nrActivePoints = 500;
     printf("%d  %d\n", lengthSeries,nrActivePoints);
     obsDataD = (TObsDataD **)calloc(nrActivePoints, sizeof(TObsDataD*));
     for (int i=0;i<nrActivePoints;i++)
