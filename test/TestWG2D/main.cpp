@@ -319,6 +319,45 @@ int main()
         }
 
     }
+    bool testMatrix = true;
+    if (testMatrix)
+    {
+        double** A;
+        double** B;
+        double** C;
+        A = (double **)calloc(nrStations, sizeof(double*));
+        C = (double **)calloc(nrStations, sizeof(double*));
+        B = (double **)calloc(nrStations, sizeof(double*));
+        int i,j;
+        for (i =0;i<nrStations;i++)
+        {
+            A[i] = (double *)calloc(nrStations, sizeof(double));
+            B[i] = (double *)calloc(nrStations, sizeof(double));
+            C[i] = (double *)calloc(nrStations, sizeof(double));
+        }
+        for (i =0;i<nrStations;i++)
+        {
+            for (j =0;j<nrStations;j++)
+            {
+                   A[i][j] = B[i][j] = C[i][j]=1.;
+            }
+        }
+        time_t rawtime;
+        struct tm * timeinfo;
+
+        time ( &rawtime );
+        timeinfo = localtime ( &rawtime );
+        printf ( "Current local time and date: %s", asctime (timeinfo) );
+        matricial::matrixProductNoCheck(A,B,nrStations,nrStations,nrStations,C);
+        time ( &rawtime );
+        timeinfo = localtime ( &rawtime );
+        printf ( "Current local time and date: %s", asctime (timeinfo) );
+        time ( &rawtime );
+        timeinfo = localtime ( &rawtime );
+        printf ( "Current local time and date: %s", asctime (timeinfo) );
+        return 0;
+    }
+
     TObsDataD** observedDataDaily = (TObsDataD **)calloc(nrStations, sizeof(TObsDataD*));
     for (int i=0;i<nrStations;i++)
     {

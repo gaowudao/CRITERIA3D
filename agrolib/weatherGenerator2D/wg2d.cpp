@@ -926,6 +926,7 @@ void weatherGenerator2D::spatialIterationOccurrence(double ** M, double** K,doub
         time ( &rawtime );
         timeinfo = localtime ( &rawtime );
         printf ( "end while cycle Current local time and date: %s", asctime (timeinfo) );
+        pressEnterToContinue();
     }  // end of the while cycle
 
 
