@@ -319,7 +319,7 @@ int main()
         }
 
     }
-    bool testMatrix = true;
+    /*bool testMatrix = true;
     if (testMatrix)
     {
         double** A;
@@ -352,11 +352,13 @@ int main()
         time ( &rawtime );
         timeinfo = localtime ( &rawtime );
         printf ( "Current local time and date: %s", asctime (timeinfo) );
+
+        matricial::multiplyStrassen(A,B,nrStations,C);
         time ( &rawtime );
         timeinfo = localtime ( &rawtime );
         printf ( "Current local time and date: %s", asctime (timeinfo) );
         return 0;
-    }
+    }*/
 
     TObsDataD** observedDataDaily = (TObsDataD **)calloc(nrStations, sizeof(TObsDataD*));
     for (int i=0;i<nrStations;i++)
