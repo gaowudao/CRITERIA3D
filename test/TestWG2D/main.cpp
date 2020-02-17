@@ -319,7 +319,8 @@ int main()
         }
 
     }
-    /*bool testMatrix = true;
+    /*
+    bool testMatrix = true;
     if (testMatrix)
     {
         double** A;
