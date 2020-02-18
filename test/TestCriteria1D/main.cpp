@@ -5,12 +5,49 @@
 #include <QDir>
 #include <QDate>
 
+#include <iostream>
+
 #include "basicMath.h"
 #include "project.h"
 #include "modelCore.h"
 #include "cropDbTools.h"
 #include "soilDbTools.h"
 #include "commonConstants.h"
+
+
+#define TEST
+
+
+bool searchDefaultPath(QString inputPath, QString* outputPath)
+{
+    QString myPath = inputPath;
+    QString myRoot = QDir::rootPath();
+
+    bool isFound = false;
+    while (! isFound)
+    {
+        if (QDir(myPath + "/DATA").exists())
+        {
+            isFound = true;
+            break;
+        }
+
+        if (QDir::cleanPath(myPath) == myRoot)
+            break;
+
+        myPath = QFileInfo(myPath).dir().absolutePath();
+    }
+
+    if (! isFound)
+    {
+        std::cout << "\nDATA directory is missing";
+        return false;
+    }
+
+    *outputPath = QDir::cleanPath(myPath) + "/DATA/";
+    return true;
+}
+
 
 
 int main(int argc, char *argv[])
@@ -28,18 +65,25 @@ int main(int argc, char *argv[])
     double irriRatio;
     double percentile;
 
+    QString appPath = myApp.applicationDirPath() + "/";
+
     if (argc > 1)
         settingsFileName = argv[1];
     else
     {
-        settingsFileName = "../../../DATA/PROJECT/kiwifruit/kiwifruit.ini";
-
-        //myProject.logError("USAGE: CRITERIA1D filename.ini");
-        //return ERROR_SETTINGS_MISSING;
+        #ifdef TEST
+                QString path;
+                if (! searchDefaultPath(appPath, &path)) return -1;
+                //settingsFileName = path + "PROJECT/CLARA/CLARA.ini";
+                settingsFileName = path + "PROJECT/kiwifruit/kiwifruit.ini";
+        #else
+                myProject.logInfo("USAGE: CRITERIA1D settings.ini");
+                return ERROR_SETTINGS_MISSING;
+        #endif
     }
 
     if (settingsFileName.left(1) == ".")
-        settingsFileName = myApp.applicationDirPath() + "/" + settingsFileName;
+        settingsFileName = appPath + settingsFileName;
 
     int myError = myProject.initializeProject(settingsFileName);
     if (myError != CRIT3D_OK)
@@ -225,7 +269,6 @@ int main(int argc, char *argv[])
                                         readilyAvailWater = myQuery.value("RAW").toDouble();
                                         rootDepth = myQuery.value("ROOTDEPTH").toDouble();
                                     }
-
 
                                     mySQL = "SELECT SUM(IRRIGATION) AS previousIrrigation FROM '" + myProject.unit[i].idCase + "'"
                                             " WHERE DATE <= '" + dateOfForecastStr + "'"
