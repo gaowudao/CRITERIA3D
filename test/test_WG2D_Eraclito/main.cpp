@@ -8,6 +8,9 @@
 #include <iostream>
 #include <QFileDialog>
 #include <QApplication>
+#include <QFile>
+#include <QTextStream>
+#include <QString>
 #include <malloc.h>
 #include <time.h>
 
@@ -16,8 +19,9 @@
 //#define NR_STATIONS 10
 #define STARTING_YEAR 2001
 #define PREC_THRESHOLD 0.25
-
+void printSimulationResults(ToutputWeatherData* output,int nrStations,int lengthArray);
 static Crit3DMeteoGridDbHandler* meteoGridDbHandler;
+static Crit3DMeteoGridDbHandler* meteoGridDbHandlerWG2D;
 static weatherGenerator2D WG2D;
 
 void logInfo(QString myStr)
@@ -50,7 +54,29 @@ bool loadMeteoGridDB(QString* errorString)
     return true;
 }
 
+bool saveMeteoGridDB(QString* errorString)
+{
+    //QString xmlName = QFileDialog::getOpenFileName(nullptr, "Open XML grid", "", "XML files (*.xml)");
+    QString xmlName = "../../../PRAGA/DATA/METEOGRID/DBGridXML_Eraclito_WG2D.xml";
+    if (xmlName == "") return false;
 
+    meteoGridDbHandlerWG2D = new Crit3DMeteoGridDbHandler();
+
+    // todo
+    //meteoGridDbHandler->meteoGrid()->setGisSettings(this->gisSettings);
+
+    //if (! meteoGridDbHandler->parseXMLGrid(xmlName, errorString)) return false;
+
+    //if (! meteoGridDbHandler->openDatabase(errorString))return false;
+
+    //if (! meteoGridDbHandler->loadCellProperties(errorString)) return false;
+
+    //if (! meteoGridDbHandler->updateGridDate(errorString)) return false;
+
+    logInfo("Meteo Grid = " + xmlName);
+
+    return true;
+}
 
 int main(int argc, char *argv[])
 {
@@ -103,7 +129,7 @@ int main(int argc, char *argv[])
            }
         }
     }
-    //nrActivePoints = 500;
+    nrActivePoints = 5;
     printf("%d  %d\n", lengthSeries,nrActivePoints);
     obsDataD = (TObsDataD **)calloc(nrActivePoints, sizeof(TObsDataD*));
     for (int i=0;i<nrActivePoints;i++)
@@ -170,12 +196,64 @@ int main(int argc, char *argv[])
                               computePrecipitation, computeTemperature,false);
     WG2D.computeWeatherGenerator2D();
     results = WG2D.getWeatherGeneratorOutput(startingYear);
+    //printSimulationResults(results,nrActivePoints,lengthArraySimulation);
+    TObsDataD* outputDataD = nullptr;
+    outputDataD = (TObsDataD *)calloc(lengthArraySimulation, sizeof(TObsDataD));
+    // fill the new database
+    QDate firstDayOutput(startingYear,1,1);
+    QDate lastDayOutput(startingYear+NR_SIMULATION_YEARS,12,31);
 
-    time ( &rawtime );
-    timeinfo = localtime ( &rawtime );
-    printf ( "Current local time and date: %s", asctime (timeinfo) );
+    if (! saveMeteoGridDB(&errorString))
+    {
+        std::cout << errorString.toStdString() << std::endl;
+        return -1;
+    }
+    QList<meteoVariable> listMeteoVariable = {dailyAirTemperatureMin,dailyAirTemperatureMax,dailyPrecipitation};
+    counter = 0;
+    for (int row = 0; row < meteoGridDbHandlerWG2D->gridStructure().header().nrRows; row++)
+    {
+
+        for (int col = 0; col < meteoGridDbHandlerWG2D->gridStructure().header().nrCols; col++)
+        {
+
+           if (meteoGridDbHandlerWG2D->meteoGrid()->getMeteoPointActiveId(row, col, &id) && counter<nrActivePoints)
+           {
+               for (int j=0;j<lengthArraySimulation;j++)
+               {
+                   outputDataD[j].date.day = results[counter].daySimulated[j];
+                   outputDataD[j].date.month = results[counter].monthSimulated[j];
+                   outputDataD[j].date.year = results[counter].yearSimulated[j];
+                   outputDataD[j].tMin = results[counter].minT[j];
+                   outputDataD[j].tMax = results[counter].maxT[j];
+                   outputDataD[j].prec = results[counter].precipitation[j];
+               }
+               meteoGridDbHandlerWG2D->meteoGrid()->meteoPointPointer(row,col)->obsDataD = outputDataD;
+               meteoGridDbHandlerWG2D->saveCellGridDailyData(&myError, QString::fromStdString(id),row,col,firstDayOutput,lastDayOutput,listMeteoVariable);
+               counter++;
+           }
+        }
+        //std::cout << row << "\n";
+    }
+    meteoGridDbHandlerWG2D->closeDatabase();
     return 0;
 }
 
+void printSimulationResults(ToutputWeatherData* output,int nrStations,int lengthArray)
+{
+    FILE* fp;
+    QString outputName;
+    for (int iStation=0; iStation<nrStations;iStation++)
+    {
+        outputName = "wgStation_" + QString::number(iStation) + ".csv";
+        QFile file(outputName);
+        file.open(QIODevice::WriteOnly | QIODevice::Truncate | QIODevice::Text);
+        QTextStream stream( &file );
+        for (int m=0; m<lengthArray; m++)
+        {
+            stream <<  output[iStation].daySimulated[m] << "/" << output[iStation].monthSimulated[m] << "/" << output[iStation].yearSimulated[m] << "," << output[iStation].doySimulated[m] << "," << output[iStation].minT[m]<< "," << output[iStation].maxT[m]<< "," << output[iStation].precipitation[m]<<endl;
+        }
+        file.close();
+    }
 
+}
 

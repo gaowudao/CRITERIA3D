@@ -16,7 +16,7 @@
 
 #define NR_SIMULATION_YEARS 3
 // [ 1 - 10 ]
-#define NR_STATIONS 5
+#define NR_STATIONS 8
 
 weatherGenerator2D WG2D;
 
