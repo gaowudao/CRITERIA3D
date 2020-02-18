@@ -23,8 +23,8 @@ int main(int argc, char *argv[])
     Crit3DDate dateOfForecast, firstDateAllSeason;
     QString dateOfForecastStr, IrrPreviousDateStr, firstDateAllSeasonStr, mySQL;
     QSqlQuery myQuery;
-    float RAW, rootDepth, prec, maxTranspiration;
-    float forecastIrrigation, previousAllIrrigation;
+    double readilyAvailWater, rootDepth, prec, maxTranspiration;
+    double forecastIrrigation, previousIrrigation;
     double irriRatio;
     double percentile;
 
@@ -192,8 +192,8 @@ int main(int argc, char *argv[])
                                     prec = NODATA;
                                     maxTranspiration = NODATA;
                                     forecastIrrigation = NODATA;
-                                    previousAllIrrigation = NODATA;
-                                    RAW = NODATA;
+                                    previousIrrigation = NODATA;
+                                    readilyAvailWater = NODATA;
                                     rootDepth = NODATA;
 
                                     mySQL = "SELECT SUM(PREC) AS prec,"
@@ -208,9 +208,9 @@ int main(int argc, char *argv[])
                                     else
                                     {
                                         myQuery.last();
-                                        prec = myQuery.value("prec").toFloat();
-                                        maxTranspiration = myQuery.value("maxTransp").toFloat();
-                                        forecastIrrigation = myQuery.value("irr").toFloat();
+                                        prec = myQuery.value("prec").toDouble();
+                                        maxTranspiration = myQuery.value("maxTransp").toDouble();
+                                        forecastIrrigation = myQuery.value("irr").toDouble();
                                     }
 
                                     mySQL = "SELECT RAW, DEFICIT, ROOTDEPTH FROM '" + myProject.unit[i].idCase + "'"
@@ -222,12 +222,12 @@ int main(int argc, char *argv[])
                                     else
                                     {
                                         myQuery.last();
-                                        RAW = myQuery.value("RAW").toFloat();
-                                        rootDepth = myQuery.value("ROOTDEPTH").toFloat();
+                                        readilyAvailWater = myQuery.value("RAW").toDouble();
+                                        rootDepth = myQuery.value("ROOTDEPTH").toDouble();
                                     }
 
 
-                                    mySQL = "SELECT SUM(IRRIGATION) AS prevAllIrr FROM '" + myProject.unit[i].idCase + "'"
+                                    mySQL = "SELECT SUM(IRRIGATION) AS previousIrrigation FROM '" + myProject.unit[i].idCase + "'"
                                             " WHERE DATE <= '" + dateOfForecastStr + "'"
                                             " AND DATE >= '" + firstDateAllSeasonStr + "'";
                                     myQuery = myProject.criteria.dbOutput.exec(mySQL);
@@ -237,7 +237,7 @@ int main(int argc, char *argv[])
                                     else
                                     {
                                         myQuery.last();
-                                        previousAllIrrigation = myQuery.value("prevAllIrr").toFloat();
+                                        previousIrrigation = myQuery.value("previousIrrigation").toDouble();
                                     }
 
                                     myProject.outputFile << dateOfForecast.toStdString();
@@ -245,12 +245,12 @@ int main(int argc, char *argv[])
                                     myProject.outputFile << "," << myProject.unit[i].idCrop.toStdString();
                                     myProject.outputFile << "," << myProject.unit[i].idSoil.toStdString();
                                     myProject.outputFile << "," << myProject.unit[i].idMeteo.toStdString();
-                                    myProject.outputFile << "," << QString::number(double(RAW),'f',1).toStdString();
-                                    myProject.outputFile << "," << QString::number(double(rootDepth),'f',2).toStdString();
-                                    myProject.outputFile << "," << QString::number(double(prec),'f',1).toStdString();
-                                    myProject.outputFile << "," << QString::number(double(maxTranspiration),'f',1).toStdString();
-                                    myProject.outputFile << "," << double(forecastIrrigation) * irriRatio;
-                                    myProject.outputFile << "," << double(previousAllIrrigation) * irriRatio << "\n";
+                                    myProject.outputFile << "," << QString::number(readilyAvailWater,'f',1).toStdString();
+                                    myProject.outputFile << "," << QString::number(rootDepth,'f',2).toStdString();
+                                    myProject.outputFile << "," << QString::number(prec,'f',1).toStdString();
+                                    myProject.outputFile << "," << QString::number(maxTranspiration,'f',1).toStdString();
+                                    myProject.outputFile << "," << forecastIrrigation * irriRatio;
+                                    myProject.outputFile << "," << previousIrrigation * irriRatio << "\n";
                                     myProject.outputFile.flush();
                                 }
                             }
