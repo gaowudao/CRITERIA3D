@@ -123,12 +123,10 @@ bool Criteria1DProject::readSettings()
         dbCropName = path + dbCropName;
 
     dbSoilName = projectSettings->value("db_soil","").toString();
-    if (dbSoilName == "") dbSoilName = projectSettings->value("soil_db","").toString();
     if (dbSoilName.left(1) == ".")
         dbSoilName = path + dbSoilName;
 
     dbMeteoName = projectSettings->value("db_meteo","").toString();
-    if (dbMeteoName == "") dbMeteoName = projectSettings->value("meteo_points","").toString();
     if (dbMeteoName.left(1) == ".")
         dbMeteoName = path + dbMeteoName;
 
