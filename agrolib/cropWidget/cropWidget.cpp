@@ -107,6 +107,9 @@ Crit3DCropWidget::Crit3DCropWidget()
     cropSowing.setText("sowing DOY: ");
     cropCycleMax.setText("cycle max duration: ");
 
+    QLabel * maxKc= new QLabel(tr("max kc [-]: "));
+    maxKcValue = new QLineEdit();
+
     infoCropGroup = new QGroupBox(tr(""));
     infoMeteoGroup = new QGroupBox(tr(""));
     laiParametersGroup = new QGroupBox(tr(""));
@@ -132,6 +135,8 @@ Crit3DCropWidget::Crit3DCropWidget()
     cropInfoLayout->addWidget(cropSowingValue, 3, 1);
     cropInfoLayout->addWidget(&cropCycleMax, 4, 0);
     cropInfoLayout->addWidget(cropCycleMaxValue, 4, 1);
+    cropInfoLayout->addWidget(maxKc, 5, 0);
+    cropInfoLayout->addWidget(maxKcValue, 5, 1);
 
     QLabel *meteoName = new QLabel(tr("METEO_NAME: "));
 
@@ -310,6 +315,9 @@ Crit3DCropWidget::Crit3DCropWidget()
     connect(deleteCrop, &QAction::triggered, this, &Crit3DCropWidget::on_actionDeleteCrop);
     connect(restoreData, &QAction::triggered, this, &Crit3DCropWidget::on_actionRestoreData);
 
+    connect(saveButton, &QPushButton::clicked, this, &Crit3DCropWidget::on_actionSave);
+    connect(updateButton, &QPushButton::clicked, this, &Crit3DCropWidget::on_actionUpdate);
+
     //set current tab
     tabChanged(0);
 }
@@ -432,7 +440,8 @@ void Crit3DCropWidget::on_actionChooseCrop(QString cropName)
         cropCycleMax.setVisible(false);
         cropSowingValue->setVisible(false);
         cropCycleMaxValue->setVisible(false);
-    }
+    }   
+    maxKcValue->setText(QString::number(myCrop->kcMax));
 
     // LAI parameters
     LAIminValue->setText(QString::number(myCrop->LAImin));
@@ -499,9 +508,23 @@ void Crit3DCropWidget::on_actionChooseMeteo(QString idMeteo)
         return;
     }
 
+    int pos = 0;
     for (int i = 0; i<yearList.size(); i++)
     {
-        if ( checkYear(&dbMeteo, tableMeteo, yearList[i], &error))
+        if ( !checkYear(&dbMeteo, tableMeteo, yearList[i], &error))
+        {
+            yearList.removeAt(pos);
+        }
+        else
+        {
+            pos = pos + 1;
+        }
+    }
+
+    // add year if exists previous year
+    for (int i = 1; i<yearList.size(); i++)
+    {
+        if (yearList[i].toInt() == yearList[i-1].toInt()+1)
         {
             this->yearListComboBox.addItem(yearList[i]);
         }
@@ -523,13 +546,22 @@ void Crit3DCropWidget::on_actionChooseYear(QString year)
     meteoPoint->latitude = latValue->text().toDouble();
     meteoPoint->longitude = lonValue->text().toDouble();
 
-    QDate firstDate(year.toInt(), 1, 1);
-    int daysInYear = firstDate.daysInYear();
-    meteoPoint->initializeObsDataD(daysInYear, getCrit3DDate(firstDate));
+    // init meteoPoint with 2 years
+    int firstYear = year.toInt()-1;
+    QDate firstDate(firstYear, 1, 1);
+    QDate currentDate(year.toInt(), 1, 1);
+    int numberDays = firstDate.daysInYear() + currentDate.daysInYear();
+    meteoPoint->initializeObsDataD(numberDays, getCrit3DDate(firstDate));
 
+    // fill meteoPoint
+    if (!fillDailyTempCriteria1D(&dbMeteo, tableMeteo, meteoPoint, QString::number(firstYear), &error))
+    {
+        QMessageBox::critical(nullptr, "Error!", error + " year: " + QString::number(firstYear));
+        return;
+    }
     if (!fillDailyTempCriteria1D(&dbMeteo, tableMeteo, meteoPoint, year, &error))
     {
-        QMessageBox::critical(nullptr, "Error!", error);
+        QMessageBox::critical(nullptr, "Error!", error + " year: " + year);
         return;
     }
     if (myCrop != nullptr)
@@ -576,6 +608,18 @@ void Crit3DCropWidget::on_actionRestoreData()
     // deve salvare il db Crop originario? le modifiche possibili sono solo dovute a delete/new crop?
 }
 
+void Crit3DCropWidget::on_actionSave()
+{
+    // TO DO
+}
+
+void Crit3DCropWidget::on_actionUpdate()
+{
+    if (myCrop == nullptr)
+    {
+        return;
+    }
+}
 
 void Crit3DCropWidget::on_actionNewCrop()
 {

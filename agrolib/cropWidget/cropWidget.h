@@ -25,6 +25,8 @@
             void on_actionDeleteCrop();
             void on_actionRestoreData();
             void on_actionNewCrop();
+            void on_actionSave();
+            void on_actionUpdate();
             void updateTabLAI();
             void tabChanged(int index);
         private:
@@ -45,6 +47,7 @@
             QComboBox yearListComboBox;
             QLineEdit* cropIdValue;
             QLineEdit* cropTypeValue;
+            QLineEdit* maxKcValue;
             QLabel cropSowing;
             QLabel cropCycleMax;
             QSpinBox *cropSowingValue;
