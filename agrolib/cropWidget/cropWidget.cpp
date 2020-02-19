@@ -107,9 +107,6 @@ Crit3DCropWidget::Crit3DCropWidget()
     cropSowing.setText("sowing DOY: ");
     cropCycleMax.setText("cycle max duration: ");
 
-    QLabel * maxKc= new QLabel(tr("max kc [-]: "));
-    maxKcValue = new QLineEdit();
-
     infoCropGroup = new QGroupBox(tr(""));
     infoMeteoGroup = new QGroupBox(tr(""));
     laiParametersGroup = new QGroupBox(tr(""));
@@ -122,8 +119,8 @@ Crit3DCropWidget::Crit3DCropWidget()
 
     infoCropGroup->setTitle("Crop");
     infoMeteoGroup->setTitle("Meteo");
-    laiParametersGroup->setTitle("LAI Parameters");
-    rootParametersGroup->setTitle("root depth Parameters");
+    laiParametersGroup->setTitle("LAI parameters");
+    rootParametersGroup->setTitle("root parameters");
 
     cropInfoLayout->addWidget(cropName, 0, 0);
     cropInfoLayout->addWidget(&cropListComboBox, 0, 1);
@@ -135,8 +132,6 @@ Crit3DCropWidget::Crit3DCropWidget()
     cropInfoLayout->addWidget(cropSowingValue, 3, 1);
     cropInfoLayout->addWidget(&cropCycleMax, 4, 0);
     cropInfoLayout->addWidget(cropCycleMaxValue, 4, 1);
-    cropInfoLayout->addWidget(maxKc, 5, 0);
-    cropInfoLayout->addWidget(maxKcValue, 5, 1);
 
     QLabel *meteoName = new QLabel(tr("METEO_NAME: "));
 
@@ -164,10 +159,18 @@ Crit3DCropWidget::Crit3DCropWidget()
     meteoInfoLayout->addWidget(lonValue, 3, 1);
 
     QLabel *LAImin = new QLabel(tr("LAI min [m2 m-2]: "));
-    LAIminValue = new QLineEdit();
+    LAIminValue = new QDoubleSpinBox();
+    LAIminValue->setMinimum(0);
+    LAIminValue->setMaximum(10);
+    LAIminValue->setDecimals(1);
+    LAIminValue->setSingleStep(0.5);
 
     QLabel *LAImax = new QLabel(tr("LAI max [m2 m-2]: "));
-    LAImaxValue = new QLineEdit();
+    LAImaxValue = new QDoubleSpinBox();
+    LAImaxValue->setMinimum(0);
+    LAImaxValue->setMaximum(10);
+    LAImaxValue->setDecimals(1);
+    LAImaxValue->setSingleStep(0.5);
 
     LAIgrass = new QLabel(tr("LAI grass [m2 m-2]: "));
     LAIgrassValue = new QLineEdit();
@@ -193,6 +196,9 @@ Crit3DCropWidget::Crit3DCropWidget()
     QLabel *LAIcurveB = new QLabel(tr("LAI curve factor B [-]: "));
     LAIcurveBValue = new QLineEdit();
 
+    QLabel * maxKc= new QLabel(tr("max kc [-]: "));
+    maxKcValue = new QLineEdit();
+
     parametersLaiLayout->addWidget(LAImin, 0, 0);
     parametersLaiLayout->addWidget(LAIminValue, 0, 1);
     parametersLaiLayout->addWidget(LAImax, 1, 0);
@@ -213,6 +219,8 @@ Crit3DCropWidget::Crit3DCropWidget()
     parametersLaiLayout->addWidget(LAIcurveAValue, 9, 1);
     parametersLaiLayout->addWidget(LAIcurveB, 10, 0);
     parametersLaiLayout->addWidget(LAIcurveBValue, 10, 1);
+    parametersLaiLayout->addWidget(maxKc, 11, 0);
+    parametersLaiLayout->addWidget(maxKcValue, 11, 1);
 
     QLabel *rootDepthZero = new QLabel(tr("root depth zero [m]: "));
     rootDepthZeroValue = new QLineEdit();
@@ -231,7 +239,12 @@ Crit3DCropWidget::Crit3DCropWidget()
     }
 
     QLabel *shapeDeformation = new QLabel(tr("shape deformation [-]: "));
-    shapeDeformationValue = new QLineEdit();
+    shapeDeformationValue = new QDoubleSpinBox();
+    shapeDeformationValue->setMinimum(0);
+    shapeDeformationValue->setMaximum(2);
+    shapeDeformationValue->setDecimals(1);
+    shapeDeformationValue->setSingleStep(0.1);
+
 
     degreeDaysInc = new QLabel(tr("degree days root inc [°C]: "));
     degreeDaysIncValue = new QLineEdit();
@@ -444,8 +457,8 @@ void Crit3DCropWidget::on_actionChooseCrop(QString cropName)
     maxKcValue->setText(QString::number(myCrop->kcMax));
 
     // LAI parameters
-    LAIminValue->setText(QString::number(myCrop->LAImin));
-    LAImaxValue->setText(QString::number(myCrop->LAImax));
+    LAIminValue->setValue(myCrop->LAImin);
+    LAImaxValue->setValue(myCrop->LAImax);
     if (myCrop->type == FRUIT_TREE)
     {
         LAIgrass->setVisible(true);
@@ -468,7 +481,7 @@ void Crit3DCropWidget::on_actionChooseCrop(QString cropName)
     // root parameters
     rootDepthZeroValue->setText(QString::number(myCrop->roots.rootDepthMin));
     rootDepthMaxValue->setText(QString::number(myCrop->roots.rootDepthMax));
-    shapeDeformationValue->setText(QString::number(myCrop->roots.shapeDeformation));
+    shapeDeformationValue->setValue(myCrop->roots.shapeDeformation);
     if (myCrop->isPluriannual())
     {
         degreeDaysInc->setVisible(false);
