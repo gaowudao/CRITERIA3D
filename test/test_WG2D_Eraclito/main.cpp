@@ -54,7 +54,7 @@ bool loadMeteoGridDB(QString* errorString)
     return true;
 }
 
-bool saveMeteoGridDB(QString* errorString)
+bool saveOnMeteoGridDB(QString* errorString)
 {
     //QString xmlName = QFileDialog::getOpenFileName(nullptr, "Open XML grid", "", "XML files (*.xml)");
     QString xmlName = "../../../PRAGA/DATA/METEOGRID/DBGridXML_Eraclito_WG2D.xml";
@@ -65,13 +65,13 @@ bool saveMeteoGridDB(QString* errorString)
     // todo
     //meteoGridDbHandler->meteoGrid()->setGisSettings(this->gisSettings);
 
-    //if (! meteoGridDbHandler->parseXMLGrid(xmlName, errorString)) return false;
+    if (! meteoGridDbHandlerWG2D->parseXMLGrid(xmlName, errorString)) return false;
 
-    //if (! meteoGridDbHandler->openDatabase(errorString))return false;
+    if (! meteoGridDbHandlerWG2D->openDatabase(errorString))return false;
 
-    //if (! meteoGridDbHandler->loadCellProperties(errorString)) return false;
+    if (! meteoGridDbHandlerWG2D->loadCellProperties(errorString)) return false;
 
-    //if (! meteoGridDbHandler->updateGridDate(errorString)) return false;
+    if (! meteoGridDbHandlerWG2D->updateGridDate(errorString)) return false;
 
     logInfo("Meteo Grid = " + xmlName);
 
@@ -203,7 +203,7 @@ int main(int argc, char *argv[])
     QDate firstDayOutput(startingYear,1,1);
     QDate lastDayOutput(startingYear+NR_SIMULATION_YEARS,12,31);
 
-    if (! saveMeteoGridDB(&errorString))
+    if (! saveOnMeteoGridDB(&errorString))
     {
         std::cout << errorString.toStdString() << std::endl;
         return -1;
