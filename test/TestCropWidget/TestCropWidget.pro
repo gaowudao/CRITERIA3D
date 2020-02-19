@@ -37,6 +37,7 @@ CONFIG(debug, debug|release) {
     LIBS += -L../../agrolib/cropWidget/debug -lcropWidget
     LIBS += -L../../agrolib/criteriaModel/debug -lcriteriaModel
     LIBS += -L../../agrolib/crop/debug -lcrop
+    LIBS += -L../../agrolib/soil/debug -lsoil
     LIBS += -L../../agrolib/utilities/debug -lutilities
     LIBS += -L../../agrolib/meteo/debug -lmeteo
     LIBS += -L../../agrolib/gis/debug -lgis
@@ -47,6 +48,7 @@ CONFIG(debug, debug|release) {
     LIBS += -L../../agrolib/cropWidget/release -lcropWidget
     LIBS += -L../../agrolib/criteriaModel/release -lcriteriaModel
     LIBS += -L../../agrolib/crop/release -lcrop
+    LIBS += -L../../agrolib/soil/release -lsoil
     LIBS += -L../../agrolib/utilities/release -lutilities
     LIBS += -L../../agrolib/meteo/release -lmeteo
     LIBS += -L../../agrolib/gis/release -lgis
