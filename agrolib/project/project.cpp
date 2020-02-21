@@ -195,31 +195,17 @@ void Project::addProxyToProject(QString name_, QString gridName_, QString table_
 }
 
 
-bool Project::addProxyGridSeries(QString name_, std::vector <QString> gridNames, std::vector <unsigned> gridYears)
+void Project::addProxyGridSeries(QString name_, std::vector <QString> gridNames, std::vector <unsigned> gridYears)
 {
+    // no check on grids
     std::string myError;
 
     Crit3DProxyGridSeries mySeries(name_);
 
-    gis::Crit3DRasterGrid* myGrid = new gis::Crit3DRasterGrid();
-
     for (unsigned i=0; i < gridNames.size(); i++)
-    {
-        logInfo("Checking grid " + gridNames[i] + " for proxy " + name_ + " (" + QString::number(i+1) + "/" + QString::number(gridNames.size()) + ")");
-
-        if (gis::readEsriGrid(getCompleteFileName(gridNames[i], PATH_GEO).toStdString(), myGrid, &myError))
-            mySeries.addGridToSeries(gridNames[i], signed(gridYears[i]));
-        else {
-            errorString = "Grid " + gridNames[i] + " not found";
-            return false;
-        }
-    }
+        mySeries.addGridToSeries(gridNames[i], signed(gridYears[i]));
 
     proxyGridSeries.push_back(mySeries);
-
-    myGrid->clear();
-
-    return true;
 }
 
 bool Project::loadParameters(QString parametersFileName)
@@ -624,8 +610,7 @@ bool Project::loadParameters(QString parametersFileName)
             parameters->endArray();
             parameters->endGroup();
 
-            if (! addProxyGridSeries(proxyName, proxyGridSeriesNames, proxyGridSeriesYears))
-                logError();
+            addProxyGridSeries(proxyName, proxyGridSeriesNames, proxyGridSeriesYears);
         }
     }
 
@@ -975,6 +960,9 @@ bool Project::loadMeteoGridDB(QString xmlName)
 
     this->meteoGridDbHandler->updateGridDate(&errorString);
 
+    if (loadGridDataAtStart || ! meteoPointsLoaded)
+        setCurrentDate(meteoGridDbHandler->lastDate());
+
     meteoGridLoaded = true;
     logInfo("Meteo Grid = " + xmlName);
 
@@ -1197,7 +1185,13 @@ QDateTime Project::findDbPointFirstTime()
 void Project::checkMeteoPointsDEM()
 {
     for (int i=0; i < nrMeteoPoints; i++)
-        meteoPoints[i].isInsideDem = ! gis::isOutOfGridXY(meteoPoints[i].point.utm.x, meteoPoints[i].point.utm.y, DEM.header);
+    {
+        if (! gis::isOutOfGridXY(meteoPoints[i].point.utm.x, meteoPoints[i].point.utm.y, DEM.header)
+                && (! isEqual(gis::getValueFromXY(DEM, meteoPoints[i].point.utm.x, meteoPoints[i].point.utm.y), DEM.header->flag)))
+             meteoPoints[i].isInsideDem = true;
+        else
+            meteoPoints[i].isInsideDem = false;
+    }
 }
 
 
@@ -1484,7 +1478,7 @@ void Project::passInterpolatedTemperatureToHumidityPoints(Crit3DTime myTime)
             if (! gis::isOutOfGridRowCol(row, col, *(hourlyMeteoMaps->mapHourlyTair)))
             {
                 meteoPoints[i].setMeteoPointValueH(myTime.date, myTime.getHour(), myTime.getMinutes(),
-                                          airTemperature, hourlyMeteoMaps->mapHourlyRelHum->value[row][col]);
+                                          airTemperature, hourlyMeteoMaps->mapHourlyTair->value[row][col]);
             }
         }
     }
@@ -1504,12 +1498,9 @@ bool Project::interpolationDem(meteoVariable myVar, const Crit3DTime& myTime, gi
         return false;
     }
 
-    // Proxy vars regression and detrend
+    FormInfo myInfo;
     if (showInfo && modality == MODE_GUI)
-    {
-        FormInfo myInfo;
         myInfo.start("Preparing interpolation...", 0);
-    }
 
     //detrending and checking precipitation
     if (! preInterpolation(interpolationPoints, &interpolationSettings, &climateParameters, meteoPoints, nrMeteoPoints, myVar, myTime))
@@ -1734,24 +1725,23 @@ bool Project::loadProjectSettings(QString settingsFileName)
 }
 
 
-bool Project::searchDefaultPath(QString* path)
+bool Project::searchDefaultPath(QString* defaultPath)
 {
     QString myPath = getApplicationPath();
-    QString myVolumeDOS = myPath.left(3);
+    QString myRoot = QDir::rootPath();
 
     bool isFound = false;
     while (! isFound)
     {
-        if (QDir(myPath + "DATA").exists())
+        if (QDir(myPath + "/DATA").exists())
         {
             isFound = true;
             break;
         }
-
-        if (QDir::cleanPath(myPath) == "/" || QDir::cleanPath(myPath) == myVolumeDOS)
+        if (QDir::cleanPath(myPath) == myRoot)
             break;
 
-        myPath += "../";
+        myPath = QFileInfo(myPath).dir().absolutePath();
     }
 
     if (! isFound)
@@ -1760,7 +1750,7 @@ bool Project::searchDefaultPath(QString* path)
         return false;
     }
 
-    *path = QDir::cleanPath(myPath) + "/DATA/";
+    *defaultPath = QDir::cleanPath(myPath) + "/DATA/";
     return true;
 }
 

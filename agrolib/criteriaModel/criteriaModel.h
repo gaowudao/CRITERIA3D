@@ -16,6 +16,7 @@
     #ifndef QSQLDATABASE_H
         #include <QSqlDatabase>
     #endif
+    #include <vector>
 
     /*!
      * \brief The CriteriaModelOutput class
@@ -35,10 +36,9 @@
         double dailyMaxEvaporation;
         double dailyEvaporation;
         double dailyMaxTranspiration;
-        double dailyKc;
         double dailyTranspiration;
         double dailyCropAvailableWater;
-        double dailyCropWaterDeficit;
+        double dailyWaterDeficit;
         double dailyWaterTable;
         double dailyCapillaryRise;
 
@@ -56,8 +56,8 @@
         QString idMeteo;
         QString idForecast;
         QString idCropClass;
+        int idCropNumber;
         int idSoilNumber;
-        int idICM;              // for MOSES
 
         CriteriaUnit();
     };
@@ -69,7 +69,7 @@
         QString idCase;
 
         // DATABASE
-        QSqlDatabase dbParameters;
+        QSqlDatabase dbCrop;
         QSqlDatabase dbSoil;
         QSqlDatabase dbMeteo;
         QSqlDatabase dbForecast;
@@ -88,9 +88,9 @@
         // SOIL
         soil::Crit3DSoil mySoil;
         soil::Crit3DTextureClass soilTexture[13];
-        soil::Crit3DLayer* layer;
+        std::vector<soil::Crit3DLayer> layers;
         soil::Crit3DFittingOptions fittingOptions;
-        int nrLayers;
+        unsigned int nrLayers;
         double layerThickness;                  /*!<  [m]  */
         double maxSimulationDepth;              /*!<  [m]  */
         bool isGeometricLayer;

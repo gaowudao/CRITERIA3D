@@ -25,8 +25,10 @@
         float* tDew;
         float* irradiance;
         float* et0;
-        float* windVecInt;
         float* windScalInt;
+        float* windVecX;
+        float* windVecY;
+        float* windVecInt;
         float* windVecDir;
         int* leafW;
         float* transmissivity;
@@ -115,6 +117,8 @@
             void initializeObsDataH(int hourlyFraction, int numberOfDays, const Crit3DDate& firstDate);
             void emptyVarObsDataH(meteoVariable myVar, const Crit3DDate& myDate);
             void emptyVarObsDataH(meteoVariable myVar, const Crit3DDate& date1, const Crit3DDate& date2);
+            void emptyObsDataH(const Crit3DDate& date1, const Crit3DDate& date2);
+            void emptyObsDataD(const Crit3DDate& date1, const Crit3DDate& date2);
             void cleanObsDataH();
             bool isDateLoadedH(const Crit3DDate& myDate);
             bool isDateIntervalLoadedH(const Crit3DDate& date1, const Crit3DDate& date2);
