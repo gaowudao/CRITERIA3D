@@ -17,6 +17,8 @@
 #include <time.h>
 
 #define NR_SIMULATION_YEARS 1
+#define MAX_NR_POINTS 5
+
 // [ 1 - 10 ]
 //#define NR_STATIONS 10
 #define STARTING_YEAR 3001
@@ -32,11 +34,44 @@ void logInfo(QString myStr)
 }
 
 
-bool loadMeteoGridDB(QString* errorString)
+bool searchDefaultPath(QString inputPath, QString* outputPath)
+{
+    QString myPath = inputPath;
+    QString myRoot = QDir::rootPath();
+
+    bool isFound = false;
+    while (! isFound)
+    {
+        if (QDir(myPath + "/DATA").exists())
+        {
+            isFound = true;
+            break;
+        }
+
+        if (QDir::cleanPath(myPath) == myRoot)
+            break;
+
+        myPath = QFileInfo(myPath).dir().absolutePath();
+    }
+
+    if (! isFound)
+    {
+        std::cout << "\nDATA directory is missing";
+        return false;
+    }
+
+    *outputPath = QDir::cleanPath(myPath) + "/DATA/";
+    return true;
+}
+
+
+bool loadMeteoGridDB(QString appPath, QString* errorString)
 {
     //QString xmlName = QFileDialog::getOpenFileName(nullptr, "Open XML grid", "", "XML files (*.xml)");
-    QString xmlName = "../../DATA/METEOGRID/DBGridXML_Eraclito4.xml";
-    if (xmlName == "") return false;
+
+    QString path;
+    if (! searchDefaultPath(appPath, &path)) return -1;
+    QString xmlName = path + "METEOGRID/DBGridXML_Eraclito4.xml";
 
     meteoGridDbHandler = new Crit3DMeteoGridDbHandler();
 
@@ -56,11 +91,12 @@ bool loadMeteoGridDB(QString* errorString)
     return true;
 }
 
-bool saveOnMeteoGridDB(QString* errorString)
+bool saveOnMeteoGridDB(QString appPath, QString* errorString)
 {
     //QString xmlName = QFileDialog::getOpenFileName(nullptr, "Open XML grid", "", "XML files (*.xml)");
-    QString xmlName = "../../DATA/METEOGRID/DBGridXML_Eraclito_WG2D.xml";
-    if (xmlName == "") return false;
+    QString path;
+    if (! searchDefaultPath(appPath, &path)) return -1;
+    QString xmlName = path + "METEOGRID/DBGridXML_Eraclito_WG2D.xml";
 
     meteoGridDbHandlerWG2D = new Crit3DMeteoGridDbHandler();
 
@@ -83,10 +119,10 @@ bool saveOnMeteoGridDB(QString* errorString)
 int main(int argc, char *argv[])
 {
     int startingYear = STARTING_YEAR;
-    printf("insert the starting year\n");
+    printf("insert the starting year for the synthethic series:\n");
     scanf("%d",&startingYear);
     int nrYearSimulations = NR_SIMULATION_YEARS;
-    printf("insert the number of year simulation required\n");
+    printf("insert the number of years of the the synthethic series:\n");
     scanf("%d",&nrYearSimulations);
     time_t rawtime;
     struct tm * timeinfo;
@@ -95,6 +131,8 @@ int main(int argc, char *argv[])
     printf ( "Current local time and date: %s", asctime (timeinfo) );
 
     QApplication myApp(argc, argv);
+    QString appPath = myApp.applicationDirPath() + "/";
+
     QString myError;
     //Crit3DMeteoPoint* meteoPointTemp = new Crit3DMeteoPoint;
     meteoVariable variable;
@@ -105,7 +143,7 @@ int main(int argc, char *argv[])
     TObsDataD** obsDataD = nullptr;
 
     QString errorString;
-    if (! loadMeteoGridDB(&errorString))
+    if (! loadMeteoGridDB(appPath, &errorString))
     {
         std::cout << errorString.toStdString() << std::endl;
         return -1;
@@ -136,7 +174,11 @@ int main(int argc, char *argv[])
            }
         }
     }
-    //nrActivePoints = 5;
+
+    #ifdef MAX_NR_POINTS
+        nrActivePoints = MINVALUE(nrActivePoints, MAX_NR_POINTS);
+    #endif
+
     printf("%d  %d\n", lengthSeries,nrActivePoints);
     obsDataD = (TObsDataD **)calloc(nrActivePoints, sizeof(TObsDataD*));
     for (int i=0;i<nrActivePoints;i++)
@@ -215,7 +257,7 @@ int main(int argc, char *argv[])
     QDate firstDayOutput(startingYear,1,1);
     QDate lastDayOutput(startingYear+nrYearSimulations-1,12,31);
 
-    if (! saveOnMeteoGridDB(&errorString))
+    if (! saveOnMeteoGridDB(appPath, &errorString))
     {
         std::cout << errorString.toStdString() << std::endl;
         return -1;
@@ -225,7 +267,6 @@ int main(int argc, char *argv[])
 
     for (int row = 0; row < meteoGridDbHandlerWG2D->gridStructure().header().nrRows; row++)
     {
-
         for (int col = 0; col < meteoGridDbHandlerWG2D->gridStructure().header().nrCols; col++)
         {
            if (meteoGridDbHandlerWG2D->meteoGrid()->getMeteoPointActiveId(row, col, &id) && counter<nrActivePoints)
