@@ -13,41 +13,10 @@
 #include "cropDbTools.h"
 #include "soilDbTools.h"
 #include "commonConstants.h"
+#include "utilities.h"
 
 
 #define TEST
-
-
-bool searchDefaultPath(QString inputPath, QString* outputPath)
-{
-    QString myPath = inputPath;
-    QString myRoot = QDir::rootPath();
-
-    bool isFound = false;
-    while (! isFound)
-    {
-        if (QDir(myPath + "/DATA").exists())
-        {
-            isFound = true;
-            break;
-        }
-
-        if (QDir::cleanPath(myPath) == myRoot)
-            break;
-
-        myPath = QFileInfo(myPath).dir().absolutePath();
-    }
-
-    if (! isFound)
-    {
-        std::cout << "\nDATA directory is missing";
-        return false;
-    }
-
-    *outputPath = QDir::cleanPath(myPath) + "/DATA/";
-    return true;
-}
-
 
 
 int main(int argc, char *argv[])
@@ -73,7 +42,7 @@ int main(int argc, char *argv[])
     {
         #ifdef TEST
                 QString path;
-                if (! searchDefaultPath(appPath, &path)) return -1;
+                if (! searchDataPath(&path)) return -1;
                 //settingsFileName = path + "PROJECT/CLARA/CLARA.ini";
                 settingsFileName = path + "PROJECT/kiwifruit/kiwifruit.ini";
         #else
