@@ -1,11 +1,12 @@
 #include "commonConstants.h"
+#include "utilities.h"
 #include "dbMeteoGrid.h"
 #include "meteo.h"
 #include "meteoPoint.h"
 #include "wg2D.h"
 #include "crit3dDate.h"
 
-
+#include <QDebug>
 #include <iostream>
 #include <QFileDialog>
 #include <QApplication>
@@ -217,10 +218,10 @@ int main(int argc, char *argv[])
 
         for (int col = 0; col < meteoGridDbHandlerWG2D->gridStructure().header().nrCols; col++)
         {
-
-           meteoGridDbHandlerWG2D->meteoGrid()->meteoPointPointer(row,col)->obsDataD = (TObsDataD *)calloc(lengthArraySimulation, sizeof(TObsDataD));
            if (meteoGridDbHandlerWG2D->meteoGrid()->getMeteoPointActiveId(row, col, &id) && counter<nrActivePoints)
            {
+               meteoGridDbHandlerWG2D->meteoGrid()->meteoPointPointer(row,col)->initializeObsDataD(lengthArraySimulation, getCrit3DDate(firstDayOutput));
+
                for (int j=0;j<lengthArraySimulation;j++)
                {
                    outputDataD[j].date.day = results[counter].daySimulated[j];
@@ -237,6 +238,7 @@ int main(int argc, char *argv[])
                meteoGridDbHandlerWG2D->meteoGrid()->meteoPointPointer(row,col)->obsDataD = outputDataD;
                for (int j=0;j<lengthArraySimulation;j++)
                {
+                   qDebug() << getQDate(meteoGridDbHandlerWG2D->meteoGrid()->meteoPointPointer(row,col)->obsDataD[j].date);
                    printf("%f  %f  %f\npress enter to continue",meteoGridDbHandlerWG2D->meteoGrid()->meteoPointPointer(row,col)->obsDataD[j].tMin,meteoGridDbHandlerWG2D->meteoGrid()->meteoPointPointer(row,col)->obsDataD[j].tMax,meteoGridDbHandlerWG2D->meteoGrid()->meteoPointPointer(row,col)->obsDataD[j].prec );
                    //meteoGridDbHandlerWG2D->meteoGrid()->meteoPoint(row,col).obsDataD[j].tMin =  meteoGridDbHandlerWG2D->meteoGrid()->meteoPointPointer(row,col)->obsDataD[j].tMin;
                    //meteoGridDbHandlerWG2D->meteoGrid()->meteoPoint(row,col).obsDataD[j].tMax =  meteoGridDbHandlerWG2D->meteoGrid()->meteoPointPointer(row,col)->obsDataD[j].tMax;
@@ -246,7 +248,7 @@ int main(int argc, char *argv[])
                meteoGridDbHandlerWG2D->saveCellGridDailyData(&myError, QString::fromStdString(id),row,col,firstDayOutput,lastDayOutput,listMeteoVariable);
                counter++;
            }
-           free(meteoGridDbHandlerWG2D->meteoGrid()->meteoPointPointer(row,col)->obsDataD);
+           meteoGridDbHandlerWG2D->meteoGrid()->meteoPointPointer(row,col)->cleanObsDataD();
         }
         //std::cout << row << "\n";
     }
