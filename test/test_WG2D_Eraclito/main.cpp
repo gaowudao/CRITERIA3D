@@ -217,13 +217,14 @@ int main(int argc, char *argv[])
 
     results = WG2D.getWeatherGeneratorOutput(startingYear);
     //printSimulationResults(results,nrActivePoints,lengthArraySimulation);
-    TObsDataD* outputDataD = nullptr;
+    std::vector<TObsDataD> outputDataD;
     int nrLeapYears = 0;
     for (int iYear = startingYear;iYear<startingYear+nrYearSimulations;iYear++ )
     {
         nrLeapYears += isLeapYear(iYear);
     }
-    outputDataD = (TObsDataD *)calloc(lengthArraySimulation+nrLeapYears, sizeof(TObsDataD));
+    outputDataD.resize(lengthArraySimulation+nrLeapYears);
+
     // fill the new database
     QDate firstDayOutput(startingYear,1,1);
     QDate lastDayOutput(startingYear+nrYearSimulations-1,12,31);
@@ -287,7 +288,7 @@ int main(int argc, char *argv[])
                meteoGridDbHandlerWG2D->saveCellGridDailyData(&myError, QString::fromStdString(id),row,col,firstDayOutput,lastDayOutput,listMeteoVariable);
                counter++;
            }
-           meteoGridDbHandlerWG2D->meteoGrid()->meteoPointPointer(row,col)->cleanObsDataD();
+           meteoGridDbHandlerWG2D->meteoGrid()->meteoPointPointer(row,col)->obsDataD.clear();
         }
         //std::cout << row << "\n";
     }
