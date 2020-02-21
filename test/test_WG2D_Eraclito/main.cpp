@@ -34,43 +34,12 @@ void logInfo(QString myStr)
 }
 
 
-bool searchDefaultPath(QString inputPath, QString* outputPath)
-{
-    QString myPath = inputPath;
-    QString myRoot = QDir::rootPath();
-
-    bool isFound = false;
-    while (! isFound)
-    {
-        if (QDir(myPath + "/DATA").exists())
-        {
-            isFound = true;
-            break;
-        }
-
-        if (QDir::cleanPath(myPath) == myRoot)
-            break;
-
-        myPath = QFileInfo(myPath).dir().absolutePath();
-    }
-
-    if (! isFound)
-    {
-        std::cout << "\nDATA directory is missing";
-        return false;
-    }
-
-    *outputPath = QDir::cleanPath(myPath) + "/DATA/";
-    return true;
-}
-
-
-bool loadMeteoGridDB(QString appPath, QString* errorString)
+bool loadMeteoGridDB(QString* errorString)
 {
     //QString xmlName = QFileDialog::getOpenFileName(nullptr, "Open XML grid", "", "XML files (*.xml)");
 
     QString path;
-    if (! searchDefaultPath(appPath, &path)) return -1;
+    if (! searchDataPath(&path)) return -1;
     QString xmlName = path + "METEOGRID/DBGridXML_Eraclito4.xml";
 
     meteoGridDbHandler = new Crit3DMeteoGridDbHandler();
@@ -91,11 +60,11 @@ bool loadMeteoGridDB(QString appPath, QString* errorString)
     return true;
 }
 
-bool saveOnMeteoGridDB(QString appPath, QString* errorString)
+bool saveOnMeteoGridDB(QString* errorString)
 {
     //QString xmlName = QFileDialog::getOpenFileName(nullptr, "Open XML grid", "", "XML files (*.xml)");
     QString path;
-    if (! searchDefaultPath(appPath, &path)) return -1;
+    if (! searchDataPath(&path)) return -1;
     QString xmlName = path + "METEOGRID/DBGridXML_Eraclito_WG2D.xml";
 
     meteoGridDbHandlerWG2D = new Crit3DMeteoGridDbHandler();
@@ -143,7 +112,7 @@ int main(int argc, char *argv[])
     TObsDataD** obsDataD = nullptr;
 
     QString errorString;
-    if (! loadMeteoGridDB(appPath, &errorString))
+    if (! loadMeteoGridDB(&errorString))
     {
         std::cout << errorString.toStdString() << std::endl;
         return -1;
@@ -257,7 +226,7 @@ int main(int argc, char *argv[])
     QDate firstDayOutput(startingYear,1,1);
     QDate lastDayOutput(startingYear+nrYearSimulations-1,12,31);
 
-    if (! saveOnMeteoGridDB(appPath, &errorString))
+    if (! saveOnMeteoGridDB(&errorString))
     {
         std::cout << errorString.toStdString() << std::endl;
         return -1;
