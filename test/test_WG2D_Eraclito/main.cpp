@@ -19,7 +19,7 @@
 #define NR_SIMULATION_YEARS 1
 // [ 1 - 10 ]
 //#define NR_STATIONS 10
-#define STARTING_YEAR 2001
+#define STARTING_YEAR 3001
 #define PREC_THRESHOLD 0.25
 void printSimulationResults(ToutputWeatherData* output,int nrStations,int lengthArray);
 static Crit3DMeteoGridDbHandler* meteoGridDbHandler;
@@ -35,7 +35,7 @@ void logInfo(QString myStr)
 bool loadMeteoGridDB(QString* errorString)
 {
     //QString xmlName = QFileDialog::getOpenFileName(nullptr, "Open XML grid", "", "XML files (*.xml)");
-    QString xmlName = "../../../PRAGA/DATA/METEOGRID/DBGridXML_Eraclito4.xml";
+    QString xmlName = "../../DATA/METEOGRID/DBGridXML_Eraclito4.xml";
     if (xmlName == "") return false;
 
     meteoGridDbHandler = new Crit3DMeteoGridDbHandler();
@@ -59,7 +59,7 @@ bool loadMeteoGridDB(QString* errorString)
 bool saveOnMeteoGridDB(QString* errorString)
 {
     //QString xmlName = QFileDialog::getOpenFileName(nullptr, "Open XML grid", "", "XML files (*.xml)");
-    QString xmlName = "../../../PRAGA/DATA/METEOGRID/DBGridXML_Eraclito_WG2D.xml";
+    QString xmlName = "../../DATA/METEOGRID/DBGridXML_Eraclito_WG2D.xml";
     if (xmlName == "") return false;
 
     meteoGridDbHandlerWG2D = new Crit3DMeteoGridDbHandler();
@@ -82,9 +82,14 @@ bool saveOnMeteoGridDB(QString* errorString)
 
 int main(int argc, char *argv[])
 {
+    int startingYear = STARTING_YEAR;
+    printf("insert the starting year\n");
+    scanf("%d",&startingYear);
+    int nrYearSimulations = NR_SIMULATION_YEARS;
+    printf("insert the number of year simulation required\n");
+    scanf("%d",&nrYearSimulations);
     time_t rawtime;
     struct tm * timeinfo;
-
     time ( &rawtime );
     timeinfo = localtime ( &rawtime );
     printf ( "Current local time and date: %s", asctime (timeinfo) );
@@ -131,7 +136,7 @@ int main(int argc, char *argv[])
            }
         }
     }
-    nrActivePoints = 5;
+    //nrActivePoints = 5;
     printf("%d  %d\n", lengthSeries,nrActivePoints);
     obsDataD = (TObsDataD **)calloc(nrActivePoints, sizeof(TObsDataD*));
     for (int i=0;i<nrActivePoints;i++)
@@ -190,20 +195,25 @@ int main(int argc, char *argv[])
     bool computePrecipitation = true;
     bool computeTemperature = true;
     printf("weather generator\n");
-    int startingYear = STARTING_YEAR;
+
     int lengthArraySimulation;
     static int distributionType = 1;
-    lengthArraySimulation = 365 * NR_SIMULATION_YEARS;
-    WG2D.initializeParameters(PREC_THRESHOLD, NR_SIMULATION_YEARS, distributionType,
+    lengthArraySimulation = 365 * nrYearSimulations;
+    WG2D.initializeParameters(PREC_THRESHOLD, nrYearSimulations, distributionType,
                               computePrecipitation, computeTemperature,false);
     WG2D.computeWeatherGenerator2D();
     results = WG2D.getWeatherGeneratorOutput(startingYear);
     //printSimulationResults(results,nrActivePoints,lengthArraySimulation);
     TObsDataD* outputDataD = nullptr;
-    outputDataD = (TObsDataD *)calloc(lengthArraySimulation, sizeof(TObsDataD));
+    int nrLeapYears = 0;
+    for (int iYear = startingYear;iYear<startingYear+nrYearSimulations;iYear++ )
+    {
+        nrLeapYears += isLeapYear(iYear);
+    }
+    outputDataD = (TObsDataD *)calloc(lengthArraySimulation+nrLeapYears, sizeof(TObsDataD));
     // fill the new database
     QDate firstDayOutput(startingYear,1,1);
-    QDate lastDayOutput(startingYear+NR_SIMULATION_YEARS,12,31);
+    QDate lastDayOutput(startingYear+nrYearSimulations-1,12,31);
 
     if (! saveOnMeteoGridDB(&errorString))
     {
@@ -220,31 +230,48 @@ int main(int argc, char *argv[])
         {
            if (meteoGridDbHandlerWG2D->meteoGrid()->getMeteoPointActiveId(row, col, &id) && counter<nrActivePoints)
            {
-               meteoGridDbHandlerWG2D->meteoGrid()->meteoPointPointer(row,col)->initializeObsDataD(lengthArraySimulation, getCrit3DDate(firstDayOutput));
-
+               meteoGridDbHandlerWG2D->meteoGrid()->meteoPointPointer(row,col)->initializeObsDataD(lengthArraySimulation+nrLeapYears, getCrit3DDate(firstDayOutput));
+               int k = NODATA;
                for (int j=0;j<lengthArraySimulation;j++)
                {
-                   outputDataD[j].date.day = results[counter].daySimulated[j];
-                   outputDataD[j].date.month = results[counter].monthSimulated[j];
-                   outputDataD[j].date.year = results[counter].yearSimulated[j];
-                   outputDataD[j].tMin = results[counter].minT[j];
-                   outputDataD[j].tMax = results[counter].maxT[j];
-                   outputDataD[j].prec = results[counter].precipitation[j];
+                   if (j == 0) k = j;
+                   outputDataD[k].date.day = results[counter].daySimulated[j];
+                   outputDataD[k].date.month = results[counter].monthSimulated[j];
+                   outputDataD[k].date.year = results[counter].yearSimulated[j];
+                   outputDataD[k].tMin = results[counter].minT[j];
+                   outputDataD[k].tMax = results[counter].maxT[j];
+                   outputDataD[k].prec = results[counter].precipitation[j];
+                   //printf("%d  %d  %d\n",outputDataD[k].date.day,outputDataD[k].date.month,outputDataD[k].date.year);
+                   //printf("%f  %f  %f\n",outputDataD[k].tMin,outputDataD[k].tMax,outputDataD[k].prec);
+                   if (results[counter].daySimulated[j] == 28 && results[counter].monthSimulated[j] == 2)
+                   {
+                        if (isLeapYear(results[counter].yearSimulated[j]))
+                        {
+                            ++k;
+                            outputDataD[k].date.day = results[counter].daySimulated[j] + 1;
+                            outputDataD[k].date.month = results[counter].monthSimulated[j];
+                            outputDataD[k].date.year = results[counter].yearSimulated[j];
+                            outputDataD[k].tMin = results[counter].minT[j];
+                            outputDataD[k].tMax = results[counter].maxT[j];
+                            outputDataD[k].prec = results[counter].precipitation[j];
+                            //printf("%d  %d  %d\n",outputDataD[k].date.day,outputDataD[k].date.month,outputDataD[k].date.year);
+                            //printf("%f  %f  %f\n",outputDataD[k].tMin,outputDataD[k].tMax,outputDataD[k].prec);
+                        }
+                   }
 
-                   //printf("%f  %f  %f\npress enter to continue",outputDataD[j].tMin,outputDataD[j].tMax,outputDataD[j].prec);
+                   k++;
+
 
                    //getchar();
                }
+               //getchar();
                meteoGridDbHandlerWG2D->meteoGrid()->meteoPointPointer(row,col)->obsDataD = outputDataD;
-               for (int j=0;j<lengthArraySimulation;j++)
+               /*for (int j=0;j<lengthArraySimulation+nrYearSimulations;j++)
                {
                    qDebug() << getQDate(meteoGridDbHandlerWG2D->meteoGrid()->meteoPointPointer(row,col)->obsDataD[j].date);
-                   printf("%f  %f  %f\npress enter to continue",meteoGridDbHandlerWG2D->meteoGrid()->meteoPointPointer(row,col)->obsDataD[j].tMin,meteoGridDbHandlerWG2D->meteoGrid()->meteoPointPointer(row,col)->obsDataD[j].tMax,meteoGridDbHandlerWG2D->meteoGrid()->meteoPointPointer(row,col)->obsDataD[j].prec );
-                   //meteoGridDbHandlerWG2D->meteoGrid()->meteoPoint(row,col).obsDataD[j].tMin =  meteoGridDbHandlerWG2D->meteoGrid()->meteoPointPointer(row,col)->obsDataD[j].tMin;
-                   //meteoGridDbHandlerWG2D->meteoGrid()->meteoPoint(row,col).obsDataD[j].tMax =  meteoGridDbHandlerWG2D->meteoGrid()->meteoPointPointer(row,col)->obsDataD[j].tMax;
-                   //meteoGridDbHandlerWG2D->meteoGrid()->meteoPoint(row,col).obsDataD[j].prec =  meteoGridDbHandlerWG2D->meteoGrid()->meteoPointPointer(row,col)->obsDataD[j].prec;
-                   //getchar();
-               }
+                   //printf("%f  %f  %f\npress enter to continue",meteoGridDbHandlerWG2D->meteoGrid()->meteoPointPointer(row,col)->obsDataD[j].tMin,meteoGridDbHandlerWG2D->meteoGrid()->meteoPointPointer(row,col)->obsDataD[j].tMax,meteoGridDbHandlerWG2D->meteoGrid()->meteoPointPointer(row,col)->obsDataD[j].prec );
+
+               }*/
                meteoGridDbHandlerWG2D->saveCellGridDailyData(&myError, QString::fromStdString(id),row,col,firstDayOutput,lastDayOutput,listMeteoVariable);
                counter++;
            }
