@@ -17,7 +17,7 @@
 #include <time.h>
 
 #define NR_SIMULATION_YEARS 1
-#define MAX_NR_POINTS 5
+//#define MAX_NR_POINTS 10
 
 // [ 1 - 10 ]
 //#define NR_STATIONS 10
@@ -166,9 +166,8 @@ int main(int argc, char *argv[])
             currentDay = currentDay.addDays(1);
         }
     }
-    printf("initialize date\n");
 
-
+    printf("load data...\n");
 
     int counter = 0;
     for (int row = 0; row < meteoGridDbHandler->gridStructure().header().nrRows; row++)
@@ -197,6 +196,7 @@ int main(int argc, char *argv[])
         }
         //std::cout << row << "\n";
     }
+
     dailyVariable.clear();
     meteoGridDbHandler->closeDatabase();
     WG2D.initializeData(lengthSeries,nrActivePoints);
@@ -212,7 +212,9 @@ int main(int argc, char *argv[])
     lengthArraySimulation = 365 * nrYearSimulations;
     WG2D.initializeParameters(PREC_THRESHOLD, nrYearSimulations, distributionType,
                               computePrecipitation, computeTemperature,false);
+
     WG2D.computeWeatherGenerator2D();
+
     results = WG2D.getWeatherGeneratorOutput(startingYear);
     //printSimulationResults(results,nrActivePoints,lengthArraySimulation);
     TObsDataD* outputDataD = nullptr;
