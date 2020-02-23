@@ -321,8 +321,8 @@ int main(int argc, char *argv[])
         return ERROR_DBOUTPUT;
 
     // test
-    /*for (int i = 0; i < 100; i++)
-        compute(&myProject);*/
+    for (int i = 0; i < 100; i++)
+        compute(&myProject);
 
     int result = compute(&myProject);
 
