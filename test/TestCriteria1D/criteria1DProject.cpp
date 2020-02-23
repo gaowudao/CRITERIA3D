@@ -9,7 +9,7 @@
 #include "commonConstants.h"
 #include "utilities.h"
 #include "soilDbTools.h"
-#include "project.h"
+#include "criteria1DProject.h"
 
 using namespace std;
 
