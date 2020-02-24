@@ -1,18 +1,11 @@
 #include <QCoreApplication>
-#include <QVariant>
-#include <QSqlError>
-#include <QSqlQuery>
 #include <QDir>
-#include <QDate>
-
-#include <iostream>
 
 #include "criteria1DProject.h"
 #include "commonConstants.h"
 #include "utilities.h"
 
 #define TEST
-
 
 
 int main(int argc, char *argv[])
