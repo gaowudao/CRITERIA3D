@@ -60,7 +60,7 @@
 
             QString projectError;
 
-            CriteriaModel criteria;
+            CriteriaModel criteriaCase;
 
             int nrUnits;
             CriteriaUnit *unit;
@@ -72,12 +72,15 @@
             void closeProject();
             int initializeProject(QString myFileName);
             bool readSettings();
-            bool setLogFile();
+            bool initializeOutputFile();
 
             void closeAllDatabase();
             int openAllDatabase();
             bool loadUnits();
 
+            int compute();
+
+            bool setLogFile();
             void logInfo(QString logStr);
             void logError();
             void logError(QString myErrorStr);
