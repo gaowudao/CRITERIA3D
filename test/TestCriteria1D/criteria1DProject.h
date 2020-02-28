@@ -60,10 +60,10 @@
 
             QString projectError;
 
-            CriteriaModel criteriaCase;
+            Crit1DIrrigationForecast irrForecast;
 
             int nrUnits;
-            CriteriaUnit *unit;
+            Crit1DUnit *unit;
 
             Criteria1DProject();
 
