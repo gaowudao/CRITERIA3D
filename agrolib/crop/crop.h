@@ -69,11 +69,13 @@
 
         Crit3DCrop();
 
-        bool isWaterSurplusResistant();
-        int getDaysFromTypicalSowing(int myDoy);
-        int getDaysFromCurrentSowing(int myDoy);
-        bool isInsideTypicalCycle(int myDoy);
-        bool isPluriannual();
+        void clear();
+
+        bool isWaterSurplusResistant() const;
+        int getDaysFromTypicalSowing(int myDoy) const;
+        int getDaysFromCurrentSowing(int myDoy) const;
+        bool isInsideTypicalCycle(int myDoy) const;
+        bool isPluriannual() const;
 
         void initialize(double latitude, unsigned int nrLayers, double totalSoilDepth, int currentDoy);
         bool needReset(Crit3DDate myDate, double latitude, double waterTableDepth);
