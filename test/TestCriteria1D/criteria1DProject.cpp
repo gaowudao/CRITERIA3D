@@ -46,7 +46,7 @@ void Criteria1DProject::initialize()
 void Criteria1DProject::initializeUnit(int nr)
 {
     nrUnits = nr;
-    unit = new CriteriaUnit[unsigned(nr)];
+    unit = new Crit1DUnit[unsigned(nr)];
 }
 
 
@@ -100,10 +100,10 @@ int Criteria1DProject::initializeProject(QString settingsFileName)
     if (myError != CRIT3D_OK)
         return myError;
 
-    if (! loadVanGenuchtenParameters(&(criteriaCase.dbSoil), criteriaCase.soilTexture, &(projectError)))
+    if (! loadVanGenuchtenParameters(&(irrForecast.dbSoil), irrForecast.soilTexture, &(projectError)))
         return ERROR_SOIL_PARAMETERS;
 
-    if (! loadDriessenParameters(&(criteriaCase.dbSoil), criteriaCase.soilTexture, &(projectError)))
+    if (! loadDriessenParameters(&(irrForecast.dbSoil), irrForecast.soilTexture, &(projectError)))
         return ERROR_SOIL_PARAMETERS;
 
     isProjectLoaded = true;
@@ -158,9 +158,9 @@ bool Criteria1DProject::readSettings()
     projectSettings->endGroup();
     projectSettings->beginGroup("forecast");
 
-    criteriaCase.isSeasonalForecast = projectSettings->value("isSeasonalForecast",0).toBool();
-    criteriaCase.isShortTermForecast = projectSettings->value("isShortTermForecast",0).toBool();
-    if ((criteriaCase.isSeasonalForecast) || (criteriaCase.isShortTermForecast))
+    irrForecast.isSeasonalForecast = projectSettings->value("isSeasonalForecast",0).toBool();
+    irrForecast.isShortTermForecast = projectSettings->value("isShortTermForecast",0).toBool();
+    if ((irrForecast.isSeasonalForecast) || (irrForecast.isShortTermForecast))
     {
         irrigationFileName = projectSettings->value("irrigationOutput").toString();
 
@@ -169,26 +169,28 @@ bool Criteria1DProject::readSettings()
 
         irrigationPath = getFilePath(irrigationFileName);
 
-        criteriaCase.firstSeasonMonth = projectSettings->value("firstMonth",0).toInt();
+        irrForecast.firstSeasonMonth = projectSettings->value("firstMonth",0).toInt();
     }
 
-    if (criteriaCase.isShortTermForecast)
+    if (irrForecast.isShortTermForecast)
     {
-        criteriaCase.daysOfForecast = projectSettings->value("daysOfForecast",0).toInt();
+        irrForecast.daysOfForecast = projectSettings->value("daysOfForecast",0).toInt();
     }
 
     projectSettings->endGroup();
     return true;
 }
 
+
 void Criteria1DProject::closeAllDatabase()
 {
-    criteriaCase.dbCrop.close();
-    criteriaCase.dbSoil.close();
-    criteriaCase.dbMeteo.close();
-    criteriaCase.dbForecast.close();
-    criteriaCase.dbOutput.close();
+    irrForecast.dbCrop.close();
+    irrForecast.dbSoil.close();
+    irrForecast.dbMeteo.close();
+    irrForecast.dbForecast.close();
+    irrForecast.dbOutput.close();
 }
+
 
 int Criteria1DProject::openAllDatabase()
 {
@@ -202,11 +204,11 @@ int Criteria1DProject::openAllDatabase()
         return ERROR_DBPARAMETERS;
     }
 
-    criteriaCase.dbCrop = QSqlDatabase::addDatabase("QSQLITE", "parameters");
-    criteriaCase.dbCrop.setDatabaseName(dbCropName);
-    if (! criteriaCase.dbCrop.open())
+    irrForecast.dbCrop = QSqlDatabase::addDatabase("QSQLITE", "parameters");
+    irrForecast.dbCrop.setDatabaseName(dbCropName);
+    if (! irrForecast.dbCrop.open())
     {
-        projectError = "Open parameters DB failed: " + criteriaCase.dbCrop.lastError().text();
+        projectError = "Open parameters DB failed: " + irrForecast.dbCrop.lastError().text();
         closeAllDatabase();
         return ERROR_DBPARAMETERS;
     }
@@ -219,11 +221,11 @@ int Criteria1DProject::openAllDatabase()
         return ERROR_DBSOIL;
     }
 
-    criteriaCase.dbSoil = QSqlDatabase::addDatabase("QSQLITE", "soil");
-    criteriaCase.dbSoil.setDatabaseName(dbSoilName);
-    if (! criteriaCase.dbSoil.open())
+    irrForecast.dbSoil = QSqlDatabase::addDatabase("QSQLITE", "soil");
+    irrForecast.dbSoil.setDatabaseName(dbSoilName);
+    if (! irrForecast.dbSoil.open())
     {
-        projectError = "Open soil DB failed: " + criteriaCase.dbSoil.lastError().text();
+        projectError = "Open soil DB failed: " + irrForecast.dbSoil.lastError().text();
         closeAllDatabase();
         return ERROR_DBSOIL;
     }
@@ -236,17 +238,17 @@ int Criteria1DProject::openAllDatabase()
         return ERROR_DBMETEO_OBSERVED;
     }
 
-    criteriaCase.dbMeteo = QSqlDatabase::addDatabase("QSQLITE", "meteo");
-    criteriaCase.dbMeteo.setDatabaseName(dbMeteoName);
-    if (! criteriaCase.dbMeteo.open())
+    irrForecast.dbMeteo = QSqlDatabase::addDatabase("QSQLITE", "meteo");
+    irrForecast.dbMeteo.setDatabaseName(dbMeteoName);
+    if (! irrForecast.dbMeteo.open())
     {
-        projectError = "Open meteo DB failed: " + criteriaCase.dbMeteo.lastError().text();
+        projectError = "Open meteo DB failed: " + irrForecast.dbMeteo.lastError().text();
         closeAllDatabase();
         return ERROR_DBMETEO_OBSERVED;
     }
 
     // meteo forecast
-    if (criteriaCase.isShortTermForecast)
+    if (irrForecast.isShortTermForecast)
     {
         logInfo ("Forecast DB: " + dbForecastName);
         if (! QFile(dbForecastName).exists())
@@ -255,31 +257,31 @@ int Criteria1DProject::openAllDatabase()
             closeAllDatabase();
             return ERROR_DBMETEO_FORECAST;
         }
-        criteriaCase.dbForecast = QSqlDatabase::addDatabase("QSQLITE", "forecast");
-        criteriaCase.dbForecast.setDatabaseName(dbForecastName);
-        if (! criteriaCase.dbForecast.open())
+        irrForecast.dbForecast = QSqlDatabase::addDatabase("QSQLITE", "forecast");
+        irrForecast.dbForecast.setDatabaseName(dbForecastName);
+        if (! irrForecast.dbForecast.open())
         {
-            projectError = "Open forecast DB failed: " + criteriaCase.dbForecast.lastError().text();
+            projectError = "Open forecast DB failed: " + irrForecast.dbForecast.lastError().text();
             closeAllDatabase();
             return ERROR_DBMETEO_FORECAST;
         }
     }
 
     // output DB (not used in seasonal forecast)
-    if (! criteriaCase.isSeasonalForecast)
+    if (! irrForecast.isSeasonalForecast)
     {
         QFile::remove(dbOutputName);
         logInfo ("Output DB: " + dbOutputName);
-        criteriaCase.dbOutput = QSqlDatabase::addDatabase("QSQLITE", "output");
-        criteriaCase.dbOutput.setDatabaseName(dbOutputName);
+        irrForecast.dbOutput = QSqlDatabase::addDatabase("QSQLITE", "output");
+        irrForecast.dbOutput.setDatabaseName(dbOutputName);
 
         if (!QDir(dbOutputPath).exists())
              QDir().mkdir(dbOutputPath);
 
 
-        if (! criteriaCase.dbOutput.open())
+        if (! irrForecast.dbOutput.open())
         {
-            projectError = "Open output DB failed: " + criteriaCase.dbOutput.lastError().text();
+            projectError = "Open output DB failed: " + irrForecast.dbOutput.lastError().text();
             closeAllDatabase();
             return ERROR_DBOUTPUT;
         }
@@ -338,13 +340,13 @@ bool Criteria1DProject::loadUnits()
 
 bool Criteria1DProject::initializeOutputFile()
 {
-    if ((criteriaCase.isSeasonalForecast) || (criteriaCase.isShortTermForecast))
+    if ((irrForecast.isSeasonalForecast) || (irrForecast.isShortTermForecast))
     {
         if (!QDir(irrigationPath).exists())
             QDir().mkdir(irrigationPath);
 
         // add date to filename (only for ShortTermForecast)
-        if (criteriaCase.isShortTermForecast)
+        if (irrForecast.isShortTermForecast)
         {
             irrigationFileName = irrigationFileName.left(irrigationFileName.length()-4);
             irrigationFileName += "_" + QDate::currentDate().toString("yyyyMMdd") + ".csv";
@@ -361,10 +363,10 @@ bool Criteria1DProject::initializeOutputFile()
             logInfo("Output file: " + irrigationFileName);
         }
 
-        if (criteriaCase.isSeasonalForecast)
+        if (irrForecast.isSeasonalForecast)
             outputFile << "ID_CASE,CROP,SOIL,METEO,p5,p25,p50,p75,p95\n";
 
-        else if(criteriaCase.isShortTermForecast)
+        else if(irrForecast.isShortTermForecast)
             outputFile << "dateForecast,ID_CASE,CROP,SOIL,METEO,readilyAvailableWater,rootDepth,"
                            "forecast7daysPrec,forecast7daysETc,forecast7daysIRR,previousAllSeasonIRR\n";
     }
@@ -385,7 +387,7 @@ int Criteria1DProject::compute()
         for (int i = 0; i < nrUnits; i++)
         {
             //CROP
-            unit[i].idCrop = getCropFromClass(&(criteriaCase.dbCrop), "crop_class", "id_class",
+            unit[i].idCrop = getCropFromClass(&(irrForecast.dbCrop), "crop_class", "id_class",
                                                          unit[i].idCropClass, &(projectError)).toUpper();
             if (unit[i].idCrop == "")
             {
@@ -395,14 +397,14 @@ int Criteria1DProject::compute()
             else
             {
                 //IRRI_RATIO
-                double irriRatio = double(getIrriRatioFromClass(&(criteriaCase.dbCrop), "crop_class", "id_class",
+                double irriRatio = double(getIrriRatioFromClass(&(irrForecast.dbCrop), "crop_class", "id_class",
                                                                 unit[i].idCropClass, &(projectError)));
                 if (int(irriRatio) == int(NODATA))
                     logInfo("Unit " + unit[i].idCase + " " + unit[i].idCropClass + " ***** missing IRRIGATION RATIO *****");
                 else
                 {
                     //SOIL
-                    unit[i].idSoil = getIdSoilString(&(criteriaCase.dbSoil), unit[i].idSoilNumber, &(projectError));
+                    unit[i].idSoil = getIdSoilString(&(irrForecast.dbSoil), unit[i].idSoilNumber, &(projectError));
                     if (unit[i].idSoil == "")
                     {
                         logInfo("Unit " + unit[i].idCase + " Soil nr." + QString::number(unit[i].idSoilNumber) + " ***** missing SOIL *****");
@@ -414,7 +416,7 @@ int Criteria1DProject::compute()
                         logInfo("Unit " + unit[i].idCase +" "+ unit[i].idCrop +" "+ unit[i].idSoil +" "+ unit[i].idMeteo);
 
                         // SEASONAL
-                        if (criteriaCase.isSeasonalForecast)
+                        if (irrForecast.isSeasonalForecast)
                         {
                             if (irriRatio < EPSILON)
                             {
@@ -424,7 +426,7 @@ int Criteria1DProject::compute()
                             }
                             else
                             {
-                                if (! runModel(&criteriaCase, &(unit[i]), &(projectError)))
+                                if (! runModel(&irrForecast, unit[i], &(projectError)))
                                 {
                                     logError();
                                     // TODO Improve
@@ -435,15 +437,15 @@ int Criteria1DProject::compute()
                                     outputFile << unit[i].idCase.toStdString() << "," << unit[i].idCrop.toStdString() << ",";
                                     outputFile << unit[i].idSoil.toStdString() << "," << unit[i].idMeteo.toStdString();
                                     // percentiles
-                                    double percentile = sorting::percentile(criteriaCase.seasonalForecasts, &(criteriaCase.nrSeasonalForecasts), 5, true);
+                                    double percentile = sorting::percentile(irrForecast.seasonalForecasts, &(irrForecast.nrSeasonalForecasts), 5, true);
                                     outputFile << "," << percentile * irriRatio;
-                                    percentile = sorting::percentile(criteriaCase.seasonalForecasts, &(criteriaCase.nrSeasonalForecasts), 25, false);
+                                    percentile = sorting::percentile(irrForecast.seasonalForecasts, &(irrForecast.nrSeasonalForecasts), 25, false);
                                     outputFile << "," << percentile * irriRatio;
-                                    percentile = sorting::percentile(criteriaCase.seasonalForecasts, &(criteriaCase.nrSeasonalForecasts), 50, false);
+                                    percentile = sorting::percentile(irrForecast.seasonalForecasts, &(irrForecast.nrSeasonalForecasts), 50, false);
                                     outputFile << "," << percentile * irriRatio;
-                                    percentile = sorting::percentile(criteriaCase.seasonalForecasts, &(criteriaCase.nrSeasonalForecasts), 75, false);
+                                    percentile = sorting::percentile(irrForecast.seasonalForecasts, &(irrForecast.nrSeasonalForecasts), 75, false);
                                     outputFile << "," << percentile * irriRatio;
-                                    percentile = sorting::percentile(criteriaCase.seasonalForecasts, &(criteriaCase.nrSeasonalForecasts), 95, false);
+                                    percentile = sorting::percentile(irrForecast.seasonalForecasts, &(irrForecast.nrSeasonalForecasts), 95, false);
                                     outputFile << "," << percentile * irriRatio << "\n";
                                     outputFile.flush();
 
@@ -453,24 +455,24 @@ int Criteria1DProject::compute()
                         }
                         else
                         {
-                            if (runModel(&criteriaCase, &(unit[i]), &(projectError)))
+                            if (runModel(&irrForecast, unit[i], &projectError))
                             {
                                 nrUnitsComputed++;
 
                                 // SHORT TERM FORECAST
-                                if(criteriaCase.isShortTermForecast)
+                                if(irrForecast.isShortTermForecast)
                                 {
-                                    int indexOfForecast = criteriaCase.meteoPoint.nrObsDataDaysD - criteriaCase.daysOfForecast - 1;
-                                    Crit3DDate dateOfForecast = criteriaCase.meteoPoint.obsDataD[indexOfForecast].date;
+                                    int indexOfForecast = irrForecast.myCase.meteoPoint.nrObsDataDaysD - irrForecast.daysOfForecast - 1;
+                                    Crit3DDate dateOfForecast = irrForecast.myCase.meteoPoint.obsDataD[indexOfForecast].date;
                                     std::string dateOfForecastStr = dateOfForecast.toStdString();
                                     std::string IrrPreviousDateStr = dateOfForecast.addDays(-13).toStdString();
 
                                     // first date for annual irrigation
                                     Crit3DDate firstDateAllSeason;
-                                    if (criteriaCase.firstSeasonMonth <= dateOfForecast.month)
-                                        firstDateAllSeason = Crit3DDate(1, criteriaCase.firstSeasonMonth, dateOfForecast.year);
+                                    if (irrForecast.firstSeasonMonth <= dateOfForecast.month)
+                                        firstDateAllSeason = Crit3DDate(1, irrForecast.firstSeasonMonth, dateOfForecast.year);
                                     else
-                                        firstDateAllSeason = Crit3DDate(1, criteriaCase.firstSeasonMonth, dateOfForecast.year - 1);
+                                        firstDateAllSeason = Crit3DDate(1, irrForecast.firstSeasonMonth, dateOfForecast.year - 1);
 
                                     std::string firstDateAllSeasonStr = firstDateAllSeason.toStdString();
 
@@ -486,7 +488,7 @@ int Criteria1DProject::compute()
                                                         " FROM '" + unit[i].idCase.toStdString() + "'"
                                                                                                     " WHERE DATE > '" + dateOfForecastStr + "'";
 
-                                    QSqlQuery myQuery = criteriaCase.dbOutput.exec(QString::fromStdString(mySQL));
+                                    QSqlQuery myQuery = irrForecast.dbOutput.exec(QString::fromStdString(mySQL));
 
                                     if (myQuery.lastError().type() != QSqlError::NoError)
                                         logError("SELECT SUM(PREC)\n" + myQuery.lastError().text());
@@ -502,7 +504,7 @@ int Criteria1DProject::compute()
                                             + unit[i].idCase.toStdString() + "'"
                                                                                         " WHERE DATE = '" + dateOfForecastStr + "'";
 
-                                    myQuery = criteriaCase.dbOutput.exec(QString::fromStdString(mySQL));
+                                    myQuery = irrForecast.dbOutput.exec(QString::fromStdString(mySQL));
 
                                     if (myQuery.lastError().type() != QSqlError::NoError)
                                         logError("SELECT RAW, DEFICIT, ROOTDEPTH\n" + myQuery.lastError().text());
@@ -518,7 +520,7 @@ int Criteria1DProject::compute()
                                                                                         " WHERE DATE <= '" + dateOfForecastStr + "'"
                                                                   " AND DATE >= '" + firstDateAllSeasonStr + "'";
 
-                                    myQuery = criteriaCase.dbOutput.exec(QString::fromStdString(mySQL));
+                                    myQuery = irrForecast.dbOutput.exec(QString::fromStdString(mySQL));
 
                                     if (myQuery.lastError().type() != QSqlError::NoError)
                                         logError("SELECT SUM(IRRIGATION) (all season) \n" + myQuery.lastError().text());
