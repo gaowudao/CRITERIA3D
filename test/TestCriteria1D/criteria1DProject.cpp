@@ -12,7 +12,6 @@
 #include "cropDbTools.h"
 #include "soilDbTools.h"
 #include "criteria1DProject.h"
-#include "modelCore.h"
 
 using namespace std;
 
@@ -426,7 +425,7 @@ int Criteria1DProject::compute()
                             }
                             else
                             {
-                                if (! runModel(&irrForecast, unit[i], &(projectError)))
+                                if (! irrForecast.runModel(unit[i], &projectError))
                                 {
                                     logError();
                                     // TODO Improve
@@ -455,7 +454,7 @@ int Criteria1DProject::compute()
                         }
                         else
                         {
-                            if (runModel(&irrForecast, unit[i], &projectError))
+                            if (irrForecast.runModel(unit[i], &projectError))
                             {
                                 nrUnitsComputed++;
 

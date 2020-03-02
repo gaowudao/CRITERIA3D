@@ -1,8 +1,8 @@
 #ifndef CRITERIA1DPROJECT
 #define CRITERIA1DPROJECT
 
-    #ifndef CRITERIAMODEL_H
-        #include "criteriaModel.h"
+    #ifndef IRRIGATIONFORECAST_H
+        #include "irrigationForecast.h"
     #endif
 
     #include <fstream>
