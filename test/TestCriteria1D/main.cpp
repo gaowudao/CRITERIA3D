@@ -23,8 +23,8 @@ int main(int argc, char *argv[])
         #ifdef TEST
                 QString path;
                 if (! searchDataPath(&path)) return -1;
-                settingsFileName = path + "PROJECT/CLARA/CLARA.ini";
-                //settingsFileName = path + "PROJECT/kiwifruit/kiwifruit.ini";
+                //settingsFileName = path + "PROJECT/CLARA/CLARA.ini";
+                settingsFileName = path + "PROJECT/kiwifruit/kiwifruit.ini";
         #else
                 myProject->logInfo("USAGE: CRITERIA1D settings.ini");
                 return ERROR_SETTINGS_MISSING;
