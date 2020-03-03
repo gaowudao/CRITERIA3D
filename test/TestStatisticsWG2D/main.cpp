@@ -19,7 +19,7 @@
 #include <time.h>
 
 #define NR_SIMULATION_YEARS 1
-#define MAX_NR_POINTS 10
+#define MAX_NR_POINTS 5
 
 // [ 1 - 10 ]
 //#define NR_STATIONS 10
@@ -300,6 +300,10 @@ int main(int argc, char *argv[])
 
     meteoGridDbHandlerWG2D->closeDatabase();
 
+    time ( &rawtime );
+    timeinfo = localtime ( &rawtime );
+    printf ( "Start statistics\nCurrent local time and date: %s", asctime (timeinfo) );
+
     // compute statistics
     double** correlationMatrix;
     correlationMatrix = (double **)calloc(nrActivePoints, sizeof(double*));
@@ -347,11 +351,11 @@ int main(int argc, char *argv[])
             }
             for (int j=0; j<counterSimulation; j++)
             {
-                arrayVariable[i][j] = outputDataD[i][j].tMax;
+                arrayVariableSimulation[i][j] = outputDataD[i][j].tMax;
             }
         }
         statistics::correlationsMatrix(nrActivePoints,arrayVariable,counter,correlationMatrix);
-        statistics::correlationsMatrix(nrActivePoints,arrayVariable,counterSimulation,correlationMatrixSimulation);
+        statistics::correlationsMatrix(nrActivePoints,arrayVariableSimulation,counterSimulation,correlationMatrixSimulation);
 
         for (int i=0; i<nrActivePoints; i++)
         {
@@ -359,20 +363,36 @@ int main(int argc, char *argv[])
             {
                 arrayVariable[i][j] = obsDataD[i][j].tMin;
             }
+            for (int j=0; j<counterSimulation; j++)
+            {
+                arrayVariableSimulation[i][j] = outputDataD[i][j].tMin;
+            }
+
         }
         statistics::correlationsMatrix(nrActivePoints,arrayVariable,counter,correlationMatrix);
+        statistics::correlationsMatrix(nrActivePoints,arrayVariableSimulation,counterSimulation,correlationMatrixSimulation);
+
         for (int i=0; i<nrActivePoints; i++)
         {
             for (int j=0; j<counter; j++)
             {
                 arrayVariable[i][j] = obsDataD[i][j].prec;
             }
+            for (int j=0; j<counterSimulation; j++)
+            {
+                arrayVariableSimulation[i][j] = outputDataD[i][j].prec;
+            }
         }
         statistics::correlationsMatrix(nrActivePoints,arrayVariable,counter,correlationMatrix);
+        statistics::correlationsMatrix(nrActivePoints,arrayVariableSimulation,counterSimulation,correlationMatrixSimulation);
+
         for (int i=0; i<nrActivePoints; i++)
         {
             free(arrayVariable[i]);
+            free(arrayVariableSimulation[i]);
         }
+        free(arrayVariable);
+        free(arrayVariableSimulation);
     }
 
 
