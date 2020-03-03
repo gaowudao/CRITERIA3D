@@ -228,25 +228,11 @@ int main(int argc, char *argv[])
 
     dailyVariable.clear();
     meteoGridDbHandler->closeDatabase();
-    //WG2D.initializeData(lengthSeries,nrActivePoints);
-    //WG2D.setObservedData(obsDataD);
 
-    //ToutputWeatherData* results;
-    //bool computePrecipitation = true;
-    //bool computeTemperature = true;
     printf("weather generator\n");
 
     int lengthArraySimulation;
-    //static int distributionType = 1;
     lengthArraySimulation = 365 * nrYearSimulations;
-    //WG2D.initializeParameters(PREC_THRESHOLD, nrYearSimulations, distributionType,
-    //                          computePrecipitation, computeTemperature,false);
-
-    //WG2D.computeWeatherGenerator2D();
-
-    //results = WG2D.getWeatherGeneratorOutput(startingYear);
-    //printSimulationResults(results,nrActivePoints,lengthArraySimulation);
-
 
     int nrLeapYears = 0;
     for (int iYear = startingYear;iYear<startingYear+nrYearSimulations;iYear++ )
@@ -278,73 +264,38 @@ int main(int argc, char *argv[])
             currentDay = currentDay.addDays(1);
         }
     }
+    printf("loading data...\n");
 
-
-    /*
-    if (! saveOnMeteoGridDB(&errorString))
-    {
-        std::cout << errorString.toStdString() << std::endl;
-        return -1;
-    }
-
-    QList<meteoVariable> listMeteoVariable = {dailyAirTemperatureMin,dailyAirTemperatureMax,dailyPrecipitation};
     counter = 0;
-
     for (int row = 0; row < meteoGridDbHandlerWG2D->gridStructure().header().nrRows; row++)
     {
+
         for (int col = 0; col < meteoGridDbHandlerWG2D->gridStructure().header().nrCols; col++)
         {
+
            if (meteoGridDbHandlerWG2D->meteoGrid()->getMeteoPointActiveId(row, col, &id) && counter<nrActivePoints)
            {
-               meteoGridDbHandlerWG2D->meteoGrid()->meteoPointPointer(row,col)->initializeObsDataD(lengthArraySimulation+nrLeapYears, getCrit3DDate(firstDayOutput));
-               int k = NODATA;
-               for (int j=0;j<lengthArraySimulation;j++)
-               {
-                   if (j == 0) k = j;
-                   outputDataD[k].date.day = results[counter].daySimulated[j];
-                   outputDataD[k].date.month = results[counter].monthSimulated[j];
-                   outputDataD[k].date.year = results[counter].yearSimulated[j];
-                   outputDataD[k].tMin = results[counter].minT[j];
-                   outputDataD[k].tMax = results[counter].maxT[j];
-                   outputDataD[k].prec = results[counter].precipitation[j];
-                   //printf("%d  %d  %d\n",outputDataD[k].date.day,outputDataD[k].date.month,outputDataD[k].date.year);
-                   //printf("%f  %f  %f\n",outputDataD[k].tMin,outputDataD[k].tMax,outputDataD[k].prec);
-                   if (results[counter].daySimulated[j] == 28 && results[counter].monthSimulated[j] == 2)
-                   {
-                        if (isLeapYear(results[counter].yearSimulated[j]))
-                        {
-                            ++k;
-                            outputDataD[k].date.day = results[counter].daySimulated[j] + 1;
-                            outputDataD[k].date.month = results[counter].monthSimulated[j];
-                            outputDataD[k].date.year = results[counter].yearSimulated[j];
-                            outputDataD[k].tMin = results[counter].minT[j];
-                            outputDataD[k].tMax = results[counter].maxT[j];
-                            outputDataD[k].prec = results[counter].precipitation[j];
-                            //printf("%d  %d  %d\n",outputDataD[k].date.day,outputDataD[k].date.month,outputDataD[k].date.year);
-                            //printf("%f  %f  %f\n",outputDataD[k].tMin,outputDataD[k].tMax,outputDataD[k].prec);
-                        }
-                   }
 
-                   k++;
-
-
-                   //getchar();
-               }
-               //getchar();
-               meteoGridDbHandlerWG2D->meteoGrid()->meteoPointPointer(row,col)->obsDataD = outputDataD;
-               for (int j=0;j<lengthArraySimulation+nrYearSimulations;j++)
-               {
-                   qDebug() << getQDate(meteoGridDbHandlerWG2D->meteoGrid()->meteoPointPointer(row,col)->obsDataD[j].date);
-                   //printf("%f  %f  %f\npress enter to continue",meteoGridDbHandlerWG2D->meteoGrid()->meteoPointPointer(row,col)->obsDataD[j].tMin,meteoGridDbHandlerWG2D->meteoGrid()->meteoPointPointer(row,col)->obsDataD[j].tMax,meteoGridDbHandlerWG2D->meteoGrid()->meteoPointPointer(row,col)->obsDataD[j].prec );
-
-               }
-               meteoGridDbHandlerWG2D->saveCellGridDailyData(&myError, QString::fromStdString(id),row,col,firstDayOutput,lastDayOutput,listMeteoVariable);
+               variable = dailyAirTemperatureMin;
+               dailyVariable = meteoGridDbHandlerWG2D->loadGridDailyVar(&myError, QString::fromStdString(id),
+                                                                    variable, firstDayOutput, lastDayOutput, &firstDateDB);
+               for (int iLength=0; iLength<lengthArraySimulation; iLength++) outputDataD[counter][iLength].tMin = dailyVariable[iLength];
+               variable = dailyAirTemperatureMax;
+               dailyVariable = meteoGridDbHandlerWG2D->loadGridDailyVar(&myError, QString::fromStdString(id),
+                                                                    variable, firstDayOutput, lastDayOutput, &firstDateDB);
+               for (int iLength=0; iLength<lengthArraySimulation; iLength++) outputDataD[counter][iLength].tMax = dailyVariable[iLength];
+               variable = dailyPrecipitation;
+               dailyVariable = meteoGridDbHandlerWG2D->loadGridDailyVar(&myError, QString::fromStdString(id),
+                                                                    variable, firstDayOutput, lastDayOutput, &firstDateDB);
+               for (int iLength=0; iLength<lengthArraySimulation; iLength++) outputDataD[counter][iLength].prec = dailyVariable[iLength];
                counter++;
            }
-           meteoGridDbHandlerWG2D->meteoGrid()->meteoPointPointer(row,col)->obsDataD.clear();
         }
         //std::cout << row << "\n";
-    }*/
+    }
+
+    dailyVariable.clear();
+
     meteoGridDbHandlerWG2D->closeDatabase();
     return 0;
 }
