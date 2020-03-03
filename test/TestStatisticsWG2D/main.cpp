@@ -118,10 +118,12 @@ int main(int argc, char *argv[])
 {
     int startingYear = STARTING_YEAR;
     printf("insert the starting year for the synthethic series:\n");
-    scanf("%d",&startingYear);
+    //scanf("%d",&startingYear);
+    startingYear = 3001;
     int nrYearSimulations = NR_SIMULATION_YEARS;
     printf("insert the number of years of the the synthethic series:\n");
-    scanf("%d",&nrYearSimulations);
+    //scanf("%d",&nrYearSimulations);
+    nrYearSimulations = 60;
     time_t rawtime;
     struct tm * timeinfo;
     time ( &rawtime );
@@ -297,6 +299,88 @@ int main(int argc, char *argv[])
     dailyVariable.clear();
 
     meteoGridDbHandlerWG2D->closeDatabase();
+
+    // compute statistics
+    double** correlationMatrix;
+    correlationMatrix = (double **)calloc(nrActivePoints, sizeof(double*));
+    for (int i=0; i<nrActivePoints; i++)
+    {
+        correlationMatrix[i] = (double *)calloc(nrActivePoints, sizeof(double));
+    }
+    double** correlationMatrixSimulation;
+    correlationMatrixSimulation = (double **)calloc(nrActivePoints, sizeof(double*));
+    for (int i=0; i<nrActivePoints; i++)
+    {
+        correlationMatrixSimulation[i] = (double *)calloc(nrActivePoints, sizeof(double));
+    }
+    int counterSimulation = 0;
+    // 1 correlation matrices
+    for (int iMonth = 0; iMonth<12 ; iMonth++)
+    {
+        counterSimulation = counter = 0;
+        for (int i=0; i<lengthSeries; i++)
+        {
+            if (obsDataD[0][i].date.month == iMonth+1) counter++;
+        }
+        for (int i=0; i<lengthArraySimulation; i++)
+        {
+            if (outputDataD[0][i].date.month == iMonth+1) counterSimulation++;
+        }
+        double** arrayVariable;
+        arrayVariable = (double **)calloc(nrActivePoints, sizeof(double*));
+        for (int i=0; i<nrActivePoints; i++)
+        {
+            arrayVariable[i] = (double *)calloc(counter, sizeof(double));
+        }
+        double** arrayVariableSimulation;
+        arrayVariableSimulation = (double **)calloc(nrActivePoints, sizeof(double*));
+        for (int i=0; i<nrActivePoints; i++)
+        {
+            arrayVariableSimulation[i] = (double *)calloc(counterSimulation, sizeof(double));
+        }
+
+        for (int i=0; i<nrActivePoints; i++)
+        {
+            for (int j=0; j<counter; j++)
+            {
+                arrayVariable[i][j] = obsDataD[i][j].tMax;
+            }
+            for (int j=0; j<counterSimulation; j++)
+            {
+                arrayVariable[i][j] = outputDataD[i][j].tMax;
+            }
+        }
+        statistics::correlationsMatrix(nrActivePoints,arrayVariable,counter,correlationMatrix);
+        statistics::correlationsMatrix(nrActivePoints,arrayVariable,counterSimulation,correlationMatrixSimulation);
+
+        for (int i=0; i<nrActivePoints; i++)
+        {
+            for (int j=0; j<counter; j++)
+            {
+                arrayVariable[i][j] = obsDataD[i][j].tMin;
+            }
+        }
+        statistics::correlationsMatrix(nrActivePoints,arrayVariable,counter,correlationMatrix);
+        for (int i=0; i<nrActivePoints; i++)
+        {
+            for (int j=0; j<counter; j++)
+            {
+                arrayVariable[i][j] = obsDataD[i][j].prec;
+            }
+        }
+        statistics::correlationsMatrix(nrActivePoints,arrayVariable,counter,correlationMatrix);
+        for (int i=0; i<nrActivePoints; i++)
+        {
+            free(arrayVariable[i]);
+        }
+    }
+
+
+    time ( &rawtime );
+    timeinfo = localtime ( &rawtime );
+    printf ( "Current local time and date: %s", asctime (timeinfo) );
+
+
     return 0;
 }
 
