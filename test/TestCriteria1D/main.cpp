@@ -12,9 +12,10 @@ int main(int argc, char *argv[])
 {
     QCoreApplication myApp(argc, argv);
 
+    Criteria1DProject myProject;
+
     QString appPath = myApp.applicationDirPath() + "/";
     QString settingsFileName;
-    Criteria1DProject myProject;
 
     if (argc > 1)
         settingsFileName = argv[1];
@@ -23,8 +24,8 @@ int main(int argc, char *argv[])
         #ifdef TEST
                 QString path;
                 if (! searchDataPath(&path)) return -1;
-                //settingsFileName = path + "PROJECT/CLARA/CLARA.ini";
                 settingsFileName = path + "PROJECT/kiwifruit/kiwifruit.ini";
+                //settingsFileName = path + "PROJECT/CLARA/CLARA.ini";
         #else
                 myProject->logInfo("USAGE: CRITERIA1D settings.ini");
                 return ERROR_SETTINGS_MISSING;
@@ -34,28 +35,30 @@ int main(int argc, char *argv[])
     if (settingsFileName.left(1) == ".")
         settingsFileName = appPath + settingsFileName;
 
-    int myError = myProject.initializeProject(settingsFileName);
-    if (myError != CRIT3D_OK)
+    // initialize project
+    int myResult = myProject.initializeProject(settingsFileName);
+    if (myResult != CRIT3D_OK)
     {
         myProject.logError();
-        return myError;
+        return myResult;
     }
 
-    // unit list
+    // read unit list
     if (! myProject.loadUnits())
     {
         myProject.logError();
         return ERROR_READ_UNITS;
     }
-
     myProject.logInfo("\nQuery result: " + QString::number(myProject.nrUnits) + " distinct units.\n");
 
+    // initialize output
     if (!myProject.initializeOutputFile())
         return ERROR_DBOUTPUT;
 
-    int result = myProject.compute();
-
+    // COMPUTE
+    myResult = myProject.compute();
     myProject.logInfo("\nEND");
-    return result;
+
+    return myResult;
 }
 

@@ -369,6 +369,7 @@ bool Criteria1DProject::initializeOutputFile()
             outputFile << "dateForecast,ID_CASE,CROP,SOIL,METEO,readilyAvailableWater,rootDepth,"
                            "forecast7daysPrec,forecast7daysETc,forecast7daysIRR,previousAllSeasonIRR\n";
     }
+
     return true;
 }
 
