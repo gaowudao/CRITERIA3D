@@ -426,7 +426,7 @@ int Criteria1DProject::compute()
                             }
                             else
                             {
-                                if (! irrForecast.runModel(unit[i], &projectError))
+                                if (! irrForecast.runModel(unit[i], projectError))
                                 {
                                     logError();
                                     // TODO Improve
@@ -455,7 +455,7 @@ int Criteria1DProject::compute()
                         }
                         else
                         {
-                            if (irrForecast.runModel(unit[i], &projectError))
+                            if (irrForecast.runModel(unit[i], projectError))
                             {
                                 nrUnitsComputed++;
 
