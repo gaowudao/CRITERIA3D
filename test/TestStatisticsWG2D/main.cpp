@@ -19,13 +19,13 @@
 #include <time.h>
 
 #define NR_SIMULATION_YEARS 1
-#define MAX_NR_POINTS 5
+//#define MAX_NR_POINTS 5
 
 // [ 1 - 10 ]
 //#define NR_STATIONS 10
 #define STARTING_YEAR 3001
 #define PREC_THRESHOLD 0.25
-void printSimulationResults(ToutputWeatherData* output,int nrStations,int lengthArray);
+void printSimulationResults(double **observed, double **simulated, int nrStations, QString variable, int month);
 static Crit3DMeteoGridDbHandler* meteoGridDbHandler;
 static Crit3DMeteoGridDbHandler* meteoGridDbHandlerWG2D;
 static weatherGenerator2D WG2D;
@@ -319,6 +319,7 @@ int main(int argc, char *argv[])
     }
     int counterSimulation = 0;
     // 1 correlation matrices
+    QString variableToPrint;
     for (int iMonth = 0; iMonth<12 ; iMonth++)
     {
         counterSimulation = counter = 0;
@@ -356,7 +357,8 @@ int main(int argc, char *argv[])
         }
         statistics::correlationsMatrix(nrActivePoints,arrayVariable,counter,correlationMatrix);
         statistics::correlationsMatrix(nrActivePoints,arrayVariableSimulation,counterSimulation,correlationMatrixSimulation);
-
+        variableToPrint = "Tmax";
+        printSimulationResults(correlationMatrix,correlationMatrixSimulation,nrActivePoints,variableToPrint, iMonth+1);
         for (int i=0; i<nrActivePoints; i++)
         {
             for (int j=0; j<counter; j++)
@@ -371,7 +373,8 @@ int main(int argc, char *argv[])
         }
         statistics::correlationsMatrix(nrActivePoints,arrayVariable,counter,correlationMatrix);
         statistics::correlationsMatrix(nrActivePoints,arrayVariableSimulation,counterSimulation,correlationMatrixSimulation);
-
+        variableToPrint = "Tmin";
+        printSimulationResults(correlationMatrix,correlationMatrixSimulation,nrActivePoints,variableToPrint, iMonth+1);
         for (int i=0; i<nrActivePoints; i++)
         {
             for (int j=0; j<counter; j++)
@@ -385,7 +388,8 @@ int main(int argc, char *argv[])
         }
         statistics::correlationsMatrix(nrActivePoints,arrayVariable,counter,correlationMatrix);
         statistics::correlationsMatrix(nrActivePoints,arrayVariableSimulation,counterSimulation,correlationMatrixSimulation);
-
+        variableToPrint = "Prec";
+        printSimulationResults(correlationMatrix,correlationMatrixSimulation,nrActivePoints,variableToPrint, iMonth+1);
         for (int i=0; i<nrActivePoints; i++)
         {
             free(arrayVariable[i]);
@@ -404,23 +408,24 @@ int main(int argc, char *argv[])
     return 0;
 }
 
-void printSimulationResults(ToutputWeatherData* output,int nrStations,int lengthArray)
+void printSimulationResults(double** observed,double** simulated,int nrStations, QString variable, int month)
 {
-    FILE* fp;
+    //FILE* fp;
     QString outputName;
-    for (int iStation=0; iStation<nrStations;iStation++)
-    {
-        outputName = "wgStation_" + QString::number(iStation) + ".csv";
-        QFile file(outputName);
-        file.open(QIODevice::WriteOnly | QIODevice::Truncate | QIODevice::Text);
-        QTextStream stream( &file );
-        for (int m=0; m<lengthArray; m++)
-        {
-            stream <<  output[iStation].daySimulated[m] << "/" << output[iStation].monthSimulated[m] << "/" << output[iStation].yearSimulated[m] << "," << output[iStation].doySimulated[m] << "," << output[iStation].minT[m]<< "," << output[iStation].maxT[m]<< "," << output[iStation].precipitation[m]<<endl;
-        }
-        file.close();
-    }
+    outputName = "correlationMatrix" + variable + "month" + QString::number(month)+".csv";
+    QFile file(outputName);
+    file.open(QIODevice::WriteOnly | QIODevice::Truncate | QIODevice::Text);
+    QTextStream stream( &file );
 
+    for (int i=0; i<nrStations;i++)
+    {
+        for (int m=0; m<nrStations; m++)
+        {
+            stream <<  observed[i][m] << "," << simulated[i][m] << "," << observed[i][m]-simulated[i][m] <<endl;
+        }
+
+    }
+    file.close();
 }
 /*
 void weatherGenerator2D::precipitationCorrelationMatricesSimulation()
