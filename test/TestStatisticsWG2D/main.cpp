@@ -295,7 +295,8 @@ int main(int argc, char *argv[])
         }
         //std::cout << row << "\n";
     }
-
+    printf("%d  %d\n", lengthArraySimulation,nrActivePoints);
+    //getchar();
     dailyVariable.clear();
 
     meteoGridDbHandlerWG2D->closeDatabase();
@@ -320,6 +321,11 @@ int main(int argc, char *argv[])
     int counterSimulation = 0;
     // 1 correlation matrices
     QString variableToPrint;
+    /*for (int iMonth = 0; iMonth<lengthArraySimulation ; iMonth++)
+    {
+
+    }*/
+
     for (int iMonth = 0; iMonth<12 ; iMonth++)
     {
         counterSimulation = counter = 0;
@@ -331,6 +337,7 @@ int main(int argc, char *argv[])
         {
             if (outputDataD[0][i].date.month == iMonth+1) counterSimulation++;
         }
+        //printf("%f\n", counterSimulation);
         double** arrayVariable;
         arrayVariable = (double **)calloc(nrActivePoints, sizeof(double*));
         for (int i=0; i<nrActivePoints; i++)
@@ -343,31 +350,56 @@ int main(int argc, char *argv[])
         {
             arrayVariableSimulation[i] = (double *)calloc(counterSimulation, sizeof(double));
         }
+        int cObs,cSim;
 
         for (int i=0; i<nrActivePoints; i++)
         {
+            cObs = cSim = 0;
             for (int j=0; j<counter; j++)
             {
-                arrayVariable[i][j] = obsDataD[i][j].tMax;
+                while (obsDataD[i][cObs].date.month != iMonth + 1)
+                {
+                    cObs++;
+                }
+                arrayVariable[i][j] = obsDataD[i][cObs].tMax;
+                cObs++;
             }
             for (int j=0; j<counterSimulation; j++)
             {
-                arrayVariableSimulation[i][j] = outputDataD[i][j].tMax;
+                while (outputDataD[i][cSim].date.month != iMonth + 1)
+                {
+                    cSim++;
+                }
+                printf("%d\n",cSim);
+                arrayVariableSimulation[i][j] = outputDataD[i][cSim].tMax;
+                cSim++;
             }
         }
         statistics::correlationsMatrix(nrActivePoints,arrayVariable,counter,correlationMatrix);
         statistics::correlationsMatrix(nrActivePoints,arrayVariableSimulation,counterSimulation,correlationMatrixSimulation);
         variableToPrint = "Tmax";
         printSimulationResults(correlationMatrix,correlationMatrixSimulation,nrActivePoints,variableToPrint, iMonth+1);
+
         for (int i=0; i<nrActivePoints; i++)
         {
+            cSim = cObs = 0;
             for (int j=0; j<counter; j++)
             {
-                arrayVariable[i][j] = obsDataD[i][j].tMin;
+                while (obsDataD[i][cObs].date.month != iMonth + 1)
+                {
+                    cObs++;
+                }
+                arrayVariable[i][j] = obsDataD[i][cObs].tMin;
+                cObs++;
             }
             for (int j=0; j<counterSimulation; j++)
             {
-                arrayVariableSimulation[i][j] = outputDataD[i][j].tMin;
+                while (outputDataD[i][cSim].date.month != iMonth + 1)
+                {
+                    cSim++;
+                }
+                arrayVariableSimulation[i][j] = outputDataD[i][cSim].tMin;
+                cSim++;
             }
 
         }
@@ -375,15 +407,27 @@ int main(int argc, char *argv[])
         statistics::correlationsMatrix(nrActivePoints,arrayVariableSimulation,counterSimulation,correlationMatrixSimulation);
         variableToPrint = "Tmin";
         printSimulationResults(correlationMatrix,correlationMatrixSimulation,nrActivePoints,variableToPrint, iMonth+1);
+        cSim = cObs = 0;
         for (int i=0; i<nrActivePoints; i++)
         {
+            cSim = cObs = 0;
             for (int j=0; j<counter; j++)
             {
-                arrayVariable[i][j] = obsDataD[i][j].prec;
+                while (obsDataD[i][cObs].date.month != iMonth + 1)
+                {
+                    cObs++;
+                }
+                arrayVariable[i][j] = obsDataD[i][cObs].prec;
+                cObs++;
             }
             for (int j=0; j<counterSimulation; j++)
             {
-                arrayVariableSimulation[i][j] = outputDataD[i][j].prec;
+                while (outputDataD[i][cSim].date.month != iMonth + 1)
+                {
+                    cSim++;
+                }
+                arrayVariableSimulation[i][j] = outputDataD[i][cSim].prec;
+                cSim++;
             }
         }
         statistics::correlationsMatrix(nrActivePoints,arrayVariable,counter,correlationMatrix);
@@ -419,7 +463,7 @@ void printSimulationResults(double** observed,double** simulated,int nrStations,
 
     for (int i=0; i<nrStations;i++)
     {
-        for (int m=0; m<nrStations; m++)
+        for (int m=i; m<nrStations; m++)
         {
             stream <<  observed[i][m] << "," << simulated[i][m] << "," << observed[i][m]-simulated[i][m] <<endl;
         }
