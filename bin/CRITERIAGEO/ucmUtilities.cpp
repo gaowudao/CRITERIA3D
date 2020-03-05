@@ -2,50 +2,42 @@
 #include "shapeUtilities.h"
 #include "ucmDb.h"
 #include "commonConstants.h"
-#include "formInfo.h"
+
+#include <QtSql>
 
 
-bool UCMListToDb(Crit3DShapeHandler* shapeHandler, QString dbName, std::string *error, bool showInfo)
+bool writeUCMListToDb(Crit3DShapeHandler* shapeHandler, QString dbName, std::string *error)
 {
     UcmDb* unitList = new UcmDb(dbName);
 
-    QStringList idCase;
-    QStringList idCrop;
-    QStringList idMeteo;
-    QList<float> idSoil;
+    QStringList idCase, idCrop, idMeteo, idSoil;
+    QList<double> ha;
 
     int nShape = shapeHandler->getShapeCount();
 
-    FormInfo formInfo;
-    if (showInfo)
-    {
-        formInfo.start("Extract list " + QString::fromStdString(shapeHandler->getFilepath()), nShape);
-    }
-
     for (int i = 0; i < nShape; i++)
     {
-        if (showInfo)
-        {
-            formInfo.setValue(i);
-        }
         QString key = QString::fromStdString(shapeHandler->getStringValue(signed(i), "ID_CASE"));
-        if (!key.isEmpty() && !idCase.contains(key))
+        if (key.isEmpty()) continue;
+
+        if ( !idCase.contains(key) )
         {
             idCase << key;
             idCrop << QString::fromStdString(shapeHandler->getStringValue(signed(i), "ID_CROP"));
             idMeteo << QString::fromStdString(shapeHandler->getStringValue(signed(i), "ID_METEO"));
-            idSoil << shapeHandler->getNumericValue(signed(i), "ID_SOIL");
+            idSoil << QString::fromStdString(shapeHandler->getStringValue(signed(i), "ID_SOIL"));
+            ha << shapeHandler->getNumericValue(signed(i), "HA");
+        }
+        else
+        {
+            // TODO search value and sum ha
         }
     }
-    bool res = unitList->writeListToUnitsTable(idCase, idCrop, idMeteo, idSoil);
+
+    bool res = unitList->writeListToUnitsTable(idCase, idCrop, idMeteo, idSoil, ha);
     *error = unitList->getError().toStdString();
 
     delete unitList;
-
-    if (showInfo)
-    {
-        formInfo.close();
-    }
 
     return res;
 }
@@ -100,7 +92,6 @@ bool shapeFromCSV(Crit3DShapeHandler* shapeHandler, Crit3DShapeHandler* outputSh
             MapCSVShapeFields.insert(key,items);
         }
     }
-
 
     int nShape = outputShape->getShapeCount();
 

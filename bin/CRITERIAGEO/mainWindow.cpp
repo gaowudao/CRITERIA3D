@@ -545,14 +545,8 @@ void MainWindow::on_actionCompute_Unit_Crop_Map_triggered()
 
 void MainWindow::on_actionExtract_Unit_Crop_Map_list_triggered()
 {
-
     QListWidgetItem * itemSelected = ui->checkList->currentItem();
-    if (shapeObjList.empty())
-    {
-        QMessageBox::information(nullptr, "No shape loaded", "Load a shape");
-        return;
-    }
-    else if (itemSelected == nullptr || !itemSelected->text().contains("SHAPE"))
+    if (itemSelected == nullptr || !itemSelected->text().contains("SHAPE"))
     {
         QMessageBox::information(nullptr, "No shape selected", "Select a shape");
         return;
@@ -560,17 +554,11 @@ void MainWindow::on_actionExtract_Unit_Crop_Map_list_triggered()
     else
     {
         int pos = ui->checkList->row(itemSelected);
-        QString dbName = QFileDialog::getSaveFileName(this, tr("Save as"), "", tr("DB files (*.db)"));
+        GisObject* myObject = myProject.objectList.at(unsigned(pos));
+        Crit3DShapeHandler* shapeHandler = myObject->getShapeHandler();
 
-        if (dbName == "")
-        {
-            QMessageBox::information(nullptr, "Insert DB name", "missing new db file name");
-            return;
-        }
-
-        myProject.extractUCMListToDb(pos, dbName, true);
+        myProject.extractUCMListToDb(shapeHandler, true);
      }
-
 }
 
 

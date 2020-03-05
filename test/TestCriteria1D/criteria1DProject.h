@@ -1,8 +1,8 @@
 #ifndef CRITERIA1DPROJECT
 #define CRITERIA1DPROJECT
 
-    #ifndef CRITERIAMODEL_H
-        #include "criteriaModel.h"
+    #ifndef IRRIGATIONFORECAST_H
+        #include "irrigationForecast.h"
     #endif
 
     #include <fstream>
@@ -40,7 +40,7 @@
             QString name;
             QString configFileName;
 
-            QString dbParametersName;
+            QString dbCropName;
             QString dbSoilName;
             QString dbMeteoName;
             QString dbForecastName;
@@ -60,10 +60,10 @@
 
             QString projectError;
 
-            CriteriaModel criteria;
+            Crit1DIrrigationForecast irrForecast;
 
             int nrUnits;
-            CriteriaUnit *unit;
+            Crit1DUnit *unit;
 
             Criteria1DProject();
 
@@ -72,12 +72,15 @@
             void closeProject();
             int initializeProject(QString myFileName);
             bool readSettings();
-            bool setLogFile();
+            bool initializeOutputFile();
 
             void closeAllDatabase();
             int openAllDatabase();
             bool loadUnits();
 
+            int compute();
+
+            bool setLogFile();
             void logInfo(QString logStr);
             void logError();
             void logError(QString myErrorStr);

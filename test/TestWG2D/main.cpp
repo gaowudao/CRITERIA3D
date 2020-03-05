@@ -1,4 +1,8 @@
 
+#include <QString>
+#include <QFile>
+#include <QTextStream>
+
 #include <stdlib.h>
 #include <math.h>
 #include <time.h>
@@ -10,12 +14,13 @@
 #include "readPragaFormatData.h"
 
 
-#define NR_SIMULATION_YEARS 200
+#define NR_SIMULATION_YEARS 3
 // [ 1 - 10 ]
-#define NR_STATIONS 3
+#define NR_STATIONS 8
 
 weatherGenerator2D WG2D;
 
+void printSimulationResults(ToutputWeatherData* output,int nrStations,int lengthArray);
 
 void obsDataMeteoPointFormat(int nrStations, int nrData, float*** weatherArray, int** dateArray,TObsDataD** observedDataDaily)
 {
@@ -314,6 +319,48 @@ int main()
         }
 
     }
+    /*
+    bool testMatrix = true;
+    if (testMatrix)
+    {
+        double** A;
+        double** B;
+        double** C;
+        A = (double **)calloc(nrStations, sizeof(double*));
+        C = (double **)calloc(nrStations, sizeof(double*));
+        B = (double **)calloc(nrStations, sizeof(double*));
+        int i,j;
+        for (i =0;i<nrStations;i++)
+        {
+            A[i] = (double *)calloc(nrStations, sizeof(double));
+            B[i] = (double *)calloc(nrStations, sizeof(double));
+            C[i] = (double *)calloc(nrStations, sizeof(double));
+        }
+        for (i =0;i<nrStations;i++)
+        {
+            for (j =0;j<nrStations;j++)
+            {
+                   A[i][j] = B[i][j] = C[i][j]=1.;
+            }
+        }
+        time_t rawtime;
+        struct tm * timeinfo;
+
+        time ( &rawtime );
+        timeinfo = localtime ( &rawtime );
+        printf ( "Current local time and date: %s", asctime (timeinfo) );
+        matricial::matrixProductNoCheck(A,B,nrStations,nrStations,nrStations,C);
+        time ( &rawtime );
+        timeinfo = localtime ( &rawtime );
+        printf ( "Current local time and date: %s", asctime (timeinfo) );
+
+        matricial::multiplyStrassen(A,B,nrStations,C);
+        time ( &rawtime );
+        timeinfo = localtime ( &rawtime );
+        printf ( "Current local time and date: %s", asctime (timeinfo) );
+        return 0;
+    }*/
+
     TObsDataD** observedDataDaily = (TObsDataD **)calloc(nrStations, sizeof(TObsDataD*));
     for (int i=0;i<nrStations;i++)
     {
@@ -327,10 +374,28 @@ int main()
     bool computePrecipitation = true;
     bool computeTemperature = true;
     printf("weather generator\n");
+    int startingYear = 2001;
+    int lengthArraySimulation;
+    lengthArraySimulation = 365 * yearsOfSimulations;
+    ToutputWeatherData* results;
+    results = (ToutputWeatherData *)calloc(nrStations, sizeof(ToutputWeatherData));
+    for (int iStation=0;iStation<nrStations;iStation++)
+    {
+        results[iStation].daySimulated = (int *)calloc(lengthArraySimulation, sizeof(int));
+        results[iStation].monthSimulated = (int *)calloc(lengthArraySimulation, sizeof(int));
+        results[iStation].yearSimulated = (int *)calloc(lengthArraySimulation, sizeof(int));
+        results[iStation].doySimulated = (int *)calloc(lengthArraySimulation, sizeof(int));
+        results[iStation].minT = (double *)calloc(lengthArraySimulation, sizeof(double));
+        results[iStation].maxT = (double *)calloc(lengthArraySimulation, sizeof(double));
+        results[iStation].precipitation = (double *)calloc(lengthArraySimulation, sizeof(double));
+    }
     WG2D.initializeParameters(precipitationThreshold, yearsOfSimulations, distributionType,
-                              computePrecipitation, computeTemperature);
+                              computePrecipitation, computeTemperature,false);
     WG2D.computeWeatherGenerator2D();
+    results = WG2D.getWeatherGeneratorOutput(startingYear);
+    printSimulationResults(results,nrStations,lengthArraySimulation);
 
+    //free memory
     for (int i=0;i<nrStations;i++)
     {
         free(observedDataDaily[i]);
@@ -350,4 +415,21 @@ int main()
     return 0;
 }
 
+void printSimulationResults(ToutputWeatherData* output,int nrStations,int lengthArray)
+{
+    FILE* fp;
+    QString outputName;
+    for (int iStation=0; iStation<nrStations;iStation++)
+    {
+        outputName = "wgStation_" + QString::number(iStation) + ".csv";
+        QFile file(outputName);
+        file.open(QIODevice::WriteOnly | QIODevice::Truncate | QIODevice::Text);
+        QTextStream stream( &file );
+        for (int m=0; m<lengthArray; m++)
+        {
+            stream <<  output[iStation].daySimulated[m] << "/" << output[iStation].monthSimulated[m] << "/" << output[iStation].yearSimulated[m] << "," << output[iStation].doySimulated[m] << "," << output[iStation].minT[m]<< "," << output[iStation].maxT[m]<< "," << output[iStation].precipitation[m]<<endl;
+        }
+        file.close();
+    }
 
+}

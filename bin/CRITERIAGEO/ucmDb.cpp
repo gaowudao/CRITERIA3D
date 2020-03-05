@@ -1,5 +1,5 @@
 #include "ucmDb.h"
-
+#include <QtSql>
 
 
 UcmDb::UcmDb(QString dbname)
@@ -41,43 +41,46 @@ void UcmDb::createUnitsTable()
 {
 
     QSqlQuery qry(db);
-    qry.prepare("CREATE TABLE units (ID_CASE TEXT, ID_CROP TEXT, ID_METEO TEXT, ID_SOIL NUMERIC, PRIMARY KEY(ID_CASE))");
+    qry.prepare("CREATE TABLE units (ID_CASE TEXT, ID_CROP TEXT, ID_METEO TEXT, ID_SOIL TEXT, HA NUMERIC, PRIMARY KEY(ID_CASE))");
     if( !qry.exec() )
     {
         error = qry.lastError().text();
     }
 }
 
-bool UcmDb::writeUnitsTable(QString idCase, QString idCrop, QString idMeteo, float idSoil)
-{
 
+/*
+bool UcmDb::writeUnitsTable(QString idCase, QString idCrop, QString idMeteo, QString idSoil, double ha)
+{
     QSqlQuery qry(db);
 
-    qry.prepare( "INSERT INTO units (ID_CASE, ID_CROP, ID_METEO, ID_SOIL)"
-                                      " VALUES (:idCase, :idCrop, :idMeteo, :idSoil)" );
+    qry.prepare( "INSERT INTO units (ID_CASE, ID_CROP, ID_METEO, ID_SOIL, HA)"
+                                      " VALUES (:idCase, :idCrop, :idMeteo, :idSoil, :ha)" );
 
     qry.bindValue(":idCase", idCase);
     qry.bindValue(":idCrop", idCrop);
     qry.bindValue(":idMeteo", idMeteo);
     qry.bindValue(":idSoil", idSoil);
+    qry.bindValue(":ha", ha);
 
     if( !qry.exec() )
     {
         error = qry.lastError().text();
         return false;
     }
-    else
-        return true;
 
+    return true;
 }
+*/
 
-bool UcmDb::writeListToUnitsTable(QStringList idCase, QStringList idCrop, QStringList idMeteo, QList<float> idSoil)
+
+bool UcmDb::writeListToUnitsTable(QStringList idCase, QStringList idCrop, QStringList idMeteo,
+                                  QStringList idSoil, QList<double> ha)
 {
-
     QSqlQuery qry(db);
 
-    qry.prepare( "INSERT INTO units (ID_CASE, ID_CROP, ID_METEO, ID_SOIL)"
-                                      " VALUES (?, ?, ?, ?)" );
+    qry.prepare( "INSERT INTO units (ID_CASE, ID_CROP, ID_METEO, ID_SOIL, HA)"
+                                      " VALUES (?, ?, ?, ?, ?)" );
 
     for (int i = 0; i < idCase.size(); i++)
     {
@@ -85,6 +88,7 @@ bool UcmDb::writeListToUnitsTable(QStringList idCase, QStringList idCrop, QStrin
         qry.addBindValue(idCrop[i]);
         qry.addBindValue(idMeteo[i]);
         qry.addBindValue(idSoil[i]);
+        qry.addBindValue(ha[i]);
 
         if( !qry.exec() )
         {
@@ -92,9 +96,10 @@ bool UcmDb::writeListToUnitsTable(QStringList idCase, QStringList idCrop, QStrin
             return false;
         }
     }
-    return true;
 
+    return true;
 }
+
 
 QString UcmDb::getError() const
 {

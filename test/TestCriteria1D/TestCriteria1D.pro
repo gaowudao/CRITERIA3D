@@ -12,7 +12,6 @@ QT -= gui
 QT += core sql
 
 CONFIG += console
-
 TEMPLATE = app
 
 unix:{
@@ -33,11 +32,12 @@ win32:{
 DEFINES += QT_DEPRECATED_WARNINGS
 DEFINES += _CRT_SECURE_NO_WARNINGS
 
-SOURCES += main.cpp \
-    project.cpp \
+SOURCES += \
+    main.cpp \
+    criteria1DProject.cpp
 
 HEADERS += \
-    project.h \
+    criteria1DProject.h
 
 INCLUDEPATH +=  ../../agrolib/crit3dDate ../../agrolib/mathFunctions ../../agrolib/gis ../../agrolib/meteo \
                 ../../agrolib/soil ../../agrolib/crop ../../agrolib/utilities \

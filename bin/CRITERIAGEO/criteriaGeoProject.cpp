@@ -30,9 +30,11 @@
 #include "shapeToRaster.h"
 #include "unitCropMap.h"
 #include "ucmUtilities.h"
+#include "formInfo.h"
 
 #include <QMessageBox>
 #include <QFile>
+#include <QFileDialog>
 
 
 CriteriaGeoProject::CriteriaGeoProject()
@@ -127,48 +129,55 @@ bool CriteriaGeoProject::addUnitCropMap(Crit3DShapeHandler *crop, Crit3DShapeHan
     }
 }
 
-bool CriteriaGeoProject::extractUCMListToDb(int pos, QString dbName, bool showInfo)
+
+bool CriteriaGeoProject::extractUCMListToDb(Crit3DShapeHandler* shapeHandler, bool showInfo)
 {
-    Crit3DShapeHandler* shapeHandler = (objectList.at(unsigned(pos)))->getShapeHandler();
     std::string errorStr;
+
+    //TODO: select area field and unit (m2 or ha)
 
     int fieldRequired = 0;
     for (int i = 0; i < shapeHandler->getFieldNumbers(); i++)
     {
-
-        if (shapeHandler->getFieldName(i) == "ID_CASE" || shapeHandler->getFieldName(i) == "ID_SOIL" || shapeHandler->getFieldName(i) == "ID_CROP" || shapeHandler->getFieldName(i) == "ID_METEO")
+        if (shapeHandler->getFieldName(i) == "ID_CASE" || shapeHandler->getFieldName(i) == "ID_SOIL"
+            || shapeHandler->getFieldName(i) == "ID_CROP" || shapeHandler->getFieldName(i) == "ID_METEO"
+            || shapeHandler->getFieldName(i) == "HA")
         {
             fieldRequired = fieldRequired + 1;
         }
     }
-    if (fieldRequired < 4)
+    if (fieldRequired < 5)
     {
-        errorStr = "Ivalid Unit Crop Map - Missing required fields";
+        errorStr = "Required fields: HA, ID_CASE, ID_SOIL, ID_CROP, ID_METEO";
         logError(errorStr);
         return false;
     }
+
+    QString dbName = QFileDialog::getSaveFileName(nullptr, "Save as", "", "DB files (*.db)");
+    if (dbName == "") return false;
 
     QFile dbFile(dbName);
     if (dbFile.exists())
     {
         if (!dbFile.remove())
         {
-            QString error = "Remove file failed: " + dbName + "\n" + dbFile.errorString();
-            logError(error.toStdString());
+            logError("Remove file failed: " + dbName + "\n" + dbFile.errorString());
             return false;
         }
     }
 
-    if (UCMListToDb(shapeHandler, dbName, &errorStr, showInfo))
-    {
-        return true;
-    }
-    else
-    {
-        logError(errorStr);
-        return false;
-    }
+    FormInfo formInfo;
+    if (showInfo) formInfo.start("Extract UCM list in " + dbName, 0);
+
+    bool result = writeUCMListToDb(shapeHandler, dbName, &errorStr);
+
+    if (showInfo) formInfo.close();
+
+    if (! result) logError(errorStr);
+
+    return result;
 }
+
 
 bool CriteriaGeoProject::createShapeFromCSV(int pos, QString fileCSV, QString fileCSVRef, QString outputName)
 {
