@@ -39,8 +39,14 @@ TabRootDensity::TabRootDensity()
     seriesRootDensity->attachAxis(axisX);
 
     axisY->setTitleText("Depth [m]");
-    //categories << "2.0" << "1.8" << "1.6" << "1.4" << "1.2" << "1.0" << "0.8" << "0.6" << "0.4" << "0.2" << "0.0";
-    categories << "2.00" << "1.80" << "1.60" << "1.40" << "1.20" << "1.00" << "0.80" << "0.60" << "0.40" << "0.20" << "0.00";
+
+    double i = 1.95;
+    while (i > 0)
+    {
+        categories.append(QString::number(i, 'f', 2));
+        i = i-0.1;
+    }
+    //categories << "2.00" << "1.80" << "1.60" << "1.40" << "0.1" << "0.10" << "0.09" << "0.08" << "0.07" << "0.06" << "0.05";
     axisY->append(categories);
     chart->addAxis(axisY, Qt::AlignLeft);
     seriesRootDensity->attachAxis(axisY);
@@ -77,20 +83,24 @@ void TabRootDensity::computeRootDensity(Crit3DCrop* myCrop, Crit3DMeteoPoint *me
 
     axisY->clear();
     categories.clear();
-    for (int i = (nrLayers-1); i>0; i--)
+    depthLayers.clear();
+    double i = totalSoilDepth-0.05;
+    while (i >= 0)
     {
-        if (soilLayers[i].depth <= 2)
-        {
-            double layerDepth = soilLayers[i].depth + soilLayers[i].thickness/2;
-            QString depthStr = QString::number(layerDepth, 'f', 1);
-            if (!categories.contains(depthStr))
-            {
-                categories << depthStr;
-            }
-        }
+        categories.append(QString::number(i, 'f', 2));
+        i = i-0.1;
+    }
+
+    double n = totalSoilDepth/0.02;
+    double value;
+    for (int i = n; i>0; i--)
+    {
+        value = (i-1)*0.02 + 0.01;
+        depthLayers.append(value);
     }
 
     axisY->append(categories);
+
     int currentDoy = 1;
     myCrop->initialize(meteoPoint->latitude, nrLayers, totalSoilDepth, currentDoy);
     updateRootDensity();
@@ -147,14 +157,24 @@ void TabRootDensity::updateRootDensity()
         // display only current doy
         if (myDate == lastDate)
         {
-            for (int i = (nrLayers-1); i>0; i--)
+            for (int i = 0; i<depthLayers.size(); i++)
             {
-                if (layers[i].depth <= 2)
+                int layerIndex;
+                double rootDensity;
+                double rootDensityAdj;
+                if (depthLayers[i] <= 2)
                 {
-                    *set << crop->roots.rootDensity[i]*100;
-                    if (crop->roots.rootDensity[i]*100 > maxRootDensity)
+                    layerIndex = getSoilLayerIndex(layers, depthLayers[i]);
+                    if (layerIndex != NODATA)
                     {
-                        maxRootDensity = crop->roots.rootDensity[i]*100;
+                        rootDensity = crop->roots.rootDensity[layerIndex]*100;
+                        rootDensityAdj = rootDensity/layers[layerIndex].thickness*0.02;
+                        *set << rootDensityAdj;
+
+                        if (rootDensityAdj > maxRootDensity)
+                        {
+                            maxRootDensity = crop->roots.rootDensity[i]*100;
+                        }
                     }
                 }
             }
