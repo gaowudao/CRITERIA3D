@@ -16,7 +16,7 @@
 #include <malloc.h>
 #include <time.h>
 
-#define NR_SIMULATION_YEARS 1
+#define NR_SIMULATION_YEARS 10
 //#define MAX_NR_POINTS 10
 
 // [ 1 - 10 ]
