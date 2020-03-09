@@ -370,7 +370,7 @@ int main(int argc, char *argv[])
                 {
                     cSim++;
                 }
-                printf("%d\n",cSim);
+                //printf("%d\n",cSim);
                 arrayVariableSimulation[i][j] = outputDataD[i][cSim].tMax;
                 cSim++;
             }
