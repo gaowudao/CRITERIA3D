@@ -7,6 +7,9 @@
 #include "meteoPoint.h"
 #include "wg2D.h"
 #include "crit3dDate.h"
+#include "weatherGenerator.h"
+#include "wgClimate.h"
+
 
 #include <QDebug>
 #include <iostream>
@@ -306,6 +309,67 @@ int main(int argc, char *argv[])
     printf ( "Start statistics\nCurrent local time and date: %s", asctime (timeinfo) );
 
     // compute statistics
+    QString outputFileName;
+    Crit3DDate inputFirstDate;
+    float* inputTMin;
+    float* inputTMax;
+    float* inputPrec;
+    inputTMin = (float*)calloc(lengthSeries, sizeof(float));
+    inputTMax = (float*)calloc(lengthSeries, sizeof(float));
+    inputPrec = (float*)calloc(lengthSeries, sizeof(float));
+    // compute climate statistics from observed data
+    for (int iStation=0;iStation<nrActivePoints;iStation++)
+    {
+        outputFileName = "wgClimate_station_" + QString::number(iStation) + ".txt";
+        inputFirstDate.day = obsDataD[iStation][0].date.day;
+        inputFirstDate.month = obsDataD[iStation][0].date.month;
+        inputFirstDate.year = obsDataD[iStation][0].date.year;
+        int nrDays = nrActivePoints;
+        for (int i=0;i<nrDays;i++)
+        {
+            inputTMin[i] = obsDataD[iStation][i].tMin;
+            inputTMax[i] = obsDataD[iStation][i].tMax;
+            inputPrec[i] = obsDataD[iStation][i].prec;
+        }
+        // float
+        float minPrecData = NODATA;
+        TweatherGenClimate weatherGenClimate;
+        computeWGClimate(nrDays,inputFirstDate,inputTMin,inputTMax,inputPrec,PREC_THRESHOLD,minPrecData,&weatherGenClimate,true,outputFileName);
+    }
+    free(inputTMin);
+    free(inputTMax);
+    free(inputPrec);
+
+    //float* inputTMin;
+    //float* inputTMax;
+    //float* inputPrec;
+    inputTMin = (float*)calloc(lengthArraySimulation, sizeof(float));
+    inputTMax = (float*)calloc(lengthArraySimulation, sizeof(float));
+    inputPrec = (float*)calloc(lengthArraySimulation, sizeof(float));
+    // compute climate statistics from observed data
+    for (int iStation=0;iStation<nrActivePoints;iStation++)
+    {
+        outputFileName = "wgSimulation_station_" + QString::number(iStation) + ".txt";
+        inputFirstDate.day = outputDataD[iStation][0].date.day;
+        inputFirstDate.month = outputDataD[iStation][0].date.month;
+        inputFirstDate.year = outputDataD[iStation][0].date.year;
+        int nrDays = nrActivePoints;
+        for (int i=0;i<nrDays;i++)
+        {
+            inputTMin[i] = outputDataD[iStation][i].tMin;
+            inputTMax[i] = outputDataD[iStation][i].tMax;
+            inputPrec[i] = outputDataD[iStation][i].prec;
+        }
+        // float
+        float minPrecData = NODATA;
+        TweatherGenClimate weatherGenClimate;
+        computeWGClimate(nrDays,inputFirstDate,inputTMin,inputTMax,inputPrec,PREC_THRESHOLD,minPrecData,&weatherGenClimate,true,outputFileName);
+    }
+    free(inputTMin);
+    free(inputTMax);
+    free(inputPrec);
+
+    /*
     double** correlationMatrix;
     correlationMatrix = (double **)calloc(nrActivePoints, sizeof(double*));
     for (int i=0; i<nrActivePoints; i++)
@@ -321,10 +385,8 @@ int main(int argc, char *argv[])
     int counterSimulation = 0;
     // 1 correlation matrices
     QString variableToPrint;
-    /*for (int iMonth = 0; iMonth<lengthArraySimulation ; iMonth++)
-    {
 
-    }*/
+
 
     for (int iMonth = 0; iMonth<12 ; iMonth++)
     {
@@ -370,7 +432,7 @@ int main(int argc, char *argv[])
                 {
                     cSim++;
                 }
-                printf("%d\n",cSim);
+                //printf("%d\n",cSim);
                 arrayVariableSimulation[i][j] = outputDataD[i][cSim].tMax;
                 cSim++;
             }
@@ -442,7 +504,7 @@ int main(int argc, char *argv[])
         free(arrayVariable);
         free(arrayVariableSimulation);
     }
-
+    */
 
     time ( &rawtime );
     timeinfo = localtime ( &rawtime );
