@@ -31,10 +31,11 @@ win32:{
 
 INCLUDEPATH +=  ../../agrolib/crit3dDate ../../agrolib/mathFunctions ../../agrolib/gis  \
                 ../../agrolib/meteo ../../agrolib/utilities ../../agrolib/soil ../../agrolib/crop \
-                ../../agrolib/criteriaModel ../../agrolib/cropWidget
+                ../../agrolib/criteriaModel ../../agrolib/project ../../agrolib/cropWidget
 
 CONFIG(debug, debug|release) {
     LIBS += -L../../agrolib/cropWidget/debug -lcropWidget
+    LIBS += -L../../agrolib/project/debug -lproject
     LIBS += -L../../agrolib/criteriaModel/debug -lcriteriaModel
     LIBS += -L../../agrolib/crop/debug -lcrop
     LIBS += -L../../agrolib/soil/debug -lsoil
@@ -46,6 +47,7 @@ CONFIG(debug, debug|release) {
 } else {
 
     LIBS += -L../../agrolib/cropWidget/release -lcropWidget
+    LIBS += -L../../agrolib/project/release -lproject
     LIBS += -L../../agrolib/criteriaModel/release -lcriteriaModel
     LIBS += -L../../agrolib/crop/release -lcrop
     LIBS += -L../../agrolib/soil/release -lsoil
