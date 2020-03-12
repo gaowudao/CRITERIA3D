@@ -369,6 +369,7 @@ bool Criteria1DProject::initializeOutputFile()
             outputFile << "dateForecast,ID_CASE,CROP,SOIL,METEO,readilyAvailableWater,rootDepth,"
                            "forecast7daysPrec,forecast7daysETc,forecast7daysIRR,previousAllSeasonIRR\n";
     }
+
     return true;
 }
 
@@ -425,7 +426,7 @@ int Criteria1DProject::compute()
                             }
                             else
                             {
-                                if (! irrForecast.runModel(unit[i], &projectError))
+                                if (! irrForecast.runModel(unit[i], projectError))
                                 {
                                     logError();
                                     // TODO Improve
@@ -454,7 +455,7 @@ int Criteria1DProject::compute()
                         }
                         else
                         {
-                            if (irrForecast.runModel(unit[i], &projectError))
+                            if (irrForecast.runModel(unit[i], projectError))
                             {
                                 nrUnitsComputed++;
 

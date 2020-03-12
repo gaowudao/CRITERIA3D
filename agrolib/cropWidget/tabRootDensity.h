@@ -20,17 +20,27 @@ class TabRootDensity : public QWidget
 public:
     TabRootDensity();
     void computeRootDensity(Crit3DCrop* myCrop, Crit3DMeteoPoint *meteoPoint, int currentYear, const std::vector<soil::Crit3DLayer> &soilLayers);
-    void tooltip(QPointF point, bool state);
-    Callout *m_tooltip;
+    void updateDate();
+    void updateRootDensity();
+    void tooltip(bool state, int index, QBarSet *barset);
+
 private:
+    Crit3DCrop* crop;
+    Crit3DMeteoPoint *mp;
+    std::vector<soil::Crit3DLayer> layers;
+    unsigned int nrLayers;
     int year;
+    QList<double> depthLayers;
+    QSlider* slider;
+    QDateEdit *currentDate;
     QChartView *chartView;
     QChart *chart;
-    QHorizontalPercentBarSeries *seriesRootDensity;
+    QHorizontalBarSeries *seriesRootDensity;
     QBarSet *set;
     QValueAxis *axisX;
     QBarCategoryAxis *axisY;
     QStringList categories;
+    Callout *m_tooltip;
 
 };
 
