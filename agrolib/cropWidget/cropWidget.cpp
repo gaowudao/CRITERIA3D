@@ -29,8 +29,6 @@
 #include "soilDbTools.h"
 #include "utilities.h"
 #include "commonConstants.h"
-#include "formInfo.h"
-
 
 #include <QFileInfo>
 #include <QFileDialog>
@@ -390,10 +388,12 @@ Crit3DCropWidget::Crit3DCropWidget()
     tabRootDepth = new TabRootDepth();
     tabRootDensity = new TabRootDensity();
     tabIrrigation = new TabIrrigation();
+    tabWaterContent = new TabWaterContent();
     tabWidget->addTab(tabLAI, tr("LAI development"));
     tabWidget->addTab(tabRootDepth, tr("Root depth"));
     tabWidget->addTab(tabRootDensity, tr("Root density"));
     tabWidget->addTab(tabIrrigation, tr("Irrigation"));
+    tabWidget->addTab(tabWaterContent, tr("Water Content"));
     cropLayout->addWidget(tabWidget);
 
     this->setLayout(mainLayout);
@@ -1022,11 +1022,31 @@ void Crit3DCropWidget::on_actionUpdate()
     }
     if (!yearListComboBox.currentText().isEmpty())
     {
-        updateTabLAI();
-        if (!myCase.mySoil.code.empty())
+        if (tabWidget->currentIndex() == 0)
         {
-            updateTabRootDepth();
-            updateTabRootDensity();
+            updateTabLAI();
+        }
+        else
+        {
+            if (!myCase.mySoil.code.empty())
+            {
+                if (tabWidget->currentIndex() == 1)
+                {
+                    updateTabRootDepth();
+                }
+                if (tabWidget->currentIndex() == 2)
+                {
+                    updateTabRootDensity();
+                }
+                if (tabWidget->currentIndex() == 3)
+                {
+                    updateTabIrrigation();
+                }
+                if (tabWidget->currentIndex() == 4)
+                {
+                    updateTabWaterContent();
+                }
+            }
         }
     }
 
@@ -1109,7 +1129,6 @@ bool Crit3DCropWidget::updateCrop()
         }
         if (degreeDaysStartValue->text().isEmpty() || degreeDaysEndValue->text().isEmpty())
         {
-            // LC not NULL o > 0? Nel db crop ho casi con irrigation_volume > 0 e degreeDaysStartValue=0
             error = "irrigation degree days is NULL, insert a valid value";
             QMessageBox::critical(nullptr, "Error irrigation update", error);
             return false;
@@ -1186,6 +1205,22 @@ void Crit3DCropWidget::updateTabRootDensity()
     }
 }
 
+void Crit3DCropWidget::updateTabIrrigation()
+{
+    if (!myCase.myCrop.idCrop.empty() && !myCase.meteoPoint.id.empty() && !myCase.mySoil.code.empty())
+    {
+        tabIrrigation->computeIrrigation(myCase, yearListComboBox.currentText().toInt());
+    }
+}
+
+void Crit3DCropWidget::updateTabWaterContent()
+{
+    if (!myCase.myCrop.idCrop.empty() && !myCase.meteoPoint.id.empty() && !myCase.mySoil.code.empty())
+    {
+        tabWaterContent->computeWaterContent(myCase, yearListComboBox.currentText().toInt());
+    }
+}
+
 void Crit3DCropWidget::tabChanged(int index)
 {
 
@@ -1232,8 +1267,29 @@ void Crit3DCropWidget::tabChanged(int index)
         rootParametersGroup->hide();
         irrigationParametersGroup->setVisible(true);
         waterStressParametersGroup->setVisible(true);
-        FormInfo formInfo;
-        // TO DO
+
+        if (myCase.mySoil.code.empty())
+        {
+            QString msg = "Open a Db Soil";
+            QMessageBox::information(nullptr, "Warning", msg);
+            return;
+        }
+        updateTabIrrigation();
+    }
+    else if(index == 4) //water content tab
+    {
+        laiParametersGroup->hide();
+        rootParametersGroup->hide();
+        irrigationParametersGroup->hide();
+        waterStressParametersGroup->hide();
+
+        if (myCase.mySoil.code.empty())
+        {
+            QString msg = "Open a Db Soil";
+            QMessageBox::information(nullptr, "Warning", msg);
+            return;
+        }
+        updateTabWaterContent();
     }
 
 }
