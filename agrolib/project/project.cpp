@@ -653,10 +653,7 @@ bool Project::loadParameters(QString parametersFileName)
     if (proxyListTmp.size() > 0)
         addProxyToProject(proxyListTmp, proxyActiveTmp, proxyOrder);
 
-
-    // check proxy grids for detrending
-    if (!loadProxyGrids())
-        return false;
+    updateProxy();
 
     if (!loadRadiationGrids())
         return false;
@@ -895,6 +892,7 @@ bool Project::loadDEM(QString myFileName)
     }
 
     setProxyDEM();
+    updateProxy();
 
     //set interpolation settings DEM
     interpolationSettings.setCurrentDEM(&DEM);
@@ -1246,6 +1244,7 @@ bool Project::readPointProxyValues(Crit3DMeteoPoint* myPoint, QSqlDatabase* myDb
     QString statement;
     int nrProxy;
     Crit3DProxy* myProxy;
+    float proxyMaxValue, myValue;
 
     nrProxy = int(interpolationSettings.getProxyNr());
     myPoint->proxyValues.resize(unsigned(nrProxy));
@@ -1260,6 +1259,8 @@ bool Project::readPointProxyValues(Crit3DMeteoPoint* myPoint, QSqlDatabase* myDb
             myProxy = interpolationSettings.getProxy(i);
             proxyField = QString::fromStdString(myProxy->getProxyField());
             proxyTable = QString::fromStdString(myProxy->getProxyTable());
+            proxyMaxValue = myProxy->getMaxVal();
+
             if (proxyField != "" && proxyTable != "")
             {
                 statement = QString("SELECT %1 FROM %2 WHERE id_point = '%3'").arg(proxyField).arg(proxyTable).arg(QString::fromStdString((*myPoint).id));
@@ -1267,7 +1268,11 @@ bool Project::readPointProxyValues(Crit3DMeteoPoint* myPoint, QSqlDatabase* myDb
                 {
                     qry.last();
                     if (qry.value(proxyField) != "")
-                        myPoint->proxyValues[i] = qry.value(proxyField).toFloat();
+                    {
+                        myValue = qry.value(proxyField).toFloat();
+                        if (isEqual(proxyMaxValue, NODATA) || myValue <= proxyMaxValue)
+                            myPoint->proxyValues[i] = myValue;
+                    }
                 }
             }
 
@@ -1278,9 +1283,10 @@ bool Project::readPointProxyValues(Crit3DMeteoPoint* myPoint, QSqlDatabase* myDb
                     return false;
                 else
                 {
-                    float myValue = gis::getValueFromXY(*proxyGrid, myPoint->point.utm.x, myPoint->point.utm.y);
-                    if (int(myValue) != int(proxyGrid->header->flag))
-                        myPoint->proxyValues[i] = myValue;
+                    myValue = gis::getValueFromXY(*proxyGrid, myPoint->point.utm.x, myPoint->point.utm.y);
+                    if (! isEqual(myValue, proxyGrid->header->flag))
+                        if (isEqual(proxyMaxValue, NODATA) || myValue <= proxyMaxValue)
+                            myPoint->proxyValues[i] = myValue;
                 }
             }
         }
@@ -1309,17 +1315,13 @@ bool Project::loadProxyGrids()
             {
                 gis::Crit3DRasterGrid proxyGrid;
                 std::string myError;
-                if (gis::readEsriGrid(fileName.toStdString(), &proxyGrid, & myError))
+                if (DEM.isLoaded && gis::readEsriGrid(fileName.toStdString(), &proxyGrid, & myError))
                 {
                     gis::Crit3DRasterGrid* resGrid = new gis::Crit3DRasterGrid();
                     gis::resampleGrid(proxyGrid, resGrid, *(DEM.header), aggrAverage, 0);
                     myProxy->setGrid(resGrid);
                 }
-                else
-                {
-                    logError("Error loading proxy grid " + fileName);
-                    interpolationSettings.getSelectedCombination().setValue(i, false);
-                }
+
                 proxyGrid.clear();
             }
         }
@@ -1543,9 +1545,14 @@ bool Project::interpolationDem(meteoVariable myVar, const Crit3DTime& myTime, gi
         myInfo.start("Preparing interpolation...", 0);
 
     //detrending and checking precipitation
-    if (! preInterpolation(interpolationPoints, &interpolationSettings, &climateParameters, meteoPoints, nrMeteoPoints, myVar, myTime))
+    bool interpolationReady = preInterpolation(interpolationPoints, &interpolationSettings, &climateParameters, meteoPoints, nrMeteoPoints, myVar, myTime);
+
+    if (showInfo && modality == MODE_GUI)
+        myInfo.close();
+
+    if (! interpolationReady)
     {
-        logError("Interpolation: error in function preInterpolation");
+        logError("Interpolation: error in function preInterpolation");   
         return false;
     }
 
@@ -1890,6 +1897,7 @@ void Project::saveProxies()
             parameters->setValue("field", QString::fromStdString(myProxy->getProxyField()));
             parameters->setValue("use_for_spatial_quality_control", myProxy->getForQualityControl());
             parameters->setValue("raster", getRelativePath(QString::fromStdString(myProxy->getGridName())));
+            parameters->setValue("max_value", QString::number(myProxy->getMaxVal()));
         parameters->endGroup();
     }
 }
