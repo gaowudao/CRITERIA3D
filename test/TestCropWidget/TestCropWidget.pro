@@ -5,7 +5,7 @@
 #
 #-----------------------------------------------------------
 
-QT       += core gui widgets charts sql
+QT       += core gui widgets charts sql printsupport
 
 TEMPLATE = app
 
@@ -31,11 +31,12 @@ win32:{
 
 INCLUDEPATH +=  ../../agrolib/crit3dDate ../../agrolib/mathFunctions ../../agrolib/gis  \
                 ../../agrolib/meteo ../../agrolib/utilities ../../agrolib/soil ../../agrolib/crop \
-                ../../agrolib/criteriaModel ../../agrolib/cropWidget
+                ../../agrolib/customplot ../../agrolib/criteriaModel ../../agrolib/cropWidget
 
 CONFIG(debug, debug|release) {
     LIBS += -L../../agrolib/cropWidget/debug -lcropWidget
     LIBS += -L../../agrolib/criteriaModel/debug -lcriteriaModel
+    LIBS += -L../../agrolib/customplot/debug -lcustomplot
     LIBS += -L../../agrolib/crop/debug -lcrop
     LIBS += -L../../agrolib/soil/debug -lsoil
     LIBS += -L../../agrolib/utilities/debug -lutilities
@@ -47,6 +48,7 @@ CONFIG(debug, debug|release) {
 
     LIBS += -L../../agrolib/cropWidget/release -lcropWidget
     LIBS += -L../../agrolib/criteriaModel/release -lcriteriaModel
+    LIBS += -L../../agrolib/customplot/release -lcustomplot
     LIBS += -L../../agrolib/crop/release -lcrop
     LIBS += -L../../agrolib/soil/release -lsoil
     LIBS += -L../../agrolib/utilities/release -lutilities
