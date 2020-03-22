@@ -26,7 +26,7 @@ bool writeUCMListToDb(Crit3DShapeHandler* shapeHandler, QString dbName, std::str
             idCrop << QString::fromStdString(shapeHandler->getStringValue(signed(i), "ID_CROP"));
             idMeteo << QString::fromStdString(shapeHandler->getStringValue(signed(i), "ID_METEO"));
             idSoil << QString::fromStdString(shapeHandler->getStringValue(signed(i), "ID_SOIL"));
-            ha << shapeHandler->getNumericValue(signed(i), "Shape_Area") / 10000;
+            ha << shapeHandler->getNumericValue(signed(i), "HA");
         }
         else
         {
