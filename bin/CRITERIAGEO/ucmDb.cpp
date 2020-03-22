@@ -77,24 +77,24 @@ bool UcmDb::writeUnitsTable(QString idCase, QString idCrop, QString idMeteo, QSt
 bool UcmDb::writeListToUnitsTable(QStringList idCase, QStringList idCrop, QStringList idMeteo,
                                   QStringList idSoil, QList<double> ha)
 {
-    QSqlQuery qry(db);
 
-    qry.prepare( "INSERT INTO units (ID_CASE, ID_CROP, ID_METEO, ID_SOIL, HA)"
-                                      " VALUES (?, ?, ?, ?, ?)" );
+    QString myString = "INSERT INTO units (ID_CASE, ID_CROP, ID_METEO, ID_SOIL, HA) VALUES ";
 
     for (int i = 0; i < idCase.size(); i++)
     {
-        qry.addBindValue(idCase[i]);
-        qry.addBindValue(idCrop[i]);
-        qry.addBindValue(idMeteo[i]);
-        qry.addBindValue(idSoil[i]);
-        qry.addBindValue(ha[i]);
+        myString += "('" + idCase[i] + "','" + idCrop[i] + "','" + idMeteo[i] + "','" + idSoil[i];
+        myString += "','" + QString::number(ha[i]) +"')";
+        if (i < (idCase.size()-1))
+            myString += ",";
+    }
 
-        if( !qry.exec() )
-        {
-            error = qry.lastError().text();
-            return false;
-        }
+    QSqlQuery myQuery = db.exec(myString);
+    myString.clear();
+
+    if (myQuery.lastError().type() != QSqlError::NoError)
+    {
+        error = myQuery.lastError().text();
+        return false;
     }
 
     return true;
