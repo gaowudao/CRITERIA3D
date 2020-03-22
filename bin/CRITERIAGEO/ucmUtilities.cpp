@@ -43,9 +43,13 @@ bool writeUCMListToDb(Crit3DShapeHandler* shapeHandler, QString dbName, std::str
 }
 
 
+/* example of output format file:
+CROP,CROPTYPE,STRING,20,
+readilyAvailableWater,RAW,FLOAT,10,1
+forecast7daysIRR,FcstIrr7d,FLOAT,10,1
+*/
 bool shapeFromCSV(Crit3DShapeHandler* shapeHandler, Crit3DShapeHandler* outputShape, QString fileCSV, QString fileCSVRef, QString outputName, std::string *error)
 {
-
     int CSVRefRequiredInfo = 5;
     int defaultStringLenght = 20;
     int defaultDoubleLenght = 10;
@@ -79,14 +83,14 @@ bool shapeFromCSV(Crit3DShapeHandler* shapeHandler, Crit3DShapeHandler* outputSh
             QStringList items = line.split(",");
             if (items.size() < CSVRefRequiredInfo)
             {
-                *error = "invalid reference CSV, missing reference data";
+                *error = "invalid output format CSV, missing reference data";
                 return false;
             }
             QString key = items[0];
             items.removeFirst();
             if (key.isEmpty() || items[0].isEmpty())
             {
-                *error = "invalid reference CSV, missing field name";
+                *error = "invalid output format CSV, missing field name";
                 return false;
             }
             MapCSVShapeFields.insert(key,items);

@@ -257,7 +257,7 @@ bool MainWindow::addShapeObject(GisObject* myObject)
     // add shapeObject
     MapGraphicsShapeObject* newShapeObj = new MapGraphicsShapeObject(this->mapView);
     newShapeObj->initializeUTM(myObject->getShapeHandler());
-    newShapeObj->setOpacity(0.5);
+    newShapeObj->setOpacity(0.66);
 
     this->shapeObjList.push_back(newShapeObj);
     this->mapView->scene()->addObject(newShapeObj);
@@ -588,11 +588,11 @@ void MainWindow::on_actionCreate_Shape_file_from_CSV_triggered()
             return;
         }
 
-        QString fileCSVRef = QFileDialog::getOpenFileName(this, tr("Open CSV reference file"), "", tr("CSV files (*.csv)"));
+        QString fileCSVRef = QFileDialog::getOpenFileName(this, tr("Open CSV output format"), "", tr("CSV files (*.csv)"));
 
         if (fileCSVRef == "")
         {
-            QMessageBox::information(nullptr, "Select CSV fields reference", "missing CSV reference");
+            QMessageBox::information(nullptr, "Select CSV output format", "missing CSV file");
             return;
         }
 
