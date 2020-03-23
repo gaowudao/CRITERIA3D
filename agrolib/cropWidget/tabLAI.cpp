@@ -11,12 +11,12 @@ TabLAI::TabLAI()
     chart = new QChart();   
     chartView = new QChartView(chart);
     chartView->setChart(chart);
+
     seriesLAI = new QLineSeries();
     seriesPotentialEvap = new QLineSeries();
     seriesMaxEvap = new QLineSeries();
     seriesMaxTransp = new QLineSeries();
     seriesLAI->setName("Leaf Area Index [m2 m-2]");
-
     seriesPotentialEvap->setName("Potential evapotranspiration [mm]");
     seriesPotentialEvap->setColor(QColor(Qt::darkGray));
     seriesMaxEvap->setName("Evaporation max [mm]");
@@ -160,7 +160,7 @@ void TabLAI::tooltipLAI(QPointF point, bool state)
     {
         QDateTime xDate;
         xDate.setMSecsSinceEpoch(point.x());
-        m_tooltip->setText(QString("%1 \nLAI %2 ").arg(xDate.date().toString("MMM dd")).arg(point.y()));
+        m_tooltip->setText(QString("%1 \nLAI %2 ").arg(xDate.date().toString("MMM dd")).arg(point.y(), 0, 'f', 1));
         m_tooltip->setAnchor(point);
         m_tooltip->setZValue(11);
         m_tooltip->updateGeometry();
@@ -176,7 +176,7 @@ void TabLAI::tooltipPE(QPointF point, bool state)
     {
         QDateTime xDate;
         xDate.setMSecsSinceEpoch(point.x());
-        m_tooltip->setText(QString("%1 \nPot. ET %2 ").arg(xDate.date().toString("MMM dd")).arg(point.y()));
+        m_tooltip->setText(QString("%1 \nPot. ET %2 ").arg(xDate.date().toString("MMM dd")).arg(point.y(), 0, 'f', 1));
         m_tooltip->setAnchor(point);
         m_tooltip->setZValue(11);
         m_tooltip->updateGeometry();
@@ -192,7 +192,7 @@ void TabLAI::tooltipME(QPointF point, bool state)
     {
         QDateTime xDate;
         xDate.setMSecsSinceEpoch(point.x());
-        m_tooltip->setText(QString("%1 \nEvap. max %2 ").arg(xDate.date().toString("MMM dd")).arg(point.y()));
+        m_tooltip->setText(QString("%1 \nEvap. max %2 ").arg(xDate.date().toString("MMM dd")).arg(point.y(), 0, 'f', 1));
         m_tooltip->setAnchor(point);
         m_tooltip->setZValue(11);
         m_tooltip->updateGeometry();
@@ -209,7 +209,7 @@ void TabLAI::tooltipMT(QPointF point, bool state)
     {
         QDateTime xDate;
         xDate.setMSecsSinceEpoch(point.x());
-        m_tooltip->setText(QString("%1 \nTransp. max %2 ").arg(xDate.date().toString("MMM dd")).arg(point.y()));
+        m_tooltip->setText(QString("%1 \nTransp. max %2 ").arg(xDate.date().toString("MMM dd")).arg(point.y(), 0, 'f', 1));
         m_tooltip->setAnchor(point);
         m_tooltip->setZValue(11);
         m_tooltip->updateGeometry();

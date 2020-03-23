@@ -168,12 +168,12 @@ void Crit3DInterpolationSettings::setValueSelectedCombination(unsigned int index
     selectedCombination.setValue(index, isActive);
 }
 
-int Crit3DInterpolationSettings::getIndexHeight() const
+unsigned Crit3DInterpolationSettings::getIndexHeight() const
 {
     return indexHeight;
 }
 
-void Crit3DInterpolationSettings::setIndexHeight(int value)
+void Crit3DInterpolationSettings::setIndexHeight(unsigned value)
 {
     indexHeight = value;
 }
@@ -238,6 +238,8 @@ void Crit3DInterpolationSettings::initializeProxy()
     currentProxy.clear();
     selectedCombination.clear();
     optimalCombination.clear();
+
+    indexHeight = NODATA;
 }
 
 void Crit3DInterpolationSettings::initialize()
@@ -400,16 +402,6 @@ void Crit3DProxy::setProxyField(const std::string &value)
     proxyField = value;
 }
 
-float Crit3DProxy::getMaxVal() const
-{
-    return maxVal;
-}
-
-void Crit3DProxy::setMaxVal(float value)
-{
-    maxVal = value;
-}
-
 Crit3DProxy::Crit3DProxy()
 {
     name = "";
@@ -417,7 +409,6 @@ Crit3DProxy::Crit3DProxy()
     grid = new gis::Crit3DRasterGrid();
     isSignificant = false;
     forQualityControl = false;
-    maxVal = NODATA;
 
     regressionR2 = NODATA;
     regressionSlope = NODATA;
@@ -485,12 +476,9 @@ float Crit3DProxy::getRegressionSlope()
 float Crit3DProxy::getValue(unsigned int pos, std::vector <float> proxyValues)
 {
     if (pos < proxyValues.size())
-    {
-        if (isEqual(maxVal, NODATA) || proxyValues[pos] <= maxVal)
-            return proxyValues[pos];
-        else
-            return NODATA;
-    }
+        return proxyValues[pos];
+    else
+        return NODATA;
 }
 
 void Crit3DProxy::initializeOrography()

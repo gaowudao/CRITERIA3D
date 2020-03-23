@@ -13,6 +13,7 @@
     #include "tabRootDepth.h"
     #include "tabRootDensity.h"
     #include "tabIrrigation.h"
+    #include "tabWaterContent.h"
 
     class Crit3DCropWidget : public QWidget
     {
@@ -40,8 +41,12 @@
             void updateTabLAI();
             void updateTabRootDepth();
             void updateTabRootDensity();
+            void updateTabIrrigation();
+            void updateTabWaterContent();
             void tabChanged(int index);
             bool checkIfCropIsChanged();
+            void irrigationVolumeChanged();
+            void variableWaterContentChanged(bool status);
 
         private:
             QSqlDatabase dbCrop;
@@ -62,6 +67,7 @@
             QGroupBox *rootParametersGroup;
             QGroupBox *irrigationParametersGroup;
             QGroupBox *waterStressParametersGroup;
+            QGroupBox *waterContentGroup;
             QComboBox cropListComboBox;
             QComboBox meteoListComboBox;
             QComboBox soilListComboBox;
@@ -98,6 +104,8 @@
             QLineEdit* psiLeafValue;
             QDoubleSpinBox* rawFractionValue;
             QDoubleSpinBox* stressToleranceValue;
+            QRadioButton *volWaterContent;
+            QRadioButton *degreeSat;
             QTabWidget* tabWidget;
             QAction* saveChanges;
             QAction* restoreData;
@@ -108,6 +116,7 @@
             TabRootDepth* tabRootDepth;
             TabRootDensity* tabRootDensity;
             TabIrrigation* tabIrrigation;
+            TabWaterContent* tabWaterContent;
 
             void clearCrop();
             void checkCropUpdate();
