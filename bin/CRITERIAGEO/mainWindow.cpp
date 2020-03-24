@@ -257,7 +257,7 @@ bool MainWindow::addShapeObject(GisObject* myObject)
     // add shapeObject
     MapGraphicsShapeObject* newShapeObj = new MapGraphicsShapeObject(this->mapView);
     newShapeObj->initializeUTM(myObject->getShapeHandler());
-    newShapeObj->setOpacity(0.66);
+    newShapeObj->setOpacity(0.8);
 
     this->shapeObjList.push_back(newShapeObj);
     this->mapView->scene()->addObject(newShapeObj);
@@ -413,8 +413,9 @@ void MainWindow::setShapeStyle(GisObject* myObject)
             shapeObject->setNumericValues(fieldName);
         }
 
-        setZeroCenteredScale(shapeObject->colorScale);
+        //setZeroCenteredScale(shapeObject->colorScale);
         //reverseColorScale(shapeObject->colorScale);
+        setTemperatureScale(shapeObject->colorScale);
         shapeObject->setFill(true);
     }
 }
