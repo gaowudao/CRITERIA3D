@@ -43,10 +43,12 @@ bool writeUCMListToDb(Crit3DShapeHandler* shapeHandler, QString dbName, std::str
 }
 
 
-/* example of output format file:
-CROP,CROPTYPE,STRING,20,
-readilyAvailableWater,RAW,FLOAT,10,1
-forecast7daysIRR,FcstIrr7d,FLOAT,10,1
+/* output format file:
+ * CSVfield, ShapeField, type, lenght, decimals nr
+ * example:
+ * CROP,CROPTYPE,STRING,20,
+ * deficit,DEFICIT,FLOAT,10,1
+ * forecast7daysIRR,FcstIrr7d,FLOAT,10,1
 */
 bool shapeFromCSV(Crit3DShapeHandler* shapeHandler, Crit3DShapeHandler* outputShape, QString fileCSV, QString fileCSVRef, QString outputName, std::string *error)
 {

@@ -27,9 +27,8 @@ void Criteria1DProject::initialize()
     path = "";
     name = "";
     logFileName = "";
-    irrigationFileName = "";
-    irrigationPath = "";
-    dbOutputPath = "";
+    outputCsvFileName = "";
+    outputCsvPath = "";
 
     dbCropName = "";
     dbSoilName = "";
@@ -151,8 +150,6 @@ bool Criteria1DProject::readSettings()
     if (dbOutputName.left(1) == ".")
         dbOutputName = path + dbOutputName;
 
-    dbOutputPath = getFilePath(dbOutputName);
-
     // seasonal or short-term forecast
     projectSettings->endGroup();
     projectSettings->beginGroup("forecast");
@@ -161,12 +158,10 @@ bool Criteria1DProject::readSettings()
     irrForecast.isShortTermForecast = projectSettings->value("isShortTermForecast",0).toBool();
     if ((irrForecast.isSeasonalForecast) || (irrForecast.isShortTermForecast))
     {
-        irrigationFileName = projectSettings->value("irrigationOutput").toString();
+        outputCsvFileName = projectSettings->value("output").toString();
 
-        if (irrigationFileName.left(1) == ".")
-            irrigationFileName = path + irrigationFileName;
-
-        irrigationPath = getFilePath(irrigationFileName);
+        if (outputCsvFileName.left(1) == ".")
+            outputCsvFileName = path + outputCsvFileName;
 
         irrForecast.firstSeasonMonth = projectSettings->value("firstMonth",0).toInt();
     }
@@ -274,8 +269,9 @@ int Criteria1DProject::openAllDatabase()
         irrForecast.dbOutput = QSqlDatabase::addDatabase("QSQLITE", "output");
         irrForecast.dbOutput.setDatabaseName(dbOutputName);
 
-        if (!QDir(dbOutputPath).exists())
-             QDir().mkdir(dbOutputPath);
+        QString outputDbPath = getFilePath(outputCsvFileName);
+        if (!QDir(outputDbPath).exists())
+             QDir().mkdir(outputDbPath);
 
 
         if (! irrForecast.dbOutput.open())
@@ -341,17 +337,17 @@ bool Criteria1DProject::initializeCsvOutputFile()
 {
     if ((irrForecast.isSeasonalForecast) || (irrForecast.isShortTermForecast))
     {
-        if (!QDir(irrigationPath).exists())
-            QDir().mkdir(irrigationPath);
+        if (!QDir(outputCsvPath).exists())
+            QDir().mkdir(outputCsvPath);
 
         // add date to filename (only for ShortTermForecast)
         if (irrForecast.isShortTermForecast)
         {
-            irrigationFileName = irrigationFileName.left(irrigationFileName.length()-4);
-            irrigationFileName += "_" + QDate::currentDate().toString("yyyyMMdd") + ".csv";
+            outputCsvFileName = outputCsvFileName.left(outputCsvFileName.length()-4);
+            outputCsvFileName += "_" + QDate::currentDate().toString("yyyyMMdd") + ".csv";
         }
 
-        outputFile.open(irrigationFileName.toStdString().c_str(), std::ios::out | std::ios::trunc);
+        outputFile.open(outputCsvFileName.toStdString().c_str(), std::ios::out | std::ios::trunc);
         if ( outputFile.fail())
         {
             logError("open failure: " + QString(strerror(errno)) + '\n');
@@ -359,14 +355,14 @@ bool Criteria1DProject::initializeCsvOutputFile()
         }
         else
         {
-            logInfo("Output file: " + irrigationFileName);
+            logInfo("Output file: " + outputCsvFileName);
         }
 
         if (irrForecast.isSeasonalForecast)
             outputFile << "ID_CASE,CROP,SOIL,METEO,p5,p25,p50,p75,p95\n";
 
         else if(irrForecast.isShortTermForecast)
-            outputFile << "dateForecast,ID_CASE,CROP,SOIL,METEO,readilyAvailableWater,rootDepth,"
+            outputFile << "dateForecast,ID_CASE,CROP,SOIL,METEO,deficit,readilyAvailableWater,"
                            "forecast7daysPrec,forecast7daysETc,forecast7daysIRR,previousAllSeasonIRR\n";
     }
 
@@ -441,7 +437,7 @@ bool Criteria1DProject::runShortTermForecast(unsigned int i, double irriRatio)
     double forecastIrrigation = NODATA;
     double previousIrrigation = NODATA;
     double readilyAvailWater = NODATA;
-    double rootDepth = NODATA;
+    double deficit = NODATA;
 
     std::string mySQLstr = "SELECT SUM(PREC) AS prec,"
                         " SUM(TRANSP_MAX) AS maxTransp, SUM(IRRIGATION) AS irr"
@@ -464,7 +460,7 @@ bool Criteria1DProject::runShortTermForecast(unsigned int i, double irriRatio)
         forecastIrrigation = myQuery.value("irr").toDouble();
     }
 
-    mySQLstr = "SELECT RAW, DEFICIT, ROOTDEPTH FROM '"
+    mySQLstr = "SELECT RAW, DEFICIT FROM '"
             + unit[i].idCase.toStdString() + "'"
             " WHERE DATE = '" + dateOfForecastStr + "'";
     mySQL = QString::fromStdString(mySQLstr);
@@ -477,7 +473,7 @@ bool Criteria1DProject::runShortTermForecast(unsigned int i, double irriRatio)
     {
         myQuery.last();
         readilyAvailWater = myQuery.value("RAW").toDouble();
-        rootDepth = myQuery.value("ROOTDEPTH").toDouble();
+        deficit = myQuery.value("DEFICIT").toDouble();
     }
 
     mySQLstr = "SELECT SUM(IRRIGATION) AS previousIrrigation FROM '"
@@ -501,8 +497,8 @@ bool Criteria1DProject::runShortTermForecast(unsigned int i, double irriRatio)
     outputFile << "," << unit[i].idCrop.toStdString();
     outputFile << "," << unit[i].idSoil.toStdString();
     outputFile << "," << unit[i].idMeteo.toStdString();
+    outputFile << "," << QString::number(deficit,'f',2).toStdString();
     outputFile << "," << QString::number(readilyAvailWater,'f',1).toStdString();
-    outputFile << "," << QString::number(rootDepth,'f',2).toStdString();
     outputFile << "," << QString::number(prec,'f',1).toStdString();
     outputFile << "," << QString::number(maxTranspiration,'f',1).toStdString();
     outputFile << "," << forecastIrrigation * irriRatio;
