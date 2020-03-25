@@ -54,9 +54,9 @@
             std::ofstream outputFile;
 
             bool isProjectLoaded;
-            QString irrigationFileName;
-            QString irrigationPath;
-            QString dbOutputPath;
+
+            QString outputCsvFileName;
+            QString outputCsvPath;
 
             QString projectError;
 
