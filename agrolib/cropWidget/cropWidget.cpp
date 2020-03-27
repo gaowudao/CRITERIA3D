@@ -1197,6 +1197,7 @@ bool Crit3DCropWidget::updateCrop()
             QMessageBox::critical(nullptr, "Error irrigation update", error);
             return false;
         }
+        myCase.myCrop.irrigationVolume = irrigationVolumeValue->text().toDouble();
         myCase.myCrop.irrigationShift = irrigationShiftValue->value();
         myCase.myCrop.degreeDaysStartIrrigation = degreeDaysStartValue->text().toInt();
         myCase.myCrop.degreeDaysEndIrrigation = degreeDaysEndValue->text().toInt();
@@ -1265,7 +1266,7 @@ void Crit3DCropWidget::updateTabRootDensity()
 {
     if (!myCase.myCrop.idCrop.empty() && !myCase.meteoPoint.id.empty() && !myCase.mySoil.code.empty())
     {
-        tabRootDensity->computeRootDensity(&(myCase.myCrop), &(myCase.meteoPoint), firstYearListComboBox.currentText().toInt(), myCase.soilLayers);
+        tabRootDensity->computeRootDensity(&(myCase.myCrop), &(myCase.meteoPoint), firstYearListComboBox.currentText().toInt(), lastYearListComboBox.currentText().toInt(), myCase.soilLayers);
     }
 }
 
@@ -1273,7 +1274,7 @@ void Crit3DCropWidget::updateTabIrrigation()
 {
     if (!myCase.myCrop.idCrop.empty() && !myCase.meteoPoint.id.empty() && !myCase.mySoil.code.empty())
     {
-        tabIrrigation->computeIrrigation(myCase, firstYearListComboBox.currentText().toInt());
+        tabIrrigation->computeIrrigation(myCase, firstYearListComboBox.currentText().toInt(), lastYearListComboBox.currentText().toInt());
     }
 }
 
