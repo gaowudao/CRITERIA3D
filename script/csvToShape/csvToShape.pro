@@ -24,7 +24,6 @@ DEFINES += _CRT_SECURE_NO_WARNINGS
 
 SOURCES += \
     main.cpp \
-    main.cpp \
 
 HEADERS += \
 
