@@ -23,9 +23,11 @@ DEFINES += QT_DEPRECATED_WARNINGS
 DEFINES += _CRT_SECURE_NO_WARNINGS
 
 SOURCES += \
+    csvToShapeProject.cpp \
     main.cpp \
 
-HEADERS += \
+HEADERS += \ \
+    csvToShapeProject.h
 
 INCLUDEPATH +=  ../../agrolib/crit3dDate ../../agrolib/mathFunctions ../../agrolib/utilities
 
