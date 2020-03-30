@@ -190,7 +190,7 @@ int Criteria1DProject::openAllDatabase()
 {
     closeAllDatabase();
 
-    logInfo ("Model parameters: " + dbCropName);
+    logInfo ("Crop DB: " + dbCropName);
     if (! QFile(dbCropName).exists())
     {
         projectError = "DBparameters file doesn't exist";
@@ -355,7 +355,7 @@ bool Criteria1DProject::initializeCsvOutputFile()
         }
         else
         {
-            logInfo("Output file: " + outputCsvFileName);
+            logInfo("Output file: " + outputCsvFileName + "\n");
         }
 
         if (irrForecast.isSeasonalForecast)
