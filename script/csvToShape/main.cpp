@@ -2,6 +2,7 @@
 #include <QDir>
 
 #include "commonConstants.h"
+#include "csvToShapeProject.h"
 #include "utilities.h"
 
 #define TEST
@@ -10,6 +11,7 @@
 int main(int argc, char *argv[])
 {
     QCoreApplication myApp(argc, argv);
+    CsvToShapeProject myProject;
 
     QString appPath = myApp.applicationDirPath() + "/";
     QString settingsFileName;
@@ -21,7 +23,7 @@ int main(int argc, char *argv[])
         #ifdef TEST
                 QString path;
                 if (! searchDataPath(&path)) return -1;
-                settingsFileName = path + "PROJECT/csvToShapeInputOutput/csvToShape.ini";
+                settingsFileName = path + "PROJECT/CLARA/csvToShapeInputOutput/csvToShape.ini";
         #else
                 logInfo("USAGE: CRITERIA1D settings.ini");
                 return ERROR_SETTINGS_MISSING;
@@ -30,9 +32,10 @@ int main(int argc, char *argv[])
 
     if (settingsFileName.left(1) == ".")
         settingsFileName = appPath + settingsFileName;
-/*
+
     // initialize project
     int myResult = myProject.initializeProject(settingsFileName);
+    /*
     if (myResult != CRIT3D_OK)
     {
         myProject.logError();
