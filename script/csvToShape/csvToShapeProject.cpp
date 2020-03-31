@@ -1,5 +1,8 @@
 #include "csvToShapeProject.h"
 #include "logger.h"
+#include "commonConstants.h"
+#include "shapeHandler.h"
+#include "ucmUtilities.h"
 #include <QDir>
 #include <QSettings>
 
@@ -59,23 +62,20 @@ int CsvToShapeProject::initializeProject(QString settingsFileName)
 
     if (!readSettings())
         return ERROR_SETTINGS_MISSINGDATA;
-/*
-    setLogFile();
 
-    int myError = openAllDatabase();
-    if (myError != CRIT3D_OK)
-        return myError;
+    logger.setLog(path,logFileName);
 
-    if (! loadVanGenuchtenParameters(&(irrForecast.dbSoil), irrForecast.soilTexture, &(projectError)))
-        return ERROR_SOIL_PARAMETERS;
+    Crit3DShapeHandler shapeHandler;
+    Crit3DShapeHandler outputShape;
+    bool showInfo = false;
+    std::string errorStr;
+    shapeHandler.open(UCM.toStdString());
+    if (shapeFromCSV(&shapeHandler, &outputShape, csv_data, csv_format, output_shape, &errorStr, showInfo))
+    {
+        isProjectLoaded = true;
+        return CRIT3D_OK;
+    }
 
-    if (! loadDriessenParameters(&(irrForecast.dbSoil), irrForecast.soilTexture, &(projectError)))
-        return ERROR_SOIL_PARAMETERS;
-
-    isProjectLoaded = true;
-
-    return CRIT3D_OK;
-    */
 }
 
 bool CsvToShapeProject::readSettings()
@@ -127,14 +127,7 @@ bool CsvToShapeProject::readSettings()
     }
 
     logFileName = projectSettings->value("logfile","").toString();
-    if (logFileName.left(1) == ".")
-    {
-        logFileName = path + QDir::cleanPath(logFileName);
-    }
-    else
-    {
-        logFileName = dataPath + QDir::cleanPath(logFileName);
-    }
+    logFileName = QDir::cleanPath(logFileName);
 
     projectSettings->endGroup();
     return true;
