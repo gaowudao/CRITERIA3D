@@ -13,6 +13,12 @@ class CsvToShapeProject
 {
 public:
     bool isProjectLoaded;
+    QString path;
+    QString dataPath;
+    QString projectName;
+    QString configFileName;
+    QString projectError;
+
     QString UCM;
     QString csv_data;
     QString csv_format;
@@ -23,6 +29,7 @@ public:
     void initialize();
     void closeProject();
     int initializeProject(QString settingsFileName);
+    bool readSettings();
 };
 
 #endif // CSVTOSHAPEPROJECT_H
