@@ -2,7 +2,7 @@
 #include "logger.h"
 #include "commonConstants.h"
 #include "shapeHandler.h"
-#include "ucmUtilities.h"
+#include "shapeFromCSVForShell.h"
 #include <QDir>
 #include <QSettings>
 
@@ -67,11 +67,13 @@ int CsvToShapeProject::initializeProject(QString settingsFileName)
 
     Crit3DShapeHandler shapeHandler;
     Crit3DShapeHandler outputShape;
-    bool showInfo = false;
+
     std::string errorStr;
     shapeHandler.open(UCM.toStdString());
-    if (shapeFromCSV(&shapeHandler, &outputShape, csv_data, csv_format, output_shape, &errorStr, showInfo))
+    logger.writeInfo(" Waiting...");
+    if (shapeFromCSVForShell(&shapeHandler, &outputShape, csv_data, csv_format, output_shape, &errorStr))
     {
+        logger.writeInfo(" DONE");
         isProjectLoaded = true;
         return CRIT3D_OK;
     }

@@ -1,5 +1,5 @@
-#QT -= gui // gui e widget servono per formInfo
-QT += core gui sql xml widgets
+QT -= gui
+QT += core sql xml
 
 CONFIG += console
 TEMPLATE = app
@@ -29,7 +29,7 @@ SOURCES += \
 HEADERS += \ \
     csvToShapeProject.h
 
-INCLUDEPATH +=  ../../agrolib/crit3dDate ../../agrolib/mathFunctions ../../agrolib/utilities ../../agrolib/project ../../agrolib/shapeHandler ../../agrolib/shapeUtilities
+INCLUDEPATH +=  ../../agrolib/crit3dDate ../../agrolib/mathFunctions ../../agrolib/utilities ../../agrolib/shapeHandler ../../agrolib/shapeUtilities
 
 CONFIG(debug, debug|release) {
 
@@ -38,7 +38,6 @@ CONFIG(debug, debug|release) {
     LIBS += -L../../agrolib/mathFunctions/debug -lmathFunctions
     LIBS += -L../../agrolib/shapeHandler/debug -lshapeHandler
     LIBS += -L../../agrolib/shapeUtilities/debug -lshapeUtilities
-    LIBS += -L../../agrolib/project/debug -lproject
 
 } else {
 
@@ -47,5 +46,4 @@ CONFIG(debug, debug|release) {
     LIBS += -L../../agrolib/mathFunctions/release -lmathFunctions
     LIBS += -L../../agrolib/shapeHandler/release -lshapeHandler
     LIBS += -L../../agrolib/shapeUtilities/release -lshapeUtilities
-    LIBS += -L../../agrolib/project/release -lproject
 } 
