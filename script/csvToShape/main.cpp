@@ -32,33 +32,12 @@ int main(int argc, char *argv[])
     if (settingsFileName.left(1) == ".")
         settingsFileName = appPath + settingsFileName;
 
-    // initialize project
     int myResult = myProject.initializeProject(settingsFileName);
-    /*
     if (myResult != CRIT3D_OK)
-    {
-        myProject.logError();
         return myResult;
-    }
 
-    // read unit list
-    if (! myProject.loadUnits())
-    {
-        myProject.logError();
-        return ERROR_READ_UNITS;
-    }
-    myProject.logInfo("\nQuery result: " + QString::number(myProject.nrUnits) + " distinct units.\n");
+    myProject.createShape();
 
-    // initialize output
-    if (!myProject.initializeCsvOutputFile())
-        return ERROR_DBOUTPUT;
-
-    // COMPUTE
-    myResult = myProject.compute();
-    myProject.logInfo("\nEND");
-
-    return myResult;
-    */
     return 0;
 }
 

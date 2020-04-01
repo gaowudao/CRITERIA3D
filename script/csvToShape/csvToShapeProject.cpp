@@ -5,6 +5,7 @@
 #include "shapeFromCSVForShell.h"
 #include <QDir>
 #include <QSettings>
+#include <iostream>
 
 CsvToShapeProject::CsvToShapeProject()
 {
@@ -63,22 +64,32 @@ int CsvToShapeProject::initializeProject(QString settingsFileName)
     if (!readSettings())
         return ERROR_SETTINGS_MISSINGDATA;
 
-    logger.setLog(path,logFileName);
+    isProjectLoaded = true;
 
+    logger.setLog(path,logFileName);
+    return CRIT3D_OK;
+}
+
+
+bool CsvToShapeProject::createShape()
+{
     Crit3DShapeHandler shapeHandler;
     Crit3DShapeHandler outputShape;
 
-    std::string errorStr;
     shapeHandler.open(UCM.toStdString());
-    logger.writeInfo(" Waiting...");
-    if (shapeFromCSVForShell(&shapeHandler, &outputShape, csv_data, csv_format, output_shape, &errorStr))
+    std::cout << " Waiting...";
+
+    std::string errorStr;
+    if (! shapeFromCSVForShell(&shapeHandler, &outputShape, csv_data, csv_format, output_shape, &errorStr))
     {
-        logger.writeInfo(" DONE");
-        isProjectLoaded = true;
-        return CRIT3D_OK;
+        logger.writeError(QString::fromStdString(errorStr));
+        return false;
     }
 
+    std::cout << "Done!";
+    return true;
 }
+
 
 bool CsvToShapeProject::readSettings()
 {
