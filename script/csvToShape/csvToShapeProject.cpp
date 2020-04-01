@@ -86,7 +86,7 @@ bool CsvToShapeProject::createShape()
         return false;
     }
 
-    std::cout << "Done!";
+    std::cout << "Done!\n";
     return true;
 }
 
