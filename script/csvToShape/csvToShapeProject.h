@@ -30,6 +30,9 @@ public:
     void closeProject();
     int initializeProject(QString settingsFileName);
     bool readSettings();
+
+    bool createShape();
 };
+
 
 #endif // CSVTOSHAPEPROJECT_H
