@@ -31,7 +31,9 @@ int main(int argc, char *argv[])
         meteoPoint.setMeteoPointValueD(date, dailyPrecipitation, prec);
     }
     Crit3DMeteoWidget w;
-    w.draw(&meteoPoint);
+    QVector<Crit3DMeteoPoint> mpVector;
+    mpVector.append(meteoPoint);
+    w.draw(mpVector);
     w.show();
 
     return a.exec();
