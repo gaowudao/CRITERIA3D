@@ -32,8 +32,9 @@ int main(int argc, char *argv[])
     }
     Crit3DMeteoWidget w;
     QVector<Crit3DMeteoPoint> mpVector;
+    frequencyType freq = daily;
     mpVector.append(meteoPoint);
-    w.draw(mpVector);
+    w.draw(mpVector, freq);
     w.show();
 
     return a.exec();
