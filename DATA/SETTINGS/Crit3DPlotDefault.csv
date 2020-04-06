@@ -1,0 +1,5 @@
+var,type,color
+DAILY_TMIN,line,cyan
+DAILY_TMAX,line,red
+DAILY_TAVG,line,darkGreen
+DAILY_PREC,bar,blue

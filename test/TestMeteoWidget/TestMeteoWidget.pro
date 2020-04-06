@@ -5,7 +5,7 @@
 #
 #-----------------------------------------------------------
 
-QT       += core gui widgets charts
+QT       += core gui widgets charts sql
 
 TEMPLATE = app
 
@@ -29,13 +29,14 @@ win32:{
     TARGET = TestMeteoWidget
 }
 
-INCLUDEPATH +=  ../../agrolib/crit3dDate ../../agrolib/mathFunctions \
+INCLUDEPATH +=  ../../agrolib/crit3dDate ../../agrolib/mathFunctions ../../agrolib/gis \
                 ../../agrolib/meteo ../../agrolib/utilities ../../agrolib/meteoWidget
 
 CONFIG(debug, debug|release) {
     LIBS += -L../../agrolib/meteoWidget/debug -lmeteoWidget
     LIBS += -L../../agrolib/utilities/debug -lutilities
     LIBS += -L../../agrolib/meteo/debug -lmeteo
+    LIBS += -L../../agrolib/gis/debug -lgis
     LIBS += -L../../agrolib/mathFunctions/debug -lmathFunctions
     LIBS += -L../../agrolib/crit3dDate/debug -lcrit3dDate
 } else {
@@ -43,6 +44,7 @@ CONFIG(debug, debug|release) {
     LIBS += -L../../agrolib/meteoWidget/release -lcropWidget
     LIBS += -L../../agrolib/utilities/release -lutilities
     LIBS += -L../../agrolib/meteo/release -lmeteo
+    LIBS += -L../../agrolib/gis/release -lgis
     LIBS += -L../../agrolib/mathFunctions/release -lmathFunctions
     LIBS += -L../../agrolib/crit3dDate/release -lcrit3dDate
 }
