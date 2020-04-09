@@ -30,9 +30,21 @@ int main(int argc, char *argv[])
         meteoPoint.setMeteoPointValueD(date, dailyAirTemperatureAvg, tavg);
         meteoPoint.setMeteoPointValueD(date, dailyPrecipitation, prec);
     }
+    meteoPoint.initializeObsDataH(1, 15, firstDate);
+    Crit3DTime firstDateTime(firstDate, 0);
+    lastDate = firstDate.addDays(15);
+    Crit3DTime lastDateTime(lastDate, 0);
+    for (Crit3DTime date = firstDateTime; date <= lastDateTime; date=date.addSeconds(3600))
+    {
+        for (int i = 0; i<24; i++)
+        {
+            prec = QRandomGenerator::global()->generateDouble()*10+1;
+            tavg = 10;
+            meteoPoint.setMeteoPointValueH(date.date, i, 0, airTemperature, tavg);
+            meteoPoint.setMeteoPointValueH(date.date, i, 0, precipitation, prec);
+        }
+    }
     Crit3DMeteoWidget w;
-    //QVector<Crit3DMeteoPoint> mpVector;
-    //mpVector.append(meteoPoint);
     w.draw(meteoPoint);
     w.show();
 
