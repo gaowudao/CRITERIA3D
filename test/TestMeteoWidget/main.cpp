@@ -17,6 +17,7 @@ int main(int argc, char *argv[])
     float tmax;
     float tavg;
     float prec;
+    float airRel;
     meteoPoint.initializeObsDataD(365,firstDate);
 
     for (Crit3DDate date = firstDate; date <= lastDate; ++date)
@@ -24,11 +25,13 @@ int main(int argc, char *argv[])
         tmin = QRandomGenerator::global()->generateDouble()*10+2;
         tmax = QRandomGenerator::global()->generateDouble()*10+5;
         prec = QRandomGenerator::global()->generateDouble()*10+1;
+        airRel = 5;
         tavg = (tmin+tmax)/2;
         meteoPoint.setMeteoPointValueD(date, dailyAirTemperatureMin, tmin);
         meteoPoint.setMeteoPointValueD(date, dailyAirTemperatureMax, tmax);
         meteoPoint.setMeteoPointValueD(date, dailyAirTemperatureAvg, tavg);
         meteoPoint.setMeteoPointValueD(date, dailyPrecipitation, prec);
+        meteoPoint.setMeteoPointValueD(date, dailyAirRelHumidityAvg, airRel);
     }
     meteoPoint.initializeObsDataH(1, 15, firstDate);
     Crit3DTime firstDateTime(firstDate, 0);
@@ -40,8 +43,10 @@ int main(int argc, char *argv[])
         {
             prec = QRandomGenerator::global()->generateDouble()*10+1;
             tavg = 10;
+            airRel = 2;
             meteoPoint.setMeteoPointValueH(date.date, i, 0, airTemperature, tavg);
             meteoPoint.setMeteoPointValueH(date.date, i, 0, precipitation, prec);
+            meteoPoint.setMeteoPointValueH(date.date, i, 0, airRelHumidity, airRel);
         }
     }
     Crit3DMeteoWidget w;
