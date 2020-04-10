@@ -5,7 +5,7 @@
 #include "commonConstants.h"
 #include "utilities.h"
 
-#define TEST
+//#define TEST
 
 
 int main(int argc, char *argv[])
@@ -26,9 +26,9 @@ int main(int argc, char *argv[])
                 if (! searchDataPath(&path)) return -1;
                 //settingsFileName = path + "PROJECT/kiwifruit/kiwifruit.ini";
                 //settingsFileName = path + "PROJECT/Incolto/Incolto.ini";
-                settingsFileName = path + "PROJECT/CLARA/CLARA.ini";
+                settingsFileName = path + "PROJECT/CLARA/seasonalIrriClimate.ini";
         #else
-                myProject->logInfo("USAGE: CRITERIA1D settings.ini");
+                myProject.logInfo("USAGE: CRITERIA1D settings.ini");
                 return ERROR_SETTINGS_MISSING;
         #endif
     }

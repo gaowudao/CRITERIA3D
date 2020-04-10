@@ -344,7 +344,7 @@ bool Criteria1DProject::initializeCsvOutputFile()
         if (irrForecast.isShortTermForecast)
         {
             outputCsvFileName = outputCsvFileName.left(outputCsvFileName.length()-4);
-            outputCsvFileName += "_" + QDate::currentDate().toString("yyyyMMdd") + ".csv";
+            outputCsvFileName += "_" + QDate::currentDate().toString("yyyy-MM-dd") + ".csv";
         }
 
         outputFile.open(outputCsvFileName.toStdString().c_str(), std::ios::out | std::ios::trunc);
