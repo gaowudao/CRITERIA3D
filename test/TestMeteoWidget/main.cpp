@@ -11,6 +11,7 @@ int main(int argc, char *argv[])
 
     // test fill meteoPoint with random series
     Crit3DMeteoPoint meteoPoint;
+    Crit3DMeteoPoint meteoPointSecond;
     Crit3DDate firstDate = Crit3DDate(1, 1, 2018);
     Crit3DDate lastDate = Crit3DDate(31, 12, 2018);
     float tmin;
@@ -19,7 +20,7 @@ int main(int argc, char *argv[])
     float prec;
     float airRel;
     meteoPoint.initializeObsDataD(365,firstDate);
-
+    meteoPointSecond.initializeObsDataD(365,firstDate);
     for (Crit3DDate date = firstDate; date <= lastDate; ++date)
     {
         tmin = QRandomGenerator::global()->generateDouble()*10+2;
@@ -32,6 +33,16 @@ int main(int argc, char *argv[])
         meteoPoint.setMeteoPointValueD(date, dailyAirTemperatureAvg, tavg);
         meteoPoint.setMeteoPointValueD(date, dailyPrecipitation, prec);
         meteoPoint.setMeteoPointValueD(date, dailyAirRelHumidityAvg, airRel);
+
+        tmin = QRandomGenerator::global()->generateDouble()*10+2;
+        tmax = QRandomGenerator::global()->generateDouble()*10+5;
+        prec = QRandomGenerator::global()->generateDouble()*10+1;
+        tavg = (tmin+tmax)/2;
+
+        meteoPointSecond.setMeteoPointValueD(date, dailyAirTemperatureMin, tmin);
+        meteoPointSecond.setMeteoPointValueD(date, dailyAirTemperatureMax, tmax);
+        meteoPointSecond.setMeteoPointValueD(date, dailyAirTemperatureAvg, tavg);
+        meteoPoint.setMeteoPointValueD(date, dailyPrecipitation, prec);
     }
     meteoPoint.initializeObsDataH(1, 15, firstDate);
     Crit3DTime firstDateTime(firstDate, 0);
@@ -51,6 +62,7 @@ int main(int argc, char *argv[])
     }
     Crit3DMeteoWidget w;
     w.draw(meteoPoint);
+    //w.draw(meteoPointSecond);
     w.show();
 
     return a.exec();
