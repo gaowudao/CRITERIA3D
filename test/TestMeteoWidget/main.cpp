@@ -27,7 +27,8 @@ int main(int argc, char *argv[])
         tmax = QRandomGenerator::global()->generateDouble()*10+5;
         prec = QRandomGenerator::global()->generateDouble()*10+1;
         airRel = 5;
-        tavg = (tmin+tmax)/2;
+        //tavg = (tmin+tmax)/2;
+        tavg = 10;
         meteoPoint.setMeteoPointValueD(date, dailyAirTemperatureMin, tmin);
         meteoPoint.setMeteoPointValueD(date, dailyAirTemperatureMax, tmax);
         meteoPoint.setMeteoPointValueD(date, dailyAirTemperatureAvg, tavg);
@@ -37,7 +38,8 @@ int main(int argc, char *argv[])
         tmin = QRandomGenerator::global()->generateDouble()*10+2;
         tmax = QRandomGenerator::global()->generateDouble()*10+5;
         prec = QRandomGenerator::global()->generateDouble()*10+1;
-        tavg = (tmin+tmax)/2;
+        //tavg = (tmin+tmax)/2;
+        tavg = 10;
 
         meteoPointSecond.setMeteoPointValueD(date, dailyAirTemperatureMin, tmin);
         meteoPointSecond.setMeteoPointValueD(date, dailyAirTemperatureMax, tmax);
@@ -62,8 +64,9 @@ int main(int argc, char *argv[])
     }
     Crit3DMeteoWidget w;
     w.draw(meteoPoint);
-    //w.draw(meteoPointSecond);
     w.show();
+    //w.draw(meteoPointSecond);
+
 
     return a.exec();
 }
