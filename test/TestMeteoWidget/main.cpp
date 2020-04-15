@@ -35,6 +35,9 @@ int main(int argc, char *argv[])
         {
             meteoPoint.setMeteoPointValueD(date, dailyAirTemperatureAvg, 7);
             meteoPoint.setMeteoPointValueD(date, dailyPrecipitation, 15);
+
+            meteoPointSecond.setMeteoPointValueD(date, dailyAirTemperatureAvg, 2);
+            meteoPointSecond.setMeteoPointValueD(date, dailyPrecipitation, 25);
         }
         else
         {
