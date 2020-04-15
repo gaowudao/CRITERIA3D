@@ -31,11 +31,19 @@ int main(int argc, char *argv[])
         airRel = 5;
         //tavg = (tmin+tmax)/2;
         tavg = 10;
-        meteoPoint.setMeteoPointValueD(date, dailyAirTemperatureMin, tmin);
-        meteoPoint.setMeteoPointValueD(date, dailyAirTemperatureMax, tmax);
-        meteoPoint.setMeteoPointValueD(date, dailyAirTemperatureAvg, tavg);
-        meteoPoint.setMeteoPointValueD(date, dailyPrecipitation, prec);
-        meteoPoint.setMeteoPointValueD(date, dailyAirRelHumidityAvg, airRel);
+        if (date.month == 3 && date.day == 1)
+        {
+            meteoPoint.setMeteoPointValueD(date, dailyAirTemperatureAvg, 7);
+            meteoPoint.setMeteoPointValueD(date, dailyPrecipitation, 15);
+        }
+        else
+        {
+            meteoPoint.setMeteoPointValueD(date, dailyAirTemperatureMin, tmin);
+            meteoPoint.setMeteoPointValueD(date, dailyAirTemperatureMax, tmax);
+            meteoPoint.setMeteoPointValueD(date, dailyAirTemperatureAvg, tavg);
+            meteoPoint.setMeteoPointValueD(date, dailyPrecipitation, prec);
+            meteoPoint.setMeteoPointValueD(date, dailyAirRelHumidityAvg, airRel);
+        }
 
         tmin = QRandomGenerator::global()->generateDouble()*10+2;
         tmax = QRandomGenerator::global()->generateDouble()*10+5;
@@ -46,7 +54,7 @@ int main(int argc, char *argv[])
         meteoPointSecond.setMeteoPointValueD(date, dailyAirTemperatureMin, tmin);
         meteoPointSecond.setMeteoPointValueD(date, dailyAirTemperatureMax, tmax);
         meteoPointSecond.setMeteoPointValueD(date, dailyAirTemperatureAvg, tavg);
-        meteoPoint.setMeteoPointValueD(date, dailyPrecipitation, prec);
+
     }
     meteoPoint.initializeObsDataH(1, 15, firstDate);
     Crit3DTime firstDateTime(firstDate, 0);
