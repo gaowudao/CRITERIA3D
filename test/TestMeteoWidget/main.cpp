@@ -58,7 +58,7 @@ int main(int argc, char *argv[])
         meteoPointSecond.setMeteoPointValueD(date, dailyAirTemperatureMax, tmax);
         meteoPointSecond.setMeteoPointValueD(date, dailyAirTemperatureAvg, tavg);
 
-    }
+    }/*
     meteoPoint.initializeObsDataH(1, 15, firstDate);
     Crit3DTime firstDateTime(firstDate, 0);
     lastDate = firstDate.addDays(15);
@@ -75,6 +75,7 @@ int main(int argc, char *argv[])
             meteoPoint.setMeteoPointValueH(date.date, i, 0, airRelHumidity, airRel);
         }
     }
+    */
     Crit3DMeteoWidget w;
     qDebug() << "--------------------------------";
     w.draw(meteoPoint);
