@@ -81,7 +81,7 @@ int main(int argc, char *argv[])
     w.draw(meteoPoint);
     w.show();
     qDebug() << "--------------------------------";
-    w.draw(meteoPointSecond);
+    //w.draw(meteoPointSecond);
 
 
     return a.exec();
