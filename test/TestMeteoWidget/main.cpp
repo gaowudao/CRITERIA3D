@@ -31,7 +31,15 @@ int main(int argc, char *argv[])
         airRel = 5;
         //tavg = (tmin+tmax)/2;
         tavg = 10;
-        if (date.month == 3 && date.day == 1)
+        if (date.month == 1 && date.day == 1)
+        {
+            meteoPoint.setMeteoPointValueD(date, dailyAirTemperatureAvg, 3);
+        }
+        else if (date.month == 1 && date.day == 2)
+        {
+            meteoPoint.setMeteoPointValueD(date, dailyAirTemperatureAvg, 5);
+        }
+        else if (date.month == 3 && date.day == 1)
         {
             meteoPoint.setMeteoPointValueD(date, dailyAirTemperatureAvg, 7);
             meteoPoint.setMeteoPointValueD(date, dailyPrecipitation, 15);
@@ -58,7 +66,7 @@ int main(int argc, char *argv[])
         meteoPointSecond.setMeteoPointValueD(date, dailyAirTemperatureMax, tmax);
         meteoPointSecond.setMeteoPointValueD(date, dailyAirTemperatureAvg, tavg);
 
-    }/*
+    }
     meteoPoint.initializeObsDataH(1, 15, firstDate);
     Crit3DTime firstDateTime(firstDate, 0);
     lastDate = firstDate.addDays(15);
@@ -75,7 +83,7 @@ int main(int argc, char *argv[])
             meteoPoint.setMeteoPointValueH(date.date, i, 0, airRelHumidity, airRel);
         }
     }
-    */
+
     Crit3DMeteoWidget w;
     qDebug() << "--------------------------------";
     w.draw(meteoPoint);
