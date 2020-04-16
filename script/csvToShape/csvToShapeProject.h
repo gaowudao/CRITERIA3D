@@ -23,7 +23,6 @@ public:
     QString csv_data;
     QString csv_format;
     QString output_shape;
-    QString logFileName;
     Logger logger;
     CsvToShapeProject();  
     void initialize();

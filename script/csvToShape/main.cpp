@@ -4,8 +4,9 @@
 #include "commonConstants.h"
 #include "csvToShapeProject.h"
 #include "utilities.h"
+#include <iostream>
 
-#define TEST
+//#define TEST
 
 
 int main(int argc, char *argv[])
@@ -22,10 +23,10 @@ int main(int argc, char *argv[])
     {
         #ifdef TEST
                 if (! searchDataPath(&myProject.dataPath)) return -1;
-                settingsFileName = myProject.dataPath + "PROJECT/CLARA/csvToShapeInputOutput/csvToShape.ini";
+                settingsFileName = "C:/CRITERIA1D/PROJECTS/CLARA/csvToShapeInputOutput/csvToShape.ini";
         #else
-                logInfo("USAGE: CRITERIA1D settings.ini");
-                return ERROR_SETTINGS_MISSING;
+                std::cout << "USAGE: CRITERIA1D settings.ini\n";
+                return -1;
         #endif
     }
 

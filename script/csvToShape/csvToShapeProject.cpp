@@ -6,6 +6,7 @@
 #include <QDir>
 #include <QSettings>
 #include <iostream>
+#include "utilities.h"
 
 CsvToShapeProject::CsvToShapeProject()
 {
@@ -20,8 +21,6 @@ void CsvToShapeProject::initialize()
     csv_data = "";
     csv_format = "";
     output_shape = "";
-    logFileName = "";
-
 }
 
 void CsvToShapeProject::closeProject()
@@ -66,7 +65,6 @@ int CsvToShapeProject::initializeProject(QString settingsFileName)
 
     isProjectLoaded = true;
 
-    logger.setLog(path,logFileName);
     return CRIT3D_OK;
 }
 
@@ -110,6 +108,9 @@ bool CsvToShapeProject::readSettings()
     }
 
     csv_data = projectSettings->value("csv_data","").toString();
+    QString fileName = getFileName(csv_data);
+    QString dateStr = QDate::currentDate().toString("yyyy-MM-dd");
+    csv_data += "_" + dateStr + ".csv";
     if (csv_data.left(1) == ".")
     {
         csv_data = path + QDir::cleanPath(csv_data);
@@ -119,7 +120,7 @@ bool CsvToShapeProject::readSettings()
         csv_data = dataPath + QDir::cleanPath(csv_data);
     }
 
-    csv_format = projectSettings->value("csv_format","").toString();
+    csv_format = projectSettings->value("csv_format", "").toString();
     if (csv_format.left(1) == ".")
     {
         csv_format = path + QDir::cleanPath(csv_format);
@@ -129,18 +130,22 @@ bool CsvToShapeProject::readSettings()
         csv_format = dataPath + QDir::cleanPath(csv_format);
     }
 
-    output_shape = projectSettings->value("output_shape","").toString();
-    if (output_shape.left(1) == ".")
+    // output directory
+    QString outputDir = projectSettings->value("output_dir", "").toString();
+    outputDir += dateStr;
+    if (outputDir.left(1) == ".")
     {
-        output_shape = path + QDir::cleanPath(output_shape);
+        outputDir = path + QDir::cleanPath(outputDir);
     }
     else
     {
-        output_shape = dataPath + QDir::cleanPath(output_shape);
+        outputDir = dataPath + QDir::cleanPath(outputDir);
     }
 
-    logFileName = projectSettings->value("logfile","").toString();
-    logFileName = QDir::cleanPath(logFileName);
+    QDir myDir;
+    if (! myDir.exists(outputDir)) myDir.mkdir(outputDir);
+
+    output_shape += outputDir + "/" + fileName + "_" + dateStr + ".shp";
 
     projectSettings->endGroup();
     return true;
