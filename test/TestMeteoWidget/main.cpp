@@ -29,8 +29,8 @@ int main(int argc, char *argv[])
         tmax = QRandomGenerator::global()->generateDouble()*10+5;
         prec = QRandomGenerator::global()->generateDouble()*10+1;
         airRel = 5;
-        //tavg = (tmin+tmax)/2;
-        tavg = 10;
+        tavg = (tmin+tmax)/2;
+        //tavg = 10;
         if (date.month == 1 && date.day == 1)
         {
             meteoPoint.setMeteoPointValueD(date, dailyAirTemperatureAvg, 3);
