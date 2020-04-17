@@ -34,6 +34,7 @@ int main(int argc, char *argv[])
         if (date.month == 1 && date.day == 1)
         {
             meteoPoint.setMeteoPointValueD(date, dailyAirTemperatureAvg, 3);
+            meteoPoint.setMeteoPointValueD(date, dailyPrecipitation, 5);
         }
         else if (date.month == 1 && date.day == 2)
         {
