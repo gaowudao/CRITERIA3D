@@ -478,20 +478,24 @@ void Crit3DMeteoWidget::drawDailyVar()
 
     Crit3DDate firstCrit3DDate = getCrit3DDate(firstDate->date());
     Crit3DDate lastfirstCrit3DDate = getCrit3DDate(lastDate->date());
-    nDays = firstCrit3DDate.daysTo(lastfirstCrit3DDate);
+    nDays = firstCrit3DDate.daysTo(lastfirstCrit3DDate)+1;
 
     int step = formInfo.start("Compute model...", nDays);
     int cont = 0;
 
     categories.clear();
     categoriesVirtual.clear();
-    for (int day = 0; day<=nDays; day++)
+
+    int nrIntervals = 12;
+    double ratio = double(nDays) / double(nrIntervals);
+
+    for (int day = 0; day<nDays; day++)
     {
         myDate = firstCrit3DDate.addDays(day);
         categories.append(QString::number(day));
-        if (nDays>13)
+        if (nDays > nrIntervals)
         {
-            if (day % ( (nDays+1)/13) == 0)
+            if (fabs(fmod(day, ratio)) < 0.01)
             {
                 categoriesVirtual.append(getQDate(myDate).toString("MMM dd <br> yyyy"));
             }
