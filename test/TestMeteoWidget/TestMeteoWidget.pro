@@ -51,5 +51,9 @@ CONFIG(debug, debug|release) {
 
 
 SOURCES += \
+        console.cpp \
         main.cpp
  
+
+HEADERS += \
+    console.h

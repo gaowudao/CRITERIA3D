@@ -3,6 +3,8 @@
 #include "meteoWidget.h"
 #include "meteoPoint.h"
 #include "utilities.h"
+#include "console.h"
+
 #include <QRandomGenerator> // test
 #include <iostream>
 
@@ -84,14 +86,18 @@ int main(int argc, char *argv[])
         }
     }
 
-    std::cout << "opening window\n" << std::flush;
+    #ifdef _WIN32
+        attachOutputToConsole();
+    #endif
+
+    std::cout << "\n...Opening window\n" << std::flush;
     Crit3DMeteoWidget w;
 
-    std::cout << "draw data p1\n" << std::flush;
+    std::cout << "...draw data p1\n" << std::flush;
     w.draw(meteoPoint);
     w.show();
 
-    std::cout << "draw data p2\n" << std::flush;
+    std::cout << "...draw data p2\n" << std::flush;
     w.draw(meteoPointSecond);
 
     return a.exec();
