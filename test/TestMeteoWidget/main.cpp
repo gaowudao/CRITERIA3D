@@ -90,7 +90,7 @@ int main(int argc, char *argv[])
         attachOutputToConsole();
     #endif
 
-    std::cout << "\n...Opening window\n" << std::flush;
+    std::cout << "\n...Create window\n" << std::flush;
     Crit3DMeteoWidget w;
 
     std::cout << "...draw data p1\n" << std::flush;
