@@ -62,6 +62,7 @@ int main(int argc, char *argv[])
             meteoPointSecond.setMeteoPointValueD(date, dailyAirTemperatureMin, tmin*0.8);
             meteoPointSecond.setMeteoPointValueD(date, dailyAirTemperatureMax, tmax*0.8);
             meteoPointSecond.setMeteoPointValueD(date, dailyAirTemperatureAvg, tavg*0.8);
+            meteoPointSecond.setMeteoPointValueD(date, dailyPrecipitation, prec*0.8);
         }
 
     }
