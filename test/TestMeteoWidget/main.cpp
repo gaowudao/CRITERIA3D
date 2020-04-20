@@ -30,15 +30,18 @@ int main(int argc, char *argv[])
         prec = QRandomGenerator::global()->generateDouble()*10+1;
         airRel = 5;
         tavg = (tmin+tmax)/2;
-        //tavg = 10;
+
         if (date.month == 1 && date.day == 1)
         {
             meteoPoint.setMeteoPointValueD(date, dailyAirTemperatureAvg, 3);
             meteoPoint.setMeteoPointValueD(date, dailyPrecipitation, 5);
+            meteoPointSecond.setMeteoPointValueD(date, dailyAirTemperatureAvg, 4);
+            meteoPointSecond.setMeteoPointValueD(date, dailyPrecipitation, 6);
         }
         else if (date.month == 1 && date.day == 2)
         {
             meteoPoint.setMeteoPointValueD(date, dailyAirTemperatureAvg, 5);
+            meteoPointSecond.setMeteoPointValueD(date, dailyAirTemperatureAvg, 7);
         }
         else if (date.month == 3 && date.day == 1)
         {
@@ -55,17 +58,11 @@ int main(int argc, char *argv[])
             meteoPoint.setMeteoPointValueD(date, dailyAirTemperatureAvg, tavg);
             meteoPoint.setMeteoPointValueD(date, dailyPrecipitation, prec);
             meteoPoint.setMeteoPointValueD(date, dailyAirRelHumidityAvg, airRel);
+
+            meteoPointSecond.setMeteoPointValueD(date, dailyAirTemperatureMin, tmin*0.8);
+            meteoPointSecond.setMeteoPointValueD(date, dailyAirTemperatureMax, tmax*0.8);
+            meteoPointSecond.setMeteoPointValueD(date, dailyAirTemperatureAvg, tavg*0.8);
         }
-
-        tmin = QRandomGenerator::global()->generateDouble()*10+2;
-        tmax = QRandomGenerator::global()->generateDouble()*10+5;
-        prec = QRandomGenerator::global()->generateDouble()*10+1;
-        //tavg = (tmin+tmax)/2;
-        tavg = 5;
-
-        meteoPointSecond.setMeteoPointValueD(date, dailyAirTemperatureMin, tmin);
-        meteoPointSecond.setMeteoPointValueD(date, dailyAirTemperatureMax, tmax);
-        meteoPointSecond.setMeteoPointValueD(date, dailyAirTemperatureAvg, tavg);
 
     }
     meteoPoint.initializeObsDataH(1, 15, firstDate);
@@ -90,7 +87,7 @@ int main(int argc, char *argv[])
     w.draw(meteoPoint);
     w.show();
     //qDebug() << "--------------------------------";
-    //w.draw(meteoPointSecond);
+    w.draw(meteoPointSecond);
 
 
     return a.exec();
