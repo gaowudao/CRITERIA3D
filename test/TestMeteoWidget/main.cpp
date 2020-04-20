@@ -93,9 +93,11 @@ int main(int argc, char *argv[])
     std::cout << "\n...Create window\n" << std::flush;
     Crit3DMeteoWidget w;
 
+    std::cout << "...Show window\n" << std::flush;
+    w.show();
+
     std::cout << "...draw data p1\n" << std::flush;
     w.draw(meteoPoint);
-    w.show();
 
     std::cout << "...draw data p2\n" << std::flush;
     w.draw(meteoPointSecond);
