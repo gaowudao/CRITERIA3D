@@ -41,7 +41,7 @@ CONFIG(debug, debug|release) {
     LIBS += -L../../agrolib/crit3dDate/debug -lcrit3dDate
 } else {
 
-    LIBS += -L../../agrolib/meteoWidget/release -lcropWidget
+    LIBS += -L../../agrolib/meteoWidget/release -lmeteoWidget
     LIBS += -L../../agrolib/utilities/release -lutilities
     LIBS += -L../../agrolib/meteo/release -lmeteo
     LIBS += -L../../agrolib/gis/release -lgis
