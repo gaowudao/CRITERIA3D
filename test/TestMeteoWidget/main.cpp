@@ -4,6 +4,7 @@
 #include "meteoPoint.h"
 #include "utilities.h"
 #include <QRandomGenerator> // test
+#include <iostream>
 
 int main(int argc, char *argv[])
 {
@@ -83,13 +84,15 @@ int main(int argc, char *argv[])
         }
     }
 
+    std::cout << "opening window\n" << std::flush;
     Crit3DMeteoWidget w;
-    qDebug() << "--------------------------------";
+
+    std::cout << "draw data p1\n" << std::flush;
     w.draw(meteoPoint);
     w.show();
-    //qDebug() << "--------------------------------";
-    w.draw(meteoPointSecond);
 
+    std::cout << "draw data p2\n" << std::flush;
+    w.draw(meteoPointSecond);
 
     return a.exec();
 }
