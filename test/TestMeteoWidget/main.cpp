@@ -78,11 +78,12 @@ int main(int argc, char *argv[])
         for (int i = 0; i<24; i++)
         {
             prec = QRandomGenerator::global()->generateDouble()*10+1;
-            tavg = 10;
-            airRel = 2;
+            tmin = QRandomGenerator::global()->generateDouble()*10+2;
+            tmax = QRandomGenerator::global()->generateDouble()*10+5;
+            tavg = (tmin+tmax)/2;
+
             meteoPoint.setMeteoPointValueH(date.date, i, 0, airTemperature, tavg);
             meteoPoint.setMeteoPointValueH(date.date, i, 0, precipitation, prec);
-            meteoPoint.setMeteoPointValueH(date.date, i, 0, airRelHumidity, airRel);
         }
     }
 
@@ -99,8 +100,8 @@ int main(int argc, char *argv[])
     std::cout << "...draw data p1\n" << std::flush;
     w.draw(meteoPoint);
 
-    std::cout << "...draw data p2\n" << std::flush;
-    w.draw(meteoPointSecond);
+    //std::cout << "...draw data p2\n" << std::flush;
+    //w.draw(meteoPointSecond);
 
     return a.exec();
 }
