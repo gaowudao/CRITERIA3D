@@ -491,6 +491,9 @@ Crit3DCropWidget::Crit3DCropWidget()
 
 void Crit3DCropWidget::on_actionOpenProject()
 {
+    this->firstYearListComboBox.blockSignals(true);
+    this->lastYearListComboBox.blockSignals(true);
+
     checkCropUpdate();
 
     QString projFileName = QFileDialog::getOpenFileName(this, tr("Open Criteria-1D project"), "", tr("Settings files (*.ini)"));
@@ -520,6 +523,9 @@ void Crit3DCropWidget::on_actionOpenProject()
     openCropDB(newDbCropName);
     openMeteoDB(dbMeteoName);
     openSoilDB(dbSoilName);
+
+    this->firstYearListComboBox.blockSignals(false);
+    this->lastYearListComboBox.blockSignals(false);
 }
 
 
@@ -615,6 +621,7 @@ void Crit3DCropWidget::on_actionOpenMeteoDB()
 
 void Crit3DCropWidget::openMeteoDB(QString dbMeteoName)
 {
+
     QString error;
     if (! openDbMeteo(dbMeteoName, &dbMeteo, &error))
     {
@@ -630,6 +637,7 @@ void Crit3DCropWidget::openMeteoDB(QString dbMeteoName)
         return;
     }
 
+
     // show id_meteo list
     this->meteoListComboBox.clear();
     for (int i = 0; i < idMeteoList.size(); i++)
@@ -639,6 +647,7 @@ void Crit3DCropWidget::openMeteoDB(QString dbMeteoName)
     saveChanges->setEnabled(true);
     saveButton->setEnabled(true);
     updateButton->setEnabled(true);
+
 }
 
 
@@ -855,7 +864,6 @@ void Crit3DCropWidget::on_actionChooseMeteo(QString idMeteo)
     this->lastYearListComboBox.clear();
     this->yearList.clear();
     this->firstYearListComboBox.blockSignals(false);
-    this->lastYearListComboBox.blockSignals(false);
 
     myCase.meteoPoint.setId(idMeteo.toStdString());
     QString error, lat, lon;
@@ -896,12 +904,15 @@ void Crit3DCropWidget::on_actionChooseMeteo(QString idMeteo)
         }
     }
 
+    this->lastYearListComboBox.blockSignals(false);
+
 }
 
 
 void Crit3DCropWidget::on_actionChooseFirstYear(QString year)
 {
 
+    this->lastYearListComboBox.blockSignals(true);
     this->lastYearListComboBox.clear();
     // add first year
     this->lastYearListComboBox.addItem(year);
@@ -920,6 +931,7 @@ void Crit3DCropWidget::on_actionChooseFirstYear(QString year)
         }
     }
     updateMeteoPointValues();
+    this->lastYearListComboBox.blockSignals(false);
 }
 
 void Crit3DCropWidget::on_actionChooseLastYear(QString year)
