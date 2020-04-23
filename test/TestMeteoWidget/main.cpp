@@ -47,7 +47,7 @@ int main(int argc, char *argv[])
 
     first = mpHandler.getFirstDate(hourly);
     last = mpHandler.getLastDate(hourly);
-    lastDateYear = first.date().addDays(10);
+    lastDateYear = first.date().addDays(1000);
     if (last.date() < lastDateYear)
     {
         mpHandler.loadHourlyData(getCrit3DDate(first.date()), getCrit3DDate(last.date()), &meteoPoint);
