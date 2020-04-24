@@ -16,6 +16,7 @@ CsvToShapeProject::CsvToShapeProject()
 void CsvToShapeProject::initialize()
 {
     isProjectLoaded = false;
+    useCurrentDate = true;
 
     UCM = "";
     csv_data = "";
@@ -107,10 +108,15 @@ bool CsvToShapeProject::readSettings()
         UCM = dataPath + QDir::cleanPath(UCM);
     }
 
+    useCurrentDate= projectSettings->value("use_current_date","").toBool();
+
     csv_data = projectSettings->value("csv_data","").toString();
     QString fileName = getFileName(csv_data);
     QString dateStr = QDate::currentDate().toString("yyyy-MM-dd");
-    csv_data += "_" + dateStr + ".csv";
+
+    if (useCurrentDate)
+        csv_data += "_" + dateStr + ".csv";
+
     if (csv_data.left(1) == ".")
     {
         csv_data = path + QDir::cleanPath(csv_data);
@@ -145,7 +151,10 @@ bool CsvToShapeProject::readSettings()
     QDir myDir;
     if (! myDir.exists(outputDir)) myDir.mkdir(outputDir);
 
-    output_shape += outputDir + "/" + fileName + "_" + dateStr + ".shp";
+    if (useCurrentDate)
+        output_shape += outputDir + "/" + fileName + "_" + dateStr + ".shp";
+    else
+        output_shape += outputDir + "/" + fileName + ".shp";
 
     projectSettings->endGroup();
     return true;
