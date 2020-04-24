@@ -5,7 +5,6 @@
 #include "utilities.h"
 #include "console.h"
 
-#include <QRandomGenerator> // test
 #include "dbMeteoPointsHandler.h"
 #include <iostream>
 
