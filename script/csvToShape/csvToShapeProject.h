@@ -18,6 +18,7 @@ public:
     QString projectName;
     QString configFileName;
     QString projectError;
+    bool useCurrentDate;
 
     QString UCM;
     QString csv_data;
