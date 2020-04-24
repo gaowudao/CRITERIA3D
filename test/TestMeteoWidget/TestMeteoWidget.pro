@@ -30,10 +30,11 @@ win32:{
 }
 
 INCLUDEPATH +=  ../../agrolib/crit3dDate ../../agrolib/mathFunctions ../../agrolib/gis \
-                ../../agrolib/meteo ../../agrolib/utilities ../../agrolib/meteoWidget
+                ../../agrolib/meteo ../../agrolib/utilities ../../agrolib/interpolation ../../agrolib/dbMeteoPoints ../../agrolib/meteoWidget
 
 CONFIG(debug, debug|release) {
     LIBS += -L../../agrolib/meteoWidget/debug -lmeteoWidget
+    LIBS += -L../../agrolib/dbMeteoPoints/debug -ldbMeteoPoints
     LIBS += -L../../agrolib/utilities/debug -lutilities
     LIBS += -L../../agrolib/meteo/debug -lmeteo
     LIBS += -L../../agrolib/gis/debug -lgis
@@ -42,6 +43,7 @@ CONFIG(debug, debug|release) {
 } else {
 
     LIBS += -L../../agrolib/meteoWidget/release -lmeteoWidget
+    LIBS += -L../../agrolib/dbMeteoPoints/release -ldbMeteoPoints
     LIBS += -L../../agrolib/utilities/release -lutilities
     LIBS += -L../../agrolib/meteo/release -lmeteo
     LIBS += -L../../agrolib/gis/release -lgis
