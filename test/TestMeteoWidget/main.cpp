@@ -26,9 +26,11 @@ int main(int argc, char *argv[])
     // test fill meteoPoint with random series
     Crit3DMeteoPoint meteoPoint;
     Crit3DMeteoPoint meteoPointSecond;
+    Crit3DMeteoPoint meteoPointThird;
 
     meteoPoint.setId("10141");
     meteoPointSecond.setId("10");
+    meteoPointThird.setId("11");
 
     QDateTime first = mpHandler.getFirstDate(daily);
     QDateTime last = mpHandler.getLastDate(daily);
@@ -37,11 +39,13 @@ int main(int argc, char *argv[])
     {
         mpHandler.loadDailyData(getCrit3DDate(first.date()), getCrit3DDate(last.date()), &meteoPoint);
         mpHandler.loadDailyData(getCrit3DDate(first.date()), getCrit3DDate(last.date()), &meteoPointSecond);
+        mpHandler.loadDailyData(getCrit3DDate(first.date()), getCrit3DDate(last.date()), &meteoPointThird);
     }
     else
     {
         mpHandler.loadDailyData(getCrit3DDate(first.date()), getCrit3DDate(lastDateYear), &meteoPoint);
         mpHandler.loadDailyData(getCrit3DDate(first.date()), getCrit3DDate(lastDateYear), &meteoPointSecond);
+        mpHandler.loadDailyData(getCrit3DDate(first.date()), getCrit3DDate(lastDateYear), &meteoPointThird);
     }
 
     first = mpHandler.getFirstDate(hourly);
@@ -51,11 +55,13 @@ int main(int argc, char *argv[])
     {
         mpHandler.loadHourlyData(getCrit3DDate(first.date()), getCrit3DDate(last.date()), &meteoPoint);
         mpHandler.loadHourlyData(getCrit3DDate(first.date()), getCrit3DDate(last.date()), &meteoPointSecond);
+        mpHandler.loadHourlyData(getCrit3DDate(first.date()), getCrit3DDate(last.date()), &meteoPointThird);
     }
     else
     {
         mpHandler.loadHourlyData(getCrit3DDate(first.date()), getCrit3DDate(lastDateYear), &meteoPoint);
         mpHandler.loadHourlyData(getCrit3DDate(first.date()), getCrit3DDate(lastDateYear), &meteoPointSecond);
+        mpHandler.loadHourlyData(getCrit3DDate(first.date()), getCrit3DDate(lastDateYear), &meteoPointThird);
     }
 
     #ifdef _WIN32
@@ -73,6 +79,9 @@ int main(int argc, char *argv[])
 
     std::cout << "...draw data p2\n" << std::flush;
     w.draw(meteoPointSecond);
+
+    std::cout << "...draw data p3\n" << std::flush;
+    w.draw(meteoPointThird);
 
     return a.exec();
 }
