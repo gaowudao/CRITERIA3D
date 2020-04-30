@@ -89,12 +89,6 @@ bool computeDownyMildew(Vine3DProject* myProject, QDate firstDate, QDate lastDat
 
     QDate firstJanuary;
     firstJanuary.setDate(lastDate.year(), 1, 1);
-    //check last date - at least 3 hours
-    if (lastHour < 3)
-    {
-        lastDate = lastDate.addDays(-1);
-        lastHour = 23;
-    }
 
     unsigned lastDoy = unsigned(firstJanuary.daysTo(lastDate) + 1);
     unsigned firstDoy = unsigned(firstJanuary.daysTo(firstDate) + 1);

@@ -699,7 +699,7 @@ bool Project3D::aggregateAndSaveDailyMap(meteoVariable myVar, aggregationMethod 
                     gis::mapAlgebra(myAggrMap, myMap, myAggrMap, operationMin);
                 else if (myAggregation == aggrMax)
                     gis::mapAlgebra(myAggrMap, myMap, myAggrMap, operationMax);
-                else if (myAggregation == aggrSum || myAggregation == aggrAverage)
+                else if (myAggregation == aggrSum || myAggregation == aggrAverage || myAggregation == aggrIntegral)
                     gis::mapAlgebra(myAggrMap, myMap, myAggrMap, operationSum);
                 else
                 {

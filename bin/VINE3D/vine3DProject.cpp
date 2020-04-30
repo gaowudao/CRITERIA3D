@@ -877,6 +877,8 @@ bool Vine3DProject::loadDBPoints()
     int id;
     while (query.next())
     {
+        meteoPoints[i].active = true;
+
         id = query.value("id_point").toInt();
         meteoPoints[i].id = std::to_string(id);
         meteoPoints[i].name = query.value("name").toString().toStdString();
@@ -897,18 +899,14 @@ bool Vine3DProject::loadDBPoints()
 
     findVine3DLastMeteoDate();
 
-    // load proxy values for detrending
-    if (! readProxyValues())
+    if (dbConnection.isOpen())
     {
-        if (dbConnection.isOpen())
+        for (int i = 0; i < this->nrMeteoPoints; i++)
         {
-            for (int i = 0; i < this->nrMeteoPoints; i++)
+            if (! readPointProxyValues(&(this->meteoPoints[i]), &(this->dbConnection)))
             {
-                if (! readPointProxyValues(&(this->meteoPoints[i]), &(this->dbConnection)))
-                {
-                    logError("Error reading proxy values");
-                    return false;
-                }
+                logError("Error reading proxy values");
+                return false;
             }
         }
     }
@@ -1424,7 +1422,7 @@ bool Vine3DProject::runModels(QDateTime dateTime1, QDateTime dateTime2, bool sav
                 aggregateAndSaveDailyMap(airRelHumidity, aggrMax, getCrit3DDate(myDate), myOutputPathDaily, myOutputPathHourly, myArea);
                 aggregateAndSaveDailyMap(airRelHumidity, aggrAverage, getCrit3DDate(myDate), myOutputPathDaily, myOutputPathHourly, myArea);
                 aggregateAndSaveDailyMap(windScalarIntensity, aggrAverage, getCrit3DDate(myDate), myOutputPathDaily, myOutputPathHourly, myArea);
-                aggregateAndSaveDailyMap(globalIrradiance, aggrSum, getCrit3DDate(myDate), myOutputPathDaily, myOutputPathHourly, myArea);
+                aggregateAndSaveDailyMap(globalIrradiance, aggrIntegral, getCrit3DDate(myDate), myOutputPathDaily, myOutputPathHourly, myArea);
                 aggregateAndSaveDailyMap(leafWetness, aggrSum, getCrit3DDate(myDate), myOutputPathDaily, myOutputPathHourly, myArea);
 
                 if (removeDirectory(myOutputPathHourly)) this->logInfo("Delete hourly files");
