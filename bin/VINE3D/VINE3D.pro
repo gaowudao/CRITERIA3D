@@ -15,7 +15,8 @@ TEMPLATE = app
 
 DEFINES += VINE3D
 
-INCLUDEPATH +=  ../../agrolib/crit3dDate ../../agrolib/mathFunctions ../../agrolib/gis ../../agrolib/meteo \
+INCLUDEPATH +=  ../../mapGraphics \
+                ../../agrolib/crit3dDate ../../agrolib/mathFunctions ../../agrolib/gis ../../agrolib/meteo \
                 ../../agrolib/interpolation ../../agrolib/solarRadiation ../../agrolib/soil  \
                 ../../agrolib/soilFluxes3D/header ../../agrolib/crop ../../agrolib/grapevine \
                 ../../agrolib/utilities ../../agrolib/dbMeteoPoints ../../agrolib/dbMeteoGrid \
@@ -25,7 +26,16 @@ INCLUDEPATH +=  ../../agrolib/crit3dDate ../../agrolib/mathFunctions ../../agrol
 CONFIG += debug_and_release
 
 
-LIBS += -L../../mapGraphics/release -lMapGraphics
+    win32:{
+        CONFIG(debug, debug|release) {
+            LIBS += -L../../mapGraphics/debug -lMapGraphics
+        } else {
+            LIBS += -L../../mapGraphics/release -lMapGraphics
+        }
+    }
+    unix:{
+        LIBS += -L../mapGraphics/release -lMapGraphics
+    }
 
 
 CONFIG(debug, debug|release) {
