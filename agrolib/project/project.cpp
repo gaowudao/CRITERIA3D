@@ -49,6 +49,7 @@ void Project::initializeProject()
     meteoPointsDbHandler = nullptr;
     meteoGridDbHandler = nullptr;
     aggregationDbHandler = nullptr;
+    meteoWidget = nullptr;
 
     meteoSettings->initialize();
     quality->initialize();
@@ -92,6 +93,7 @@ void Project::clearProject()
     delete parameters;
     delete projectSettings;
     delete aggregationDbHandler;
+    delete meteoWidget;
 
     clearProxyDEM();
     DEM.clear();
@@ -2122,6 +2124,31 @@ void Project::importHourlyMeteoData(const QString& csvFileName, bool importAllFi
         else
             logError(myLog);
     }
+}
+
+void Project::showMeteoWidgt(std::string idMeteoPoint)
+{
+
+    QDate firstDaily = meteoPointsDbHandler->getFirstDate(daily).date();
+    QDate lastDaily = meteoPointsDbHandler->getLastDate(daily).date();
+
+    QDateTime firstHourly = meteoPointsDbHandler->getFirstDate(hourly);
+    QDateTime lastHourly = meteoPointsDbHandler->getLastDate(hourly);
+
+    if (meteoWidget == nullptr)
+    {
+        meteoWidget = new Crit3DMeteoWidget();
+    }
+    for (int i=0; i < nrMeteoPoints; i++)
+    {
+        if (meteoPoints[i].id == idMeteoPoint)
+        {
+            meteoPointsDbHandler->loadDailyData(getCrit3DDate(firstDaily), getCrit3DDate(lastDaily), &(meteoPoints[i]));
+            meteoPointsDbHandler->loadHourlyData(getCrit3DDate(firstHourly.date()), getCrit3DDate(lastHourly.date()), &(meteoPoints[i]));
+            meteoWidget->draw(meteoPoints[i]);
+        }
+    }
+
 }
 
 
