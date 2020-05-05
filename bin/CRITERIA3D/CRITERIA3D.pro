@@ -23,7 +23,7 @@ INCLUDEPATH +=  ./shared  \
                 ../../agrolib/interpolation ../../agrolib/solarRadiation  \
                 ../../agrolib/soilWidget ../../agrolib/utilities  \
                 ../../agrolib/dbMeteoPoints ../../agrolib/dbMeteoGrid \
-                ../../agrolib/project ../../agrolib/graphics
+                ../../agrolib/project ../../agrolib/graphics ../../meteoWidget
 
 unix:{
     INCLUDEPATH += /usr/include/qwt/
