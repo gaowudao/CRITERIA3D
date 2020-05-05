@@ -90,8 +90,8 @@ bool computeDownyMildew(Vine3DProject* myProject, QDate firstDate, QDate lastDat
     QDate firstJanuary;
     firstJanuary.setDate(lastDate.year(), 1, 1);
 
-    unsigned lastDoy = unsigned(firstJanuary.daysTo(lastDate) + 1);
-    unsigned firstDoy = unsigned(firstJanuary.daysTo(firstDate) + 1);
+    int lastDoy = firstJanuary.daysTo(lastDate) + 1;
+    int firstDoy = firstJanuary.daysTo(firstDate) + 1;
 
     //check vegetative season
     if ((lastDoy < VEGETATIVESTART) || (firstDoy >= VEGETATIVEEND))

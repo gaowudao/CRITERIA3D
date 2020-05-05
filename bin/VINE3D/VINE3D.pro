@@ -8,7 +8,7 @@
 #
 #-----------------------------------------------------
 
-QT  += core gui widgets xml sql network
+QT  += core gui widgets charts xml sql network
 
 TARGET = VINE3D
 TEMPLATE = app
@@ -21,7 +21,7 @@ INCLUDEPATH +=  ../../mapGraphics \
                 ../../agrolib/soilFluxes3D/header ../../agrolib/crop ../../agrolib/grapevine \
                 ../../agrolib/utilities ../../agrolib/dbMeteoPoints ../../agrolib/dbMeteoGrid \
                 ../../agrolib/project ../../agrolib/graphics  \
-                ../../mapGraphics ../CRITERIA3D/shared
+                ../../mapGraphics ../../agrolib/meteoWidget ../CRITERIA3D/shared
 
 CONFIG += debug_and_release
 
@@ -39,7 +39,7 @@ CONFIG += debug_and_release
 
 
 CONFIG(debug, debug|release) {
-
+    LIBS += -L../../agrolib/meteoWidget/debug -lmeteoWidget
     LIBS += -L../../agrolib/project/debug -lproject
     LIBS += -L../../agrolib/soil/debug -lsoil
     LIBS += -L../../agrolib/soilFluxes3D/debug -lsoilFluxes3D
@@ -54,7 +54,7 @@ CONFIG(debug, debug|release) {
     LIBS += -L../../agrolib/crit3dDate/debug -lcrit3dDate
     LIBS += -L../../agrolib/mathFunctions/debug -lmathFunctions
 } else {
-
+    LIBS += -L../../agrolib/meteoWidget/release -lmeteoWidget
     LIBS += -L../../agrolib/project/release -lproject
     LIBS += -L../../agrolib/soil/release -lsoil
     LIBS += -L../../agrolib/soilFluxes3D/release -lsoilFluxes3D
