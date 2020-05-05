@@ -32,11 +32,13 @@
     #ifndef _FSTREAM_
         #include <fstream>
     #endif
-    #ifndef METEOWIDGET
+    #ifndef METEOWIDGET_H
         #include "meteoWidget.h"
     #endif
 
-    class Project {
+    class Project : public QObject {
+        Q_OBJECT
+
     private:
         QString appPath;
         QString defaultPath;
@@ -193,6 +195,9 @@
 
         gis::Crit3DRasterGrid* getHourlyMeteoRaster(meteoVariable myVar);
         void showMeteoWidgt(std::string idMeteoPoint);
+
+    private slots:
+        void deleteMeteoWidget();
 
     };
 
