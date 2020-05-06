@@ -88,6 +88,7 @@
 
         void updateMaps();
         void updateGUI();
+        void callMeteoWidget();
 
     protected:
         /*!
