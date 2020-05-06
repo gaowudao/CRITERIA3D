@@ -218,11 +218,13 @@ Crit3DMeteoWidget::Crit3DMeteoWidget()
     QLabel *labelEndDate = new QLabel(tr("End Date: "));
     firstDate = new QDateTimeEdit(QDate::currentDate());
     lastDate = new QDateTimeEdit(QDate::currentDate());
-    dailyButton->setMaximumWidth(this->width()/8);
-    hourlyButton->setMaximumWidth(this->width()/8);
-    addVarButton->setMaximumWidth(this->width()/8);
-    tableButton->setMaximumWidth(this->width()/8);
-    redrawButton->setMaximumWidth(this->width()/8);
+    dailyButton->setMaximumWidth(this->width()/9);
+    hourlyButton->setMaximumWidth(this->width()/9);
+    addVarButton->setMaximumWidth(this->width()/9);
+    tableButton->setMaximumWidth(this->width()/9);
+    redrawButton->setMaximumWidth(this->width()/9);
+    firstDate->setMaximumWidth(this->width()/9);
+    lastDate->setMaximumWidth(this->width()/9);
 
     if (currentFreq == daily || currentFreq == noFrequency)
     {
@@ -289,8 +291,8 @@ Crit3DMeteoWidget::Crit3DMeteoWidget()
     connect(hourlyButton, &QPushButton::clicked, [=](){ showHourlyGraph(); });
     connect(tableButton, &QPushButton::clicked, [=](){ showTable(); });
     connect(redrawButton, &QPushButton::clicked, [=](){ updateDate(); });
-    connect(firstDate, &QDateTimeEdit::editingFinished, [=](){ updateDate(); });
-    connect(lastDate, &QDateTimeEdit::editingFinished, [=](){ updateDate(); });
+    //connect(firstDate, &QDateTimeEdit::editingFinished, [=](){ updateDate(); });
+    //connect(lastDate, &QDateTimeEdit::editingFinished, [=](){ updateDate(); });
 
     plotLayout->addWidget(chartView);
     horizontalGroupBox->setLayout(buttonLayout);
@@ -483,6 +485,8 @@ void Crit3DMeteoWidget::drawDailyVar()
 {
 
     FormInfo formInfo;
+    formInfo.showInfo("Draw daily data...");
+
     firstDate->blockSignals(true);
     lastDate->blockSignals(true);
 
@@ -609,7 +613,6 @@ void Crit3DMeteoWidget::drawDailyVar()
 
     if (isLine)
     {
-        formInfo.showInfo("add series...");
         for (int mp=0; mp<nMeteoPoints;mp++)
         {
             if (isLine)
@@ -623,7 +626,6 @@ void Crit3DMeteoWidget::drawDailyVar()
                 }
             }
         }
-        formInfo.close();
 
         axisY->setVisible(true);
         axisY->setMax(maxLine);
@@ -699,12 +701,17 @@ void Crit3DMeteoWidget::drawDailyVar()
         marker->series()->setVisible(true);
         QObject::connect(marker, &QLegendMarker::clicked, this, &Crit3DMeteoWidget::handleMarkerClicked);
     }
+
+    formInfo.close();
 }
+
 
 void Crit3DMeteoWidget::drawHourlyVar()
 {
 
     FormInfo formInfo;
+    formInfo.showInfo("Draw hourly data...");
+
     firstDate->blockSignals(true);
     lastDate->blockSignals(true);
 
@@ -799,7 +806,6 @@ void Crit3DMeteoWidget::drawHourlyVar()
 
     if (isBar)
     {
-
         for (int mp=0; mp<nMeteoPoints;mp++)
         {
             QBarSeries* barMpSeries = new QBarSeries();
@@ -830,7 +836,6 @@ void Crit3DMeteoWidget::drawHourlyVar()
 
     if (isLine)
     {
-        formInfo.showInfo("add series...");
         for (int mp=0; mp<nMeteoPoints;mp++)
         {
             if (isLine)
@@ -844,7 +849,6 @@ void Crit3DMeteoWidget::drawHourlyVar()
                 }
             }
         }
-        formInfo.close();
 
         axisY->setVisible(true);
         axisY->setMax(maxLine);
@@ -854,7 +858,6 @@ void Crit3DMeteoWidget::drawHourlyVar()
     {
         axisY->setVisible(false);
     }
-
 
     axisX->setCategories(categories);
     axisXvirtual->setCategories(categoriesVirtual);
@@ -869,6 +872,8 @@ void Crit3DMeteoWidget::drawHourlyVar()
         marker->series()->setVisible(true);
         QObject::connect(marker, &QLegendMarker::clicked, this, &Crit3DMeteoWidget::handleMarkerClicked);
     }
+
+    formInfo.close();
 
 }
 
