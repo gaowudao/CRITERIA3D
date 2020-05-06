@@ -212,7 +212,8 @@ Crit3DMeteoWidget::Crit3DMeteoWidget()
     dailyButton = new QPushButton(tr("daily"));
     hourlyButton = new QPushButton(tr("hourly"));
     addVarButton = new QPushButton(tr("+/- var"));
-    tableButton = new QPushButton(tr("Table"));
+    tableButton = new QPushButton(tr("view table"));
+    redrawButton = new QPushButton(tr("redraw"));
     QLabel *labelFirstDate = new QLabel(tr("Start Date: "));
     QLabel *labelEndDate = new QLabel(tr("End Date: "));
     firstDate = new QDateTimeEdit(QDate::currentDate());
@@ -221,6 +222,7 @@ Crit3DMeteoWidget::Crit3DMeteoWidget()
     hourlyButton->setMaximumWidth(this->width()/8);
     addVarButton->setMaximumWidth(this->width()/8);
     tableButton->setMaximumWidth(this->width()/8);
+    redrawButton->setMaximumWidth(this->width()/8);
 
     if (currentFreq == daily || currentFreq == noFrequency)
     {
@@ -244,6 +246,7 @@ Crit3DMeteoWidget::Crit3DMeteoWidget()
     buttonLayout->addWidget(firstDate);
     buttonLayout->addWidget(labelEndDate);
     buttonLayout->addWidget(lastDate);
+    buttonLayout->addWidget(redrawButton);
     buttonLayout->addWidget(tableButton);
     buttonLayout->setAlignment(Qt::AlignLeft);
     chart = new QChart();
@@ -275,7 +278,7 @@ Crit3DMeteoWidget::Crit3DMeteoWidget()
 
     chart->legend()->setVisible(true);
     chart->legend()->setAlignment(Qt::AlignBottom);
-    chartView->setRenderHint(QPainter::Antialiasing);
+    //chartView->setRenderHint(QPainter::Antialiasing);
     axisX->hide();
 
     m_tooltip = new Callout(chart);
@@ -285,6 +288,7 @@ Crit3DMeteoWidget::Crit3DMeteoWidget()
     connect(dailyButton, &QPushButton::clicked, [=](){ showDailyGraph(); });
     connect(hourlyButton, &QPushButton::clicked, [=](){ showHourlyGraph(); });
     connect(tableButton, &QPushButton::clicked, [=](){ showTable(); });
+    connect(redrawButton, &QPushButton::clicked, [=](){ updateDate(); });
     connect(firstDate, &QDateTimeEdit::editingFinished, [=](){ updateDate(); });
     connect(lastDate, &QDateTimeEdit::editingFinished, [=](){ updateDate(); });
 
@@ -582,6 +586,10 @@ void Crit3DMeteoWidget::drawDailyVar()
                             maxBar = value;
                         }
                     }
+                    else
+                    {
+                        *setVector[mp][j] << 0;
+                    }
                 }
             }
         }
@@ -649,7 +657,7 @@ void Crit3DMeteoWidget::drawDailyVar()
             {
                 for (int j = 0; j < nameBar.size(); j++)
                 {
-                    *setVector[mp][j] << NODATA;
+                    *setVector[mp][j] << 0;
                 }
             }
 
@@ -783,6 +791,10 @@ void Crit3DMeteoWidget::drawHourlyVar()
                         {
                             maxBar = value;
                         }
+                    }
+                    else
+                    {
+                        *setVector[mp][j] << 0;
                     }
                 }
             }
