@@ -133,7 +133,7 @@ void MainWindow::updateGUI()
 void MainWindow::callMeteoWidget()
 {
     StationMarker* point = qobject_cast<StationMarker*>(sender());
-    myProject.showMeteoWidgetPoint(point->id());
+    myProject.showMeteoWidgetPoint(point->id(), true);
 }
 
 
