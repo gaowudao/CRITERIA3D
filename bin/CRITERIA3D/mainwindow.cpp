@@ -192,9 +192,9 @@ void MainWindow::addMeteoPoints()
         this->pointList.append(point);
         this->mapView->scene()->addObject(pointList[i]);
 
-        point->setToolTip(&(myProject.meteoPoints[i]));
-        connect(point, SIGNAL(newStationClicked()), this, SLOT(callNewMeteoWidget()));
-        connect(point, SIGNAL(appendStationClicked()), this, SLOT(callAppendMeteoWidget()));
+        pointList[i]->setToolTip(&(myProject.meteoPoints[i]));
+        connect(pointList[i], SIGNAL(newStationClicked()), this, SLOT(callNewMeteoWidget()));
+        connect(pointList[i], SIGNAL(appendStationClicked()), this, SLOT(callAppendMeteoWidget()));
     }
 }
 
