@@ -88,7 +88,9 @@
 
         void updateMaps();
         void updateGUI();
-        void callMeteoWidget();
+
+        void callNewMeteoWidget();
+        void callAppendMeteoWidget();
 
     protected:
         /*!

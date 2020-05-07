@@ -130,13 +130,6 @@ void MainWindow::updateGUI()
 }
 
 
-void MainWindow::callMeteoWidget()
-{
-    StationMarker* point = qobject_cast<StationMarker*>(sender());
-    myProject.showMeteoWidgetPoint(point->id(), true);
-}
-
-
 void MainWindow::mouseReleaseEvent(QMouseEvent *event)
 {
     Q_UNUSED(event)
@@ -199,9 +192,25 @@ void MainWindow::addMeteoPoints()
         this->pointList.append(point);
         this->mapView->scene()->addObject(pointList[i]);
 
-        point->setToolTip(&(myProject.meteoPoints[i]));
-        connect(point, SIGNAL(stationClicked()), this, SLOT(callMeteoWidget()));
+        pointList[i]->setToolTip(&(myProject.meteoPoints[i]));
+        connect(pointList[i], SIGNAL(newStationClicked()), this, SLOT(callNewMeteoWidget()));
+        connect(pointList[i], SIGNAL(appendStationClicked()), this, SLOT(callAppendMeteoWidget()));
     }
+}
+
+
+void MainWindow::callNewMeteoWidget()
+{
+    StationMarker* point = qobject_cast<StationMarker*>(sender());
+    bool isAppend = false;
+    myProject.showMeteoWidgetPoint(point->id(), isAppend);
+}
+
+void MainWindow::callAppendMeteoWidget()
+{
+    StationMarker* point = qobject_cast<StationMarker*>(sender());
+    bool isAppend = true;
+    myProject.showMeteoWidgetPoint(point->id(), isAppend);
 }
 
 
