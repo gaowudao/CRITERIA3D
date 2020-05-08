@@ -89,8 +89,10 @@
         void updateMaps();
         void updateGUI();
 
-        void callNewMeteoWidget();
-        void callAppendMeteoWidget();
+        void callNewMeteoWidget(std::string id);
+        void callAppendMeteoWidget(std::string id);
+
+        void on_actionHide_soil_map_triggered();
 
     protected:
         /*!

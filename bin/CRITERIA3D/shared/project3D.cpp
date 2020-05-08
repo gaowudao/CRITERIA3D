@@ -38,6 +38,7 @@ Project3D::Project3D() : Project()
 void Project3D::initializeProject3D()
 {
     soilDbFileName = "";
+    cropDbFileName = "";
     soilMapFileName = "";
 
     // default
@@ -164,6 +165,32 @@ bool Project3D::loadSoilDatabase(QString fileName)
     nrSoils = unsigned(soilList.size());
 
     logInfo("Soil database = " + fileName);
+    return true;
+}
+
+
+bool Project3D::loadCropDatabase(QString fileName)
+{
+    if (fileName == "")
+    {
+        logError("Missing Crop DB filename");
+        return false;
+    }
+    cropDbFileName = fileName;
+    fileName = getCompleteFileName(fileName, PATH_SOIL);
+
+    QSqlDatabase dbCrop;
+    dbCrop = QSqlDatabase::addDatabase("QSQLITE", QUuid::createUuid().toString());
+    dbCrop.setDatabaseName(fileName);
+
+    if (!dbCrop.open())
+    {
+       logError("Connection with database fail");
+       return false;
+    }
+
+    // TODO: Load crop parameters
+    logInfo("Crop database = " + fileName);
     return true;
 }
 

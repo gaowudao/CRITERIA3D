@@ -18,30 +18,27 @@
     private:
         void clearCriteria3DProject();
 
+        bool setSoilIndexMap();
+
     public:
         // same header of DEM
         gis::Crit3DRasterGrid soilMap;
-        gis::Crit3DRasterGrid cropIndexMap;
-
-        bool isParametersLoaded;
+        gis::Crit3DRasterGrid soilUseMap;
 
         Crit3DProject();
 
-        bool loadCriteria3DProject(QString myFileName);
-        bool loadCriteria3DSettings();
-        bool loadModelParameters(QString dbName);
-        bool loadSoilMap(QString fileName);
-
         bool initializeCriteria3DModel();
 
-        bool setSoilIndexMap();
+        bool loadCriteria3DProject(QString myFileName);
+        bool loadCriteria3DSettings();
+        bool loadSoilMap(QString fileName);
+
         double getSoilVar(int soilIndex, int layerIndex, soil::soilVariable myVar);
         double* getSoilVarProfile(int row, int col, soil::soilVariable myVar);
-        bool setSoilProfileCrop(int row, int col);
 
         int getCrit3DSoilId(double x, double y);
-        QString getCrit3DSoilCode(double x, double y);
         int getCrit3DSoilIndex(double x, double y);
+        QString getCrit3DSoilCode(double x, double y);
 
         bool computeAllMeteoMaps(const QDateTime& myTime, bool showInfo);
 

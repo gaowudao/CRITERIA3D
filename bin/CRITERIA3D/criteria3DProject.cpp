@@ -39,7 +39,6 @@
 
 Crit3DProject::Crit3DProject() : Project3D()
 {
-    isParametersLoaded = false;
 }
 
 
@@ -65,45 +64,36 @@ bool Crit3DProject::loadCriteria3DProject(QString myFileName)
     if (soilMapFileName != "") loadSoilMap(soilMapFileName);
     if (soilDbFileName != "") loadSoilDatabase(soilDbFileName);
 
+    // soiluse map and data
+    // TODO soilUse map
+    if (cropDbFileName != "") loadCropDatabase(cropDbFileName);
+
     if (projectName != "")
     {
         logInfo("Project " + projectName + " loaded");
     }
 
     isProjectLoaded = true;
-    return true;
+    return isProjectLoaded;
 }
 
 
 bool Crit3DProject::loadCriteria3DSettings()
 {
     projectSettings->beginGroup("project");
-        soilDbFileName = projectSettings->value("soil_db").toString();
-        soilMapFileName = projectSettings->value("soil_map").toString();
+
+    soilDbFileName = projectSettings->value("soil_db").toString();
+    if (soilDbFileName == "")
+        soilDbFileName = projectSettings->value("db_soil").toString();
+
+    cropDbFileName = projectSettings->value("crop_db").toString();
+    if (cropDbFileName == "")
+        cropDbFileName = projectSettings->value("db_crop").toString();
+
+    soilMapFileName = projectSettings->value("soil_map").toString();
+
     projectSettings->endGroup();
 
-    return true;
-}
-
-
-bool Crit3DProject::loadModelParameters(QString dbName)
-{
-    QSqlDatabase dbParameters;
-
-    isParametersLoaded = false;
-
-    dbParameters = QSqlDatabase::addDatabase("QSQLITE", QUuid::createUuid().toString());
-    dbParameters.setDatabaseName(dbName);
-
-    if (!dbParameters.open())
-    {
-       logError("Connection with database fail");
-       return false;
-    }
-
-    // TODO: Load crop parameters
-
-    isParametersLoaded = true;
     return true;
 }
 
@@ -245,9 +235,8 @@ double Crit3DProject::getSoilVar(int soilIndex, int layerIndex, soil::soilVariab
 
 void Crit3DProject::clearCriteria3DProject()
 {
-    cropIndexMap.clear();
+    soilUseMap.clear();
     soilMap.clear();
-    isParametersLoaded = false;
 
     clearProject3D();
 }
@@ -353,9 +342,7 @@ bool Crit3DProject::initializeCriteria3DModel()
 
     if (!setSoilIndexMap()) return false;
 
-    // TODO loadCropProperties()
-
-    // TODO load crop map
+    // TODO set soilUseMap()
 
     /* TODO initialize root density
     // andrebbe rifatto per ogni tipo di suolo (ora considera solo suolo 0)

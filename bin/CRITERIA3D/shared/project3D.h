@@ -37,6 +37,7 @@
         bool isCriteria3DInitialized;
 
         QString soilDbFileName;
+        QString cropDbFileName;
         QString soilMapFileName;
 
         unsigned long nrNodes;
@@ -77,7 +78,8 @@
 
         bool initializeWaterBalance3D();
 
-        bool loadSoilDatabase(QString fileName);
+        bool loadSoilDatabase(QString dbName);
+        bool loadCropDatabase(QString dbName);
 
         double getSoilLayerTop(unsigned int i);
         double getSoilLayerBottom(unsigned int i);
