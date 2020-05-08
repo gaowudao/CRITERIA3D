@@ -89,8 +89,8 @@
         void updateMaps();
         void updateGUI();
 
-        void callNewMeteoWidget();
-        void callAppendMeteoWidget();
+        void callNewMeteoWidget(std::string id);
+        void callAppendMeteoWidget(std::string id);
 
     protected:
         /*!
