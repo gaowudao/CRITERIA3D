@@ -92,6 +92,8 @@
         void callNewMeteoWidget(std::string id);
         void callAppendMeteoWidget(std::string id);
 
+        void on_actionHide_soil_map_triggered();
+
     protected:
         /*!
          * \brief mouseReleaseEvent call moveCenter

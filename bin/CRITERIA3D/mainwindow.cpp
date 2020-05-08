@@ -759,6 +759,15 @@ void MainWindow::on_actionView_SoilMap_triggered()
 }
 
 
+void MainWindow::on_actionHide_soil_map_triggered()
+{
+    if (ui->labelOutputRaster->text() == "Soil index")
+    {
+        setOutputRasterVisible(false);
+    }
+}
+
+
 void MainWindow::on_actionView_Boundary_triggered()
 {
     if (myProject.boundaryMap.isLoaded)
