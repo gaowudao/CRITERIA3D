@@ -14,6 +14,8 @@ TARGET = CRITERIA3D
 CONFIG += debug_and_release
 QMAKE_CXXFLAGS += -std=c++11
 
+DEFINES += CRITERIA3D
+
 
 INCLUDEPATH +=  ./shared  \
                 ../../mapGraphics \
