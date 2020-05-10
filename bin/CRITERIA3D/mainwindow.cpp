@@ -1121,7 +1121,7 @@ void MainWindow::on_actionLoad_soil_data_triggered()
 }
 
 
-void MainWindow::on_actionLoad_model_parameters_triggered()
+void MainWindow::on_actionLoad_Crop_data_triggered()
 {
     QString fileName = QFileDialog::getOpenFileName(this, tr("Open DB Crop"), "", tr("SQLite files (*.db)"));
     if (fileName == "") return;
