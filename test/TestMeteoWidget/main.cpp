@@ -69,7 +69,7 @@ int main(int argc, char *argv[])
     #endif
 
     std::cout << "\n...Create window\n" << std::flush;
-    Crit3DMeteoWidget w;
+    Crit3DMeteoWidget w("Point");
 
     std::cout << "...Show window\n" << std::flush;
     w.show();
@@ -77,11 +77,11 @@ int main(int argc, char *argv[])
     std::cout << "...draw data p1\n" << std::flush;
     w.draw(meteoPoint);
 
-    std::cout << "...draw data p2\n" << std::flush;
-    w.draw(meteoPointSecond);
+    //std::cout << "...draw data p2\n" << std::flush;
+    //w.draw(meteoPointSecond);
 
-    std::cout << "...draw data p3\n" << std::flush;
-    w.draw(meteoPointThird);
+    //std::cout << "...draw data p3\n" << std::flush;
+    //w.draw(meteoPointThird);
 
     return a.exec();
 }
