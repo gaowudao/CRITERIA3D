@@ -3,7 +3,6 @@ TAVG,line,red
 PREC,bar,blue
 RHAVG,bar,cyan
 RAD,line,magenta
-W_VEC_INT,line,darkGreen
 W_SCAL_INT,line,darkGreen
 ET0,line,green
 LEAFW,bar,darkCyan

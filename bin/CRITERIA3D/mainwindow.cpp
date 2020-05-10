@@ -188,6 +188,7 @@ void MainWindow::addMeteoPoints()
         point->setLatitude(myProject.meteoPoints[i].latitude);
         point->setLongitude(myProject.meteoPoints[i].longitude);
         point->setId(myProject.meteoPoints[i].id);
+        point->setName(myProject.meteoPoints[i].name);
 
         this->pointList.append(point);
         this->mapView->scene()->addObject(pointList[i]);
