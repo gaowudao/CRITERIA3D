@@ -15,7 +15,7 @@ int main(int argc, char *argv[])
     Criteria1DProject myProject;
 
     QString appPath = myApp.applicationDirPath() + "/";
-    QString settingsFileName;
+    QString settingsFileName, dateOfForecast;
 
     if (argc > 1)
         settingsFileName = argv[1];
@@ -32,6 +32,14 @@ int main(int argc, char *argv[])
                 return ERROR_SETTINGS_MISSING;
         #endif
     }
+
+    if (argc > 2)
+        dateOfForecast = argv[2];
+    else
+    {
+        dateOfForecast = "";
+    }
+
 
     if (settingsFileName.left(1) == ".")
         settingsFileName = appPath + settingsFileName;
@@ -57,7 +65,7 @@ int main(int argc, char *argv[])
         return ERROR_DBOUTPUT;
 
     // COMPUTE
-    myResult = myProject.compute();
+    myResult = myProject.compute(dateOfForecast);
     myProject.logInfo("\nEND");
 
     return myResult;

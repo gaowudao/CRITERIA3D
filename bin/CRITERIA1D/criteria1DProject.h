@@ -79,9 +79,9 @@
             void closeProject();
             void closeAllDatabase();
 
-            int compute();
-            bool runSeasonalForecast(unsigned int i, double irriRatio);
-            bool runShortTermForecast(unsigned int i, double irriRatio);
+            int compute(QString dateOfForecast);
+            bool runSeasonalForecast(unsigned int index, double irriRatio);
+            bool runShortTermForecast(QString dateForecast, unsigned int index, double irriRatio);
 
             bool setLogFile();
             void logInfo(QString logStr);
