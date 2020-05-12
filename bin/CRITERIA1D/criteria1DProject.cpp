@@ -370,25 +370,25 @@ bool Criteria1DProject::initializeCsvOutputFile()
 }
 
 
-bool Criteria1DProject::runSeasonalForecast(unsigned int i, double irriRatio)
+bool Criteria1DProject::runSeasonalForecast(unsigned int index, double irriRatio)
 {
     if (irriRatio < EPSILON)
     {
         // No irrigation: nothing to do
-        outputFile << unit[i].idCase.toStdString() << "," << unit[i].idCrop.toStdString() << ",";
-        outputFile << unit[i].idSoil.toStdString() << "," << unit[i].idMeteo.toStdString();
+        outputFile << unit[index].idCase.toStdString() << "," << unit[index].idCrop.toStdString() << ",";
+        outputFile << unit[index].idSoil.toStdString() << "," << unit[index].idMeteo.toStdString();
         outputFile << ",0,0,0,0,0\n";
         return true;
     }
 
-    if (! irrForecast.runModel(unit[i], projectError))
+    if (! irrForecast.runModel(unit[index], projectError))
     {
         logError();
         return false;
     }
 
-    outputFile << unit[i].idCase.toStdString() << "," << unit[i].idCrop.toStdString() << ",";
-    outputFile << unit[i].idSoil.toStdString() << "," << unit[i].idMeteo.toStdString();
+    outputFile << unit[index].idCase.toStdString() << "," << unit[index].idCrop.toStdString() << ",";
+    outputFile << unit[index].idSoil.toStdString() << "," << unit[index].idMeteo.toStdString();
     // percentiles
     double percentile = sorting::percentile(irrForecast.seasonalForecasts, &(irrForecast.nrSeasonalForecasts), 5, true);
     outputFile << "," << percentile * irriRatio;
@@ -406,18 +406,37 @@ bool Criteria1DProject::runSeasonalForecast(unsigned int i, double irriRatio)
 }
 
 
-bool Criteria1DProject::runShortTermForecast(unsigned int i, double irriRatio)
+bool Criteria1DProject::runShortTermForecast(QString dateForecastStr, unsigned int index, double irriRatio)
 {
-    if (! irrForecast.runModel(unit[i], projectError))
+    if (! irrForecast.runModel(unit[index], projectError))
     {
         logError();
         return false;
     }
 
-    int indexOfForecast = irrForecast.myCase.meteoPoint.nrObsDataDaysD - irrForecast.daysOfForecast - 1;
-    Crit3DDate dateOfForecast = irrForecast.myCase.meteoPoint.obsDataD[indexOfForecast].date;
-    std::string dateOfForecastStr = dateOfForecast.toStdString();
-    std::string IrrPreviousDateStr = dateOfForecast.addDays(-13).toStdString();
+    std::string idCaseStr = unit[index].idCase.toStdString();
+    Crit3DDate dateOfForecast;
+    if (dateForecastStr == "")
+    {
+        int indexOfForecast = irrForecast.myCase.meteoPoint.nrObsDataDaysD - irrForecast.daysOfForecast - 1;
+        dateOfForecast = irrForecast.myCase.meteoPoint.obsDataD[indexOfForecast].date;
+    }
+    else
+    {
+        // last Observed day: day before
+        dateOfForecast = Crit3DDate(dateForecastStr.toStdString()).addDays(-1);
+        int lastIndex = irrForecast.myCase.meteoPoint.nrObsDataDaysD - irrForecast.daysOfForecast - 1;
+        Crit3DDate firstDate = irrForecast.myCase.meteoPoint.obsDataD[0].date;
+        Crit3DDate lastDate = irrForecast.myCase.meteoPoint.obsDataD[lastIndex].date;
+        if (dateOfForecast < firstDate || dateOfForecast > lastDate)
+        {
+            logError(" wrong date.");
+            return false;
+        }
+    }
+
+    std::string firstDateOfForecast = dateOfForecast.toStdString();
+    std::string lastDateOfForecast = dateOfForecast.addDays(irrForecast.daysOfForecast).toStdString();
 
     // first date for annual irrigation
     Crit3DDate firstDateAllSeason;
@@ -441,8 +460,9 @@ bool Criteria1DProject::runShortTermForecast(unsigned int i, double irriRatio)
 
     std::string mySQLstr = "SELECT SUM(PREC) AS prec,"
                         " SUM(TRANSP_MAX) AS maxTransp, SUM(IRRIGATION) AS irr"
-                        " FROM '" + unit[i].idCase.toStdString() + "'"
-                        " WHERE DATE > '" + dateOfForecastStr + "'";
+                        " FROM '" + idCaseStr + "'"
+                        " WHERE DATE > '" + firstDateOfForecast + "'";
+                        " AND DATE <= '" + lastDateOfForecast + "'";
 
     QString mySQL = QString::fromStdString(mySQLstr);
 
@@ -461,8 +481,8 @@ bool Criteria1DProject::runShortTermForecast(unsigned int i, double irriRatio)
     }
 
     mySQLstr = "SELECT RAW, DEFICIT FROM '"
-            + unit[i].idCase.toStdString() + "'"
-            " WHERE DATE = '" + dateOfForecastStr + "'";
+            + idCaseStr + "'"
+            " WHERE DATE = '" + firstDateOfForecast + "'";
     mySQL = QString::fromStdString(mySQLstr);
 
     myQuery = irrForecast.dbOutput.exec(mySQL);
@@ -477,8 +497,8 @@ bool Criteria1DProject::runShortTermForecast(unsigned int i, double irriRatio)
     }
 
     mySQLstr = "SELECT SUM(IRRIGATION) AS previousIrrigation FROM '"
-            + unit[i].idCase.toStdString() + "'"
-            " WHERE DATE <= '" + dateOfForecastStr + "'"
+            + idCaseStr + "'"
+            " WHERE DATE <= '" + firstDateOfForecast + "'"
             " AND DATE >= '" + firstDateAllSeasonStr + "'";
     mySQL = QString::fromStdString(mySQLstr);
 
@@ -493,10 +513,10 @@ bool Criteria1DProject::runShortTermForecast(unsigned int i, double irriRatio)
     }
 
     outputFile << dateOfForecast.toStdString();
-    outputFile << "," << unit[i].idCase.toStdString();
-    outputFile << "," << unit[i].idCrop.toStdString();
-    outputFile << "," << unit[i].idSoil.toStdString();
-    outputFile << "," << unit[i].idMeteo.toStdString();
+    outputFile << "," << unit[index].idCase.toStdString();
+    outputFile << "," << unit[index].idCrop.toStdString();
+    outputFile << "," << unit[index].idSoil.toStdString();
+    outputFile << "," << unit[index].idMeteo.toStdString();
     outputFile << "," << QString::number(deficit,'f',2).toStdString();
     outputFile << "," << QString::number(readilyAvailWater,'f',1).toStdString();
     outputFile << "," << QString::number(prec,'f',1).toStdString();
@@ -509,7 +529,7 @@ bool Criteria1DProject::runShortTermForecast(unsigned int i, double irriRatio)
 }
 
 
-int Criteria1DProject::compute()
+int Criteria1DProject::compute(QString dateOfForecast)
 {
     bool isErrorModel = false;
     bool isErrorSoil = false;
@@ -562,7 +582,7 @@ int Criteria1DProject::compute()
 
             if(irrForecast.isShortTermForecast)
             {
-                if (runShortTermForecast(i, irriRatio))
+                if (runShortTermForecast(dateOfForecast, i, irriRatio))
                     nrUnitsComputed++;
                 else
                     isErrorModel = true;
