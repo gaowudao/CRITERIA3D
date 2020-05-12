@@ -69,7 +69,7 @@ int main(int argc, char *argv[])
     #endif
 
     std::cout << "\n...Create window\n" << std::flush;
-    Crit3DMeteoWidget w("Point");
+    Crit3DMeteoWidget w("Point", "/home/laura/PRAGA/DATA/PROJECT/test/");
 
     std::cout << "...Show window\n" << std::flush;
     w.show();
