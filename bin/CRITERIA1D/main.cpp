@@ -1,5 +1,6 @@
 #include <QCoreApplication>
 #include <QDir>
+#include <QDateTime>
 
 #include "criteria1DProject.h"
 #include "commonConstants.h"
@@ -23,8 +24,9 @@ int main(int argc, char *argv[])
     {
         #ifdef TEST
                 QString path;
-                //if (! searchDataPath(&path)) return -1;
-                //settingsFileName = path + "PROJECT/kiwifruit/kiwifruit.ini";
+                if (! searchDataPath(&path)) return -1;
+                settingsFileName = path + "PROJECT/kiwifruit/kiwifruit.ini";
+                //settingsFileName = path + "PROJECT/CLARA/CLARA.ini";
         #else
                 myProject.logInfo("USAGE: CRITERIA1D settings.ini");
                 return ERROR_SETTINGS_MISSING;
@@ -32,12 +34,21 @@ int main(int argc, char *argv[])
     }
 
     if (argc > 2)
+    {
         dateOfForecast = argv[2];
+    }
     else
     {
-        dateOfForecast = "";
+        dateOfForecast = QDateTime::currentDateTime().date().toString("yyyy-MM-dd");
     }
 
+    // check date
+    QDate myDate = QDate::fromString(dateOfForecast, "yyyy-MM-dd");
+    if (! myDate.isValid())
+    {
+        myProject.logError("Wrong date format. Requested format is: YYYY-MM-DD");
+        return ERROR_WRONGDATE;
+    }
 
     if (settingsFileName.left(1) == ".")
         settingsFileName = appPath + settingsFileName;
@@ -59,7 +70,7 @@ int main(int argc, char *argv[])
     myProject.logInfo("\nQuery result: " + QString::number(myProject.nrUnits) + " distinct units.\n");
 
     // initialize output
-    if (!myProject.initializeCsvOutputFile())
+    if (!myProject.initializeCsvOutputFile(dateOfForecast))
         return ERROR_DBOUTPUT;
 
     // COMPUTE

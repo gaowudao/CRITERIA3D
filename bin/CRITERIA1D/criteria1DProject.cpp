@@ -333,7 +333,7 @@ bool Criteria1DProject::loadUnits()
 }
 
 
-bool Criteria1DProject::initializeCsvOutputFile()
+bool Criteria1DProject::initializeCsvOutputFile(QString dateOfForecast)
 {
     if ((irrForecast.isSeasonalForecast) || (irrForecast.isShortTermForecast))
     {
@@ -344,7 +344,7 @@ bool Criteria1DProject::initializeCsvOutputFile()
         if (irrForecast.isShortTermForecast)
         {
             outputCsvFileName = outputCsvFileName.left(outputCsvFileName.length()-4);
-            outputCsvFileName += "_" + QDate::currentDate().toString("yyyy-MM-dd") + ".csv";
+            outputCsvFileName += "_" + dateOfForecast + ".csv";
         }
 
         outputFile.open(outputCsvFileName.toStdString().c_str(), std::ios::out | std::ios::trunc);
@@ -415,38 +415,30 @@ bool Criteria1DProject::runShortTermForecast(QString dateForecastStr, unsigned i
     }
 
     std::string idCaseStr = unit[index].idCase.toStdString();
-    Crit3DDate dateOfForecast;
-    if (dateForecastStr == "")
+
+    // last Observed day: day before
+    Crit3DDate lastObservedDate = Crit3DDate(dateForecastStr.toStdString()).addDays(-1);
+    int lastIndex = irrForecast.myCase.meteoPoint.nrObsDataDaysD - irrForecast.daysOfForecast - 1;
+    Crit3DDate firstDate = irrForecast.myCase.meteoPoint.obsDataD[0].date;
+    Crit3DDate lastDate = irrForecast.myCase.meteoPoint.obsDataD[lastIndex].date;
+    if (lastObservedDate < firstDate || lastObservedDate > lastDate)
     {
-        int indexOfForecast = irrForecast.myCase.meteoPoint.nrObsDataDaysD - irrForecast.daysOfForecast - 1;
-        dateOfForecast = irrForecast.myCase.meteoPoint.obsDataD[indexOfForecast].date;
-    }
-    else
-    {
-        // last Observed day: day before
-        dateOfForecast = Crit3DDate(dateForecastStr.toStdString()).addDays(-1);
-        int lastIndex = irrForecast.myCase.meteoPoint.nrObsDataDaysD - irrForecast.daysOfForecast - 1;
-        Crit3DDate firstDate = irrForecast.myCase.meteoPoint.obsDataD[0].date;
-        Crit3DDate lastDate = irrForecast.myCase.meteoPoint.obsDataD[lastIndex].date;
-        if (dateOfForecast < firstDate || dateOfForecast > lastDate)
-        {
-            logError(" wrong date.");
-            return false;
-        }
+        logError(" wrong date.");
+        return false;
     }
 
-    std::string firstDateOfForecast = dateOfForecast.toStdString();
-    std::string lastDateOfForecast = dateOfForecast.addDays(irrForecast.daysOfForecast).toStdString();
+    std::string lastObservedDateStr = lastObservedDate.toStdString();
+    std::string lastDateOfForecast = lastObservedDate.addDays(irrForecast.daysOfForecast).toStdString();
 
     // first date for annual irrigation
     Crit3DDate firstDateAllSeason;
-    if (irrForecast.firstSeasonMonth <= dateOfForecast.month)
+    if (irrForecast.firstSeasonMonth <= lastObservedDate.month)
     {
-        firstDateAllSeason = Crit3DDate(1, irrForecast.firstSeasonMonth, dateOfForecast.year);
+        firstDateAllSeason = Crit3DDate(1, irrForecast.firstSeasonMonth, lastObservedDate.year);
     }
     else
     {
-        firstDateAllSeason = Crit3DDate(1, irrForecast.firstSeasonMonth, dateOfForecast.year - 1);
+        firstDateAllSeason = Crit3DDate(1, irrForecast.firstSeasonMonth, lastObservedDate.year - 1);
     }
 
     std::string firstDateAllSeasonStr = firstDateAllSeason.toStdString();
@@ -461,7 +453,7 @@ bool Criteria1DProject::runShortTermForecast(QString dateForecastStr, unsigned i
     std::string mySQLstr = "SELECT SUM(PREC) AS prec,"
                         " SUM(TRANSP_MAX) AS maxTransp, SUM(IRRIGATION) AS irr"
                         " FROM '" + idCaseStr + "'"
-                        " WHERE DATE > '" + firstDateOfForecast + "'";
+                        " WHERE DATE > '" + lastObservedDateStr + "'";
                         " AND DATE <= '" + lastDateOfForecast + "'";
 
     QString mySQL = QString::fromStdString(mySQLstr);
@@ -482,7 +474,7 @@ bool Criteria1DProject::runShortTermForecast(QString dateForecastStr, unsigned i
 
     mySQLstr = "SELECT RAW, DEFICIT FROM '"
             + idCaseStr + "'"
-            " WHERE DATE = '" + firstDateOfForecast + "'";
+            " WHERE DATE = '" + lastObservedDateStr + "'";
     mySQL = QString::fromStdString(mySQLstr);
 
     myQuery = irrForecast.dbOutput.exec(mySQL);
@@ -498,7 +490,7 @@ bool Criteria1DProject::runShortTermForecast(QString dateForecastStr, unsigned i
 
     mySQLstr = "SELECT SUM(IRRIGATION) AS previousIrrigation FROM '"
             + idCaseStr + "'"
-            " WHERE DATE <= '" + firstDateOfForecast + "'"
+            " WHERE DATE <= '" + lastObservedDateStr + "'"
             " AND DATE >= '" + firstDateAllSeasonStr + "'";
     mySQL = QString::fromStdString(mySQLstr);
 
@@ -512,7 +504,7 @@ bool Criteria1DProject::runShortTermForecast(QString dateForecastStr, unsigned i
         previousIrrigation = myQuery.value("previousIrrigation").toDouble();
     }
 
-    outputFile << dateOfForecast.toStdString();
+    outputFile << dateForecastStr.toStdString();
     outputFile << "," << unit[index].idCase.toStdString();
     outputFile << "," << unit[index].idCrop.toStdString();
     outputFile << "," << unit[index].idSoil.toStdString();

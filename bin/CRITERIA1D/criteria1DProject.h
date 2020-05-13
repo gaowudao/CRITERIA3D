@@ -17,6 +17,7 @@
     #define ERROR_DBMETEO_FORECAST -8
     #define ERROR_DBUNITS -9
     #define ERROR_DBOUTPUT -10
+    #define ERROR_WRONGDATE -11
 
     #define ERROR_READ_UNITS -15
 
@@ -70,7 +71,7 @@
             void initialize();
             int initializeProject(QString myFileName);
             void initializeUnit(int nr);
-            bool initializeCsvOutputFile();
+            bool initializeCsvOutputFile(QString dateOfForecast);
 
             bool readSettings();
             int openAllDatabase();
