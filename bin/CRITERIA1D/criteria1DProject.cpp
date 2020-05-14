@@ -41,6 +41,7 @@ void Criteria1DProject::initialize()
     nrUnits = 0;
 }
 
+
 void Criteria1DProject::initializeUnit(int nr)
 {
     nrUnits = nr;
