@@ -6,7 +6,7 @@
 #include "commonConstants.h"
 #include "utilities.h"
 
-//#define TEST
+#define TEST
 
 
 int main(int argc, char *argv[])
@@ -25,8 +25,8 @@ int main(int argc, char *argv[])
         #ifdef TEST
                 QString path;
                 if (! searchDataPath(&path)) return -1;
-                settingsFileName = path + "PROJECT/kiwifruit/kiwifruit.ini";
-                //settingsFileName = path + "PROJECT/CLARA/CLARA.ini";
+                //settingsFileName = path + "PROJECT/kiwifruit/kiwifruit.ini";
+                settingsFileName = path + "PROJECT/CLARA/CLARA.ini";
         #else
                 myProject.logInfo("USAGE: CRITERIA1D settings.ini");
                 return ERROR_SETTINGS_MISSING;
@@ -39,7 +39,8 @@ int main(int argc, char *argv[])
     }
     else
     {
-        dateOfForecast = QDateTime::currentDateTime().date().toString("yyyy-MM-dd");
+        //dateOfForecast = QDateTime::currentDateTime().date().toString("yyyy-MM-dd");
+        dateOfForecast = "2020-05-10";
     }
 
     // check date
