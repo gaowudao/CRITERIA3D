@@ -1,6 +1,6 @@
 #-----------------------------------------------------------
 #
-#   TestCropWidget
+#   TestCriteria1D
 #   This project is part of CRITERIA3D distribution
 #
 #-----------------------------------------------------------
@@ -13,20 +13,20 @@ CONFIG += debug_and_release
 
 unix:{
     CONFIG(debug, debug|release) {
-        TARGET = debug/TestCropWidget
+        TARGET = debug/TestCriteria1D
     } else {
-        TARGET = release/TestCropWidget
+        TARGET = release/TestCriteria1D
     }
 }
 macx:{
     CONFIG(debug, debug|release) {
-        TARGET = debug/TestCropWidget
+        TARGET = debug/TestCriteria1D
     } else {
-        TARGET = release/TestCropWidget
+        TARGET = release/TestCriteria1D
     }
 }
 win32:{
-    TARGET = TestCropWidget
+    TARGET = TestCriteria1D
 }
 
 INCLUDEPATH +=  ../../agrolib/crit3dDate ../../agrolib/mathFunctions ../../agrolib/gis  \
