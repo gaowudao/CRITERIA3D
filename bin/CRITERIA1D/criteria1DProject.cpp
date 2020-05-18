@@ -454,7 +454,7 @@ bool Criteria1DProject::runShortTermForecast(QString dateForecastStr, unsigned i
     std::string mySQLstr = "SELECT SUM(PREC) AS prec,"
                         " SUM(TRANSP_MAX) AS maxTransp, SUM(IRRIGATION) AS irr"
                         " FROM '" + idCaseStr + "'"
-                        " WHERE DATE > '" + lastObservedDateStr + "'";
+                        " WHERE DATE > '" + lastObservedDateStr + "'"
                         " AND DATE <= '" + lastDateOfForecast + "'";
 
     QString mySQL = QString::fromStdString(mySQLstr);
@@ -476,6 +476,7 @@ bool Criteria1DProject::runShortTermForecast(QString dateForecastStr, unsigned i
     mySQLstr = "SELECT RAW, DEFICIT FROM '"
             + idCaseStr + "'"
             " WHERE DATE = '" + lastObservedDateStr + "'";
+
     mySQL = QString::fromStdString(mySQLstr);
 
     myQuery = irrForecast.dbOutput.exec(mySQL);
@@ -493,6 +494,7 @@ bool Criteria1DProject::runShortTermForecast(QString dateForecastStr, unsigned i
             + idCaseStr + "'"
             " WHERE DATE <= '" + lastObservedDateStr + "'"
             " AND DATE >= '" + firstDateAllSeasonStr + "'";
+
     mySQL = QString::fromStdString(mySQLstr);
 
     myQuery = irrForecast.dbOutput.exec(mySQL);
