@@ -4,14 +4,16 @@
 
 #include <QMenu>
 #include <QtDebug>
+#include <QToolTip>
 
-GridCellMarker::GridCellMarker(QPolygonF geoPoly, QColor fillColor, MapGraphicsObject *parent) :
+GridCellMarker::GridCellMarker(QPolygonF geoPoly, QColor fillColor, MapGraphicsView *view, MapGraphicsObject *parent) :
     PolygonObject(geoPoly, fillColor, parent)
 {
 
     this->setFlag(MapGraphicsObject::ObjectIsSelectable, false);
     this->setFlag(MapGraphicsObject::ObjectIsMovable, false);
     this->setFlag(MapGraphicsObject::ObjectIsFocusable, false);
+    _view = view;
 }
 
 void GridCellMarker::setId(std::string id)
@@ -29,9 +31,9 @@ void GridCellMarker::setName(const std::string &name)
     _name = name;
 }
 
-
 void GridCellMarker::setToolTip(Crit3DMeteoPoint* meteoPoint_)
 {
+
     QString idpoint = QString::fromStdString(meteoPoint_->id);
     QString name = QString::fromStdString(meteoPoint_->name);
     QString dataset = QString::fromStdString(meteoPoint_->dataset);
@@ -79,11 +81,11 @@ void GridCellMarker::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
         {
             if (selection == openMeteoWidget)
             {
-                emit newCellClicked(_id, isGrid);
+                emit newCellClicked(_id, _name, isGrid);
             }
             else if (selection == appendMeteoWidget)
             {
-                emit appendCellClicked(_id, isGrid);
+                emit appendCellClicked(_id, _name, isGrid);
             }
             #ifdef CRITERIA3D
             else if (selection == openCropWidget)

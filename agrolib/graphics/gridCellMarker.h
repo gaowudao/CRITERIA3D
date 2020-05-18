@@ -4,6 +4,7 @@
     #include "MapGraphics_global.h"
     #include "PolygonObject.h"
     #include "MapGraphicsView.h"
+    #include "stationMarker.h"
 
     class Crit3DMeteoPoint;
 
@@ -12,7 +13,7 @@
         Q_OBJECT
 
         public:
-            explicit GridCellMarker(QPolygonF geoPoly, QColor fillColor, MapGraphicsObject *parent = nullptr);
+            explicit GridCellMarker(QPolygonF geoPoly, QColor fillColor, MapGraphicsView* view, MapGraphicsObject *parent = nullptr);
             void setId(std::string id);
             void setToolTip(Crit3DMeteoPoint* meteoPoint_);
             std::string id() const;
@@ -26,9 +27,12 @@
         protected:
             void mousePressEvent(QGraphicsSceneMouseEvent *event);
             void mouseReleaseEvent(QGraphicsSceneMouseEvent *event);
+
+//            bool eventFilter(QObject *obj, QEvent *event);
+
         signals:
-            void newCellClicked(std::string, bool);
-            void appendCellClicked(std::string, bool);
+            void newCellClicked(std::string, std::string, bool);
+            void appendCellClicked(std::string, std::string, bool);
             void openCropClicked(std::string);
 
     };

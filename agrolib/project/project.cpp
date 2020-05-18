@@ -2133,7 +2133,7 @@ void Project::importHourlyMeteoData(const QString& csvFileName, bool importAllFi
     }
 }
 
-void Project::showMeteoWidgetPoint(std::string idMeteoPoint, bool isAppend)
+void Project::showMeteoWidgetPoint(std::string idMeteoPoint, std::string namePoint, bool isAppend)
 {
     // check dates
     QDate firstDaily = meteoPointsDbHandler->getFirstDate(daily, idMeteoPoint).date();
@@ -2159,6 +2159,7 @@ void Project::showMeteoWidgetPoint(std::string idMeteoPoint, bool isAppend)
 
     Crit3DMeteoPoint mp;
     mp.setId(idMeteoPoint);
+    mp.setName(namePoint);
 
     if (isAppend)
     {
@@ -2167,6 +2168,7 @@ void Project::showMeteoWidgetPoint(std::string idMeteoPoint, bool isAppend)
         meteoPointsDbHandler->loadHourlyData(getCrit3DDate(firstHourly.date()), getCrit3DDate(lastHourly.date()), &mp);
         formInfo.close();
         meteoWidgetPointList[meteoWidgetPointList.size()-1]->draw(mp);
+        qDebug() << "isAppend showMeteoWidgetPoint end " << QString::fromStdString(idMeteoPoint);
         return;
     }
     else if (!isAppend)
@@ -2189,6 +2191,7 @@ void Project::showMeteoWidgetPoint(std::string idMeteoPoint, bool isAppend)
         meteoPointsDbHandler->loadHourlyData(getCrit3DDate(firstHourly.date()), getCrit3DDate(lastHourly.date()), &mp);
         formInfo.close();
         meteoWidgetPoint->draw(mp);
+        qDebug() << "showMeteoWidgetPoint end " << QString::fromStdString(idMeteoPoint);
         return;
     }
 
@@ -2272,14 +2275,17 @@ void Project::showMeteoWidgetGrid(std::string idCell, bool isAppend)
 void Project::deleteMeteoWidgetPoint(int id)
 {
     qDebug() << "deleteMeteoWidgetPoint ";
+    qDebug() << "1. meteoWidgetPointList.size() " << meteoWidgetPointList.size();
     for (int i = 0; i<meteoWidgetPointList.size(); i++)
     {
         if (meteoWidgetPointList[i]->getMeteoWidgetID() == id)
         {
+            qDebug() << "i " << i;
             delete meteoWidgetPointList.takeAt(i);
             break;
         }
     }
+    qDebug() << "2. meteoWidgetPointList.size() " << meteoWidgetPointList.size();
 }
 
 void Project::deleteMeteoWidgetGrid(int id)
