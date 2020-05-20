@@ -10,7 +10,7 @@ See [CRITERIA3D](https://github.com/ARPA-SIMC/CRITERIA3D/blob/master/DOC/CRITERI
 Dependencies:
 - Qt libraries: Qt 5.x or following is needed (select also QtCharts in download).
 - [MapGraphics library](https://github.com/raptorswing/MapGraphics) (modified version) you have to build with Qt Creator the project *mapGraphics/MapGraphics.pro*.
-- [Qwt library](http://qwt.sourceforge.net/): you have to download and compile the qwt library, then check the correct path in: *bin/CRITERIA3D/CRITERIA3D.pro* and *agrolib/soilWidget/soilWidget.pro*
+- [Qwt library](http://qwt.sourceforge.net/): you have to download and compile the qwt library, then check the correct path in: *bin/CRITERIA3D/CRITERIA3D.pro* and *agrolib/soilWidget/soilWidget.pro*. On Windows set QWT_ROOT in environment variables (for example QWT_ROOT=C:\Qwt-6.1.4).
 
 When all the dependencies are installed you can build the project *bin/Makeall_CRITERIA3D/Makeall_CRITERIA3D.pro*
 
