@@ -74,8 +74,6 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(this->mapView, SIGNAL(zoomLevelChanged(quint8)), this, SLOT(updateMaps()));
     connect(this->mapView, SIGNAL(mouseMoveSignal(const QPoint&)), this, SLOT(mouseMove(const QPoint&)));
 
-    this->setMouseTracking(true);
-
     // Set raster objects
     this->rasterDEM = new RasterObject(this->mapView);
     this->rasterDEM->setOpacity(this->ui->opacitySliderRasterInput->value() / 100.0);
@@ -136,10 +134,9 @@ void MainWindow::updateGUI()
 
 void MainWindow::mouseMove(const QPoint& eventPos)
 {
-    QPoint mapPos = getMapPos(eventPos);
-    if (! isInsideMap(mapPos)) return;
+    if (! isInsideMap(eventPos)) return;
 
-    Position geoPoint = this->mapView->mapToScene(mapPos);
+    Position geoPoint = this->mapView->mapToScene(eventPos);
     this->ui->statusBar->showMessage(QString::number(geoPoint.latitude()) + " " + QString::number(geoPoint.longitude()));
 }
 
@@ -171,17 +168,6 @@ void MainWindow::mouseDoubleClickEvent(QMouseEvent * event)
     this->mapView->centerOn(newCenter.lonLat());
 }
 
-
-/*
-void MainWindow::mouseMoveEvent(QMouseEvent * event)
-{
-    QPoint mapPos = getMapPos(event->pos());
-    if (! isInsideMap(mapPos)) return;
-
-    Position geoPoint = this->mapView->mapToScene(mapPos);
-    this->ui->statusBar->showMessage(QString::number(geoPoint.latitude()) + " " + QString::number(geoPoint.longitude()));
-}
-*/
 
 
 void MainWindow::mousePressEvent(QMouseEvent *event)
