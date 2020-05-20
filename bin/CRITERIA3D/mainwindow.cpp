@@ -38,6 +38,7 @@ MainWindow::MainWindow(QWidget *parent) :
     this->mapScene = new MapGraphicsScene(this);
     this->mapView = new MapGraphicsView(mapScene, this->ui->widgetMap);
 
+
     this->inputRasterColorLegend = new ColorLegend(ui->colorScaleInputRaster);
     this->inputRasterColorLegend->resize(ui->colorScaleInputRaster->size());
 
@@ -71,6 +72,9 @@ MainWindow::MainWindow(QWidget *parent) :
     this->mapView->setZoomLevel(8);
     this->mapView->centerOn(startCenter->lonLat());
     connect(this->mapView, SIGNAL(zoomLevelChanged(quint8)), this, SLOT(updateMaps()));
+    connect(this->mapView, SIGNAL(mouseMoveSignal(const QPoint&)), this, SLOT(mouseMove(const QPoint&)));
+
+    this->setMouseTracking(true);
 
     // Set raster objects
     this->rasterDEM = new RasterObject(this->mapView);
@@ -130,6 +134,16 @@ void MainWindow::updateGUI()
 }
 
 
+void MainWindow::mouseMove(const QPoint& eventPos)
+{
+    QPoint mapPos = getMapPos(eventPos);
+    if (! isInsideMap(mapPos)) return;
+
+    Position geoPoint = this->mapView->mapToScene(mapPos);
+    this->ui->statusBar->showMessage(QString::number(geoPoint.latitude()) + " " + QString::number(geoPoint.longitude()));
+}
+
+
 void MainWindow::mouseReleaseEvent(QMouseEvent *event)
 {
     Q_UNUSED(event)
@@ -158,6 +172,7 @@ void MainWindow::mouseDoubleClickEvent(QMouseEvent * event)
 }
 
 
+/*
 void MainWindow::mouseMoveEvent(QMouseEvent * event)
 {
     QPoint mapPos = getMapPos(event->pos());
@@ -166,6 +181,7 @@ void MainWindow::mouseMoveEvent(QMouseEvent * event)
     Position geoPoint = this->mapView->mapToScene(mapPos);
     this->ui->statusBar->showMessage(QString::number(geoPoint.latitude()) + " " + QString::number(geoPoint.longitude()));
 }
+*/
 
 
 void MainWindow::mousePressEvent(QMouseEvent *event)
@@ -189,26 +205,47 @@ void MainWindow::addMeteoPoints()
         point->setLongitude(myProject.meteoPoints[i].longitude);
         point->setId(myProject.meteoPoints[i].id);
         point->setName(myProject.meteoPoints[i].name);
+        point->setDataset(myProject.meteoPoints[i].dataset);
+        point->setAltitude(myProject.meteoPoints[i].point.z);
+        point->setMunicipality(myProject.meteoPoints[i].municipality);
+        point->setCurrentValue(myProject.meteoPoints[i].currentValue);
+        point->setQuality(myProject.meteoPoints[i].quality);
 
         this->pointList.append(point);
-        this->mapView->scene()->addObject(pointList[i]);
+        this->mapView->scene()->addObject(this->pointList[i]);
 
-        point->setToolTip(&(myProject.meteoPoints[i]));
-        connect(point, SIGNAL(newStationClicked(std::string, bool)), this, SLOT(callNewMeteoWidget(std::string)));
-        connect(point, SIGNAL(appendStationClicked(std::string, bool)), this, SLOT(callAppendMeteoWidget(std::string)));
+        point->setToolTip();
+        connect(point, SIGNAL(newStationClicked(std::string, std::string, bool)), this, SLOT(callNewMeteoWidget(std::string, std::string, bool)));
+        connect(point, SIGNAL(appendStationClicked(std::string, std::string, bool)), this, SLOT(callAppendMeteoWidget(std::string, std::string, bool)));
     }
 }
 
-void MainWindow::callNewMeteoWidget(std::string id)
+void MainWindow::callNewMeteoWidget(std::string id, std::string name, bool isGrid)
 {
     bool isAppend = false;
-    myProject.showMeteoWidgetPoint(id, isAppend);
+    if (isGrid)
+    {
+        myProject.showMeteoWidgetGrid(id, isAppend);
+    }
+    else
+    {
+        myProject.showMeteoWidgetPoint(id, name, isAppend);
+    }
+    return;
 }
 
-void MainWindow::callAppendMeteoWidget(std::string id)
+void MainWindow::callAppendMeteoWidget(std::string id, std::string name, bool isGrid)
 {
     bool isAppend = true;
-    myProject.showMeteoWidgetPoint(id, isAppend);
+    if (isGrid)
+    {
+        myProject.showMeteoWidgetGrid(id, isAppend);
+    }
+    else
+    {
+        myProject.showMeteoWidgetPoint(id, name, isAppend);
+    }
+    return;
 }
 
 
@@ -518,7 +555,8 @@ void MainWindow::redrawMeteoPoints(visualizationType myType, bool updateColorSCa
                     myProject.meteoPoints[i].currentValue = NODATA;
                     pointList[i]->setFillColor(QColor(Qt::white));
                     pointList[i]->setRadius(5);
-                    pointList[i]->setToolTip(&(myProject.meteoPoints[i]));
+                    pointList[i]->setCurrentValue(NODATA);
+                    pointList[i]->setToolTip();
                     pointList[i]->setVisible(true);
             }
 
@@ -565,7 +603,9 @@ void MainWindow::redrawMeteoPoints(visualizationType myType, bool updateColorSCa
                         pointList[i]->setOpacity(0.5);
                     }
 
-                    pointList[i]->setToolTip(&(myProject.meteoPoints[i]));
+                    pointList[i]->setCurrentValue(myProject.meteoPoints[i].currentValue);
+                    pointList[i]->setQuality(myProject.meteoPoints[i].quality);
+                    pointList[i]->setToolTip();
                     pointList[i]->setVisible(true);
                 }
             }
