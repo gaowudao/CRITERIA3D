@@ -14,9 +14,9 @@
 #include "readPragaFormatData.h"
 
 
-#define NR_SIMULATION_YEARS 3
+#define NR_SIMULATION_YEARS 300
 // [ 1 - 10 ]
-#define NR_STATIONS 8
+#define NR_STATIONS 5
 
 weatherGenerator2D WG2D;
 
@@ -390,7 +390,7 @@ int main()
         results[iStation].precipitation = (double *)calloc(lengthArraySimulation, sizeof(double));
     }
     WG2D.initializeParameters(precipitationThreshold, yearsOfSimulations, distributionType,
-                              computePrecipitation, computeTemperature,false);
+                              computePrecipitation, computeTemperature,true);
     WG2D.computeWeatherGenerator2D();
     results = WG2D.getWeatherGeneratorOutput(startingYear);
     printSimulationResults(results,nrStations,lengthArraySimulation);

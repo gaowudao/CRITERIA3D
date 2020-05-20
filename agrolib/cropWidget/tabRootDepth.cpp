@@ -2,6 +2,7 @@
 #include "commonConstants.h"
 #include "utilities.h"
 #include <QMessageBox>
+#include "formInfo.h"
 
 
 TabRootDepth::TabRootDepth()
@@ -26,7 +27,7 @@ TabRootDepth::TabRootDepth()
     QDate first(QDate::currentDate().year(), 1, 1);
     QDate last(QDate::currentDate().year(), 12, 31);
     axisX->setTitleText("Date");
-    axisX->setFormat("MMM dd");
+    axisX->setFormat("MMM dd <br> yyyy");
     axisX->setMin(QDateTime(first, QTime(0,0,0)));
     axisX->setMax(QDateTime(last, QTime(0,0,0)));
     axisX->setTickCount(13);
@@ -47,6 +48,8 @@ TabRootDepth::TabRootDepth()
 
     chart->setAcceptHoverEvents(true);
     m_tooltip = new Callout(chart);
+    m_tooltip->hide();
+
     connect(seriesRootDepthMin, &QLineSeries::hovered, this, &TabRootDepth::tooltipRDM);
     connect(seriesRootDepth, &QLineSeries::hovered, this, &TabRootDepth::tooltipRD);
 
@@ -55,25 +58,24 @@ TabRootDepth::TabRootDepth()
     setLayout(mainLayout);
 }
 
-void TabRootDepth::computeRootDepth(Crit3DCrop* myCrop, Crit3DMeteoPoint *meteoPoint, int currentYear, const std::vector<soil::Crit3DLayer> &soilLayers)
+void TabRootDepth::computeRootDepth(Crit3DCrop* myCrop, Crit3DMeteoPoint *meteoPoint, int firstYear, int lastYear, const std::vector<soil::Crit3DLayer> &soilLayers)
 {
-
     unsigned int nrLayers = unsigned(soilLayers.size());
     double totalSoilDepth = 0;
     if (nrLayers > 0) totalSoilDepth = soilLayers[nrLayers-1].depth + soilLayers[nrLayers-1].thickness / 2;
 
-    year = currentYear;
-    int prevYear = currentYear - 1;
-
+    int prevYear = firstYear - 1;
     double waterTableDepth = NODATA;
     std::string error;
 
     Crit3DDate firstDate = Crit3DDate(1, 1, prevYear);
-    Crit3DDate lastDate = Crit3DDate(31, 12, year);
+    Crit3DDate lastDate = Crit3DDate(31, 12, lastYear);
     double tmin;
     double tmax;
     QDateTime x;
 
+    chart->removeSeries(seriesRootDepth);
+    chart->removeSeries(seriesRootDepthMin);
     seriesRootDepth->clear();
     seriesRootDepthMin->clear();
 
@@ -92,8 +94,8 @@ void TabRootDepth::computeRootDepth(Crit3DCrop* myCrop, Crit3DMeteoPoint *meteoP
             return;
         }
 
-        // display only current year
-        if (myDate.year == year)
+        // display only interval firstYear lastYear
+        if (myDate.year >= firstYear)
         {
             x.setDate(QDate(myDate.year, myDate.month, myDate.day));
             if (myCrop->roots.rootDepthMin!= NODATA && myCrop->roots.rootDepth!= NODATA)
@@ -113,23 +115,25 @@ void TabRootDepth::computeRootDepth(Crit3DCrop* myCrop, Crit3DMeteoPoint *meteoP
     }
 
     // update x axis
-    QDate first(year, 1, 1);
-    QDate last(year, 12, 31);
+    QDate first(firstYear, 1, 1);
+    QDate last(lastYear, 12, 31);
     axisX->setMin(QDateTime(first, QTime(0,0,0)));
     axisX->setMax(QDateTime(last, QTime(0,0,0)));
+
+    chart->addSeries(seriesRootDepth);
+    chart->addSeries(seriesRootDepthMin);
+    seriesRootDepth->attachAxis(axisY);
+    seriesRootDepthMin->attachAxis(axisY);
 
 }
 
 void TabRootDepth::tooltipRDM(QPointF point, bool state)
 {
-    if (m_tooltip == nullptr)
-        m_tooltip = new Callout(chart);
-
     if (state)
     {
         QDateTime xDate;
         xDate.setMSecsSinceEpoch(point.x());
-        m_tooltip->setText(QString("%1 \nroot ini %2 ").arg(xDate.date().toString("MMM dd")).arg(point.y()));
+        m_tooltip->setText(QString("%1 \nroot ini %2 ").arg(xDate.date().toString("yyyy-MM-dd")).arg(point.y()));
         m_tooltip->setAnchor(point);
         m_tooltip->setZValue(11);
         m_tooltip->updateGeometry();
@@ -141,14 +145,11 @@ void TabRootDepth::tooltipRDM(QPointF point, bool state)
 
 void TabRootDepth::tooltipRD(QPointF point, bool state)
 {
-    if (m_tooltip == nullptr)
-        m_tooltip = new Callout(chart);
-
     if (state)
     {
         QDateTime xDate;
         xDate.setMSecsSinceEpoch(point.x());
-        m_tooltip->setText(QString("%1 \nroot depth %2 ").arg(xDate.date().toString("MMM dd")).arg(point.y()));
+        m_tooltip->setText(QString("%1 \nroot depth %2 ").arg(xDate.date().toString("yyyy-MM-dd")).arg(point.y()));
         m_tooltip->setAnchor(point);
         m_tooltip->setZValue(11);
         m_tooltip->updateGeometry();

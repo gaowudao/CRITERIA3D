@@ -877,6 +877,8 @@ bool Vine3DProject::loadDBPoints()
     int id;
     while (query.next())
     {
+        meteoPoints[i].active = true;
+
         id = query.value("id_point").toInt();
         meteoPoints[i].id = std::to_string(id);
         meteoPoints[i].name = query.value("name").toString().toStdString();
@@ -897,18 +899,14 @@ bool Vine3DProject::loadDBPoints()
 
     findVine3DLastMeteoDate();
 
-    // load proxy values for detrending
-    if (! readProxyValues())
+    if (dbConnection.isOpen())
     {
-        if (dbConnection.isOpen())
+        for (int i = 0; i < this->nrMeteoPoints; i++)
         {
-            for (int i = 0; i < this->nrMeteoPoints; i++)
+            if (! readPointProxyValues(&(this->meteoPoints[i]), &(this->dbConnection)))
             {
-                if (! readPointProxyValues(&(this->meteoPoints[i]), &(this->dbConnection)))
-                {
-                    logError("Error reading proxy values");
-                    return false;
-                }
+                logError("Error reading proxy values");
+                return false;
             }
         }
     }
@@ -973,9 +971,10 @@ bool Vine3DProject::meteoDataLoaded(const Crit3DTime& myTimeIni, const Crit3DTim
 //observed data: 5 minutes
 bool Vine3DProject::loadObsDataSubHourly(int indexPoint, meteoVariable myVar, QDateTime d1, QDateTime d2, QString tableName)
 {
-    QDateTime myDateTime;
+    QTime myTime;
+    Crit3DDate myDate;
+    int myHour, myMinutes;
     QString queryString;
-    int i, j, myHour;
     float myValue;
 
     if (nrMeteoPoints <= indexPoint)
@@ -1010,25 +1009,12 @@ bool Vine3DProject::loadObsDataSubHourly(int indexPoint, meteoVariable myVar, QD
     {
         if (getValue(myQuery.value(2), &myValue))
         {
-            //check value
-            myDateTime = myQuery.value(0).toDateTime();
-            myHour = myDateTime.time().hour();
-            //if myHour != previuousHour  -> aggregazione
+            myDate = getCrit3DDate(myQuery.value(0).toDate());
+            myTime = myQuery.value(0).toDateTime().time();
+            myHour = myTime.hour();
+            myMinutes = myTime.minute();
 
-            i = d1.daysTo(myDateTime);
-            j = myHour * meteoSettings->getHourlyIntervals();
-
-        //check var
-            if (myVar == airTemperature)
-                myPoint->obsDataH[i].tAir[j] = myValue;
-            else if (myVar == precipitation)
-                myPoint->obsDataH[i].prec[j] = myValue;
-            else if (myVar == airRelHumidity)
-                myPoint->obsDataH[i].rhAir[j] = myValue;
-            else if (myVar == globalIrradiance)
-                myPoint->obsDataH[i].irradiance[j] = myValue;
-            else if (myVar == windScalarIntensity)
-                myPoint->obsDataH[i].windScalInt[j] = myValue;
+            myPoint->setMeteoPointValueH(myDate, myHour, myMinutes, myVar, myValue);
         }
     }
 
@@ -1040,9 +1026,9 @@ bool Vine3DProject::loadObsDataSubHourly(int indexPoint, meteoVariable myVar, QD
 // observed data: aggregation hourly
 bool Vine3DProject::loadObsDataHourly(int indexPoint, QDate d1, QDate d2, QString tableName, bool useAggrCodes)
 {
-    QDate myDate;
     QString queryString;
-    int i, j, myHour;
+    Crit3DDate myDate;
+    int myHour;
     meteoVariable myVar;
     float myValue, myFlag;
     bool isValid;
@@ -1079,7 +1065,7 @@ bool Vine3DProject::loadObsDataHourly(int indexPoint, QDate d1, QDate d2, QStrin
     //read values
     while (myQuery.next())
     {
-        myDate = myQuery.value(0).toDate();
+        myDate = getCrit3DDate(myQuery.value(0).toDate());
         myHour = myQuery.value(1).toInt();
         //transform local time in UTC
         if (!myPoint->isUTC)
@@ -1091,62 +1077,27 @@ bool Vine3DProject::loadObsDataHourly(int indexPoint, QDate d1, QDate d2, QStrin
                 myHour += 24;
             }
         }
-        i = d1.daysTo(myDate);
-        if (i >= 0)
+
+        if (useAggrCodes)
+            isValid = true;
+        else
         {
-            j = myHour * hourlyFraction;
+            isValid = false;
+            if (getValue(myQuery.value(4), &myFlag))
+                if (myFlag >= 0.5) isValid = true;
+        }
 
+        if (isValid)
+        {
             if (useAggrCodes)
-                isValid = true;
+                myVar  = getMeteoVariable(myQuery.value(2).toInt());
             else
+                myVar = getMeteoVariable(this->getAggregatedVarCode(myQuery.value(2).toInt()));
+
+            if (getValue(myQuery.value(3), &myValue))
             {
-                isValid = false;
-                if (getValue(myQuery.value(4), &myFlag))
-                    if (myFlag >= 0.5) isValid = true;
-            }
-
-            if (isValid)
-            {
-                if (useAggrCodes)
-                    myVar  = getMeteoVariable(myQuery.value(2).toInt());
-                else
-                    myVar = getMeteoVariable(this->getAggregatedVarCode(myQuery.value(2).toInt()));
-
-                if (getValue(myQuery.value(3), &myValue))
-                {
-                    dataAvailable = true;
-
-                    if (myVar == airTemperature)
-                    {
-                        if ((myValue > -40)&&(myValue <= 60))
-                            myPoint->obsDataH[i].tAir[j] = myValue;
-                    }
-                    else if (myVar == precipitation)
-                    {
-                        if ((myValue >= 0)&&(myValue <= 500))
-                            myPoint->obsDataH[i].prec[j] = myValue;
-                    }
-                    else if (myVar == airRelHumidity)
-                    {
-                        if ((myValue > 0)&&(myValue <= 100))
-                            myPoint->obsDataH[i].rhAir[j] = myValue;
-                    }
-                    else if (myVar == globalIrradiance)
-                    {
-                        if ((myValue >= 0)&&(myValue < 1360))
-                        myPoint->obsDataH[i].irradiance[j] = myValue;
-                    }
-                    else if (myVar == windScalarIntensity)
-                    {
-                        if ((myValue >= 0)&&(myValue < 75))
-                        myPoint->obsDataH[i].windScalInt[j] = myValue;
-                    }
-                    else if (myVar == leafWetness)
-                    {
-                        if ((myValue >= 0)&&(myValue <= 60))
-                        myPoint->obsDataH[i].leafW[j] = myValue;
-                    }
-                }
+                dataAvailable = true;
+                myPoint->setMeteoPointValueH(myDate, myHour, 0, myVar, myValue);
             }
         }
     }
@@ -1158,9 +1109,9 @@ bool Vine3DProject::loadObsDataHourly(int indexPoint, QDate d1, QDate d2, QStrin
 
 bool Vine3DProject::loadObsDataHourlyVar(int indexPoint, meteoVariable myVar, QDate d1, QDate d2, QString tableName, bool useAggrCodes)
 {
-    QDate myDate;
     QString queryString;
-    int i, j, myHour;
+    Crit3DDate myDate;
+    int myHour;
     float myValue, myFlag;
     bool isValid;
     int nrIndices;
@@ -1202,12 +1153,10 @@ bool Vine3DProject::loadObsDataHourlyVar(int indexPoint, meteoVariable myVar, QD
     }
     else if (myQuery.size() == 0) return(false);
 
-    QDate pointFirstDate = getQDate(myPoint->obsDataH[0].date);
-
     //read values
     while (myQuery.next())
     {
-        myDate = myQuery.value(0).toDate();
+        myDate = getCrit3DDate(myQuery.value(0).toDate());
         myHour = myQuery.value(1).toInt();
         //transform local time in UTC
         if (!myPoint->isUTC)
@@ -1219,38 +1168,22 @@ bool Vine3DProject::loadObsDataHourlyVar(int indexPoint, meteoVariable myVar, QD
                 myHour += 24;
             }
         }
-        i = pointFirstDate.daysTo(myDate);
-        if (i>=0)
+
+        if (useAggrCodes)
+            isValid = true;
+        else
         {
-            j = myHour * meteoSettings->getHourlyIntervals();
-
-            if (useAggrCodes)
-                isValid = true;
-            else
-            {
-                isValid = false;
-                if (getValue(myQuery.value(3), &myFlag))
-                    if (myFlag >= 0.5) isValid = true;
-            }
-
-            if (isValid)
-                if (getValue(myQuery.value(2), &myValue))
-                {
-                    dataAvailable = true;
-                    if (myVar == airTemperature)
-                        myPoint->obsDataH[i].tAir[j] = myValue;
-                    else if (myVar == precipitation)
-                        myPoint->obsDataH[i].prec[j] = myValue;
-                    else if (myVar == airRelHumidity)
-                        myPoint->obsDataH[i].rhAir[j] = myValue;
-                    else if (myVar == globalIrradiance)
-                        myPoint->obsDataH[i].irradiance[j] = myValue;
-                    else if (myVar == windScalarIntensity)
-                        myPoint->obsDataH[i].windScalInt[j] = myValue;
-                    else if (myVar == leafWetness)
-                        myPoint->obsDataH[i].leafW[j] = myValue;
-                }
+            isValid = false;
+            if (getValue(myQuery.value(3), &myFlag))
+                if (myFlag >= 0.5) isValid = true;
         }
+
+        if (isValid)
+            if (getValue(myQuery.value(2), &myValue))
+            {
+                dataAvailable = true;
+                myPoint->setMeteoPointValueH(myDate, myHour, 0, myVar, myValue);
+            }
     }
 
     myQuery.clear();
@@ -1489,7 +1422,7 @@ bool Vine3DProject::runModels(QDateTime dateTime1, QDateTime dateTime2, bool sav
                 aggregateAndSaveDailyMap(airRelHumidity, aggrMax, getCrit3DDate(myDate), myOutputPathDaily, myOutputPathHourly, myArea);
                 aggregateAndSaveDailyMap(airRelHumidity, aggrAverage, getCrit3DDate(myDate), myOutputPathDaily, myOutputPathHourly, myArea);
                 aggregateAndSaveDailyMap(windScalarIntensity, aggrAverage, getCrit3DDate(myDate), myOutputPathDaily, myOutputPathHourly, myArea);
-                aggregateAndSaveDailyMap(globalIrradiance, aggrSum, getCrit3DDate(myDate), myOutputPathDaily, myOutputPathHourly, myArea);
+                aggregateAndSaveDailyMap(globalIrradiance, aggrIntegral, getCrit3DDate(myDate), myOutputPathDaily, myOutputPathHourly, myArea);
                 aggregateAndSaveDailyMap(leafWetness, aggrSum, getCrit3DDate(myDate), myOutputPathDaily, myOutputPathHourly, myArea);
 
                 if (removeDirectory(myOutputPathHourly)) this->logInfo("Delete hourly files");

@@ -107,6 +107,11 @@ QPointF RasterObject::getPixel(const QPointF &latLonPoint)
     return QRectF( -widthPixels, -heightPixels, widthPixels*2, heightPixels*2);
  }
 
+ gis::Crit3DGridHeader RasterObject::getLatLonHeader() const
+ {
+     return latLonHeader;
+ }
+
  void RasterObject::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget)
  {
      Q_UNUSED(option)
@@ -420,7 +425,13 @@ void RasterObject::updateCenter()
     geoMap->referencePoint.latitude = newCenter.y();
     referencePixel = view->tileSource()->ll2qgs(newCenter, view->zoomLevel());
 
-    if (isDrawing) setPos(newCenter);
+    if (isDrawing)
+    {
+        setPos(newCenter);
+
+        if (this->colorScaleLegend != nullptr)
+            this->colorScaleLegend->repaint();
+    }
 }
 
 
@@ -446,4 +457,6 @@ void RasterObject::setMapExtents()
     geoMap->topRight.longitude = MINVALUE(180, topRight.x());
     geoMap->topRight.latitude = MINVALUE(84, topRight.y());
 }
+
+
 

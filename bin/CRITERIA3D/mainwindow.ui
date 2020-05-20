@@ -2392,7 +2392,7 @@
      <x>0</x>
      <y>0</y>
      <width>1280</width>
-     <height>22</height>
+     <height>26</height>
     </rect>
    </property>
    <property name="palette">
@@ -2859,7 +2859,7 @@
      <addaction name="menuMeteo_points"/>
      <addaction name="actionLoad_soil_map"/>
      <addaction name="actionLoad_soil_data"/>
-     <addaction name="actionLoad_model_parameters"/>
+     <addaction name="actionLoad_Crop_data"/>
     </widget>
     <widget class="QMenu" name="menuOpen_project">
      <property name="title">
@@ -2955,6 +2955,7 @@
       <string>Soil</string>
      </property>
      <addaction name="actionView_SoilMap"/>
+     <addaction name="actionHide_soil_map"/>
     </widget>
     <addaction name="menuPoints"/>
     <addaction name="menuDEM"/>
@@ -3014,9 +3015,9 @@
     <string>Spatial quality control</string>
    </property>
   </action>
-  <action name="actionLoad_model_parameters">
+  <action name="actionLoad_Crop_data">
    <property name="text">
-    <string>Model parameters...</string>
+    <string>Crop data...</string>
    </property>
    <property name="visible">
     <bool>true</bool>
@@ -3160,7 +3161,7 @@
   </action>
   <action name="actionView_SoilMap">
    <property name="text">
-    <string>Soil map</string>
+    <string>Show soil map</string>
    </property>
   </action>
   <action name="actionMeteoPointsOpen">
@@ -3196,6 +3197,11 @@
   <action name="actionRun_models">
    <property name="text">
     <string>Run models...</string>
+   </property>
+  </action>
+  <action name="actionHide_soil_map">
+   <property name="text">
+    <string>Hide soil map</string>
    </property>
   </action>
  </widget>

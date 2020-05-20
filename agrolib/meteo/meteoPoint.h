@@ -113,6 +113,7 @@
             gis::Crit3DRasterGrid* topographicDistance;
 
             Crit3DMeteoPoint();
+            void clear();
 
             void initializeObsDataH(int hourlyFraction, int numberOfDays, const Crit3DDate& firstDate);
             void emptyVarObsDataH(meteoVariable myVar, const Crit3DDate& myDate);
@@ -149,7 +150,10 @@
             float getProxyValue(unsigned pos);
             std::vector <float> getProxyValues();
 
-        private:
+            void setId(std::string value);
+            void setName(std::string name);
+
+    private:
             TObsDataH *obsDataH;
 
     };

@@ -2,6 +2,8 @@
 #include "commonConstants.h"
 #include <QMessageBox>
 #include <QLegendMarker>
+#include "formInfo.h"
+#include "qdebug.h"
 
 
 TabLAI::TabLAI()
@@ -11,12 +13,12 @@ TabLAI::TabLAI()
     chart = new QChart();   
     chartView = new QChartView(chart);
     chartView->setChart(chart);
+
     seriesLAI = new QLineSeries();
     seriesPotentialEvap = new QLineSeries();
     seriesMaxEvap = new QLineSeries();
     seriesMaxTransp = new QLineSeries();
     seriesLAI->setName("Leaf Area Index [m2 m-2]");
-
     seriesPotentialEvap->setName("Potential evapotranspiration [mm]");
     seriesPotentialEvap->setColor(QColor(Qt::darkGray));
     seriesMaxEvap->setName("Evaporation max [mm]");
@@ -35,7 +37,7 @@ TabLAI::TabLAI()
     QDate first(QDate::currentDate().year(), 1, 1);
     QDate last(QDate::currentDate().year(), 12, 31);
     axisX->setTitleText("Date");
-    axisX->setFormat("MMM dd");
+    axisX->setFormat("MMM dd <br> yyyy");
     axisX->setMin(QDateTime(first, QTime(0,0,0)));
     axisX->setMax(QDateTime(last, QTime(0,0,0)));
     axisX->setTickCount(13);
@@ -75,7 +77,10 @@ TabLAI::TabLAI()
     chart->legend()->setVisible(true);
     chart->legend()->setAlignment(Qt::AlignBottom);
     chart->setAcceptHoverEvents(true);
+
     m_tooltip = new Callout(chart);
+    m_tooltip->hide();
+
     connect(seriesLAI, &QLineSeries::hovered, this, &TabLAI::tooltipLAI);
     connect(seriesPotentialEvap, &QLineSeries::hovered, this, &TabLAI::tooltipPE);
     connect(seriesMaxEvap, &QLineSeries::hovered, this, &TabLAI::tooltipME);
@@ -91,25 +96,29 @@ TabLAI::TabLAI()
     setLayout(mainLayout);
 }
 
-void TabLAI::computeLAI(Crit3DCrop* myCrop, Crit3DMeteoPoint *meteoPoint, int currentYear, const std::vector<soil::Crit3DLayer> &soilLayers)
+void TabLAI::computeLAI(Crit3DCrop* myCrop, Crit3DMeteoPoint *meteoPoint, int firstYear, int lastYear, const std::vector<soil::Crit3DLayer> &soilLayers)
 {
     unsigned int nrLayers = unsigned(soilLayers.size());
     double totalSoilDepth = 0;
     if (nrLayers > 0) totalSoilDepth = soilLayers[nrLayers-1].depth + soilLayers[nrLayers-1].thickness / 2;
 
-    year = currentYear;
-    int prevYear = currentYear - 1;
+    int prevYear = firstYear - 1;
 
     double waterTableDepth = NODATA;
     std::string error;
 
     Crit3DDate firstDate = Crit3DDate(1, 1, prevYear);
-    Crit3DDate lastDate = Crit3DDate(31, 12, year);
+    Crit3DDate lastDate = Crit3DDate(31, 12, lastYear);
     double tmin;
     double tmax;
     QDateTime x;
     double dailyEt0;
     int doy;
+
+    chart->removeSeries(seriesLAI);
+    chart->removeSeries(seriesPotentialEvap);
+    chart->removeSeries(seriesMaxEvap);
+    chart->removeSeries(seriesMaxTransp);
 
     seriesLAI->clear();
     seriesPotentialEvap->clear();
@@ -130,8 +139,8 @@ void TabLAI::computeLAI(Crit3DCrop* myCrop, Crit3DMeteoPoint *meteoPoint, int cu
             return;
         }
 
-        // display only current year
-        if (myDate.year == year)
+        // display only interval firstYear lastYear
+        if (myDate.year >= firstYear)
         {
             x.setDate(QDate(myDate.year, myDate.month, myDate.day));
             doy = getDoyFromDate(myDate);
@@ -145,22 +154,30 @@ void TabLAI::computeLAI(Crit3DCrop* myCrop, Crit3DMeteoPoint *meteoPoint, int cu
     }
 
     // update x axis
-    QDate first(year, 1, 1);
-    QDate last(year, 12, 31);
+    QDate first(firstYear, 1, 1);
+    QDate last(lastYear, 12, 31);
     axisX->setMin(QDateTime(first, QTime(0,0,0)));
     axisX->setMax(QDateTime(last, QTime(0,0,0)));
+
+    chart->addSeries(seriesLAI);
+    chart->addSeries(seriesPotentialEvap);
+    chart->addSeries(seriesMaxEvap);
+    chart->addSeries(seriesMaxTransp);
+
+    seriesLAI->attachAxis(axisY);
+    seriesPotentialEvap->attachAxis(axisYdx);
+    seriesMaxEvap->attachAxis(axisYdx);
+    seriesMaxTransp->attachAxis(axisYdx);
+
 }
 
 void TabLAI::tooltipLAI(QPointF point, bool state)
 {
-    if (m_tooltip == nullptr)
-        m_tooltip = new Callout(chart);
-
     if (state)
     {
         QDateTime xDate;
         xDate.setMSecsSinceEpoch(point.x());
-        m_tooltip->setText(QString("%1 \nLAI %2 ").arg(xDate.date().toString("MMM dd")).arg(point.y()));
+        m_tooltip->setText(QString("%1 \nLAI: %2 ").arg(xDate.date().toString("yyyy-MM-dd")).arg(point.y(), 0, 'f', 1));
         m_tooltip->setAnchor(point);
         m_tooltip->setZValue(11);
         m_tooltip->updateGeometry();
@@ -172,14 +189,11 @@ void TabLAI::tooltipLAI(QPointF point, bool state)
 
 void TabLAI::tooltipPE(QPointF point, bool state)
 {
-    if (m_tooltip == nullptr)
-        m_tooltip = new Callout(chart);
-
     if (state)
     {
         QDateTime xDate;
         xDate.setMSecsSinceEpoch(point.x());
-        m_tooltip->setText(QString("%1 \nPot. ET %2 ").arg(xDate.date().toString("MMM dd")).arg(point.y()));
+        m_tooltip->setText(QString("%1 \nPot. ET: %2 ").arg(xDate.date().toString("yyyy-MM-dd")).arg(point.y(), 0, 'f', 1));
         m_tooltip->setAnchor(point);
         m_tooltip->setZValue(11);
         m_tooltip->updateGeometry();
@@ -191,14 +205,11 @@ void TabLAI::tooltipPE(QPointF point, bool state)
 
 void TabLAI::tooltipME(QPointF point, bool state)
 {
-    if (m_tooltip == nullptr)
-        m_tooltip = new Callout(chart);
-
     if (state)
     {
         QDateTime xDate;
         xDate.setMSecsSinceEpoch(point.x());
-        m_tooltip->setText(QString("%1 \nEvap. max %2 ").arg(xDate.date().toString("MMM dd")).arg(point.y()));
+        m_tooltip->setText(QString("%1 \nEvap. max: %2 ").arg(xDate.date().toString("yyyy-MM-dd")).arg(point.y(), 0, 'f', 1));
         m_tooltip->setAnchor(point);
         m_tooltip->setZValue(11);
         m_tooltip->updateGeometry();
@@ -210,14 +221,12 @@ void TabLAI::tooltipME(QPointF point, bool state)
 
 void TabLAI::tooltipMT(QPointF point, bool state)
 {
-    if (m_tooltip == nullptr)
-        m_tooltip = new Callout(chart);
 
     if (state)
     {
         QDateTime xDate;
         xDate.setMSecsSinceEpoch(point.x());
-        m_tooltip->setText(QString("%1 \nTransp. max %2 ").arg(xDate.date().toString("MMM dd")).arg(point.y()));
+        m_tooltip->setText(QString("%1 \nTransp. max: %2 ").arg(xDate.date().toString("yyyy-MM-dd")).arg(point.y(), 0, 'f', 1));
         m_tooltip->setAnchor(point);
         m_tooltip->setZValue(11);
         m_tooltip->updateGeometry();

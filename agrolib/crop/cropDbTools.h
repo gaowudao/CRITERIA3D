@@ -9,7 +9,7 @@
 
     bool openDbCrop(QString dbName, QSqlDatabase* dbCrop, QString* error);
 
-    bool getCropNameList(QSqlDatabase* dbCrop, QStringList* cropNameList, QString* error);
+    bool getCropIdList(QSqlDatabase* dbCrop, QStringList* cropNameList, QString* error);
 
     QString getIdCropFromName(QSqlDatabase* dbCrop, QString cropName, QString *myError);
 
@@ -28,6 +28,8 @@
     bool updateCropLAIparam(QSqlDatabase* dbCrop, QString idCrop, Crit3DCrop* myCrop, QString *error);
 
     bool updateCropRootparam(QSqlDatabase* dbCrop, QString idCrop, Crit3DCrop* myCrop, QString *error);
+
+    bool updateCropIrrigationparam(QSqlDatabase* dbCrop, QString idCrop, Crit3DCrop* myCrop, QString *error);
 
 
 #endif // CROPDBTOOLS_H

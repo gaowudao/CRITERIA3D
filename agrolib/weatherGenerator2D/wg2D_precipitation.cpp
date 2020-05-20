@@ -1368,12 +1368,12 @@ void weatherGenerator2D::spatialIterationAmounts(double** correlationMatrixSimul
                    else
                    {
                        amountsCorrelationMatrix[i][j] += kiter*(initialAmountsCorrelationMatrix[i][j]-correlationMatrixSimulatedData[i][j]);
-                       amountsCorrelationMatrix[i][j] = MINVALUE(amountsCorrelationMatrix[i][j],ONELESSEPSILON);
+                       amountsCorrelationMatrix[i][j] = MINVALUE(amountsCorrelationMatrix[i][j],1);
                    }
                }
            }
        }
-       //printf(" iteration step %d\n", ii);
+       //printf("iter %d value %f \n",ii,val);
    }
    // free memory
    for (int i=0;i<nrStations;i++)

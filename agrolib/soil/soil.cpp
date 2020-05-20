@@ -409,8 +409,8 @@ namespace soil
      */
     double getFieldCapacity(Crit3DHorizon* horizon, soil::units unit)
     {
-        double fcMin = -10;                 /*!< [kPa] clay < 20% sandy soils */
-        double fcMax = -33;                 /*!< [kPa] clay > 50% clay soils */
+        double fcMin = -10;                 /*!< [kPa] clay < 20% : sandy soils */
+        double fcMax = -33;                 /*!< [kPa] clay > 50% : clay soils */
 
         const double CLAYMIN = 20;
         const double CLAYMAX = 50;
@@ -615,40 +615,45 @@ namespace soil
 
 
     /*!
-     * \brief get current volumetric water content
-     * \param layer: pointer to Crit3DLayer class
-     * \return volumetric water content [-]
+     * \brief return current volumetric water content [m3 m^3]
      */
-    double getVolumetricWaterContent(Crit3DLayer* layer)
+    double Crit3DLayer::getVolumetricWaterContent()
     {
-        // unit of layer->thickness is [m]
-        double theta = layer->waterContent / (layer->thickness * layer->soilFraction * 1000);
+        // waterContent [mm] - thickness [m]
+        double theta = waterContent / (thickness * soilFraction * 1000);
         return theta;
+    }
+
+    /*!
+     * \brief return degree of saturation [-]
+     */
+    double Crit3DLayer::getDegreeOfSaturation()
+    {
+        double theta = getVolumetricWaterContent();
+        return (theta - horizon->vanGenuchten.thetaR) / (horizon->vanGenuchten.thetaS - horizon->vanGenuchten.thetaR);
     }
 
 
     /*!
      * \brief get current water potential
-     * \param layer: pointer to Crit3DLayer class
      * \return water potential [kPa]
      */
-    double getWaterPotential(Crit3DLayer* layer)
+    double Crit3DLayer::getWaterPotential()
     {
-        double theta = getVolumetricWaterContent(layer);
-        return psiFromTheta(theta, layer->horizon);
+        double theta = getVolumetricWaterContent();
+        return psiFromTheta(theta, horizon);
     }
 
 
     /*!
      * \brief get current water conductivity
-     * \param layer: pointer to Crit3DLayer class
      * \return hydraulic conductivity   [cm day^-1]
      */
-    double getWaterConductivity(Crit3DLayer* layer)
+    double Crit3DLayer::getWaterConductivity()
     {
-        double theta = getVolumetricWaterContent(layer);
-        double degreeOfSaturation = SeFromTheta(theta, layer->horizon);
-        return waterConductivity(degreeOfSaturation, layer->horizon);
+        double theta = getVolumetricWaterContent();
+        double degreeOfSaturation = SeFromTheta(theta, horizon);
+        return waterConductivity(degreeOfSaturation, horizon);
     }
 
 
@@ -956,21 +961,27 @@ namespace soil
 
         // layer > 0: soil
         unsigned int i = 1;
-        double currentTopLayer = 0.0;
+        double upperDepth = 0.0;
         double currentThikness = layerThicknessMin;
-        double currentDepth = currentTopLayer + currentThikness / 2.0;
 
-        while (currentDepth <= totalDepth)
+        while (upperDepth < totalDepth)
         {
             Crit3DLayer newLayer;
-            newLayer.thickness = currentThikness;
-            newLayer.depth = currentDepth;
+            newLayer.thickness = round(currentThikness*100) / 100;
+            newLayer.depth = upperDepth + newLayer.thickness / 2.0;;
+
+            // last layer: thickness reduced
+            if ((upperDepth + newLayer.thickness) > totalDepth)
+            {
+                newLayer.thickness = totalDepth - upperDepth;
+                newLayer.depth = upperDepth + newLayer.thickness/2;
+            }
 
             // get soil horizon
-            int horizonIndex = getHorizonIndex(currentDepth);
+            int horizonIndex = getHorizonIndex(newLayer.depth);
             if (horizonIndex == NODATA)
             {
-                myError = "No horizon defined for depth:" + std::to_string(currentDepth);
+                myError = "No horizon defined for depth:" + std::to_string(newLayer.depth);
                 return false;
             }
 
@@ -984,9 +995,8 @@ namespace soil
             soilLayers.push_back(newLayer);
 
             // update depth
-            currentTopLayer += currentThikness;
+            upperDepth += newLayer.thickness;
             currentThikness *= geometricFactor;
-            currentDepth = currentTopLayer + currentThikness / 2.0;
             i++;
         }
 

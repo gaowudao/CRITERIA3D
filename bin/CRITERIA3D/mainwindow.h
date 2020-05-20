@@ -38,8 +38,8 @@
         void on_actionCloseProject_triggered();
         void on_actionLoad_DEM_triggered();
         void on_actionLoad_soil_map_triggered();
-        void on_actionLoad_model_parameters_triggered();
         void on_actionLoad_soil_data_triggered();
+        void on_actionLoad_Crop_data_triggered();
         void on_actionMeteoPointsOpen_triggered();
         void on_actionMeteoPointsImport_data_triggered();
 
@@ -60,6 +60,7 @@
 
         void on_actionView_3D_triggered();
         void on_actionView_SoilMap_triggered();
+        void on_actionHide_soil_map_triggered();
         void on_actionView_Boundary_triggered();
         void on_actionView_Slope_triggered();
         void on_actionView_Aspect_triggered();
@@ -88,6 +89,9 @@
 
         void updateMaps();
         void updateGUI();
+
+        void callNewMeteoWidget(std::string id);
+        void callAppendMeteoWidget(std::string id);
 
     protected:
         /*!

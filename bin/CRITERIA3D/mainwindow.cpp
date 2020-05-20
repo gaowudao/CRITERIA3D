@@ -187,12 +187,28 @@ void MainWindow::addMeteoPoints()
         point->setFlag(MapGraphicsObject::ObjectIsMovable, false);
         point->setLatitude(myProject.meteoPoints[i].latitude);
         point->setLongitude(myProject.meteoPoints[i].longitude);
+        point->setId(myProject.meteoPoints[i].id);
+        point->setName(myProject.meteoPoints[i].name);
 
         this->pointList.append(point);
         this->mapView->scene()->addObject(pointList[i]);
 
         point->setToolTip(&(myProject.meteoPoints[i]));
+        connect(point, SIGNAL(newStationClicked(std::string, bool)), this, SLOT(callNewMeteoWidget(std::string)));
+        connect(point, SIGNAL(appendStationClicked(std::string, bool)), this, SLOT(callAppendMeteoWidget(std::string)));
     }
+}
+
+void MainWindow::callNewMeteoWidget(std::string id)
+{
+    bool isAppend = false;
+    myProject.showMeteoWidgetPoint(id, isAppend);
+}
+
+void MainWindow::callAppendMeteoWidget(std::string id)
+{
+    bool isAppend = true;
+    myProject.showMeteoWidgetPoint(id, isAppend);
 }
 
 
@@ -744,6 +760,15 @@ void MainWindow::on_actionView_SoilMap_triggered()
 }
 
 
+void MainWindow::on_actionHide_soil_map_triggered()
+{
+    if (ui->labelOutputRaster->text() == "Soil index")
+    {
+        setOutputRasterVisible(false);
+    }
+}
+
+
 void MainWindow::on_actionView_Boundary_triggered()
 {
     if (myProject.boundaryMap.isLoaded)
@@ -1090,20 +1115,19 @@ void MainWindow::on_actionLoad_soil_map_triggered()
 
 void MainWindow::on_actionLoad_soil_data_triggered()
 {
-    QString fileName = QFileDialog::getOpenFileName(this, tr("Load DB soil"), "", tr("SQLite files (*.db)"));
+    QString fileName = QFileDialog::getOpenFileName(this, tr("Open DB soil"), "", tr("SQLite files (*.db)"));
     if (fileName == "") return;
 
     myProject.loadSoilDatabase(fileName);
 }
 
 
-void MainWindow::on_actionLoad_model_parameters_triggered()
+void MainWindow::on_actionLoad_Crop_data_triggered()
 {
-    QString fileName = QFileDialog::getOpenFileName(this, tr("Open DB parameters"), "", tr("SQLite files (*.db)"));
+    QString fileName = QFileDialog::getOpenFileName(this, tr("Open DB Crop"), "", tr("SQLite files (*.db)"));
     if (fileName == "") return;
 
-    if (myProject.loadModelParameters(fileName))
-        myProject.logInfoGUI("Model parameters loaded");
+    myProject.loadCropDatabase(fileName);
 }
 
 

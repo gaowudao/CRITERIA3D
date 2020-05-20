@@ -1,3 +1,0 @@
-CROP,CROPTYPE,STRING,20,
-readilyAvailableWater,RAW,FLOAT,10,1
-forecast7daysIRR,FcstIrr7d,FLOAT,10,1

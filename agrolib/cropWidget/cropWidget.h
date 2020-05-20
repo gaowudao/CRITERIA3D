@@ -1,6 +1,10 @@
 #ifndef CROPWIDGET_H
 #define CROPWIDGET_H
 
+#ifndef MAX_YEARS
+    #define MAX_YEARS 10
+#endif
+
     #include <QWidget>
     #include <QComboBox>
     #include <QGroupBox>
@@ -8,9 +12,13 @@
     #include <QLabel>
     #include <QSqlDatabase>
 
+    #include "criteria1DCase.h"
     #include "tabLAI.h"
     #include "tabRootDepth.h"
     #include "tabRootDensity.h"
+    #include "tabIrrigation.h"
+    #include "tabWaterContent.h"
+    #include "criteria1DUnit.h"
 
     class Crit3DCropWidget : public QWidget
     {
@@ -20,11 +28,12 @@
             Crit3DCropWidget();
             void on_actionOpenProject();
             void on_actionOpenCropDB();
-            void on_actionChooseCrop(QString cropName);
+            void on_actionChooseCrop(QString idCrop);
             void on_actionOpenMeteoDB();
             void on_actionOpenSoilDB();
             void on_actionChooseMeteo(QString idMeteo);
-            void on_actionChooseYear(QString year);
+            void on_actionChooseFirstYear(QString year);
+            void on_actionChooseLastYear(QString year);
             void on_actionChooseSoil(QString soilCode);
             void on_actionDeleteCrop();
             void on_actionRestoreData();
@@ -32,41 +41,52 @@
             void on_actionSave();
             void on_actionUpdate();
             bool saveCrop();
+            void updateMeteoPointValues();
             void updateCropParam(QString idCrop);
             bool updateCrop();
             bool updateMeteoPoint();
             void updateTabLAI();
             void updateTabRootDepth();
             void updateTabRootDensity();
+            void updateTabIrrigation();
+            void updateTabWaterContent();
             void tabChanged(int index);
             bool checkIfCropIsChanged();
+            void irrigationVolumeChanged();
+            void variableWaterContentChanged();
 
         private:
+            QSqlDatabase dbUnits;
             QSqlDatabase dbCrop;
             QSqlDatabase dbMeteo;
             QSqlDatabase dbSoil;
-            Crit3DCrop* myCrop;
+            Crit1DCase myCase;
             Crit3DCrop cropFromDB;
-            soil::Crit3DSoil mySoil;
             soil::Crit3DTextureClass textureClassList[13];
             soil::Crit3DFittingOptions fittingOptions;
-            double layerThickness;
             QString tableMeteo;
-            Crit3DMeteoPoint *meteoPoint;
-            std::vector<soil::Crit3DLayer> soilLayers;
             bool cropChanged;
             double meteoLatBackUp;
+            QStringList yearList;
 
+            std::vector<Crit1DUnit> unitList;
+
+            QGroupBox *infoCaseGroup;
             QGroupBox *infoCropGroup;
             QGroupBox *infoMeteoGroup;
             QGroupBox *infoSoilGroup;
             QGroupBox *laiParametersGroup;
             QGroupBox *rootParametersGroup;
+            QGroupBox *irrigationParametersGroup;
+            QGroupBox *waterStressParametersGroup;
+            QGroupBox *waterContentGroup;
+            QComboBox caseListComboBox;
             QComboBox cropListComboBox;
             QComboBox meteoListComboBox;
             QComboBox soilListComboBox;
-            QComboBox yearListComboBox;
-            QLineEdit* cropIdValue;
+            QComboBox firstYearListComboBox;
+            QComboBox lastYearListComboBox;
+            QLineEdit* cropNameValue;
             QLineEdit* cropTypeValue;
             QLineEdit* maxKcValue;
             QLabel cropSowing;
@@ -91,6 +111,15 @@
             QDoubleSpinBox* shapeDeformationValue;
             QLabel *degreeDaysInc;
             QLineEdit* degreeDaysIncValue;
+            QLineEdit* irrigationVolumeValue;
+            QSpinBox* irrigationShiftValue;
+            QLineEdit* degreeDaysStartValue;
+            QLineEdit* degreeDaysEndValue;
+            QLineEdit* psiLeafValue;
+            QDoubleSpinBox* rawFractionValue;
+            QDoubleSpinBox* stressToleranceValue;
+            QRadioButton *volWaterContent;
+            QRadioButton *degreeSat;
             QTabWidget* tabWidget;
             QAction* saveChanges;
             QAction* restoreData;
@@ -100,10 +129,13 @@
             TabLAI* tabLAI;
             TabRootDepth* tabRootDepth;
             TabRootDensity* tabRootDensity;
+            TabIrrigation* tabIrrigation;
+            TabWaterContent* tabWaterContent;
 
             void clearCrop();
             void checkCropUpdate();
-            void openCropDB(QString newDbCropName);
+            void openUnitsDB(QString dbUnitsName);
+            void openCropDB(QString dbCropName);
             void openMeteoDB(QString dbMeteoName);
             void openSoilDB(QString dbSoilName);
     };

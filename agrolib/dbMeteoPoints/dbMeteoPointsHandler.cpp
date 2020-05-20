@@ -2,6 +2,7 @@
 #include "commonConstants.h"
 #include "meteo.h"
 #include "utilities.h"
+#include "basicMath.h"
 
 #include <QtSql>
 
@@ -155,6 +156,68 @@ QStringList Crit3DMeteoPointsDbHandler::getDatasetsList()
 }
 
 
+QDateTime Crit3DMeteoPointsDbHandler::getFirstDate(frequencyType frequency)
+{
+    QSqlQuery qry(_db);
+    QStringList tables;
+    QDateTime firstDate;
+
+    QString dayHour;
+    if (frequency == daily)
+        dayHour = "D";
+    else if (frequency == hourly)
+        dayHour = "H";
+
+    qry.prepare( "SELECT name FROM sqlite_master WHERE type='table' AND name like :dayHour ESCAPE '^'");
+    qry.bindValue(":dayHour",  "%^" + dayHour  + "%");
+
+    if( !qry.exec() )
+    {
+        error = qry.lastError().text();
+    }
+    else
+    {
+        while (qry.next())
+        {
+            QString table = qry.value(0).toString();
+            tables << table;
+        }
+    }
+
+    QDateTime date;
+    QString dateStr, statement;
+    foreach (QString table, tables)
+    {
+        statement = QString( "SELECT MIN(date_time) FROM `%1` AS dateTime").arg(table);
+        if(qry.exec(statement) )
+        {
+            if (qry.next())
+            {
+                dateStr = qry.value(0).toString();
+                if (!dateStr.isEmpty())
+                {
+                    if (frequency == daily)
+                    {
+                        date = QDateTime::fromString(dateStr,"yyyy-MM-dd");
+                    }
+                    else if (frequency == hourly)
+                    {
+                        date = QDateTime::fromString(dateStr,"yyyy-MM-dd HH:mm:ss");
+                    }
+
+                    if (firstDate.isNull() || date < firstDate)
+                    {
+                        firstDate = date;
+                    }
+                }
+            }
+        }
+    }
+
+    return firstDate;
+}
+
+
 QDateTime Crit3DMeteoPointsDbHandler::getLastDate(frequencyType frequency)
 {
     QSqlQuery qry(_db);
@@ -217,68 +280,79 @@ QDateTime Crit3DMeteoPointsDbHandler::getLastDate(frequencyType frequency)
 }
 
 
-QDateTime Crit3DMeteoPointsDbHandler::getFirstDate(frequencyType frequency)
+// return a null datetime if the table doesn't exist or table is void
+QDateTime Crit3DMeteoPointsDbHandler::getFirstDate(frequencyType frequency, std::string idMeteoPoint)
 {
-
-    QSqlQuery qry(_db);
-    QStringList tables;
     QDateTime firstDate;
 
-    QString dayHour;
+    QString tableName;
     if (frequency == daily)
-        dayHour = "D";
+        tableName = QString::fromStdString(idMeteoPoint + "_D");
     else if (frequency == hourly)
-        dayHour = "H";
+        tableName = QString::fromStdString(idMeteoPoint + "_H");
 
-    qry.prepare( "SELECT name FROM sqlite_master WHERE type='table' AND name like :dayHour ESCAPE '^'");
-    qry.bindValue(":dayHour",  "%^" + dayHour  + "%");
+    QSqlQuery qry(_db);
+    QString statement = QString( "SELECT MIN(date_time) FROM `%1` AS dateTime").arg(tableName);
 
-    if( !qry.exec() )
+    if(qry.exec(statement))
     {
-        error = qry.lastError().text();
-    }
-    else
-    {
-        while (qry.next())
+        if (qry.next())
         {
-            QString table = qry.value(0).toString();
-            tables << table;
-        }
-    }
-
-    QDateTime date;
-    QString dateStr, statement;
-    foreach (QString table, tables)
-    {
-        statement = QString( "SELECT MIN(date_time) FROM `%1` AS dateTime").arg(table);
-        if(qry.exec(statement) )
-        {
-            if (qry.next())
+            QString dateStr = qry.value(0).toString();
+            if (!dateStr.isEmpty())
             {
-                dateStr = qry.value(0).toString();
-                if (!dateStr.isEmpty())
+                if (frequency == daily)
                 {
-                    if (frequency == daily)
-                    {
-                        date = QDateTime::fromString(dateStr,"yyyy-MM-dd");
-                    }
-                    else if (frequency == hourly)
-                    {
-                        date = QDateTime::fromString(dateStr,"yyyy-MM-dd HH:mm:ss");
-                    }
-
-                    if (firstDate.isNull() || date < firstDate)
-                    {
-                        firstDate = date;
-                    }
+                    firstDate = QDateTime::fromString(dateStr,"yyyy-MM-dd");
+                }
+                else if (frequency == hourly)
+                {
+                    firstDate = QDateTime::fromString(dateStr,"yyyy-MM-dd HH:mm:ss");
                 }
             }
         }
     }
 
     return firstDate;
-
 }
+
+
+// return a null datetime if the table doesn't exist or table is void
+QDateTime Crit3DMeteoPointsDbHandler::getLastDate(frequencyType frequency, std::string idMeteoPoint)
+{
+    QDateTime lastDate;
+
+    QString tableName;
+    if (frequency == daily)
+        tableName = QString::fromStdString(idMeteoPoint + "_D");
+    else if (frequency == hourly)
+        tableName = QString::fromStdString(idMeteoPoint + "_H");
+
+    QSqlQuery qry(_db);
+    QString statement = QString( "SELECT MAX(date_time) FROM `%1` AS dateTime").arg(tableName);
+
+    if(qry.exec(statement))
+    {
+        if (qry.next())
+        {
+            QString dateStr = qry.value(0).toString();
+            if (!dateStr.isEmpty())
+            {
+                if (frequency == daily)
+                {
+                    lastDate = QDateTime::fromString(dateStr,"yyyy-MM-dd");
+                }
+                else if (frequency == hourly)
+                {
+                    lastDate = QDateTime::fromString(dateStr,"yyyy-MM-dd HH:mm:ss");
+                }
+            }
+        }
+    }
+
+    return lastDate;
+}
+
 
 bool Crit3DMeteoPointsDbHandler::existData(Crit3DMeteoPoint *meteoPoint, frequencyType myFreq)
 {
@@ -533,60 +607,6 @@ std::map<int, meteoVariable> Crit3DMeteoPointsDbHandler::getMapIdMeteoVar() cons
 {
     return _mapIdMeteoVar;
 }
-
-bool Crit3DMeteoPointsDbHandler::readPointProxyValues(Crit3DMeteoPoint* myPoint, Crit3DInterpolationSettings* interpolationSettings)
-{
-    if (myPoint == nullptr) return false;
-
-    QSqlQuery qry(_db);
-    QString proxyField;
-    QString proxyTable;
-    QString statement;
-    int nrProxy;
-    Crit3DProxy* myProxy;
-
-    nrProxy = interpolationSettings->getProxyNr();
-    myPoint->proxyValues.resize(nrProxy);
-
-    for (int i=0; i < nrProxy; i++)
-    {
-        myPoint->proxyValues[i] = NODATA;
-
-        // read only for active proxies
-        if (interpolationSettings->getSelectedCombination().getValue(i))
-        {
-            myProxy = interpolationSettings->getProxy(i);
-            proxyField = QString::fromStdString(myProxy->getProxyField());
-            proxyTable = QString::fromStdString(myProxy->getProxyTable());
-            if (proxyField != "" && proxyTable != "")
-            {
-                statement = QString("SELECT `%1` FROM `%2` WHERE id_point = '%3'").arg(proxyField).arg(proxyTable).arg(QString::fromStdString((*myPoint).id));
-                if(qry.exec(statement))
-                {
-                    qry.last();
-                    if (qry.value(proxyField) != "")
-                        myPoint->proxyValues[i] = qry.value(proxyField).toFloat();
-                }
-            }
-
-            if (myPoint->proxyValues[i] == NODATA)
-            {
-                gis::Crit3DRasterGrid* proxyGrid = myProxy->getGrid();
-                if (proxyGrid == nullptr || ! proxyGrid->isLoaded)
-                    return false;
-                else
-                {
-                    float myValue = gis::getValueFromXY(*proxyGrid, myPoint->point.utm.x, myPoint->point.utm.y);
-                    if (myValue != proxyGrid->header->flag)
-                        myPoint->proxyValues[i] = myValue;
-                }
-            }
-        }
-    }
-
-    return true;
-}
-
 
 QList<Crit3DMeteoPoint> Crit3DMeteoPointsDbHandler::getPropertiesFromDb(const gis::Crit3DGisSettings& gisSettings, QString *errorString)
 {
@@ -846,6 +866,7 @@ bool Crit3DMeteoPointsDbHandler::importHourlyMeteoData(QString csvFileName, bool
         *log += myFile.errorString();
         return false;
     }
+
     QTextStream myStream (&myFile);
     if (myStream.atEnd())
     {
@@ -856,7 +877,7 @@ bool Crit3DMeteoPointsDbHandler::importHourlyMeteoData(QString csvFileName, bool
     else
     {
         // skip first row (header)
-        myStream.readLine().split(',');
+        QStringList header = myStream.readLine().split(',');
     }
 
     // create table

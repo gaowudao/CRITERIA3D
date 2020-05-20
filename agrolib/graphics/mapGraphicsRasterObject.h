@@ -80,6 +80,8 @@
         void updateCenter();
         Position getCurrentCenter();
 
+        gis::Crit3DGridHeader getLatLonHeader() const;
+
     protected:
         //virtual from MapGraphicsObject
         /*!
@@ -96,6 +98,7 @@
          * \return the bounding rect QRectF
          */
         QRectF boundingRect() const;
+
 
     private:
         MapGraphicsView* view;
@@ -119,6 +122,7 @@
         bool getCurrentWindow(gis::Crit3DRasterWindow* window);
         int getCurrentStep(const gis::Crit3DRasterWindow& window);
         bool drawRaster(gis::Crit3DRasterGrid *myRaster, QPainter* myPainter, bool drawBorder);
+
     };
 
 

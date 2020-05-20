@@ -32,8 +32,13 @@
     #ifndef _FSTREAM_
         #include <fstream>
     #endif
+    #ifndef METEOWIDGET_H
+        #include "meteoWidget.h"
+    #endif
 
-    class Project {
+    class Project : public QObject {
+        Q_OBJECT
+
     private:
         QString appPath;
         QString defaultPath;
@@ -100,6 +105,9 @@
 
         Crit3DClimateParameters climateParameters;
 
+        QList<Crit3DMeteoWidget*> meteoWidgetPointList;
+        QList<Crit3DMeteoWidget*> meteoWidgetGridList;
+
         Project();
 
         void initializeProject();
@@ -122,8 +130,8 @@
 
         void setProxyDEM();
         void clearProxyDEM();
-        bool checkProxy(QString name_, QString gridName_, QString table_, QString field_, QString *error);
-        void addProxyToProject(QString name_, QString gridName_, QString table_, QString field_, bool isForQuality_, bool isActive_);
+        bool checkProxy(const Crit3DProxy &myProxy, QString *error);
+        bool addProxyToProject(std::vector <Crit3DProxy> proxyList, std::deque <bool> proxyActive, std::vector <int> proxyOrder);
         void addProxyGridSeries(QString name_, std::vector <QString> gridNames, std::vector <unsigned> gridYears);
         void setCurrentDate(QDate myDate);
         void setCurrentHour(int myHour);
@@ -187,6 +195,12 @@
         void importHourlyMeteoData(const QString& fileName, bool importAllFiles, bool deletePreviousData);
 
         gis::Crit3DRasterGrid* getHourlyMeteoRaster(meteoVariable myVar);
+        void showMeteoWidgetPoint(std::string idMeteoPoint, std::string namePoint, bool isAppend);
+        void showMeteoWidgetGrid(std::string idCell, bool isAppend);
+
+    private slots:
+        void deleteMeteoWidgetPoint(int id);
+        void deleteMeteoWidgetGrid(int id);
 
     };
 

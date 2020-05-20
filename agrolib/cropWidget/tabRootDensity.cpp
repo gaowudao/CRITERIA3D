@@ -5,7 +5,7 @@ TabRootDensity::TabRootDensity()
 {
     QVBoxLayout *mainLayout = new QVBoxLayout;
     QVBoxLayout *sliderLayout = new QVBoxLayout;
-    QVBoxLayout *dateLayout = new QVBoxLayout;
+    QHBoxLayout *dateLayout = new QHBoxLayout;
     QVBoxLayout *plotLayout = new QVBoxLayout;
 
     dateLayout->setAlignment(Qt::AlignHCenter);
@@ -18,6 +18,8 @@ TabRootDensity::TabRootDensity()
     currentDate->setDate(middleDate);
     currentDate->setDisplayFormat("MMM dd");
     currentDate->setMaximumWidth(this->width()/5);
+    yearComboBox.addItem(QString::number(QDate::currentDate().year()));
+    yearComboBox.setMaximumWidth(this->width()/5);
     chart = new QChart();
     chartView = new QChartView(chart);
     chartView->setChart(chart);
@@ -53,11 +55,16 @@ TabRootDensity::TabRootDensity()
     chart->legend()->setVisible(false);
     nrLayers = 0;
 
+    m_tooltip = new Callout(chart);
+    m_tooltip->hide();
+
     connect(currentDate, &QDateEdit::dateChanged, this, &TabRootDensity::updateRootDensity);
     connect(slider, &QSlider::valueChanged, this, &TabRootDensity::updateDate);
     connect(seriesRootDensity, &QHorizontalBarSeries::hovered, this, &TabRootDensity::tooltip);
+    connect(&yearComboBox, &QComboBox::currentTextChanged, this, &TabRootDensity::on_actionChooseYear);
     plotLayout->addWidget(chartView);
     sliderLayout->addWidget(slider);
+    dateLayout->addWidget(&yearComboBox);
     dateLayout->addWidget(currentDate);
     mainLayout->addLayout(sliderLayout);
     mainLayout->addLayout(dateLayout);
@@ -65,14 +72,22 @@ TabRootDensity::TabRootDensity()
     setLayout(mainLayout);
 }
 
-void TabRootDensity::computeRootDensity(Crit3DCrop* myCrop, Crit3DMeteoPoint *meteoPoint, int currentYear, const std::vector<soil::Crit3DLayer> &soilLayers)
+void TabRootDensity::computeRootDensity(Crit3DCrop* myCrop, Crit3DMeteoPoint *meteoPoint, int firstYear, int lastYear, const std::vector<soil::Crit3DLayer> &soilLayers)
 {
 
     crop = myCrop;
     mp = meteoPoint;
     layers = soilLayers;
     nrLayers = unsigned(soilLayers.size());
-    year = currentYear;
+
+    yearComboBox.blockSignals(true);
+    yearComboBox.clear();
+    for (int i = firstYear; i<=lastYear; i++)
+    {
+        yearComboBox.addItem(QString::number(i));
+    }
+    year = yearComboBox.currentText().toInt();
+    yearComboBox.blockSignals(false);
 
     QDate lastDate(year,12,31);
     slider->setMaximum(lastDate.dayOfYear());
@@ -102,6 +117,14 @@ void TabRootDensity::computeRootDensity(Crit3DCrop* myCrop, Crit3DMeteoPoint *me
 
     int currentDoy = 1;
     myCrop->initialize(meteoPoint->latitude, nrLayers, totalSoilDepth, currentDoy);
+    updateRootDensity();
+}
+
+void TabRootDensity::on_actionChooseYear(QString year)
+{
+    this->year = year.toInt();
+    QDate lastDate(this->year,12,31);
+    slider->setMaximum(lastDate.dayOfYear());
     updateRootDensity();
 }
 
@@ -189,47 +212,23 @@ void TabRootDensity::updateRootDensity()
 void TabRootDensity::tooltip(bool state, int index, QBarSet *barset)
 {
 
-    qDebug() << "index " << index;
-    qDebug() << "set->at(index) " << set->at(index);
-/*
-    if (m_tooltip == nullptr)
-        m_tooltip = new Callout(chart);
+    if (state && barset!=nullptr && index < barset->count())
+    {
+        QString valueStr = QString::number(barset->at(index));
+        m_tooltip->setText(valueStr);
 
-    if (state) {
-        m_tooltip->setText(QString("%1 \n ").arg(set->at(index)));
-        QPointF point(index, barset->at(index));
-        m_tooltip->setAnchor(point);
+        QPoint point = QCursor::pos();
+        QPoint mapPoint = chartView->mapFromGlobal(point);
+        QPointF pointF = chart->mapToValue(mapPoint,seriesRootDensity);
+
+        m_tooltip->setAnchor(pointF);
         m_tooltip->setZValue(11);
         m_tooltip->updateGeometry();
         m_tooltip->show();
-
     }
-    else {
+    else
+    {
         m_tooltip->hide();
     }
-*/
-    /*
-    if (m_tooltip == nullptr)
-        m_tooltip = new Callout(chart);
 
-    if (state) {
-
-        int yindex=m_barSetList.indexOf(barset);
-        double indexbarset=m_barSetList.indexOf(barset)-1;
-        indexbarset=indexbarset/6;
-        QBarSet *set=m_barSetList.at(yindex);
-        QString yname=set->label();
-        m_tooltip->setText("from:"+categories.at(index)+"\n to :"+QString("\n: %2 ").arg(set->at(index)));
-        QPointF point(index+indexbarset, barset->at(index));
-        qDebug()<<"index:"<<indexbarset<<index<< " "<<barset->at(index);
-        m_tooltip->setAnchor(point);
-        m_tooltip->setZValue(11);
-        m_tooltip->updateGeometry();
-        m_tooltip->show();
-
-    }
-    else {
-        m_tooltip->hide();
-    }
-        */
 }
