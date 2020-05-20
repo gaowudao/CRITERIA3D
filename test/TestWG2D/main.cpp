@@ -83,7 +83,7 @@ int main()
     int ** dateArray = nullptr;
 
     bool kindOfTest;
-    kindOfTest = DEFAULT_TEST;
+    kindOfTest = RECLAMATION_CONSORTIA_TEST;
     if (kindOfTest == DEFAULT_TEST)
     {
         fp = fopen("inputData/argelato_1961_2018.txt", "r");
@@ -331,8 +331,45 @@ int main()
 
         }
     }
+    else
+    {
+        fp = fopen("inputDataC4/1055.txt", "r");
+        if (fp == nullptr)
+        {
+            printf("Error! File not found\n");
+            return -1;
+        }
+        numberMeteoLines = readPragaLineFileNumber(fp);
+        fclose(fp);
+        int doy,day,month,year;
+        double prec,minT,maxT,meanT;
+        doy = day = month = year = NODATA;
+        prec = minT = maxT = meanT = NODATA;
+        bool firstDay = true;
+        lengthDataSeries = numberMeteoLines;
+        int nrVariables = 3;
+        int nrDate = 3;
+        //float *** weatherArray = nullptr;
+        //int ** dateArray = nullptr;
 
+        weatherArray = (float ***)calloc(nrStations, sizeof(float**));
+        for (int i=0;i<nrStations;i++)
+        {
+            weatherArray[i] = (float **)calloc(lengthDataSeries, sizeof(float*));
+            for (int j=0;j<lengthDataSeries;j++)
+            {
+                weatherArray[i][j] = (float *)calloc(nrVariables, sizeof(float));
+            }
+        }
+        dateArray = (int **)calloc(lengthDataSeries, sizeof(int*));
+        for (int j=0;j<lengthDataSeries;j++)
+        {
+            dateArray[j] = (int *)calloc(nrDate, sizeof(int));
+        }
+        srand(time(nullptr));
+    }
 
+    /*
     TObsDataD** observedDataDaily = (TObsDataD **)calloc(nrStations, sizeof(TObsDataD*));
     for (int i=0;i<nrStations;i++)
     {
@@ -384,6 +421,7 @@ int main()
     free(observedDataDaily);
     free(weatherArray);
     free(dateArray);
+    */
     return 0;
 }
 
