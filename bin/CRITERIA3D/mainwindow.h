@@ -89,9 +89,10 @@
 
         void updateMaps();
         void updateGUI();
+        void mouseMove(const QPoint &eventPos);
 
-        void callNewMeteoWidget(std::string id);
-        void callAppendMeteoWidget(std::string id);
+        void callNewMeteoWidget(std::string id, std::string name, bool isGrid);
+        void callAppendMeteoWidget(std::string id, std::string name, bool isGrid);
 
     protected:
         /*!
@@ -106,7 +107,7 @@
          */
         void mouseDoubleClickEvent(QMouseEvent * event);
 
-        void mouseMoveEvent(QMouseEvent * event);
+        // void mouseMoveEvent(QMouseEvent * event);
 
         void mousePressEvent(QMouseEvent *event);
 

@@ -52,7 +52,8 @@ INCLUDEPATH += ../../agrolib/weatherGenerator ../../agrolib/weatherGenerator2D .
 
 
 SOURCES += main.cpp \
-    readPragaFormatData.cpp
+    readPragaFormatData.cpp \
+    readErg5FilesC4C7.cpp
 
 HEADERS += \
     readPragaFormatData.h

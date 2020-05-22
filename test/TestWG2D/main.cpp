@@ -14,9 +14,12 @@
 #include "readPragaFormatData.h"
 
 
-#define NR_SIMULATION_YEARS 300
+#define NR_SIMULATION_YEARS 100
 // [ 1 - 10 ]
 #define NR_STATIONS 5
+
+#define DEFAULT_TEST 0
+#define RECLAMATION_CONSORTIA_TEST 1
 
 weatherGenerator2D WG2D;
 
@@ -70,297 +73,303 @@ int main()
     }
     fclose(fp);
     WG2D.initializeRandomNumbers(randomSeries);
-
-    fp = fopen("inputData/argelato_1961_2018.txt", "r");
-    if (fp == nullptr)
-    {
-        printf("Error! File not found\n");
-        return -1;
-    }
-
     int numberMeteoLines;
-    numberMeteoLines = readPragaLineFileNumber(fp);
-    fclose(fp);
-    int doy,day,month,year;
-    double prec,minT,maxT,meanT;
     double precipitationThreshold = 0.25;
-    doy = day = month = year = NODATA;
-    prec = minT = maxT = meanT = NODATA;
-    bool firstDay = true;
     int nrStations = NR_STATIONS;
     int distributionType = 1; // 1 multiexponential 2 multigamma 3 Weibull
     int yearsOfSimulations = NR_SIMULATION_YEARS;
-    int lengthDataSeries = numberMeteoLines;
-    int nrVariables = 3;
-    int nrDate = 3;
+    int lengthDataSeries;
     float *** weatherArray = nullptr;
     int ** dateArray = nullptr;
 
-    weatherArray = (float ***)calloc(nrStations, sizeof(float**));
-    for (int i=0;i<nrStations;i++)
+    bool kindOfTest;
+    kindOfTest = RECLAMATION_CONSORTIA_TEST;
+    if (kindOfTest == DEFAULT_TEST)
     {
-        weatherArray[i] = (float **)calloc(lengthDataSeries, sizeof(float*));
+        fp = fopen("inputData/argelato_1961_2018.txt", "r");
+        if (fp == nullptr)
+        {
+            printf("Error! File not found\n");
+            return -1;
+        }
+
+
+        numberMeteoLines = readPragaLineFileNumber(fp);
+        fclose(fp);
+        int doy,day,month,year;
+        double prec,minT,maxT,meanT;
+        doy = day = month = year = NODATA;
+        prec = minT = maxT = meanT = NODATA;
+        bool firstDay = true;
+        lengthDataSeries = numberMeteoLines;
+        int nrVariables = 3;
+        int nrDate = 3;
+        //float *** weatherArray = nullptr;
+        //int ** dateArray = nullptr;
+
+        weatherArray = (float ***)calloc(nrStations, sizeof(float**));
+        for (int i=0;i<nrStations;i++)
+        {
+            weatherArray[i] = (float **)calloc(lengthDataSeries, sizeof(float*));
+            for (int j=0;j<lengthDataSeries;j++)
+            {
+                weatherArray[i][j] = (float *)calloc(nrVariables, sizeof(float));
+            }
+        }
+        dateArray = (int **)calloc(lengthDataSeries, sizeof(int*));
         for (int j=0;j<lengthDataSeries;j++)
         {
-            weatherArray[i][j] = (float *)calloc(nrVariables, sizeof(float));
+            dateArray[j] = (int *)calloc(nrDate, sizeof(int));
         }
-    }
-    dateArray = (int **)calloc(lengthDataSeries, sizeof(int*));
-    for (int j=0;j<lengthDataSeries;j++)
-    {
-        dateArray[j] = (int *)calloc(nrDate, sizeof(int));
-    }
-    srand(time(nullptr));
-    for (int i=0;i<nrStations;i++)
-    {
-
-
-        if (i==0)
+        srand(time(nullptr));
+        for (int i=0;i<nrStations;i++)
         {
-               fp = fopen("inputData/argelato_1961_2018.txt","r");
-               if (fp == nullptr)
-               {
-                   printf("Error! File not found\n");
-                   return -1;
-               }
-               firstDay = true;
-               readPragaERACLITODailyData(fp,&firstDay,&doy,&day,&month,&year,&minT,&maxT,&meanT,&prec);
-               for (int j=0;j<numberMeteoLines;j++)
-               {
+
+
+            if (i==0)
+            {
+                   fp = fopen("inputData/argelato_1961_2018.txt","r");
+                   if (fp == nullptr)
+                   {
+                       printf("Error! File not found\n");
+                       return -1;
+                   }
+                   firstDay = true;
                    readPragaERACLITODailyData(fp,&firstDay,&doy,&day,&month,&year,&minT,&maxT,&meanT,&prec);
-                   weatherArray[i][j][0] = minT;
-                   weatherArray[i][j][1] = maxT;
-                   weatherArray[i][j][2] = prec;
-                   dateArray[j][0] = day;
-                   dateArray[j][1] = month;
-                   dateArray[j][2] = year;
-               }
-               fclose(fp);
-        }
-        else if (i==1)
-        {
-            fp = fopen("inputData/baricella_1961_2018.txt","r");
-            if (fp == nullptr)
-            {
-                printf("Error! File not found\n");
-                return -1;
+                   for (int j=0;j<numberMeteoLines;j++)
+                   {
+                       readPragaERACLITODailyData(fp,&firstDay,&doy,&day,&month,&year,&minT,&maxT,&meanT,&prec);
+                       weatherArray[i][j][0] = minT;
+                       weatherArray[i][j][1] = maxT;
+                       weatherArray[i][j][2] = prec;
+                       dateArray[j][0] = day;
+                       dateArray[j][1] = month;
+                       dateArray[j][2] = year;
+                   }
+                   fclose(fp);
             }
-            firstDay = true;
-            readPragaERACLITODailyData(fp,&firstDay,&doy,&day,&month,&year,&minT,&maxT,&meanT,&prec);
-            for (int j=0;j<numberMeteoLines;j++)
+            else if (i==1)
             {
+                fp = fopen("inputData/baricella_1961_2018.txt","r");
+                if (fp == nullptr)
+                {
+                    printf("Error! File not found\n");
+                    return -1;
+                }
+                firstDay = true;
                 readPragaERACLITODailyData(fp,&firstDay,&doy,&day,&month,&year,&minT,&maxT,&meanT,&prec);
-                weatherArray[i][j][0] = minT;
-                weatherArray[i][j][1] = maxT;
-                weatherArray[i][j][2] = prec;
+                for (int j=0;j<numberMeteoLines;j++)
+                {
+                    readPragaERACLITODailyData(fp,&firstDay,&doy,&day,&month,&year,&minT,&maxT,&meanT,&prec);
+                    weatherArray[i][j][0] = minT;
+                    weatherArray[i][j][1] = maxT;
+                    weatherArray[i][j][2] = prec;
+                }
+                fclose(fp);
             }
-            fclose(fp);
-        }
-        else if (i==2)
-        {
-            fp = fopen("inputData/bologna_1961_2018.txt","r");
-            if (fp == nullptr)
+            else if (i==2)
             {
-                printf("Error! File not found\n");
-                return -1;
-            }
-            firstDay = true;
-            readPragaERACLITODailyData(fp,&firstDay,&doy,&day,&month,&year,&minT,&maxT,&meanT,&prec);
-            for (int j=0;j<numberMeteoLines;j++)
-            {
+                fp = fopen("inputData/bologna_1961_2018.txt","r");
+                if (fp == nullptr)
+                {
+                    printf("Error! File not found\n");
+                    return -1;
+                }
+                firstDay = true;
                 readPragaERACLITODailyData(fp,&firstDay,&doy,&day,&month,&year,&minT,&maxT,&meanT,&prec);
-                weatherArray[i][j][0] = minT;
-                weatherArray[i][j][1] = maxT;
-                weatherArray[i][j][2] = prec;
+                for (int j=0;j<numberMeteoLines;j++)
+                {
+                    readPragaERACLITODailyData(fp,&firstDay,&doy,&day,&month,&year,&minT,&maxT,&meanT,&prec);
+                    weatherArray[i][j][0] = minT;
+                    weatherArray[i][j][1] = maxT;
+                    weatherArray[i][j][2] = prec;
+                }
+                fclose(fp);
             }
-            fclose(fp);
-        }
-        else if (i==3)
-        {
-            fp = fopen("inputData/budrio_1961_2018.txt","r");
-            if (fp == nullptr)
+            else if (i==3)
             {
-                printf("Error! File not found\n");
-                return -1;
-            }
-            firstDay = true;
-            readPragaERACLITODailyData(fp,&firstDay,&doy,&day,&month,&year,&minT,&maxT,&meanT,&prec);
-            for (int j=0;j<numberMeteoLines;j++)
-            {
+                fp = fopen("inputData/budrio_1961_2018.txt","r");
+                if (fp == nullptr)
+                {
+                    printf("Error! File not found\n");
+                    return -1;
+                }
+                firstDay = true;
                 readPragaERACLITODailyData(fp,&firstDay,&doy,&day,&month,&year,&minT,&maxT,&meanT,&prec);
-                weatherArray[i][j][0] = minT;
-                weatherArray[i][j][1] = maxT;
-                weatherArray[i][j][2] = prec;
+                for (int j=0;j<numberMeteoLines;j++)
+                {
+                    readPragaERACLITODailyData(fp,&firstDay,&doy,&day,&month,&year,&minT,&maxT,&meanT,&prec);
+                    weatherArray[i][j][0] = minT;
+                    weatherArray[i][j][1] = maxT;
+                    weatherArray[i][j][2] = prec;
+                }
+                fclose(fp);
             }
-            fclose(fp);
-        }
-        else if (i==4)
-        {
-            fp = fopen("inputData/casalfiumanese_1961_2018.txt","r");
-            if (fp == nullptr)
+            else if (i==4)
             {
-                printf("Error! File not found\n");
-                return -1;
-            }
-            firstDay = true;
-            readPragaERACLITODailyData(fp,&firstDay,&doy,&day,&month,&year,&minT,&maxT,&meanT,&prec);
-            for (int j=0;j<numberMeteoLines;j++)
-            {
+                fp = fopen("inputData/casalfiumanese_1961_2018.txt","r");
+                if (fp == nullptr)
+                {
+                    printf("Error! File not found\n");
+                    return -1;
+                }
+                firstDay = true;
                 readPragaERACLITODailyData(fp,&firstDay,&doy,&day,&month,&year,&minT,&maxT,&meanT,&prec);
-                weatherArray[i][j][0] = minT;
-                weatherArray[i][j][1] = maxT;
-                weatherArray[i][j][2] = prec;
+                for (int j=0;j<numberMeteoLines;j++)
+                {
+                    readPragaERACLITODailyData(fp,&firstDay,&doy,&day,&month,&year,&minT,&maxT,&meanT,&prec);
+                    weatherArray[i][j][0] = minT;
+                    weatherArray[i][j][1] = maxT;
+                    weatherArray[i][j][2] = prec;
+                }
+                fclose(fp);
             }
-            fclose(fp);
-        }
-        else if (i==5)
-        {
-            fp = fopen("inputData/castenaso_1961_2018.txt","r");
-            if (fp == nullptr)
+            else if (i==5)
             {
-                printf("Error! File not found\n");
-                return -1;
-            }
-            firstDay = true;
-            readPragaERACLITODailyData(fp,&firstDay,&doy,&day,&month,&year,&minT,&maxT,&meanT,&prec);
-            for (int j=0;j<numberMeteoLines;j++)
-            {
+                fp = fopen("inputData/castenaso_1961_2018.txt","r");
+                if (fp == nullptr)
+                {
+                    printf("Error! File not found\n");
+                    return -1;
+                }
+                firstDay = true;
                 readPragaERACLITODailyData(fp,&firstDay,&doy,&day,&month,&year,&minT,&maxT,&meanT,&prec);
-                weatherArray[i][j][0] = minT;
-                weatherArray[i][j][1] = maxT;
-                weatherArray[i][j][2] = prec;
+                for (int j=0;j<numberMeteoLines;j++)
+                {
+                    readPragaERACLITODailyData(fp,&firstDay,&doy,&day,&month,&year,&minT,&maxT,&meanT,&prec);
+                    weatherArray[i][j][0] = minT;
+                    weatherArray[i][j][1] = maxT;
+                    weatherArray[i][j][2] = prec;
+                }
+                fclose(fp);
             }
-            fclose(fp);
-        }
-        else if (i==6)
-        {
-            fp = fopen("inputData/mezzolara_1961_2018.txt","r");
-            if (fp == nullptr)
+            else if (i==6)
             {
-                printf("Error! File not found\n");
-                return -1;
-            }
-            firstDay = true;
-            readPragaERACLITODailyData(fp,&firstDay,&doy,&day,&month,&year,&minT,&maxT,&meanT,&prec);
-            for (int j=0;j<numberMeteoLines;j++)
-            {
+                fp = fopen("inputData/mezzolara_1961_2018.txt","r");
+                if (fp == nullptr)
+                {
+                    printf("Error! File not found\n");
+                    return -1;
+                }
+                firstDay = true;
                 readPragaERACLITODailyData(fp,&firstDay,&doy,&day,&month,&year,&minT,&maxT,&meanT,&prec);
-                weatherArray[i][j][0] = minT;
-                weatherArray[i][j][1] = maxT;
-                weatherArray[i][j][2] = prec;
+                for (int j=0;j<numberMeteoLines;j++)
+                {
+                    readPragaERACLITODailyData(fp,&firstDay,&doy,&day,&month,&year,&minT,&maxT,&meanT,&prec);
+                    weatherArray[i][j][0] = minT;
+                    weatherArray[i][j][1] = maxT;
+                    weatherArray[i][j][2] = prec;
+                }
+                fclose(fp);
             }
-            fclose(fp);
-        }
-        else if (i==7)
-        {
-            fp = fopen("inputData/montecalderaro_1961_2018.txt","r");
-            if (fp == nullptr)
+            else if (i==7)
             {
-                printf("Error! File not found\n");
-                return -1;
-            }
-            firstDay = true;
-            readPragaERACLITODailyData(fp,&firstDay,&doy,&day,&month,&year,&minT,&maxT,&meanT,&prec);
-            for (int j=0;j<numberMeteoLines;j++)
-            {
+                fp = fopen("inputData/montecalderaro_1961_2018.txt","r");
+                if (fp == nullptr)
+                {
+                    printf("Error! File not found\n");
+                    return -1;
+                }
+                firstDay = true;
                 readPragaERACLITODailyData(fp,&firstDay,&doy,&day,&month,&year,&minT,&maxT,&meanT,&prec);
-                weatherArray[i][j][0] = minT;
-                weatherArray[i][j][1] = maxT;
-                weatherArray[i][j][2] = prec;
+                for (int j=0;j<numberMeteoLines;j++)
+                {
+                    readPragaERACLITODailyData(fp,&firstDay,&doy,&day,&month,&year,&minT,&maxT,&meanT,&prec);
+                    weatherArray[i][j][0] = minT;
+                    weatherArray[i][j][1] = maxT;
+                    weatherArray[i][j][2] = prec;
+                }
+                fclose(fp);
             }
-            fclose(fp);
-        }
-        else if (i==8)
-        {
-            fp = fopen("inputData/pievedicento_1961_2018.txt","r");
-            if (fp == nullptr)
+            else if (i==8)
             {
-                printf("Error! File not found\n");
-                return -1;
-            }
-            firstDay = true;
-            readPragaERACLITODailyData(fp,&firstDay,&doy,&day,&month,&year,&minT,&maxT,&meanT,&prec);
-            for (int j=0;j<numberMeteoLines;j++)
-            {
+                fp = fopen("inputData/pievedicento_1961_2018.txt","r");
+                if (fp == nullptr)
+                {
+                    printf("Error! File not found\n");
+                    return -1;
+                }
+                firstDay = true;
                 readPragaERACLITODailyData(fp,&firstDay,&doy,&day,&month,&year,&minT,&maxT,&meanT,&prec);
-                weatherArray[i][j][0] = minT;
-                weatherArray[i][j][1] = maxT;
-                weatherArray[i][j][2] = prec;
+                for (int j=0;j<numberMeteoLines;j++)
+                {
+                    readPragaERACLITODailyData(fp,&firstDay,&doy,&day,&month,&year,&minT,&maxT,&meanT,&prec);
+                    weatherArray[i][j][0] = minT;
+                    weatherArray[i][j][1] = maxT;
+                    weatherArray[i][j][2] = prec;
+                }
+                fclose(fp);
             }
-            fclose(fp);
-        }
-        else if (i==9)
-        {
-            fp = fopen("inputData/sanlazzaro_1961_2018.txt","r");
-            if (fp == nullptr)
+            else if (i==9)
             {
-                printf("Error! File not found\n");
-                return -1;
-            }
-            firstDay = true;
-            readPragaERACLITODailyData(fp,&firstDay,&doy,&day,&month,&year,&minT,&maxT,&meanT,&prec);
-            for (int j=0;j<numberMeteoLines;j++)
-            {
+                fp = fopen("inputData/sanlazzaro_1961_2018.txt","r");
+                if (fp == nullptr)
+                {
+                    printf("Error! File not found\n");
+                    return -1;
+                }
+                firstDay = true;
                 readPragaERACLITODailyData(fp,&firstDay,&doy,&day,&month,&year,&minT,&maxT,&meanT,&prec);
-                weatherArray[i][j][0] = minT;
-                weatherArray[i][j][1] = maxT;
-                weatherArray[i][j][2] = prec;
+                for (int j=0;j<numberMeteoLines;j++)
+                {
+                    readPragaERACLITODailyData(fp,&firstDay,&doy,&day,&month,&year,&minT,&maxT,&meanT,&prec);
+                    weatherArray[i][j][0] = minT;
+                    weatherArray[i][j][1] = maxT;
+                    weatherArray[i][j][2] = prec;
+                }
+                fclose(fp);
             }
-            fclose(fp);
-        }
-        else
-        {
-            for (int j=0;j<numberMeteoLines;j++)
+            else
             {
-                weatherArray[i][j][0] = weatherArray[i%10][j][0] + (1.0*rand())/RAND_MAX - 0.5;
-                weatherArray[i][j][1] = weatherArray[i%10][j][1] + (1.0*rand())/RAND_MAX - 0.5;
-                weatherArray[i][j][2] = MAXVALUE(0,weatherArray[i%10][j][2] + (1.0*rand())/RAND_MAX - 0.5);
+                for (int j=0;j<numberMeteoLines;j++)
+                {
+                    weatherArray[i][j][0] = weatherArray[i%10][j][0] + (1.0*rand())/RAND_MAX - 0.5;
+                    weatherArray[i][j][1] = weatherArray[i%10][j][1] + (1.0*rand())/RAND_MAX - 0.5;
+                    weatherArray[i][j][2] = MAXVALUE(0,weatherArray[i%10][j][2] + (1.0*rand())/RAND_MAX - 0.5);
+                }
             }
-        }
 
+        }
     }
-    /*
-    bool testMatrix = true;
-    if (testMatrix)
+    else
     {
-        double** A;
-        double** B;
-        double** C;
-        A = (double **)calloc(nrStations, sizeof(double*));
-        C = (double **)calloc(nrStations, sizeof(double*));
-        B = (double **)calloc(nrStations, sizeof(double*));
-        int i,j;
-        for (i =0;i<nrStations;i++)
+        fp = fopen("inputDataC4/1055.txt", "r");
+        if (fp == nullptr)
         {
-            A[i] = (double *)calloc(nrStations, sizeof(double));
-            B[i] = (double *)calloc(nrStations, sizeof(double));
-            C[i] = (double *)calloc(nrStations, sizeof(double));
+            printf("Error! File not found\n");
+            return -1;
         }
-        for (i =0;i<nrStations;i++)
+        numberMeteoLines = readPragaLineFileNumber(fp);
+        fclose(fp);
+        int doy,day,month,year;
+        double prec,minT,maxT,meanT;
+        doy = day = month = year = NODATA;
+        prec = minT = maxT = meanT = NODATA;
+        bool firstDay = true;
+        lengthDataSeries = numberMeteoLines;
+        int nrVariables = 3;
+        int nrDate = 3;
+        //float *** weatherArray = nullptr;
+        //int ** dateArray = nullptr;
+
+        weatherArray = (float ***)calloc(nrStations, sizeof(float**));
+        for (int i=0;i<nrStations;i++)
         {
-            for (j =0;j<nrStations;j++)
+            weatherArray[i] = (float **)calloc(lengthDataSeries, sizeof(float*));
+            for (int j=0;j<lengthDataSeries;j++)
             {
-                   A[i][j] = B[i][j] = C[i][j]=1.;
+                weatherArray[i][j] = (float *)calloc(nrVariables, sizeof(float));
             }
         }
-        time_t rawtime;
-        struct tm * timeinfo;
+        dateArray = (int **)calloc(lengthDataSeries, sizeof(int*));
+        for (int j=0;j<lengthDataSeries;j++)
+        {
+            dateArray[j] = (int *)calloc(nrDate, sizeof(int));
+        }
+        srand(time(nullptr));
+    }
 
-        time ( &rawtime );
-        timeinfo = localtime ( &rawtime );
-        printf ( "Current local time and date: %s", asctime (timeinfo) );
-        matricial::matrixProductNoCheck(A,B,nrStations,nrStations,nrStations,C);
-        time ( &rawtime );
-        timeinfo = localtime ( &rawtime );
-        printf ( "Current local time and date: %s", asctime (timeinfo) );
-
-        matricial::multiplyStrassen(A,B,nrStations,C);
-        time ( &rawtime );
-        timeinfo = localtime ( &rawtime );
-        printf ( "Current local time and date: %s", asctime (timeinfo) );
-        return 0;
-    }*/
-
+    /*
     TObsDataD** observedDataDaily = (TObsDataD **)calloc(nrStations, sizeof(TObsDataD*));
     for (int i=0;i<nrStations;i++)
     {
@@ -412,6 +421,7 @@ int main()
     free(observedDataDaily);
     free(weatherArray);
     free(dateArray);
+    */
     return 0;
 }
 
