@@ -1104,7 +1104,7 @@ void MainWindow::contextMenuRequested(QPoint localPos, QPoint globalPos)
 
     if (myProject.soilMap.isLoaded)
     {
-        submenu.addAction("Soil data");
+        submenu.addAction("Show soil data");
         nrItems++;
     }
     if (nrItems == 0) return;
@@ -1113,7 +1113,7 @@ void MainWindow::contextMenuRequested(QPoint localPos, QPoint globalPos)
 
     if (myAction)
     {
-        if (myAction->text().contains("Soil data") )
+        if (myAction->text().contains("Show soil data") )
         {
             if (myProject.nrSoils > 0) {
                 openSoilWidget(mapPos);
