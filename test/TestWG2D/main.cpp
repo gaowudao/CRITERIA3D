@@ -12,7 +12,7 @@
 #include "furtherMathFunctions.h"
 #include "wg2D.h"
 #include "readPragaFormatData.h"
-
+#include "readErg5FilesC4C7.h"
 
 #define NR_SIMULATION_YEARS 100
 // [ 1 - 10 ]
@@ -333,7 +333,13 @@ int main()
     }
     else
     {
-        fp = fopen("inputDataC4/1055.txt", "r");
+        // open the list of cells
+        fp = fopen("inputDataC4/list_C4.txt","r");
+        int numberOfCells;
+        numberOfCells = readERG5CellListNumber(fp);
+
+        fclose(fp);
+        fp = fopen("inputDataC4/01025.txt", "r");
         if (fp == nullptr)
         {
             printf("Error! File not found\n");
@@ -365,8 +371,7 @@ int main()
         for (int j=0;j<lengthDataSeries;j++)
         {
             dateArray[j] = (int *)calloc(nrDate, sizeof(int));
-        }
-        srand(time(nullptr));
+        }        
     }
 
     /*

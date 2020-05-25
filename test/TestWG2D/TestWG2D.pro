@@ -56,7 +56,8 @@ SOURCES += main.cpp \
     readErg5FilesC4C7.cpp
 
 HEADERS += \
-    readPragaFormatData.h
+    readPragaFormatData.h \
+    readErg5FilesC4C7.h
 
 
 

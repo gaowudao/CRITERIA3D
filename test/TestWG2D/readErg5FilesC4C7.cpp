@@ -5,6 +5,18 @@
 #include "readPragaFormatData.h"
 #include "commonConstants.h"
 
+int readERG5CellListNumber(FILE *fp)
+{
+    int counter = 0;
+    char dummy;
+
+    do {
+        dummy = getc(fp);
+        if (dummy == '\n') counter++ ;
+    } while (dummy != EOF);
+    return counter ;
+}
+
 int readERG5LineFileNumber(FILE *fp)
 {
     int counter = -2;

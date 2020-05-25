@@ -1,0 +1,6 @@
+#ifndef READERG5FILESC4C7_H
+#define READERG5FILESC4C7_H
+
+int readERG5CellListNumber(FILE *fp);
+
+#endif // READERG5FILESC4C7_H
