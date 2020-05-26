@@ -5,6 +5,18 @@
 #include "readPragaFormatData.h"
 #include "commonConstants.h"
 
+int readERG5CellListNumber(FILE *fp)
+{
+    int counter = 0;
+    char dummy;
+
+    do {
+        dummy = getc(fp);
+        if (dummy == '\n') counter++ ;
+    } while (dummy != EOF);
+    return counter ;
+}
+
 int readERG5LineFileNumber(FILE *fp)
 {
     int counter = -2;
@@ -17,132 +29,65 @@ int readERG5LineFileNumber(FILE *fp)
     return counter ;
 }
 
-/*bool readPragaERG5DailyData(FILE *fp,bool* firstDay,int *doy,int *day,int *month, int* year,double* tmin,double* tmax,double* tmean, double* rhmax, double* rhmin, double* rhmean, double * rad,double *prec)
+void readTheCellNumber(FILE *fp, char* numCell)
 {
-    char dummy ;
-    int counter;
-    char daychar[3],monthchar[3],yearchar[5],tminchar[6],tmaxchar[6],tmeanchar[6],precchar[6],
-         rhminchar[4],rhmaxchar[4],rhmeanchar[4],radchar[5];
-
-    if (*firstDay)
+    for (int i=0;i<6;i++)
     {
-        do {
-            dummy = getc(fp);
-        } while (dummy != '\n');
-        if (dummy == '\n') *firstDay = false;
+        numCell[i] = '\0';
     }
-    else
-    {
-        for (short i=0; i<2; i++)daychar[i] = getc(fp);
-        getc(fp);
-        for (short i=0; i<2; i++) monthchar[i] = getc(fp);
-        getc(fp);
-        for (short i=0; i<4; i++) yearchar[i] = getc(fp);
-        getc(fp);
-        daychar[2] = '\0';
-        monthchar[2] = '\0';
-        yearchar[4] = '\0';
-
-        for (short i=0; i<4; i++)
-        {
-            rhminchar[i] = '\0';
-            rhmeanchar[i] = '\0';
-            rhmaxchar[i] = '\0';
-        }
-
-
-        for (short i=0; i<5; i++)
-        {
-            radchar[i] = '\0';
-        }
-
-        for (short i=0; i<6; i++)
-        {
-            tminchar[i] = '\0';
-            tmeanchar[i] = '\0';
-            tmaxchar[i] = '\0';
-            precchar[i] = '\0';
-        }
-        counter = 0;
-        do
-        {
-            dummy = getc(fp);
-            tminchar[counter++] = dummy;
-        } while (dummy != '\t');
-        counter = 0;
-        do
-        {
-            dummy = getc(fp);
-            tmaxchar[counter++] = dummy;
-        } while (dummy != '\t');
-        counter = 0;
-        do
-        {
-            dummy = getc(fp);
-            tmeanchar[counter++] = dummy;
-        } while (dummy != '\t');
-        counter = 0;
-        do
-        {
-            dummy = getc(fp);
-            precchar[counter++] = dummy;
-        } while (dummy != '\t');
-        counter = 0;
-        do
-        {
-            dummy = getc(fp);
-            rhminchar[counter++] = dummy;
-        } while (dummy != '\t');
-        counter = 0;
-        do
-        {
-            dummy = getc(fp);
-            rhmeanchar[counter++] = dummy;
-        } while (dummy != '\t');
-        counter = 0;
-        do
-        {
-            dummy = getc(fp);
-            rhmaxchar[counter++] = dummy;
-        } while (dummy != '\t');
-        //counter = 0;
-        do
-        {
-            dummy = getc(fp);
-            //rhmaxchar[counter++] = dummy;
-        } while (dummy != '\t');
-        //counter = 0;
-        do
-        {
-            dummy = getc(fp);
-            //rhmaxchar[counter++] = dummy;
-        } while (dummy != '\t');
-        counter = 0;
-        do
-        {
-            dummy = getc(fp);
-            radchar[counter++] = dummy;
-        } while (dummy != '\n');
-        counter = 0;
-
-
-
-        *day = atoi(daychar);
-        *month = atoi(monthchar);
-        *year = atoi (yearchar);
-        *tmin = atof(tminchar);
-        *tmax = atof(tmaxchar);
-        *tmean = atof(tmeanchar);
-        *prec = atof(precchar);
-        *rhmin = (double)(atoi(rhminchar));
-        *rhmax = (double)(atoi(rhmaxchar));
-        *rhmean = (double)(atoi(rhmeanchar));
-        *rad = atof(radchar);
-        *doy = getDoyFromDate(*day,*month,*year);
-    }
-        return true;
+    numCell[0] = getc(fp);
+    numCell[1] = getc(fp);
+    numCell[2] = getc(fp);
+    numCell[3] = getc(fp);
+    numCell[4] = getc(fp);
+    getc(fp);
 }
-*/
+
+bool readEarliestLatestDateC4C7(FILE *fp,int* firstDate, int* lastDate)
+{
+    char dummy[10];
+    int counter;
+    // skip the first line
+    do {
+        dummy[0] = getc(fp);
+    } while (dummy[0] != '\n');
+    // read the first date
+    for (int i=0; i<10; i++)
+    {
+        dummy[i] = '\0';
+    }
+    counter = 0;
+    do {
+        dummy[counter] = getc(fp);
+    } while (dummy[counter++] != '.');
+    while(getc(fp) != '\n')
+    {
+        getc(fp);
+    }
+    float a;
+    a = int (atof(dummy));
+    *firstDate = int (a);
+    *lastDate = *firstDate;
+    // read the last date
+    char dummyOneDigit;
+    do {
+
+        for (int i=0; i<10; i++)
+        {
+            dummy[i] = '\0';
+        }
+        counter = 0;
+        do {
+            dummy[counter] = getc(fp);
+        } while (dummy[counter++] != '.');
+        dummyOneDigit = getc(fp);
+        while(dummyOneDigit != '\n' && dummyOneDigit != EOF)
+        {
+            dummyOneDigit = getc(fp);
+        }
+        *lastDate = atoi(dummy);
+    } while (dummyOneDigit != EOF);
+}
 
 bool readPragaERG5DailyDataC4C7(FILE *fp,bool* firstDay,int *doy,int *day,int *month, int* year,double* tmin,double* tmax,double* tmean,double *prec)
 {

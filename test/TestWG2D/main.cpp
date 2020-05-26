@@ -12,7 +12,7 @@
 #include "furtherMathFunctions.h"
 #include "wg2D.h"
 #include "readPragaFormatData.h"
-
+#include "readErg5FilesC4C7.h"
 
 #define NR_SIMULATION_YEARS 100
 // [ 1 - 10 ]
@@ -333,7 +333,48 @@ int main()
     }
     else
     {
-        fp = fopen("inputDataC4/1055.txt", "r");
+        // open the list of cells
+        fp = fopen("inputDataC4/list_C4.txt","r");
+        int numberOfCells;
+        numberOfCells = readERG5CellListNumber(fp);
+        fclose(fp);
+        // find the cell with the earliest date and with latest date
+        int earliestDate, latestDate;
+        earliestDate = latestDate = NODATA;
+        QString nameOfFile;
+        fp = fopen("inputDataC4/list_C4.txt","r");
+        char* numCell = (char *)calloc(6, sizeof(char));
+        FILE* fp1;
+        for (int i=0; i<numberOfCells; i++)
+        {
+            readTheCellNumber(fp,numCell);
+            printf("%c%c%c%c%c\n",numCell[0],numCell[1],numCell[2],numCell[3],numCell[4]);
+            QString stringNumber(numCell);
+            nameOfFile = "inputDataC4/" + stringNumber + ".txt";
+            std::string stringNameOfFile;
+            stringNameOfFile = nameOfFile.toStdString();
+            const char * charNameOfFile = stringNameOfFile.c_str();
+            fp1 = fopen(charNameOfFile,"r");
+            int firstDate,lastDate;
+            firstDate = lastDate = NODATA;
+            readEarliestLatestDateC4C7(fp1,&firstDate,&lastDate);
+            if (i == 0)
+            {
+                earliestDate = firstDate;
+                latestDate = lastDate;
+            }
+            else
+            {
+                if (firstDate < earliestDate)
+                    earliestDate = firstDate;
+                if (lastDate < latestDate)
+                    latestDate = lastDate;
+            }
+
+            fclose(fp1);
+        }
+
+        fp = fopen("inputDataC4/01025.txt", "r");
         if (fp == nullptr)
         {
             printf("Error! File not found\n");
@@ -365,8 +406,7 @@ int main()
         for (int j=0;j<lengthDataSeries;j++)
         {
             dateArray[j] = (int *)calloc(nrDate, sizeof(int));
-        }
-        srand(time(nullptr));
+        }        
     }
 
     /*
