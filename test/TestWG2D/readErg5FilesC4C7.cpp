@@ -43,7 +43,51 @@ void readTheCellNumber(FILE *fp, char* numCell)
     getc(fp);
 }
 
+bool readEarliestLatestDateC4C7(FILE *fp,int* firstDate, int* lastDate)
+{
+    char dummy[10];
+    int counter;
+    // skip the first line
+    do {
+        dummy[0] = getc(fp);
+    } while (dummy[0] != '\n');
+    // read the first date
+    for (int i=0; i<10; i++)
+    {
+        dummy[i] = '\0';
+    }
+    counter = 0;
+    do {
+        dummy[counter] = getc(fp);
+    } while (dummy[counter++] != '.');
+    while(getc(fp) != '\n')
+    {
+        getc(fp);
+    }
+    float a;
+    a = int (atof(dummy));
+    *firstDate = int (a);
+    *lastDate = *firstDate;
+    // read the last date
+    char dummyOneDigit;
+    do {
 
+        for (int i=0; i<10; i++)
+        {
+            dummy[i] = '\0';
+        }
+        counter = 0;
+        do {
+            dummy[counter] = getc(fp);
+        } while (dummy[counter++] != '.');
+        dummyOneDigit = getc(fp);
+        while(dummyOneDigit != '\n' && dummyOneDigit != EOF)
+        {
+            dummyOneDigit = getc(fp);
+        }
+        *lastDate = atoi(dummy);
+    } while (dummyOneDigit != EOF);
+}
 
 bool readPragaERG5DailyDataC4C7(FILE *fp,bool* firstDay,int *doy,int *day,int *month, int* year,double* tmin,double* tmax,double* tmean,double *prec)
 {
