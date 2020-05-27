@@ -257,6 +257,8 @@ int getDoyFromDate(int day, int month, int year)
 
 bool getDateFromDoy(int doy,int year,int* month, int* day)
 {
+    //if (doy < 1) return false;
+    //if (doy > 366) return false;
     char leap = 0 ;
     int monthList[12];
 
@@ -339,6 +341,7 @@ bool getDateFromDoy(int doy,int year,int* month, int* day)
     }
     else
     {
+        *month = 1;
         *day = doy;
     }
     return true;

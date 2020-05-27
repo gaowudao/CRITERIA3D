@@ -4,6 +4,7 @@
 
 #include "readPragaFormatData.h"
 #include "commonConstants.h"
+#include "crit3dDate.h"
 
 int readERG5CellListNumber(FILE *fp)
 {
@@ -43,7 +44,7 @@ void readTheCellNumber(FILE *fp, char* numCell)
     getc(fp);
 }
 
-bool readEarliestLatestDateC4C7(FILE *fp,int* firstDate, int* lastDate)
+void readEarliestLatestDateC4C7(FILE *fp,int* firstDate, int* lastDate)
 {
     char dummy[10];
     int counter;
@@ -65,7 +66,7 @@ bool readEarliestLatestDateC4C7(FILE *fp,int* firstDate, int* lastDate)
         getc(fp);
     }
     float a;
-    a = int (atof(dummy));
+    a = atof(dummy);
     *firstDate = int (a);
     *lastDate = *firstDate;
     // read the last date
@@ -78,14 +79,19 @@ bool readEarliestLatestDateC4C7(FILE *fp,int* firstDate, int* lastDate)
         }
         counter = 0;
         do {
-            dummy[counter] = getc(fp);
-        } while (dummy[counter++] != '.');
+            dummyOneDigit = dummy[counter] = getc(fp);
+        } while (dummy[counter++] != '.' && dummyOneDigit != EOF);
         dummyOneDigit = getc(fp);
         while(dummyOneDigit != '\n' && dummyOneDigit != EOF)
         {
             dummyOneDigit = getc(fp);
         }
-        *lastDate = atoi(dummy);
+        if (dummyOneDigit != EOF)
+        {
+            a = atof(dummy);
+            *lastDate = int(a);
+        }
+        else return;
     } while (dummyOneDigit != EOF);
 }
 
@@ -290,3 +296,48 @@ bool getDateFromDoy(int doy,int year,int* month, int* day)
     }
     return true;
 } */
+
+void getTheNewDateShiftingDays(int dayOffset, int day0, int month0, int year0, int* dayFinal, int* monthFinal, int* yearFinal)
+{
+
+    int numberOfLeapYears=0;
+    if (dayOffset >= 0)
+    {
+        // shift the initial date to the first of January
+        --dayOffset += getDoyFromDate(day0,month0,year0);
+        *yearFinal = year0;
+        if (dayOffset < 365 + isLeapYear(*yearFinal))
+        {
+            getDateFromDoy(++dayOffset,*yearFinal,monthFinal,dayFinal);
+            return;
+        }
+        while(dayOffset >= 365 + isLeapYear(*yearFinal))
+        {
+            dayOffset -= 365;
+            numberOfLeapYears += isLeapYear(*yearFinal);
+            (*yearFinal)++;
+        }
+        dayOffset -= (numberOfLeapYears - 1);
+
+        if (dayOffset == 0)
+        {
+            *dayFinal = 31;
+            *monthFinal = 12;
+            (*yearFinal)--;
+        }
+        else
+            getDateFromDoy(dayOffset,*yearFinal,monthFinal,dayFinal);
+    }
+    else
+    {
+        // shift to the first of January of the next year
+        ++dayOffset -= (365 + isLeapYear(year0) - getDoyFromDate(day0,month0,year0));
+        *yearFinal = year0;
+        while (fabs(dayOffset) > 365 + isLeapYear(*yearFinal))
+        {
+            dayOffset += (365 + isLeapYear(*yearFinal));
+            (*yearFinal)--;
+        }
+        getDateFromDoy(1 + 365 + isLeapYear(*yearFinal)+ dayOffset,*yearFinal,monthFinal,dayFinal);
+    }
+}

@@ -373,15 +373,9 @@ int main()
 
             fclose(fp1);
         }
+        nrStations = numberOfCells;
+        numberMeteoLines = latestDate - earliestDate + 1;
 
-        fp = fopen("inputDataC4/01025.txt", "r");
-        if (fp == nullptr)
-        {
-            printf("Error! File not found\n");
-            return -1;
-        }
-        numberMeteoLines = readPragaLineFileNumber(fp);
-        fclose(fp);
         int doy,day,month,year;
         double prec,minT,maxT,meanT;
         doy = day = month = year = NODATA;
@@ -408,6 +402,17 @@ int main()
             dateArray[j] = (int *)calloc(nrDate, sizeof(int));
         }        
     }
+    int yearInitial =1900;
+    int dayFinal,monthFinal,yearFinal;
+    dayFinal = monthFinal = yearFinal = NODATA;
+    getTheNewDateShiftingDays(365,1,1,yearInitial,&dayFinal,&monthFinal,&yearFinal);
+    printf("%d  %d %d\n",dayFinal,monthFinal,yearFinal);
+    getTheNewDateShiftingDays(730,1,1,yearInitial,&dayFinal,&monthFinal,&yearFinal);
+    printf("%d  %d %d\n",dayFinal,monthFinal,yearFinal);
+    getTheNewDateShiftingDays(1095,1,1,yearInitial,&dayFinal,&monthFinal,&yearFinal);
+    printf("%d  %d %d\n",dayFinal,monthFinal,yearFinal);
+    getTheNewDateShiftingDays(1460,1,1,yearInitial,&dayFinal,&monthFinal,&yearFinal);
+    printf("%d  %d %d\n",dayFinal,monthFinal,yearFinal);
 
     /*
     TObsDataD** observedDataDaily = (TObsDataD **)calloc(nrStations, sizeof(TObsDataD*));
