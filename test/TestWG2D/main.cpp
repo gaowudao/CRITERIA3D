@@ -348,7 +348,7 @@ int main()
         for (int i=0; i<numberOfCells; i++)
         {
             readTheCellNumber(fp,numCell);
-            printf("%c%c%c%c%c\n",numCell[0],numCell[1],numCell[2],numCell[3],numCell[4]);
+            //printf("%c%c%c%c%c\n",numCell[0],numCell[1],numCell[2],numCell[3],numCell[4]);
             QString stringNumber(numCell);
             nameOfFile = "inputDataC4/" + stringNumber + ".txt";
             std::string stringNameOfFile;
@@ -373,15 +373,9 @@ int main()
 
             fclose(fp1);
         }
+        nrStations = numberOfCells;
+        numberMeteoLines = latestDate - earliestDate + 1;
 
-        fp = fopen("inputDataC4/01025.txt", "r");
-        if (fp == nullptr)
-        {
-            printf("Error! File not found\n");
-            return -1;
-        }
-        numberMeteoLines = readPragaLineFileNumber(fp);
-        fclose(fp);
         int doy,day,month,year;
         double prec,minT,maxT,meanT;
         doy = day = month = year = NODATA;
@@ -390,8 +384,6 @@ int main()
         lengthDataSeries = numberMeteoLines;
         int nrVariables = 3;
         int nrDate = 3;
-        //float *** weatherArray = nullptr;
-        //int ** dateArray = nullptr;
 
         weatherArray = (float ***)calloc(nrStations, sizeof(float**));
         for (int i=0;i<nrStations;i++)
@@ -406,8 +398,25 @@ int main()
         for (int j=0;j<lengthDataSeries;j++)
         {
             dateArray[j] = (int *)calloc(nrDate, sizeof(int));
-        }        
+        }
+
+
     }
+    int yearInitial =1899;
+    int monthInitial = 12;
+    int dayInitial = 31;
+    int dayFinal,monthFinal,yearFinal;
+    dayFinal = monthFinal = yearFinal = NODATA;
+    /*
+     * getTheNewDateShiftingDays(365,dayInitial,monthInitial,yearInitial,&dayFinal,&monthFinal,&yearFinal);
+    printf("%d  %d %d\n",dayFinal,monthFinal,yearFinal);
+    getTheNewDateShiftingDays(731,dayInitial,monthInitial,yearInitial,&dayFinal,&monthFinal,&yearFinal);
+    printf("%d  %d %d\n",dayFinal,monthFinal,yearFinal);
+    getTheNewDateShiftingDays(1096,dayInitial,monthInitial,yearInitial,&dayFinal,&monthFinal,&yearFinal);
+    printf("%d  %d %d\n",dayFinal,monthFinal,yearFinal);
+    getTheNewDateShiftingDays(1461,dayInitial,monthInitial,yearInitial,&dayFinal,&monthFinal,&yearFinal);
+    printf("%d  %d %d\n",dayFinal,monthFinal,yearFinal);
+    */
 
     /*
     TObsDataD** observedDataDaily = (TObsDataD **)calloc(nrStations, sizeof(TObsDataD*));

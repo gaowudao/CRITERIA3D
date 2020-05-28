@@ -1,6 +1,6 @@
 #-----------------------------------------------------------
 #
-#   TestCriteria1D
+#   CropEditor
 #   This project is part of CRITERIA3D distribution
 #
 #-----------------------------------------------------------
@@ -26,7 +26,7 @@ macx:{
     }
 }
 win32:{
-    TARGET = TestCriteria1D
+    TARGET = CROP_EDITOR
 }
 
 INCLUDEPATH +=  ../../agrolib/crit3dDate ../../agrolib/mathFunctions ../../agrolib/gis  \
