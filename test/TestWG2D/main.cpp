@@ -348,7 +348,7 @@ int main()
         for (int i=0; i<numberOfCells; i++)
         {
             readTheCellNumber(fp,numCell);
-            printf("%c%c%c%c%c\n",numCell[0],numCell[1],numCell[2],numCell[3],numCell[4]);
+            //printf("%c%c%c%c%c\n",numCell[0],numCell[1],numCell[2],numCell[3],numCell[4]);
             QString stringNumber(numCell);
             nameOfFile = "inputDataC4/" + stringNumber + ".txt";
             std::string stringNameOfFile;
@@ -402,16 +402,18 @@ int main()
             dateArray[j] = (int *)calloc(nrDate, sizeof(int));
         }        
     }
-    int yearInitial =1900;
+    int yearInitial =1999;
+    int monthInitial = 03;
+    int dayInitial = 01;
     int dayFinal,monthFinal,yearFinal;
     dayFinal = monthFinal = yearFinal = NODATA;
-    getTheNewDateShiftingDays(365,1,1,yearInitial,&dayFinal,&monthFinal,&yearFinal);
+    getTheNewDateShiftingDays(365,dayInitial,monthInitial,yearInitial,&dayFinal,&monthFinal,&yearFinal);
     printf("%d  %d %d\n",dayFinal,monthFinal,yearFinal);
-    getTheNewDateShiftingDays(730,1,1,yearInitial,&dayFinal,&monthFinal,&yearFinal);
+    getTheNewDateShiftingDays(731,dayInitial,monthInitial,yearInitial,&dayFinal,&monthFinal,&yearFinal);
     printf("%d  %d %d\n",dayFinal,monthFinal,yearFinal);
-    getTheNewDateShiftingDays(1095,1,1,yearInitial,&dayFinal,&monthFinal,&yearFinal);
+    getTheNewDateShiftingDays(1096,dayInitial,monthInitial,yearInitial,&dayFinal,&monthFinal,&yearFinal);
     printf("%d  %d %d\n",dayFinal,monthFinal,yearFinal);
-    getTheNewDateShiftingDays(1460,1,1,yearInitial,&dayFinal,&monthFinal,&yearFinal);
+    getTheNewDateShiftingDays(1461,dayInitial,monthInitial,yearInitial,&dayFinal,&monthFinal,&yearFinal);
     printf("%d  %d %d\n",dayFinal,monthFinal,yearFinal);
 
     /*

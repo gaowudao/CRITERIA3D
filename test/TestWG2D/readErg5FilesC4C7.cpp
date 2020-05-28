@@ -300,7 +300,6 @@ bool getDateFromDoy(int doy,int year,int* month, int* day)
 void getTheNewDateShiftingDays(int dayOffset, int day0, int month0, int year0, int* dayFinal, int* monthFinal, int* yearFinal)
 {
 
-    int numberOfLeapYears=0;
     if (dayOffset >= 0)
     {
         // shift the initial date to the first of January
@@ -313,31 +312,22 @@ void getTheNewDateShiftingDays(int dayOffset, int day0, int month0, int year0, i
         }
         while(dayOffset >= 365 + isLeapYear(*yearFinal))
         {
-            dayOffset -= 365;
-            numberOfLeapYears += isLeapYear(*yearFinal);
+            dayOffset -= 365 + isLeapYear(*yearFinal);
             (*yearFinal)++;
         }
-        dayOffset -= (numberOfLeapYears - 1);
+        getDateFromDoy(++dayOffset,*yearFinal,monthFinal,dayFinal);
 
-        if (dayOffset == 0)
-        {
-            *dayFinal = 31;
-            *monthFinal = 12;
-            (*yearFinal)--;
-        }
-        else
-            getDateFromDoy(dayOffset,*yearFinal,monthFinal,dayFinal);
     }
     else
     {
-        // shift to the first of January of the next year
-        ++dayOffset -= (365 + isLeapYear(year0) - getDoyFromDate(day0,month0,year0));
+        // shift to the thirstyfirst of December of the same year
+        dayOffset -= (365 + isLeapYear(year0) - getDoyFromDate(day0,month0,year0));
         *yearFinal = year0;
-        while (fabs(dayOffset) > 365 + isLeapYear(*yearFinal))
+        while (fabs(dayOffset) >= 365 + isLeapYear(*yearFinal))
         {
             dayOffset += (365 + isLeapYear(*yearFinal));
             (*yearFinal)--;
         }
-        getDateFromDoy(1 + 365 + isLeapYear(*yearFinal)+ dayOffset,*yearFinal,monthFinal,dayFinal);
+        getDateFromDoy(365 + isLeapYear(*yearFinal)+ dayOffset,*yearFinal,monthFinal,dayFinal);
     }
 }
