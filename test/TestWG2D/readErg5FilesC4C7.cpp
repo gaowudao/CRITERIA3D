@@ -302,7 +302,7 @@ void getTheNewDateShiftingDays(int dayOffset, int day0, int month0, int year0, i
 
     if (dayOffset >= 0)
     {
-        // shift the initial date to the first of January
+        // shift back the initial date to the first of January
         --dayOffset += getDoyFromDate(day0,month0,year0);
         *yearFinal = year0;
         if (dayOffset < 365 + isLeapYear(*yearFinal))
@@ -320,7 +320,7 @@ void getTheNewDateShiftingDays(int dayOffset, int day0, int month0, int year0, i
     }
     else
     {
-        // shift to the thirstyfirst of December of the same year
+        // shift ahead to the thirstyfirst of December of the same year
         dayOffset -= (365 + isLeapYear(year0) - getDoyFromDate(day0,month0,year0));
         *yearFinal = year0;
         while (fabs(dayOffset) >= 365 + isLeapYear(*yearFinal))
