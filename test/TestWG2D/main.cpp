@@ -456,7 +456,7 @@ int main()
                 printf ("%d %d %d ",dateArray[j][0],dateArray[j][1],dateArray[j][2]);
                 printf ("%f %f %f \n",weatherArray[i][j][0],weatherArray[i][j][1],weatherArray[i][j][2]);
             }
-
+            getchar();
         }
 
 
