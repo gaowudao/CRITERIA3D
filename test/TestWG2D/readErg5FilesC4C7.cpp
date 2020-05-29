@@ -3,6 +3,7 @@
 #include <string.h>
 
 #include "readPragaFormatData.h"
+#include "readErg5FilesC4C7.h"
 #include "commonConstants.h"
 #include "crit3dDate.h"
 
@@ -95,7 +96,7 @@ void readEarliestLatestDateC4C7(FILE *fp,int* firstDate, int* lastDate)
     } while (dummyOneDigit != EOF);
 }
 
-bool readPragaERG5DailyDataC4C7(FILE *fp,bool* firstRead,int *doy,int *day,int *month, int* year,double* tmin,double* tmax,double *prec)
+bool readPragaERG5DailyDataC4C7(FILE *fp,bool* firstRead,int* currentDate,int *doy,int *day,int *month, int* year,double* tmin,double* tmax,double *prec)
 {
     char dummy = '\0';
     int counter=0;
@@ -155,7 +156,10 @@ bool readPragaERG5DailyDataC4C7(FILE *fp,bool* firstRead,int *doy,int *day,int *
     {
         precChar[counter++] = dummy;
     }
-    dayNumber = int (atof(dayNumberChar));
+    *currentDate = dayNumber = int (atof(dayNumberChar));
+    getTheNewDateShiftingDays(dayNumber,31,12,1899,day,month,year);
+    //*doy = getDoyFromDate(day,month,year);
+    //if (dayNumber < )
     *prec = atof(precChar);
     *tmin = atof(minTChar);
     *tmax = atof(maxTChar);
@@ -166,16 +170,6 @@ bool readPragaERG5DailyDataC4C7(FILE *fp,bool* firstRead,int *doy,int *day,int *
     }while (dummy != '\n' && dummy != EOF);
 
 
-    /*
-    *day = atoi(daychar);
-    *month = atoi(monthchar);
-    *year = atoi (yearchar);
-    *tmin = atof(tminchar);
-    *tmax = atof(tmaxchar);
-    *tmean = atof(tmeanchar);
-    *prec = atof(precchar);
-    *doy = getDoyFromDate(*day,*month,*year);
-    */
     return true;
 }
 
