@@ -373,6 +373,7 @@ int main()
 
             fclose(fp1);
         }
+        fclose(fp);
         nrStations = numberOfCells;
         numberMeteoLines = latestDate - earliestDate + 1;
 
@@ -400,13 +401,71 @@ int main()
             dateArray[j] = (int *)calloc(nrDate, sizeof(int));
         }
 
+        fp = fopen("inputDataC4/list_C4.txt","r");
+        for (int i=0; i<numberOfCells; i++)
+        {
+
+            readTheCellNumber(fp,numCell);
+            //printf("%c%c%c%c%c\n",numCell[0],numCell[1],numCell[2],numCell[3],numCell[4]);
+            QString stringNumber(numCell);
+            nameOfFile = "inputDataC4/" + stringNumber + ".txt";
+            std::string stringNameOfFile;
+            stringNameOfFile = nameOfFile.toStdString();
+            const char * charNameOfFile = stringNameOfFile.c_str();
+            fp1 = fopen(charNameOfFile,"r");
+            bool firstRead = true;
+            bool checkFirstRead;
+            for (int j=0;j<numberMeteoLines;j++)
+            {
+                int currentDate;
+                checkFirstRead = firstRead;
+                readPragaERG5DailyDataC4C7(fp1,&firstRead,&currentDate,&doy,&day,&month,&year,&minT,&maxT,&prec);
+
+                if (checkFirstRead != firstRead)
+                {
+                    while (currentDate > earliestDate+j)
+                    {
+                        weatherArray[i][j][0] = NODATA;
+                        weatherArray[i][j][1] = NODATA;
+                        weatherArray[i][j][2] = NODATA;
+                        if (i == 0)
+                        {
+                            int yearInitial =1899;
+                            int monthInitial = 12;
+                            int dayInitial = 31;
+                            int dayFinal,monthFinal,yearFinal;
+                            dayFinal = monthFinal = yearFinal = NODATA;
+                            getTheNewDateShiftingDays(earliestDate+j,dayInitial,monthInitial,yearInitial,&dayFinal,&monthFinal,&yearFinal);
+                            dateArray[j][0] = dayFinal;
+                            dateArray[j][1] = monthFinal;
+                            dateArray[j][2] = yearFinal;
+                        }
+                        j++;
+                    }
+
+                }
+                weatherArray[i][j][0] = minT;
+                weatherArray[i][j][1] = maxT;
+                weatherArray[i][j][2] = prec;
+                if (i == 0)
+                {
+                    dateArray[j][0] = day;
+                    dateArray[j][1] = month;
+                    dateArray[j][2] = year;
+                }
+                printf ("%d %d %d ",dateArray[j][0],dateArray[j][1],dateArray[j][2]);
+                printf ("%f %f %f \n",weatherArray[i][j][0],weatherArray[i][j][1],weatherArray[i][j][2]);
+            }
+
+        }
+
 
     }
-    int yearInitial =1899;
-    int monthInitial = 12;
-    int dayInitial = 31;
-    int dayFinal,monthFinal,yearFinal;
-    dayFinal = monthFinal = yearFinal = NODATA;
+    //int yearInitial =1899;
+    //int monthInitial = 12;
+    //int dayInitial = 31;
+    //int dayFinal,monthFinal,yearFinal;
+    //dayFinal = monthFinal = yearFinal = NODATA;
     /*
      * getTheNewDateShiftingDays(365,dayInitial,monthInitial,yearInitial,&dayFinal,&monthFinal,&yearFinal);
     printf("%d  %d %d\n",dayFinal,monthFinal,yearFinal);
