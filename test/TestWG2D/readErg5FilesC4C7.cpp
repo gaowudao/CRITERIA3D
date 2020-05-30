@@ -157,7 +157,7 @@ bool readPragaERG5DailyDataC4C7(FILE *fp,bool* firstRead,int* currentDate,int *d
         precChar[counter++] = dummy;
     }
     *currentDate = dayNumber = int (atof(dayNumberChar));
-    getTheNewDateShiftingDays(dayNumber,31,12,1899,day,month,year);
+    getTheNewDateShiftingDays(dayNumber,30,12,1899,day,month,year);
     //*doy = getDoyFromDate(day,month,year);
     //if (dayNumber < )
     *prec = atof(precChar);

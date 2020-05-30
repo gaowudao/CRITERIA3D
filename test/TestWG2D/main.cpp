@@ -14,7 +14,7 @@
 #include "readPragaFormatData.h"
 #include "readErg5FilesC4C7.h"
 
-#define NR_SIMULATION_YEARS 100
+#define NR_SIMULATION_YEARS 2
 // [ 1 - 10 ]
 #define NR_STATIONS 5
 
@@ -432,18 +432,22 @@ int main()
                         {
                             int yearInitial =1899;
                             int monthInitial = 12;
-                            int dayInitial = 31;
+                            int dayInitial = 30;
                             int dayFinal,monthFinal,yearFinal;
                             dayFinal = monthFinal = yearFinal = NODATA;
                             getTheNewDateShiftingDays(earliestDate+j,dayInitial,monthInitial,yearInitial,&dayFinal,&monthFinal,&yearFinal);
                             dateArray[j][0] = dayFinal;
                             dateArray[j][1] = monthFinal;
                             dateArray[j][2] = yearFinal;
+                            //printf ("%d %d %d ",dateArray[j][0],dateArray[j][1],dateArray[j][2]);
+                            //printf ("%.1f %.1f %.1f \n",weatherArray[i][j][0],weatherArray[i][j][1],weatherArray[i][j][2]);
+                            //getchar();
                         }
                         j++;
                     }
 
                 }
+                //getchar();
                 weatherArray[i][j][0] = minT;
                 weatherArray[i][j][1] = maxT;
                 weatherArray[i][j][2] = prec;
@@ -453,31 +457,33 @@ int main()
                     dateArray[j][1] = month;
                     dateArray[j][2] = year;
                 }
-                printf ("%d %d %d ",dateArray[j][0],dateArray[j][1],dateArray[j][2]);
-                printf ("%f %f %f \n",weatherArray[i][j][0],weatherArray[i][j][1],weatherArray[i][j][2]);
+                //printf ("%d %d %d ",dateArray[j][0],dateArray[j][1],dateArray[j][2]);
+                //printf ("%.1f %.1f %.1f \n",weatherArray[i][j][0],weatherArray[i][j][1],weatherArray[i][j][2]);
+                //getchar();
             }
-            getchar();
+            //getchar();
         }
 
 
     }
-    //int yearInitial =1899;
-    //int monthInitial = 12;
-    //int dayInitial = 31;
-    //int dayFinal,monthFinal,yearFinal;
-    //dayFinal = monthFinal = yearFinal = NODATA;
     /*
-     * getTheNewDateShiftingDays(365,dayInitial,monthInitial,yearInitial,&dayFinal,&monthFinal,&yearFinal);
+    int yearInitial =1899;
+    int monthInitial = 12;
+    int dayInitial = 31;
+    int dayFinal,monthFinal,yearFinal;
+    dayFinal = monthFinal = yearFinal = NODATA;
+
+    getTheNewDateShiftingDays(1097,dayInitial,monthInitial,yearInitial,&dayFinal,&monthFinal,&yearFinal);
     printf("%d  %d %d\n",dayFinal,monthFinal,yearFinal);
-    getTheNewDateShiftingDays(731,dayInitial,monthInitial,yearInitial,&dayFinal,&monthFinal,&yearFinal);
+    getTheNewDateShiftingDays(36892,dayInitial,monthInitial,yearInitial,&dayFinal,&monthFinal,&yearFinal);
     printf("%d  %d %d\n",dayFinal,monthFinal,yearFinal);
-    getTheNewDateShiftingDays(1096,dayInitial,monthInitial,yearInitial,&dayFinal,&monthFinal,&yearFinal);
+    getTheNewDateShiftingDays(40908,dayInitial,monthInitial,yearInitial,&dayFinal,&monthFinal,&yearFinal);
     printf("%d  %d %d\n",dayFinal,monthFinal,yearFinal);
-    getTheNewDateShiftingDays(1461,dayInitial,monthInitial,yearInitial,&dayFinal,&monthFinal,&yearFinal);
+    getTheNewDateShiftingDays(43830,dayInitial,monthInitial,yearInitial,&dayFinal,&monthFinal,&yearFinal);
     printf("%d  %d %d\n",dayFinal,monthFinal,yearFinal);
     */
 
-    /*
+
     TObsDataD** observedDataDaily = (TObsDataD **)calloc(nrStations, sizeof(TObsDataD*));
     for (int i=0;i<nrStations;i++)
     {
@@ -529,7 +535,7 @@ int main()
     free(observedDataDaily);
     free(weatherArray);
     free(dateArray);
-    */
+
     return 0;
 }
 
@@ -539,7 +545,7 @@ void printSimulationResults(ToutputWeatherData* output,int nrStations,int length
     QString outputName;
     for (int iStation=0; iStation<nrStations;iStation++)
     {
-        outputName = "wgStation_" + QString::number(iStation) + ".csv";
+        outputName = "outputDataC4/wgStation_" + QString::number(iStation) + ".csv";
         QFile file(outputName);
         file.open(QIODevice::WriteOnly | QIODevice::Truncate | QIODevice::Text);
         QTextStream stream( &file );
